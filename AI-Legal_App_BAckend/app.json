@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "66fb0d76-ffea-4c8a-bc10-71dea32060ad"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.uwo.backend2",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
+  }
+}

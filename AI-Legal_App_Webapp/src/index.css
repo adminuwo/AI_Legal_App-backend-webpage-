@@ -1,0 +1,2309 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@400;600;700&family=Outfit:wght@300;400;600;700&display=swap');
+
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:where(.dark, .dark *));
+
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    /* Main Background Pure White */
+    --foreground: 0 0% 0%;
+    /* Black */
+
+    --card: 0 0% 100%;
+    /* White Cards */
+    --card-foreground: 0 0% 0%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+
+    --primary: 240 100% 67%;
+    --primary-light: 240 100% 82%;
+    --primary-dark: 240 100% 52%;
+    --primary-bg: 240 30% 96%;
+    --primary-border: 240 100% 67% / 0.15;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 100%;
+    /* #ffffff Sidebar/Surfaces */
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 84 10% 60%;
+    /* #9ca38f */
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 210 29% 95%;
+    /* #eef2f6 */
+    --input: 210 29% 95%;
+    --ring: 240 100% 67%;
+
+    --radius: 1rem;
+    --primary-rgb: 99, 102, 241;
+    --color-primary-rgb: 99, 102, 241;
+  }
+
+  :root.dark,
+  .dark {
+    --background: 0 0% 0%;
+    /* Pure Black #000000 */
+    --foreground: 210 20% 90%;
+    /* Soft Off-White for Headings */
+    --card: 0 0% 4%;
+    /* Very Dark Gray #0a0a0a - Matte Dark Card */
+    --card-foreground: 210 15% 80%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 210 15% 80%;
+    --primary: 225 60% 55%;
+    --primary-light: 225 60% 70%;
+    --primary-dark: 225 60% 40%;
+    --primary-bg: 225 30% 12%;
+    --primary-border: 225 60% 55% / 0.15;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 0 0% 6%;
+    /* Subtle darker surface #0f0f0f */
+    --secondary-foreground: 210 20% 90%;
+    --muted: 0 0% 8%;
+    --muted-foreground: 215 15% 65%;
+    /* Muted Gray for body text */
+    --accent: 0 0% 6%;
+    --accent-foreground: 210 20% 90%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 0 0% 10%;
+    /* Subtle border, blending in */
+    --input: 0 0% 8%;
+    --ring: 225 60% 55%;
+    --primary-rgb: 129, 140, 248;
+    --color-primary-rgb: 129, 140, 248;
+  }
+}
+
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-light: hsl(var(--primary-light));
+  --color-primary-dark: hsl(var(--primary-dark));
+  --color-primary-bg: hsl(var(--primary-bg));
+  --color-primary-border: hsl(var(--primary-border));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  /* Custom Aliases */
+  --color-maintext: hsl(var(--foreground));
+  --color-subtext: hsl(var(--muted-foreground));
+  --color-surface: hsl(var(--secondary));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --typography-prose: var(--foreground);
+  --typography-headings: var(--foreground);
+  --typography-links: var(--primary);
+  --typography-bold: var(--foreground);
+  --typography-bullets: var(--primary);
+}
+
+@layer base {
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--active-font-family, 'Outfit', sans-serif);
+    overflow-wrap: anywhere;
+    word-break: normal;
+    padding-bottom: env(safe-area-inset-bottom);
+    /* Stable touch scrolling */
+    touch-action: manipulation;
+  }
+
+  /* ─── MOBILE SCROLL FIX ───
+   * Ensure the html/body can scroll naturally on non-dashboard pages.
+   * Dashboard pages use position:fixed via JS (VisualViewportManager) for
+   * keyboard handling; all other pages need natural browser scroll.
+   * This overrides any stale JS-injected overflow:hidden on page transitions.
+   */
+  @media (max-width: 1023px) {
+    html:not([style*="overflow:hidden"]),
+    html:not([style*="overflow: hidden"]) {
+      overflow-y: auto !important;
+    }
+  }
+
+  /* ─── LANDING PAGE SCROLL FIX ───
+   * On mobile, the #root element must NOT be position:fixed or overflow:hidden.
+   * The DashboardLayout component manages its own fixed layout internally via #aisa-app-root.
+   * For all public pages (landing, login, signup, pricing) we need natural scroll.
+   * The .is-landing-page class is added by VisualViewportManager based on the current route.
+   */
+  @media (max-width: 1023px) {
+    body.is-landing-page #root {
+      overflow-y: auto;
+      height: auto;
+      min-height: 100dvh;
+      position: static;
+    }
+    body.is-landing-page {
+      overflow-y: auto;
+      position: static;
+      height: auto;
+    }
+    html:has(body.is-landing-page) {
+      overflow-y: auto;
+      height: auto;
+    }
+  }
+
+  /* Reduce heavy blur effects on mobile for performance */
+  @media (max-width: 768px) {
+    /* Disable expensive GPU compositing on mobile */
+    .backdrop-blur-3xl {
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+    }
+    /* Disable blur-[90px] style heavy blurs */
+    [class*="blur-\[90px\]"],
+    [class*="blur-\[120px\]"],
+    [class*="blur-\[60px\]"],
+    [class*="blur-\[70px\]"] {
+      filter: none !important;
+    }
+  }
+
+  /* Marked/Highlighted text styling */
+  mark {
+    background-color: rgba(85, 85, 255, 0.1);
+    color: inherit;
+    padding: 0.1em 0.2em;
+    border-radius: 0.2em;
+    border-bottom: 2px solid #5555ff;
+  }
+
+  .dark mark {
+    background-color: #5555ff;
+    color: white;
+  }
+
+  .prose {
+    max-width: 700px !important;
+    color: hsl(var(--foreground)) !important;
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Responsive Typography */
+  @media (max-width: 768px) {
+    .prose {
+      font-size: 13px !important;
+    }
+  }
+
+  .prose h2 {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+  }
+
+  .prose h3 {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+  }
+
+  .prose p {
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4 {
+    color: hsl(var(--foreground)) !important;
+    font-weight: 700 !important;
+    margin-top: 1.5em !important;
+    margin-bottom: 0.75em !important;
+  }
+
+  .prose h2 {
+    font-size: 18px !important;
+  }
+
+  .prose h3 {
+    font-size: 16px !important;
+  }
+
+  .prose * {
+    font-size: inherit !important;
+  }
+
+  .prose strong {
+    color: hsl(var(--foreground)) !important;
+    font-weight: 700 !important;
+  }
+
+  .prose ul, .prose ol {
+    list-style-type: none !important;
+    padding-left: 0 !important;
+    margin-top: 12px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .prose li {
+    position: relative !important;
+    padding-left: 1.75em !important;
+    margin-bottom: 6px !important;
+  }
+
+  .prose li::before {
+    content: "•" !important;
+    position: absolute !important;
+    left: 0.5em !important;
+    color: hsl(var(--primary)) !important;
+    font-weight: bold !important;
+  }
+
+  .prose a {
+    color: hsl(var(--primary)) !important;
+    text-decoration: underline !important;
+    font-weight: 600 !important;
+  }
+
+  .prose blockquote {
+    border-left: 4px solid hsl(var(--primary) / 0.2) !important;
+    padding-left: 1.5em !important;
+    font-style: italic !important;
+    color: hsl(var(--foreground)) !important;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border/50 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-border;
+}
+
+/* Force dark scrollbar in dark mode class */
+.dark ::-webkit-scrollbar-track {
+  background: hsl(var(--secondary));
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--border));
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 8s linear infinite;
+}
+
+@keyframes float-slow {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+
+  33% {
+    transform: translate(10px, -15px) scale(1.1);
+    opacity: 0.5;
+  }
+
+  66% {
+    transform: translate(-15px, 10px) scale(0.95);
+    opacity: 0.4;
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 15s ease-in-out infinite;
+}
+
+@keyframes border-glow {
+
+  0%,
+  100% {
+    border-color: rgba(var(--primary), 0.1);
+  }
+
+  50% {
+    border-color: rgba(var(--primary), 0.5);
+  }
+}
+
+.sidebar-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%);
+  backdrop-filter: blur(25px);
+  border-right: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.05);
+}
+
+.dark .sidebar-glass {
+  background: linear-gradient(135deg, rgba(10, 12, 26, 0.6) 0%, rgba(5, 7, 18, 0.4) 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 15px 0 40px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 1024px) {
+  .sidebar-glass {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-right: 1px solid #e2e8f0 !important;
+  }
+  .dark .sidebar-glass {
+    background-color: #0f172a !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-right: 1px solid #1e293b !important;
+  }
+}
+
+/* Glass aesthetic for message cards and other surfaces to match sidebar */
+.message-card-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark .message-card-glass {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.chat-item-bg {
+  mask-image: radial-gradient(circle at center, black, transparent);
+}
+
+.ai-typing-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-typing-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.08),
+      transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.ai-typing-glow {
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.font-serif {
+  font-family: 'Playfair Display', serif !important;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.font-rounded {
+  font-family: 'Quicksand', sans-serif !important;
+  font-weight: 600;
+}
+
+.font-sans {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+:root {
+  --aisa-font-size: 16px;
+  --aisa-scale: 1;
+  /* Mobile navbar height — updated dynamically by Navigation.Provider.jsx */
+  --mobile-nav-h: 64px;
+}
+
+/* On desktop (lg+) the mobile header doesn't exist, so no offset needed */
+@media (min-width: 1024px) {
+  :root {
+    --mobile-nav-h: 0px;
+  }
+}
+
+/* Global Scaling System */
+html {
+  font-size: var(--aisa-font-size) !important;
+  scroll-behavior: smooth;
+}
+
+/* Momentum scroll on iOS */
+body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Chat and scrollable areas: instant scroll for programmatic jumps */
+.chatgpt-container,
+.overflow-y-auto,
+[class*="custom-scrollbar"] {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* GPU-accelerate ALL animated blobs */
+[class*="mix-blend-multiply"],
+[class*="mix-blend-screen"],
+[class*="mix-blend-soft-light"] {
+  will-change: transform, opacity;
+}
+
+/* Isolate the glassmorphic card containers */
+.modal-default,
+.modal-maximized {
+  contain: layout paint;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.25) transparent;
+  scroll-behavior: smooth;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.25);
+  border-radius: 99px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.45);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
+}
+
+/* Chat Container - Ensures scrollability in all modes */
+.chatgpt-container {
+  -webkit-overflow-scrolling: touch; /* iOS momentum scroll */
+  overscroll-behavior: contain;      /* Prevent scroll chaining */
+  scroll-behavior: auto;             /* Instant scroll for programmatic jumps */
+}
+
+/* When a magic tool chip row is active, extra padding is applied via JS class.
+   This ensures the last message never hides behind the input bar. */
+.chatgpt-container.tool-active {
+  padding-bottom: 22rem !important;
+}
+
+@media (max-width: 768px) {
+  .chatgpt-container.tool-active {
+    padding-bottom: 20rem !important;
+  }
+}
+
+.admin-horizontal-scrollbar {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
+}
+
+.admin-horizontal-scrollbar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.admin-horizontal-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-horizontal-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 10px;
+}
+
+
+.demo-scroll-thumb {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.20) transparent;
+  scroll-behavior: smooth;
+}
+
+.demo-scroll-thumb::-webkit-scrollbar {
+  width: 3px;
+}
+
+.demo-scroll-thumb::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.demo-scroll-thumb::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.25);
+  border-radius: 99px;
+}
+
+/* Scroll-pause backdrop optimization removed — caused full-screen repaint flicker */
+
+@media (max-width: 768px) {
+  [class*="backdrop-blur"] {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+
+  [class*="shadow-"] {
+    box-shadow: none !important;
+  }
+}
+
+/* Prevent layout thrash from animated gradient borders */
+[style*="inset: -1.5px"],
+[style*="inset: -14px"] {
+  will-change: transform, opacity;
+}
+
+.aisa-badge-small {
+  background: rgba(99, 102, 241, 0.2);
+  backdrop-filter: blur(4px);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 35px;
+}
+
+.dark .aisa-badge-small {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+/* --- AISA PREMIUM DESIGN SYSTEM --- */
+
+.navbar {
+  /* No scroll-triggered transform — prevents flicker on scroll */
+}
+
+.glass-morphism {
+  @apply bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/20 dark:border-white/5;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+.tool-icon-premium {
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.05), -4px -4px 10px rgba(255, 255, 255, 0.8);
+}
+
+.dark .tool-icon-premium {
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5), inset 0 0 0 transparent !important;
+}
+
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.modal-default {
+  @apply w-full max-w-4xl max-h-[85vh] rounded-[2.5rem] shadow-[0_30px_90px_rgba(0,0,0,0.1)];
+}
+
+.modal-maximized {
+  @apply w-[95vw] h-[95vh] max-h-[95vh] rounded-2xl shadow-[0_40px_100px_rgba(0,0,0,0.2)];
+}
+
+.modal-header-glass {
+  @apply sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100/50;
+}
+
+.footer-link-sparkle {
+  position: relative;
+  text-decoration: none !important;
+  transition: color 0.3s ease;
+}
+
+.footer-link-sparkle::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      #a855f7 20%,
+      #22d3ee 50%,
+      #a855f7 80%,
+      transparent 100%);
+  background-size: 200% 100%;
+  border-radius: 2px;
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0);
+  opacity: 0.8;
+}
+
+.footer-link-sparkle:hover::after {
+  width: 100%;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+  animation: sparkle-shimmer 2.5s infinite linear;
+}
+
+@keyframes sparkle-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.dark .footer-link-sparkle::after {
+  background: linear-gradient(90deg,
+      transparent 0%,
+      #c084fc 20%,
+      #67e8f9 50%,
+      #c084fc 80%,
+      transparent 100%);
+  background-size: 200% 100%;
+}
+
+
+.holographic-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+  @apply backdrop-blur-xl border border-white/20;
+  position: relative;
+  overflow: hidden;
+}
+
+.holographic-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg,
+      transparent,
+      rgba(99, 102, 241, 0.1),
+      rgba(168, 85, 247, 0.1),
+      transparent 60%);
+  animation: rotate-conic 10s linear infinite;
+}
+
+@keyframes rotate-conic {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.mesh-bg {
+  background-color: #f8f9fc;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(168, 85, 247, 0.05) 0px, transparent 50%);
+}
+
+.dark .mesh-bg {
+  background-color: #050505;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
+}
+
+.premium-shadow {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
+}
+
+.hover-lift {
+  @apply transition-all duration-500;
+}
+
+.hover-lift:hover {
+  @apply -translate-y-2;
+  box-shadow: 0 40px 80px -20px rgba(99, 102, 241, 0.15);
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-indigo-500 to-purple-500;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 rounded-full hover:bg-primary/40;
+}
+
+/* --- LENIS SMOOTH SCROLL --- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* ChatGPT Interface Styles */
+.chatgpt-container {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  color: #1a1a1a !important;
+  line-height: 1.6;
+  background-color: transparent !important;
+}
+
+.dark .chatgpt-container {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  background-color: transparent !important;
+  color: #ececec !important;
+}
+
+.chatgpt-message-row {
+  width: 100%;
+  display: flex;
+  transition: background-color 0.3s ease;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 8px 160px !important; /* Default fallback */
+}
+
+/* Responsive padding */
+@media (min-width: 1200px) {
+  .chatgpt-message-row {
+    padding: 10px 140px !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .chatgpt-message-row {
+    padding: 10px 80px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .chatgpt-message-row {
+    padding: 8px 32px !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 767px) {
+  .chatgpt-message-row {
+    padding: 8px 24px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .chatgpt-message-row {
+    padding: 6px 12px !important;
+  }
+}
+
+.chatgpt-message-row.user-row {
+  justify-content: flex-end;
+}
+
+.chatgpt-message-row.ai-row {
+  justify-content: flex-start;
+}
+
+.chatgpt-message-content {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  overflow-wrap: anywhere !important;
+  word-wrap: break-word !important;
+  word-break: normal !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  pointer-events: auto !important;
+}
+
+.chatgpt-message-content p,
+.chatgpt-message-content li,
+.chatgpt-message-content div,
+.chatgpt-text,
+.chatgpt-text * {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  pointer-events: auto !important;
+}
+
+/* ── Table elements must NOT be constrained by word-break rules ── */
+.chatgpt-text table,
+.chatgpt-text thead,
+.chatgpt-text tbody,
+.chatgpt-text tr,
+.chatgpt-text th,
+.chatgpt-text td {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  max-width: none !important;
+  white-space: nowrap;
+}
+
+/* Table cell content can wrap if needed */
+.chatgpt-text td {
+  white-space: normal;
+  min-width: 80px;
+}
+
+/* Message Structure */
+
+.chatgpt-text>div:first-child>*:first-child,
+.chatgpt-text>*:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.chatgpt-avatar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ai-row .chatgpt-message-content {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 16px !important;
+  text-align: left;
+}
+
+.ai-row .chatgpt-avatar-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.ai-row .chatgpt-text {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  width: auto !important;
+}
+
+.user-row .chatgpt-message-content {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 16px !important;
+  flex-direction: row-reverse !important;
+  text-align: left !important;
+}
+
+@media (min-width: 1024px) {
+  .chatgpt-message-content {
+    max-width: 950px;
+  }
+}
+
+.chatgpt-text {
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: normal;
+  color: #374151;
+  width: 100%;
+  max-width: 700px;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 768px) {
+  .chatgpt-text {
+    font-size: 13px;
+  }
+}
+
+.user-row .chatgpt-text {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important; /* Align children (bubble, timestamp) to the right */
+  width: auto !important;
+  flex: 0 1 auto !important; /* Shrink-wrap content wrapper */
+  max-width: 70% !important;
+  margin-left: auto !important; /* Push to the right */
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+
+.ai-row .chatgpt-text {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important; /* Align children (bubble, actions) to the left */
+  width: auto !important;
+  flex: 0 1 auto !important; /* Shrink-wrap content wrapper */
+  max-width: 80% !important;
+  margin-right: auto !important; /* Push to the left */
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+
+/* --- The Actual Message Bubbles (.chat-bubble-text) --- */
+.chat-bubble-text {
+  width: fit-content !important;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+
+.user-row .chat-bubble-text {
+  background-color: hsl(var(--primary-bg)) !important;
+  border: 1px solid rgba(var(--primary-rgb), 0.12) !important;
+  padding: 14px 18px !important;
+  border-radius: 16px !important; /* Clean, modern uniform border radius */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+  color: #1f2937 !important; /* Clean dark text for contrast in light mode */
+  text-align: left !important; /* Keep text left-aligned inside the bubble */
+  margin-left: auto !important;
+}
+
+.dark .user-row .chat-bubble-text {
+  background-color: hsl(var(--primary-bg)) !important;
+  border: 1px solid rgba(var(--primary-rgb), 0.25) !important;
+  color: #f3f4f6 !important; /* Soft light text in dark mode */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.ai-row .chat-bubble-text {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 14px 0 !important;
+  box-shadow: none !important;
+  color: #374151 !important;
+  text-align: left !important;
+  margin-right: auto !important;
+  width: 100% !important;
+}
+
+.dark .ai-row .chat-bubble-text {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #d1d5db !important;
+}
+
+.chat-bubble-text blockquote {
+  border-left: 4px solid hsl(var(--primary)) !important;
+  padding: 8px 16px !important;
+  margin: 12px 0 !important;
+  font-style: italic !important;
+  background-color: hsl(var(--primary) / 0.05) !important;
+  border-radius: 0 8px 8px 0 !important;
+}
+
+.chat-bubble-text details {
+  background: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  margin: 12px 0 !important;
+  transition: all 0.2s ease;
+}
+
+.chat-bubble-text details[open] {
+  border-color: hsl(var(--primary) / 0.3) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+}
+
+.chat-bubble-text summary {
+  font-weight: 600 !important;
+  color: hsl(var(--foreground)) !important;
+  cursor: pointer !important;
+  outline: none !important;
+  user-select: none !important;
+}
+
+.chat-bubble-text summary::-webkit-details-marker {
+  color: hsl(var(--primary)) !important;
+}
+
+/* Reset first/last margins inside chat bubbles and collapsible containers to ensure perfect vertical alignment */
+.chat-bubble-text .collapsible-container > *:first-child,
+.chat-bubble-text .collapsible-container > *:first-child > *:first-child,
+.chat-bubble-text > *:first-child,
+.chat-bubble-text p:first-child,
+.collapsible-container > *:first-child,
+.collapsible-container > *:first-child > *:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.chat-bubble-text .collapsible-container > *:last-child,
+.chat-bubble-text .collapsible-container > *:last-child > *:last-child,
+.chat-bubble-text > *:last-child,
+.chat-bubble-text p:last-child,
+.collapsible-container > *:last-child,
+.collapsible-container > *:last-child > *:last-child {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Typing Indicator Bubble */
+.ai-row .chatgpt-text.typing-bubble {
+  background-color: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  padding: 10px 16px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+  margin-right: auto !important;
+}
+
+.dark .ai-row .chatgpt-text.typing-bubble {
+  background-color: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Actions and Timestamps below bubbles */
+.user-row .chatgpt-text > div:last-child {
+  margin-top: 6px !important;
+  align-self: flex-end !important;
+}
+
+.ai-row .chatgpt-text > div:last-child {
+  margin-top: 6px !important;
+  align-self: flex-start !important;
+}
+
+/* User attachments matching bubble theme */
+.user-row .chatgpt-text .flex.items-center.gap-3.p-3 {
+  background-color: hsl(var(--primary-bg)) !important;
+  border: 1px solid rgba(var(--primary-rgb), 0.15) !important;
+  border-radius: 12px !important;
+  color: #1f2937 !important;
+}
+
+.dark .user-row .chatgpt-text .flex.items-center.gap-3.p-3 {
+  background-color: hsl(var(--primary-bg)) !important;
+  border: 1px solid rgba(var(--primary-rgb), 0.25) !important;
+  color: #f3f4f6 !important;
+}
+
+
+/* Ensure headings inherit alignment */
+.user-row .chatgpt-text h1,
+.user-row .chatgpt-text h2,
+.user-row .chatgpt-text h3,
+.user-row .chatgpt-text p,
+.user-row .chatgpt-text ul,
+.user-row .chatgpt-text ol {
+  text-align: left;
+  /* Normal left alignment inside the user bubble */
+}
+
+.ai-row .chatgpt-text h1,
+.ai-row .chatgpt-text h2,
+.ai-row .chatgpt-text h3,
+.ai-row .chatgpt-text p,
+.ai-row .chatgpt-text ul,
+.ai-row .chatgpt-text ol {
+  text-align: left;
+}
+
+.user-row .chatgpt-text ul,
+.user-row .chatgpt-text ol {
+  list-style-position: inside;
+  padding-left: 0;
+}
+
+
+.dark .chatgpt-text {
+  color: #d1d5db;
+}
+
+/* Heading Typography & Bullet Fix */
+.chatgpt-text h1,
+.chatgpt-text h2,
+.chatgpt-text h3 {
+  list-style-type: none !important;
+  list-style: none !important;
+  color: #111827;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.dark .chatgpt-text h1,
+.dark .chatgpt-text h2,
+.dark .chatgpt-text h3 {
+  color: #f9fafb;
+}
+
+.chatgpt-text h1 {
+  font-size: 20px;
+  margin-top: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 0.5rem;
+}
+
+.dark .chatgpt-text h1 {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.chatgpt-text h2 {
+  font-size: 18px;
+  margin-top: 1.25rem;
+}
+
+.chatgpt-text h3 {
+  font-size: 16px;
+  margin-top: 1rem;
+}
+
+.chatgpt-text p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+/* List Styles Rewrite for ChatGPT-like appearance */
+.chatgpt-text ul,
+.chatgpt-text ol {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  width: 100%;
+}
+
+.chatgpt-text li {
+  margin-bottom: 6px;
+  padding-left: 0.25rem;
+}
+
+.chatgpt-text li>p {
+  margin-bottom: 0.5rem;
+}
+
+/* Base List Types */
+.chatgpt-text ul {
+  list-style-type: disc;
+}
+
+.chatgpt-text ol {
+  list-style-type: decimal;
+}
+
+/* Nested List Styles - The core fix for the user request */
+.chatgpt-text ul ul,
+.chatgpt-text ol ul,
+.chatgpt-text ul ol,
+.chatgpt-text ol ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+  /* Subtle vertical line for nesting */
+}
+
+.dark .chatgpt-text ul ul,
+.dark .chatgpt-text ol ul,
+.dark .chatgpt-text ul ol,
+.dark .chatgpt-text ol ol {
+  border-left-color: rgba(255, 255, 255, 0.05);
+}
+
+.chatgpt-text ul ul {
+  list-style-type: circle;
+}
+
+.chatgpt-text ul ul ul {
+  list-style-type: square;
+}
+
+/* Strong emphasis */
+.chatgpt-text strong {
+  font-weight: 700;
+  color: #111827;
+}
+
+.dark .chatgpt-text strong {
+  color: #ffffff;
+}
+
+/* Horizontal Rule */
+.chatgpt-text hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark .chatgpt-text hr {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Aggressive first-child spacing elimination */
+.chatgpt-text>div:first-child,
+.chatgpt-text>div:first-child>*:first-child,
+.chatgpt-text>div:first-child>div:first-child>*:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.chatgpt-text code {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', 'ui-monospace', monospace;
+  font-size: 0.875em;
+  color: #111827;
+}
+
+.dark .chatgpt-text code {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ececec;
+}
+
+.chatgpt-message-row:hover {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.dark .chatgpt-message-row:hover {
+  background-color: rgba(255, 255, 255, 0.015);
+}
+
+.ai-row .chatgpt-text {
+  background-color: transparent !important;
+  padding: 0;
+}
+
+/* Alignment for specific components inside rows */
+.user-row .chatgpt-text>div {
+  display: flex;
+  flex-direction: column;
+  items-align: flex-end;
+}
+
+.user-row .flex-1.chatgpt-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+
+/* Sidebar Chat Item Fixes */
+.sidebar-chat-item {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding: 3.5px 12px !important;
+  gap: 8px !important;
+  border-radius: 12px !important;
+  position: relative !important;
+}
+
+.sidebar-chat-title-group {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-chat-title {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: -0.01em;
+}
+
+.sidebar-chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: all 0.3s ease;
+  transform: translateX(10px);
+}
+
+.sidebar-chat-container:hover .sidebar-chat-actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sidebar-chat-action-btn {
+  padding: 6px !important;
+  border-radius: 8px !important;
+  color: var(--muted-foreground) !important;
+  transition: all 0.2s ease !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.sidebar-chat-action-btn:hover {
+  color: var(--primary) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-1px);
+}
+
+.sidebar-chat-action-btn.delete:hover {
+  color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.sidebar-chat-action-btn svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* Chat Suggestions */
+.suggestions-container {
+  display: flex;
+  gap: 8px;
+  /* Tight spacing (gap-2) */
+  margin-top: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.suggestion-btn {
+  background: rgba(99, 102, 241, 0.08);
+  /* Subtle background */
+  color: #6366f1;
+  /* Primary color text */
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  padding: 6px 14px;
+  border-radius: 99px;
+  /* Rounded pill */
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.dark .suggestion-btn {
+  background: rgba(139, 92, 246, 0.1);
+  color: #a78bfa;
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.suggestion-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  transform: translateY(-1px);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.dark .suggestion-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.suggestion-btn:active {
+  transform: scale(0.96);
+}
+
+/* Mobile Specific Padding Optimization */
+@media (max-width: 640px) {
+  .chatgpt-container {
+    gap: 0 !important;
+  }
+
+  .chatgpt-message-row {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 16px !important; /* Vertical gap between message rows on mobile */
+  }
+
+  .ai-row {
+    margin-top: 0 !important;
+  }
+
+  .user-row .chatgpt-text {
+    max-width: 82% !important;
+    margin-left: auto !important;
+  }
+
+  .ai-row .chatgpt-text {
+    max-width: 82% !important;
+    margin-right: auto !important;
+  }
+
+  .user-row .chat-bubble-text {
+    padding: 10px 14px !important;
+    font-size: 13.5px !important;
+  }
+
+  .ai-row .chat-bubble-text {
+    padding: 12px 0 !important;
+    font-size: 13.5px !important;
+  }
+
+  .ai-row .chatgpt-text.typing-bubble {
+    max-width: 82% !important;
+    padding: 8px 14px !important;
+  }
+
+  .chatgpt-text p {
+    margin-bottom: 0.5rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .chatgpt-text h1,
+  .chatgpt-text h2,
+  .chatgpt-text h3 {
+    margin-bottom: 0.4rem !important;
+    margin-top: 0.8rem !important;
+    line-height: 1.3 !important;
+    border-bottom: none !important;
+  }
+
+  .chatgpt-text > *:first-child,
+  .chatgpt-text > div:first-child > *:first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  /* Eliminate trailing space in messages */
+  .chatgpt-text *:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  .chatgpt-message-content {
+    display: flex !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .ai-row .chatgpt-message-content {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+  }
+
+  .user-row .chatgpt-message-content {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: flex-start !important;
+  }
+
+  .chatgpt-avatar-container {
+    margin-top: 4px !important;
+    width: 28px !important;
+    height: 28px !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .chatgpt-avatar-container > div {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .chatgpt-avatar-container img {
+    width: 20px !important;
+    height: 15px !important;
+  }
+
+  /* Safe Area Support for Mobile Input */
+  .chat-input-container {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* Prevent overlapping of fixed navbar — 76px clears the 64px mobile header */
+  .chatgpt-container:not(.no-top-padding) {
+    padding-top: 76px !important;
+  }
+}
+
+/* --- FOCUS MODE STYLES --- */
+body.focus-mode {
+  overflow: hidden !important;
+}
+
+/* Ensure no stray layout elements from parents interfere */
+body.focus-mode .sidebar-container,
+body.focus-mode .mobile-nav,
+body.focus-mode header {
+  display: none !important;
+  width: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Force main content to take full screen */
+body.focus-mode main {
+  width: 100% !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* --- MODAL NAVBAR HIDING --- */
+body.modal-open-hide-navbar {
+  overflow: hidden !important;
+}
+
+@media (max-width: 1024px) {
+  body.modal-open-hide-navbar header,
+  body.modal-open-hide-navbar .lg\:hidden.fixed.top-0 {
+    transform: translateY(-100%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+  
+  body.modal-open-hide-navbar :root {
+    --mobile-nav-h: 0px !important;
+  }
+}
+/* Modern Chat Bubble Styles */
+.message-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 2rem;
+  animation: message-fadeIn 0.3s ease-out;
+}
+
+@keyframes message-fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-wrapper.user-msg {
+  align-items: flex-end;
+}
+
+.message-wrapper.ai-msg {
+  align-items: flex-start;
+}
+
+.message-label {
+  font-size: 10px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  margin-left: 4px;
+  margin-right: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.8;
+}
+
+.chat-bubble {
+  max-width: 85%;
+  padding: 12px 18px;
+  position: relative;
+  transition: all 0.2s ease;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .chat-bubble {
+    max-width: 70%;
+  }
+}
+
+.user-bubble {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
+  color: white;
+  border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
+  box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.2);
+}
+
+.ai-bubble {
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+  border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.dark .ai-bubble {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border) / 0.5);
+}
+
+.ai-message-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  align-items: flex-end;
+}
+
+.ai-avatar-wrapper {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 2px;
+}
+
+.dark .ai-avatar-wrapper {
+  background: #111;
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* Enable text selection globally for AI responses */
+.select-text, 
+.select-text *,
+.chatgpt-text,
+.chatgpt-text *,
+.chat-bubble-text,
+.chat-bubble-text * {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -webkit-touch-callout: default !important;
+}
+
+/* Ensure no parent blocks selection */
+.chatgpt-container,
+.chatgpt-message-row,
+.chatgpt-message-content {
+  user-select: text !important;
+}
+
+/* Safe Area & Mobile Helpers */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+/* Ensure full height on mobile */
+@media (max-width: 640px) {
+  .chat-container {
+    height: 100dvh !important;
+  }
+}
+
+::selection { background: rgba(147, 197, 253, 0.6) !important; color: inherit !important; }
+::-moz-selection { background: rgba(147, 197, 253, 0.6) !important; color: inherit !important; }
+.dark ::selection { background: rgba(37, 99, 235, 0.5) !important; color: inherit !important; }
+.dark ::-moz-selection { background: rgba(37, 99, 235, 0.5) !important; color: inherit !important; }
+
+.chatgpt-message-row { user-select: text !important; }
+.chatgpt-message-row * { user-select: text !important; }
+.selection-toolbar-container { user-select: none !important; }
+
+/* Hide scrollbar for tab navigation */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Mobile Table Scroll Fix ── */
+/* The table scroll wrapper div needs to escape word-break constraints */
+.chatgpt-text .overflow-x-auto,
+.chat-bubble-text .overflow-x-auto {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100% !important;
+  word-break: normal !important;
+  width: 100%;
+  display: block;
+}
+
+/* Table itself must not be width-limited so it can scroll */
+.chatgpt-text .overflow-x-auto table,
+.chat-bubble-text .overflow-x-auto table {
+  width: max-content !important;
+  min-width: 100%;
+  max-width: none !important;
+}
+
+@media (max-width: 768px) {
+  .chatgpt-text .overflow-x-auto {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: 12px !important;
+  }
+
+  .chatgpt-text th,
+  .chatgpt-text td {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    white-space: nowrap;
+  }
+
+  .chatgpt-text td {
+    white-space: normal;
+    min-width: 100px;
+  }
+}
+
+/* Truncation / Collapsible Message Logic */
+.collapsible-container {
+  position: relative;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.collapsed-message {
+  max-height: 125px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.ai-row .collapsed-message::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, hsl(var(--card)) 100%) !important;
+  pointer-events: none;
+}
+
+.dark .ai-row .collapsed-message::after {
+  background: linear-gradient(to bottom, rgba(10, 10, 10, 0) 0%, hsl(var(--card)) 100%) !important;
+}
+
+.user-row .collapsed-message::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(to bottom, rgba(240, 240, 255, 0) 0%, hsl(var(--primary-bg)) 100%) !important;
+  pointer-events: none;
+}
+
+.dark .user-row .collapsed-message::after {
+  background: linear-gradient(to bottom, rgba(20, 20, 40, 0) 0%, hsl(var(--primary-bg)) 100%) !important;
+}
+
+/* Upgraded Read More Button Styles */
+.read-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9999px;
+  cursor: pointer;
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, rgba(139, 92, 246, 0.06) 100%);
+  color: #5154ff;
+  box-shadow: 0 2px 5px rgba(99, 102, 241, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 10px;
+  user-select: none;
+  outline: none;
+}
+
+.read-more-btn:hover {
+  background: linear-gradient(135deg, #5154ff 0%, #7c3aed 100%);
+  color: #ffffff;
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.read-more-btn:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.15);
+}
+
+.read-more-btn__icon {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.read-more-btn__icon.rotated {
+  transform: rotate(180deg);
+}
+
+.read-more-btn:hover .read-more-btn__icon {
+  transform: translateY(1px);
+}
+
+.read-more-btn:hover .read-more-btn__icon.rotated {
+  transform: rotate(180deg) translateY(-1px);
+}
+
+/* Dark mode theme overrides */
+.dark .read-more-btn {
+  border-color: rgba(165, 180, 252, 0.15);
+  background: linear-gradient(135deg, rgba(165, 180, 252, 0.08) 0%, rgba(196, 181, 253, 0.08) 100%);
+  color: #a5b4fc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dark .read-more-btn:hover {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE KEYBOARD FIX v3 — Definitive stable layout solution
+   Reference: ChatGPT / WhatsApp Web mobile behavior
+   Strategy: Lock body + visual viewport tracking + keyboard-height var
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. CSS Variables (JS overwrites these in real-time) ── */
+:root {
+  --real-vh: 100dvh;
+  --real-vw: 100dvw;
+  --dvh: 1dvh;
+  --keyboard-height: 0px;
+  --keyboard-safe-bottom: 0px;
+}
+
+/* ── 2. Lock HTML + Body to prevent Android auto-scroll on focus ──
+   This is the #1 fix. `position: fixed` on body stops Chrome from
+   scrolling the page when the keyboard opens. JS also sets this dynamically.
+   Commented out CSS hard-lock to allow scrolling on public pages (landing, pricing, etc.). */
+/*
+@media (max-width: 1023px) {
+  html {
+    height: 100% !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+  }
+
+  body {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-overflow-scrolling: auto !important;
+  }
+
+  #root {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+}
+*/
+
+/* ── 3. Dashboard root container — sized to visual viewport ──
+   JS sets inline height directly; this is the CSS fallback.
+   `bottom: auto` overrides inset-0's `bottom: 0` so height wins. */
+#aisa-app-root {
+  height: var(--real-vh, 100dvh) !important;
+  max-height: var(--real-vh, 100dvh) !important;
+  overflow: hidden !important;
+}
+
+@media (max-width: 1023px) {
+  #aisa-app-root {
+    /* Override inset-0's bottom:0 so our height takes effect */
+    bottom: auto !important;
+  }
+}
+
+/* ── 4. Navbar — always fixed at top, unaffected by keyboard ── */
+@media (max-width: 1023px) {
+  .navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1001 !important;
+    /* GPU layer prevents repaint on keyboard open */
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+  }
+}
+
+/* ── 5. Chat scrollable area — fills available height, shrinks with keyboard ── */
+@media (max-width: 1023px) {
+  .chatgpt-container {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    /* Momentum scroll on iOS */
+    -webkit-overflow-scrolling: touch !important;
+    /* Prevent scroll chaining to parent */
+    overscroll-behavior: contain !important;
+    /* Tight bottom padding — input is abs positioned */
+    padding-bottom: 120px !important;
+  }
+
+  .chatgpt-container.tool-active {
+    padding-bottom: 180px !important;
+  }
+}
+
+/* ── 6. Main flex area — overflow clipped, flex column ──
+   Scoped to #aisa-app-root to avoid breaking public page main containers */
+@media (max-width: 1023px) {
+  #aisa-app-root main {
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+  }
+
+  .flex-1 {
+    min-height: 0 !important;
+  }
+}
+
+/* ── 7. Input bar outer wrapper — uses keyboard-height to stay above keyboard ──
+   The input container div uses absolute bottom-0 positioning.
+   We add bottom padding equal to --keyboard-height so it floats above the keyboard.
+   This is the KEY fix for the reference image behavior. */
+@media (max-width: 1023px) {
+  /* The main input wrapper div (absolute bottom-0 in Chat.jsx) */
+  .aisa-chat-input-wrapper {
+    /* Font size ≥ 16px prevents iOS auto-zoom on focus */
+    font-size: 16px !important;
+  }
+
+  /* All inputs & textareas — prevent iOS zoom */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  textarea,
+  [contenteditable="true"] {
+    /* iOS zooms in when font-size < 16px. This prevents that zoom jump. */
+    font-size: max(16px, 0.9rem) !important;
+    /* GPU layer for smooth keyboard transition */
+    transform: translateZ(0) !important;
+  }
+}
+
+/* ── 8. Sidebar — full device height, never affected by keyboard ── */
+@media (max-width: 1023px) {
+  .sidebar-container,
+  aside {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* ── 9. Modals — bounded by visual viewport height ── */
+@media (max-width: 1023px) {
+  .modal-default,
+  .modal-maximized,
+  [role="dialog"] {
+    max-height: var(--real-vh, 100dvh) !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* ── 10. Landscape + keyboard compact mode ── */
+@media (max-width: 1023px) and (orientation: landscape) and (max-height: 500px) {
+  .chatgpt-container {
+    padding-top: 50px !important;
+  }
+
+  .chat-bubble-text {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* ── 11. Prevent welcome screen gap (large empty space between cards and input) ── */
+@media (max-width: 767px) {
+  /* Welcome screen overlay — clip to parent, scroll internally */
+  .chatgpt-container > .absolute.inset-0 {
+    overflow: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Remove desktop-scale bottom padding that causes the gap */
+  .sm\:pb-32,
+  .md\:pb-48 {
+    padding-bottom: 8px !important;
+  }
+}
+
+/* ── 12. Disable height-change transitions on mobile (prevents jump animation) ── */
+@media (max-width: 767px) {
+  #aisa-app-root {
+    transition: none !important;
+  }
+}
+/* ─── ADDITIONAL MOBILE KEYBOARD FIXES ─── */
+
+/* 13. Fix the large empty gap between content and input bar on mobile.
+       The chatgpt-container has large pb-64 padding for desktop — reduce on mobile
+       to prevent excessive white space when keyboard is visible. */
+@media (max-width: 767px) {
+  .chatgpt-container {
+    /* Tighter bottom padding — the input bar is absolutely positioned */
+    padding-bottom: 120px !important;
+  }
+
+  .chatgpt-container.tool-active {
+    padding-bottom: 180px !important;
+  }
+}
+
+/* 14. Welcome screen / dashboard overlay — center content within visual viewport.
+       Uses min-height instead of fixed height so it shrinks with keyboard. */
+@media (max-width: 767px) {
+  /* Welcome screen uses absolute inset-0 — clip it to visual viewport */
+  .chatgpt-container > .absolute.inset-0 {
+    /* Allow it to be clipped by the parent container's visual height */
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    /* Prevent welcome screen from extending behind keyboard */
+    overflow: hidden !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* 15. Prevent input bar from shifting when keyboard opens.
+       The absolute bottom-0 input is relative to the chatgpt-container/flex parent.
+       We ensure it stays at the very bottom of the visible area. */
+@media (max-width: 767px) {
+  /* The input container wrapper in Chat.jsx */
+  .aisa-chat-input-container {
+    /* Stay anchored to bottom with safe-area padding */
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    /* Prevent keyboard from overlapping */
+    background-clip: padding-box !important;
+  }
+}
+
+/* 16. Remove transition on height changes to prevent jump animation */
+@media (max-width: 767px) {
+  #aisa-app-root,
+  #aisa-app-root > * {
+    /* Prevent animated layout shifts — keyboard open/close should be instant */
+    transition: none !important;
+  }
+
+  /* Re-allow transitions only for intentional UI animations */
+  #aisa-app-root button,
+  #aisa-app-root [class*="motion"],
+  #aisa-app-root [class*="animate"] {
+    transition: revert !important;
+  }
+}
+
+/* 17. Fix for the specific gap on dashboard welcome view.
+       The welcome screen pb-32 causes extra space when keyboard opens. */
+@media (max-width: 767px) {
+  /* Target welcome screen's inner scroll container */
+  [class*="sm\\:pb-32"],
+  [class*="md\\:pb-48"] {
+    padding-bottom: 8px !important;
+  }
+
+  /* Center welcome screen items at the actual visible center */
+  .aisa-welcome-screen-overlay {
+    justify-content: flex-start !important;
+    padding-top: 76px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+

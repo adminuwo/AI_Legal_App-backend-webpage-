@@ -1,0 +1,491 @@
+/* ═══════════════════════════════════════════════════════════════════
+   AISA™ FUTURISTIC DARK MODE ENHANCEMENT SYSTEM
+   Purple-Blue & Orange-Yellow neon gradient theme
+   Version 2.0 — Cinematic Neural AI Aesthetic
+═══════════════════════════════════════════════════════════════════ */
+
+/* ─── Keyframe Animations ──────────────────────────────────────── */
+
+@keyframes neon-pulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(139,92,246,0.4), 0 0 12px rgba(139,92,246,0.2); }
+  50%       { box-shadow: 0 0 14px rgba(139,92,246,0.8), 0 0 28px rgba(139,92,246,0.4), 0 0 48px rgba(139,92,246,0.15); }
+}
+
+@keyframes neon-pulse-orange {
+  0%, 100% { box-shadow: 0 0 6px rgba(251,146,60,0.4), 0 0 12px rgba(251,146,60,0.2); }
+  50%       { box-shadow: 0 0 14px rgba(251,146,60,0.8), 0 0 28px rgba(251,146,60,0.4); }
+}
+
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes icon-pulse {
+  0%, 100% { transform: scale(1);   opacity: 0.9; }
+  50%       { transform: scale(1.18); opacity: 1;   }
+}
+
+@keyframes card-shimmer {
+  0%   { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(250%)  rotate(45deg); }
+}
+
+@keyframes typing-dot {
+  0%, 100% { transform: translateY(0);    opacity: 0.4; }
+  50%       { transform: translateY(-6px); opacity: 1;   }
+}
+
+@keyframes send-bounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.88) rotate(-8deg); }
+  60%  { transform: scale(1.12) rotate(4deg); }
+  100% { transform: scale(1); }
+}
+
+@keyframes sidebar-glow {
+  0%, 100% { background: rgba(139,92,246,0.08); }
+  50%       { background: rgba(139,92,246,0.18); }
+}
+
+@keyframes float-card {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+@keyframes scan-line {
+  0%   { top: -4px;   opacity: 0; }
+  10%  { opacity: 0.7; }
+  90%  { opacity: 0.7; }
+  100% { top: 100%;   opacity: 0; }
+}
+
+@keyframes border-flow {
+  0%   { border-color: rgba(139,92,246,0.5); }
+  33%  { border-color: rgba(59,130,246,0.7); }
+  66%  { border-color: rgba(251,146,60,0.5); }
+  100% { border-color: rgba(139,92,246,0.5); }
+}
+
+@keyframes tilt-shine {
+  0%   { opacity: 0; transform: translateX(-80%) skewX(-20deg); }
+  50%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(120%) skewX(-20deg); }
+}
+
+@keyframes aisaCursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ─── Welcome Search Bar Typewriter Cursor ────────────────── */
+.aisa-welcome-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  margin-left: 1px;
+  background: rgba(139, 92, 246, 0.75);
+  vertical-align: middle;
+  border-radius: 1px;
+  animation: aisaCursorBlink 1s step-end infinite;
+}
+
+/* ─── Dark Mode Root Override ─────────────────────────────────── */
+.dark {
+  --neon-purple: 139, 92, 246;
+  --neon-blue:    59, 130, 246;
+  --neon-orange: 251, 146, 60;
+  --neon-yellow: 234, 179,  8;
+}
+
+/* ─── Neural Background (canvas lives here) ─────────────────── */
+.neural-bg-container {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ─── Main Dashboard Background ─────────────────────────────── */
+.dark .aisa-dashboard-bg {
+  background: radial-gradient(ellipse at 15% 20%, rgba(139,92,246,0.12) 0%, transparent 55%),
+              radial-gradient(ellipse at 85% 80%, rgba(59,130,246,0.10) 0%, transparent 55%),
+              radial-gradient(ellipse at 50% 50%, rgba(251,146,60,0.04) 0%, transparent 70%),
+              linear-gradient(160deg, #050816 0%, #0a0f2e 50%, #060b20 100%);
+  animation: gradient-shift 20s ease infinite;
+  background-size: 400% 400%;
+}
+
+/* ─── Sidebar Enhancements ───────────────────────────────────── */
+.dark [class*="fixed inset-y-0 left-0"] {
+  background: linear-gradient(180deg,
+    rgba(9,11,32,0.97) 0%,
+    rgba(13,15,40,0.97) 100%
+  ) !important;
+  border-right: 1px solid rgba(139,92,246,0.15) !important;
+  box-shadow: 4px 0 32px rgba(0,0,0,0.6), inset -1px 0 0 rgba(139,92,246,0.08) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Sidebar active nav item — neon glow */
+.dark [class*="bg-primary/10"][class*="text-primary"] {
+  background: linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(59,130,246,0.10) 100%) !important;
+  border: 1px solid rgba(139,92,246,0.35) !important;
+  box-shadow: 0 0 16px rgba(139,92,246,0.2), inset 0 0 8px rgba(139,92,246,0.05) !important;
+  animation: sidebar-glow 3s ease-in-out infinite !important;
+}
+
+/* Sidebar hover expand effect */
+.dark [class*="text-subtext hover:bg-surface"] {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.dark [class*="text-subtext hover:bg-surface"]:hover {
+  padding-left: 1.25rem !important;
+  background: rgba(139,92,246,0.07) !important;
+  color: rgba(167,139,250,1) !important;
+  border-color: rgba(139,92,246,0.2) !important;
+}
+
+/* Sidebar New Chat button — neon gradient */
+.dark [class*="bg-primary hover:opacity-90"][class*="text-white font-bold py-3"],
+.dark [class*="bg-[#a78bfa]"][class*="shadow-"] {
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #60a5fa 100%) !important;
+  background-size: 200% 200% !important;
+  animation: gradient-shift 4s ease infinite !important;
+  box-shadow: 0 8px 32px rgba(167,139,250,0.25), 0 0 0 1px rgba(167,139,250,0.15), inset 0 1px 1px rgba(255,255,255,0.25) !important;
+  border: 1px solid rgba(167,139,250,0.2) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Sidebar search bar focus glow */
+.dark input[placeholder="Search history..."] {
+  background: rgba(10,12,35,0.8) !important;
+  border: 1px solid rgba(139,92,246,0.15) !important;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+.dark input[placeholder="Search history..."]:focus {
+  border-color: rgba(139,92,246,0.6) !important;
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.12), 0 0 16px rgba(139,92,246,0.2) !important;
+  background: rgba(14,16,45,0.9) !important;
+}
+
+/* ─── Chat Area Cards ────────────────────────────────────────── */
+
+/* The 4 tool shortcut cards (Image / Video / Audio / Code) */
+.dark .aisa-tool-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(14,16,45,0.9) 0%, rgba(20,18,60,0.85) 100%);
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 1rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+  transform-style: preserve-3d;
+}
+
+.dark .aisa-tool-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, rgba(139,92,246,0) 0%, rgba(59,130,246,0) 100%);
+  border-radius: inherit;
+  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+  z-index: 0;
+}
+
+.dark .aisa-tool-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -80px;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  transform: skewX(-20deg);
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+@media (hover: hover) {
+  .dark .aisa-tool-card:hover {
+    border-color: rgba(139,92,246,0.6);
+    box-shadow: 
+      0 15px 45px rgba(0,0,0,0.4),
+      0 0 0 1px rgba(139,92,246,0.3),
+      0 0 30px rgba(139,92,246,0.2);
+  }
+  .dark .aisa-tool-card:hover::before { opacity: 1; }
+  .dark .aisa-tool-card:hover::after {
+    animation: card-shimmer 0.6s ease-out;
+    opacity: 1;
+  }
+  /* Card icon pulse on hover */
+  .dark .aisa-tool-card:hover .aisa-card-icon {
+    animation: icon-pulse 1.2s ease-in-out infinite;
+  }
+  .dark .aisa-tool-card:hover .aisa-scan-line {
+    animation: scan-line 1.5s ease-in-out infinite;
+  }
+}
+
+/* Touch Fallbacks */
+@media (hover: none) {
+  .dark .aisa-tool-card:active {
+    border-color: rgba(139,92,246,0.6);
+    transform: scale(0.98);
+  }
+  .dark .aisa-tool-card:active::before { opacity: 1; }
+}
+
+/* Note: replaced and moved above to media queries */
+
+/* Card live preview area */
+.dark .aisa-card-preview {
+  background: rgba(5,6,20,0.8);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(139,92,246,0.15);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Image card canvas */
+.aisa-preview-canvas { display: block; width: 100%; }
+
+/* Waveform bars */
+.aisa-waveform-bar {
+  width: 3px;
+  background: linear-gradient(180deg, rgba(251,146,60,0.9), rgba(234,179,8,0.6));
+  border-radius: 2px;
+  transition: height 0.15s ease;
+}
+
+/* Scrolling code snippet */
+.aisa-code-scroll {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  line-height: 1.6;
+  color: rgba(167,220,255,0.75);
+  overflow: hidden;
+}
+.aisa-code-scroll .kw  { color: rgba(167,139,250,0.95); }
+.aisa-code-scroll .fn  { color: rgba(96,165,250,0.95); }
+.aisa-code-scroll .str { color: rgba(134,239,172,0.9); }
+.aisa-code-scroll .num { color: rgba(251,146,60,0.95); }
+.aisa-code-scroll .cmt { color: rgba(107,114,128,0.8); font-style: italic; }
+
+/* ─── Chat Input Area ────────────────────────────────────────── */
+
+/* Main textarea / input wrapper */
+.dark .aisa-chat-input-wrapper {
+  background: linear-gradient(135deg, rgba(10,12,35,0.92) 0%, rgba(14,16,45,0.92) 100%);
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 1.25rem;
+  transition: border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  backdrop-filter: blur(20px);
+}
+
+.dark .aisa-chat-input-wrapper:focus-within {
+  border-color: rgba(139,92,246,0.6);
+  box-shadow:
+    0 0 0 3px rgba(139,92,246,0.1),
+    0 0 20px rgba(139,92,246,0.2),
+    0 8px 32px rgba(0,0,0,0.4);
+  animation: border-flow 6s ease infinite;
+}
+
+/* Send button bounce */
+.dark .aisa-send-btn {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  border: 1px solid rgba(167,139,250,0.4);
+  border-radius: 0.75rem;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .aisa-send-btn:hover {
+  box-shadow: 0 4px 20px rgba(124,58,237,0.5), 0 0 16px rgba(139,92,246,0.4);
+  transform: scale(1.05);
+}
+
+.dark .aisa-send-btn:active {
+  animation: send-bounce 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* ─── AI Typing Indicator ────────────────────────────────── */
+.aisa-typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  background: rgba(139,92,246,0.08);
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  width: fit-content;
+}
+
+.aisa-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  animation: typing-dot 1.2s ease-in-out infinite;
+}
+.aisa-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.aisa-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ─── Message Bubbles ────────────────────────────────────── */
+.dark .aisa-msg-ai {
+  background: linear-gradient(135deg, rgba(14,16,45,0.85) 0%, rgba(20,15,50,0.80) 100%);
+  border: 1px solid rgba(139,92,246,0.12);
+  border-radius: 0 1.25rem 1.25rem 1.25rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  transition: border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dark .aisa-msg-ai:hover {
+  border-color: rgba(139,92,246,0.28);
+  box-shadow: 0 6px 32px rgba(0,0,0,0.4), 0 0 16px rgba(139,92,246,0.08);
+}
+
+.dark .aisa-msg-user {
+  background: linear-gradient(135deg, rgba(124,58,237,0.25) 0%, rgba(79,70,229,0.20) 100%);
+  border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 1.25rem 0 1.25rem 1.25rem;
+  box-shadow: 0 4px 20px rgba(124,58,237,0.15);
+}
+
+/* ─── Tool Mode Badges ───────────────────────────────────── */
+.dark .aisa-mode-badge {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  animation: neon-pulse 2.5s ease-in-out infinite;
+}
+
+.dark .aisa-mode-badge-image {
+  background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(59,130,246,0.2));
+  border: 1px solid rgba(139,92,246,0.5);
+  color: rgba(167,139,250,1);
+  text-shadow: 0 0 8px rgba(139,92,246,0.8);
+}
+
+.dark .aisa-mode-badge-video {
+  background: linear-gradient(135deg, rgba(251,146,60,0.2), rgba(234,179,8,0.15));
+  border: 1px solid rgba(251,146,60,0.5);
+  color: rgba(251,191,36,1);
+  text-shadow: 0 0 8px rgba(251,146,60,0.8);
+  animation: neon-pulse-orange 2.5s ease-in-out infinite;
+}
+
+.dark .aisa-mode-badge-audio {
+  background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(6,182,212,0.15));
+  border: 1px solid rgba(16,185,129,0.5);
+  color: rgba(52,211,153,1);
+}
+
+.dark .aisa-mode-badge-code {
+  background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(99,102,241,0.15));
+  border: 1px solid rgba(59,130,246,0.5);
+  color: rgba(96,165,250,1);
+}
+
+/* ─── Header / Top Bar ───────────────────────────────────── */
+.dark .aisa-topbar {
+  background: linear-gradient(90deg, rgba(8,9,28,0.92) 0%, rgba(12,10,36,0.90) 100%);
+  border-bottom: 1px solid rgba(139,92,246,0.12);
+  backdrop-filter: blur(20px);
+}
+
+/* ─── Neon Text Gradient Utility ─────────────────────────── */
+.neon-text-purple {
+  background: linear-gradient(135deg, #a78bfa 0%, #818cf8 50%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(139,92,246,0.6));
+}
+
+.neon-text-orange {
+  background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(251,146,60,0.6));
+}
+
+/* ─── Glow Button Utility ────────────────────────────────── */
+.dark .btn-neon {
+  position: relative;
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+  border: 1px solid rgba(167,139,250,0.4);
+  border-radius: 0.875rem;
+  color: white;
+  font-weight: 700;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dark .btn-neon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+  opacity: 0;
+  transition: opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dark .btn-neon:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(124,58,237,0.55), 0 0 0 1px rgba(139,92,246,0.5);
+}
+.dark .btn-neon:hover::before { opacity: 1; }
+
+/* ─── Scrollbar (dark neon) ──────────────────────────────── */
+.dark ::-webkit-scrollbar { width: 5px; }
+.dark ::-webkit-scrollbar-track { background: rgba(8,9,28,0.5); }
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(139,92,246,0.5), rgba(59,130,246,0.5));
+  border-radius: 99px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(139,92,246,0.8), rgba(59,130,246,0.8));
+}
+
+/* ─── Float animation for welcome cards ──────────────────── */
+.dark .aisa-float { animation: float-card 4s ease-in-out infinite; }
+.dark .aisa-float:nth-child(2) { animation-delay: 0.5s; }
+.dark .aisa-float:nth-child(3) { animation-delay: 1s; }
+.dark .aisa-float:nth-child(4) { animation-delay: 1.5s; }
+
+/* ─── 3D Card Tilt JS Helper Classes ─────────────────────── */
+.tilt-card {
+  transform-style: preserve-3d;
+  perspective: 800px;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  transition: transform 0.08s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tilt-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.tilt-card:hover .tilt-shine { opacity: 1; }

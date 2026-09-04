@@ -1,0 +1,53 @@
+{
+  "project_info": {
+    "project_number": "743928421487",
+    "project_id": "ai-mall-484810",
+    "storage_bucket": "ai-mall-484810.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743928421487:android:3dd6d4e9b0b47f7fbd019a",
+        "android_client_info": {
+          "package_name": "com.uwo.ailegal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743928421487-95m176hg3cuar7bui2ajr82qskmifj5h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.uwo.ailegal",
+            "certificate_hash": "33b2368508b0135890d1d1efd2e0ee8483d3282b"
+          }
+        },
+        {
+          "client_id": "743928421487-8k84c3bsf4dghr93tdp7ckn1i81pvbcu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.uwo.ailegal",
+            "certificate_hash": "74f55165a67b74699880ef7deb74056eeb882964"
+          }
+        },
+        {
+          "client_id": "743928421487-f1o32bb65b5prvn0c4epmhum0gl22etb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.uwo.ailegal",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "743928421487-34c5lpviupilrg1nn62eoccr5m3cek8c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVHoMQnI3wReEvF8HiZvzrmzMwavUMrT4"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,35 @@
+# Dependencies
+**/node_modules
+node_modules
+
+# Logs
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# Git
+.git
+.gitignore
+
+# Environment files
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build outputs & caches
+**/dist
+**/build
+**/.cache
+**/.eslintcache
+**/.tmp
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Documentation / Scratch
+**/scratch
+**/archive
+qr code
+.AI-Legal_App_Webapp

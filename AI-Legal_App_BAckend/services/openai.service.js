@@ -1,0 +1,108 @@
+import axios from 'axios';
+import logger from '../utils/logger.js';
+import dotenv from 'dotenv';
+import * as configService from './configService.js';
+import { jurisdictionManager } from './jurisdictionManager.js';
+
+import { langStorage } from '../middleware/langContext.js';
+import { getGlobalLanguageInstruction } from './vertex.service.js';
+
+dotenv.config();
+
+export const askOpenAI = async (prompt, context = null, options = {}) => {
+    try {
+        const apiKey = process.env.OPENAI_API_KEY;
+        if (!apiKey) {
+            throw new Error("OPENAI_API_KEY is missing in environment variables.");
+        }
+
+        const { systemInstruction, userName } = options;
+
+        const store = langStorage.getStore();
+        let targetLanguage = options.language || (store && typeof store === 'object' ? store.language : store) || 'English';
+        const globalLanguageInstruction = getGlobalLanguageInstruction(targetLanguage);
+
+        let messages = [];
+
+        // 1. Add System Instruction if provided
+        const currentDate = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'full', timeStyle: 'short' });
+        const dateContext = `\n### CURRENT DATE & TIME:\nToday is ${currentDate} (India Standard Time). (Aaj ki date aur samay: ${currentDate})\n`;
+
+        let finalSystemContent = "";
+        if (systemInstruction) {
+            finalSystemContent = globalLanguageInstruction + "\n\n" + systemInstruction + dateContext;
+        } else {
+            finalSystemContent = globalLanguageInstruction + "\n\n" + configService.getFullSystemInstruction() + dateContext + `
+### PERSONALIZATION:
+Understand the user's expertise level and topic preference implicitly from their messages. Adjust your language to be slightly more technical or simple as needed, while maintaining the primary goal of being direct and professional.
+`;
+        }
+
+        if (userName) {
+            finalSystemContent += `\n\n### USER IDENTIFICATION:\nThe user's name is ${userName}. You MUST use their name to address them directly and naturally in your responses (e.g., "Yes, Sakshi", or "Here is the information, ${userName}"). Make the conversation feel personalized by acknowledging their name.\n`;
+        }
+
+        finalSystemContent = await jurisdictionManager.injectJurisdictionPrompt(finalSystemContent, options.userId);
+
+        messages.push({ role: 'system', content: finalSystemContent });
+        // 2. Add Context if provided
+        let finalPrompt = prompt;
+        if (context) {
+            finalPrompt = `CONTEXT:\n${context}\n\nUSER QUESTION:\n${prompt}`;
+        }
+
+        const userContent = [{ type: 'text', text: finalPrompt }];
+        
+        // Handle image input for Vision capabilities
+        const imageToUse = options.image || options.imageUrl;
+        if (imageToUse) {
+            let finalImageUrl = imageToUse;
+            // If it's a raw base64 string (no prefix), add it
+            if (typeof imageToUse === 'string' && !imageToUse.startsWith('http') && !imageToUse.startsWith('data:')) {
+                finalImageUrl = `data:image/png;base64,${imageToUse}`;
+            }
+            userContent.push({
+                type: 'image_url',
+                image_url: { url: finalImageUrl }
+            });
+        }
+
+        messages.push({ role: 'user', content: userContent });
+
+        logger.info(`[OPENAI] Sending text request to gpt-4o...`);
+
+        const response = await axios.post(
+            'https://api.openai.com/v1/chat/completions',
+            {
+                model: options.model || 'gpt-4o',
+                messages: messages,
+                max_completion_tokens: options.max_tokens || 4096,
+                temperature: options.temperature || 0.7,
+                response_format: options.jsonMode ? { type: 'json_object' } : undefined
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                timeout: options.timeout || 90000 // 90s timeout
+            }
+        );
+
+        if (response.data && response.data.choices && response.data.choices[0]) {
+            const text = response.data.choices[0].message.content;
+            logger.info(`[OPENAI] Response received successfully (${text.length} chars).`);
+            return text;
+        }
+
+        throw new Error('OpenAI did not return valid response data.');
+
+    } catch (error) {
+        const errorMsg = error.response?.data?.error?.message || error.message;
+        logger.error(`[OPENAI] Error: ${errorMsg}`);
+        throw new Error(`OpenAI request failed: ${errorMsg}`);
+    }
+};
+
+export const AskOpenAIRaw = askOpenAI;
+

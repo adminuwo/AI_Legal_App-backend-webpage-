@@ -1,0 +1,25 @@
+[
+  {
+    "timestamp": "2026-06-18T12:54:56.533Z",
+    "method": "GET",
+    "url": "/",
+    "originalUrl": "/api/notifications",
+    "headers": {
+      "accept": "application/json",
+      "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzNiMDYxOTA1MzI1MDI5MjViMTgxOCIsImVtYWlsIjoiYWJoYUB1d28yNC5jb20iLCJuYW1lIjoiYWJoYSIsInBsYW5UeXBlIjoiQmFzaWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTc4MTc3MjQ2NSwiZXhwIjoxNzgyMzc3MjY1fQ.S9VaL5akCGQc_T7bJXsdd8vPLFzvUYZqxZN1k6ZguqU",
+      "x-device-platform": "android",
+      "x-app-version": "1.0.0",
+      "x-app-language": "en",
+      "x-app-timezone": "Asia/Kolkata",
+      "x-correlation-id": "req_60laxc368",
+      "host": "192.168.29.238:8080",
+      "connection": "Keep-Alive",
+      "accept-encoding": "gzip",
+      "cookie": "token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzNiMDYxOTA1MzI1MDI5MjViMTgxOCIsImVtYWlsIjoiYWJoYUB1d28yNC5jb20iLCJuYW1lIjoiYWJoYSIsInBsYW5UeXBlIjoiQmFzaWMiLCJyb2xlIjoidXNlciIsImlhdCI6MTc4MTc3MjQ2NSwiZXhwIjoxNzgyMzc3MjY1fQ.S9VaL5akCGQc_T7bJXsdd8vPLFzvUYZqxZN1k6ZguqU",
+      "user-agent": "okhttp/4.12.0",
+      "if-none-match": "W/\"1f0-JRtwSsIJiELwXl25XoafdivZZQs\""
+    },
+    "statusCode": 304,
+    "response": "[{\"id\":\"login_1781772466011\",\"title\":\"New Login Detected\",\"desc\":\"Successfully logged in at 2:17:46 PM\",\"type\":\"alert\",\"time\":\"2026-06-18T08:47:46.013Z\",\"isRead\":false,\"voice\":\"none\",\"_id\":\"6a33b0b290532502925b1b05\"},{\"id\":\"welcome_1781772385164_1\",\"title\":\"Welcome to AISA!\",\"desc\":\"Start your journey with your Artificial Intelligence Super Assistant. Need help? Ask us anything!\",\"type\":\"promo\",\"time\":\"2026-06-18T08:46:25.164Z\",\"isRead\":false,\"voice\":\"none\",\"_id\":\"6a33b06190532502925b1819\"}]"
+  }
+]

@@ -1,0 +1,60 @@
+# Google Cloud Build Pipeline for AI-Legal-App (Unified Single Service)
+# Builds the multi-stage container and deploys to Cloud Run
+
+steps:
+  # 1. Build the unified container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/ai-legal-app:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/ai-legal-app:latest'
+      - '-f'
+      - 'Dockerfile'
+      - '.'
+
+  # 2. Push image to Google Container Registry / Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/ai-legal-app:$COMMIT_SHA'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/ai-legal-app:latest'
+
+  # 3. Deploy to Cloud Run as a single unified service
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/ai-legal-app:$COMMIT_SHA'
+      - '--region'
+      - '${_REGION}'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - '--cpu'
+      - '2'
+      - '--memory'
+      - '2Gi'
+      - '--timeout'
+      - '900'
+
+substitutions:
+  _SERVICE_NAME: 'ai-legal-app-backend'
+  _REGION: 'asia-south1'
+
+images:
+  - 'gcr.io/$PROJECT_ID/ai-legal-app:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/ai-legal-app:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

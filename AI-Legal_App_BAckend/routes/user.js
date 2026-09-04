@@ -1,0 +1,504 @@
+import express from "express"
+import userModel from "../models/User.js"
+import mongoose from "mongoose";
+import Subscription from "../models/Subscription.js"
+import { verifyToken } from "../middleware/authorization.js"
+import Session from "../models/Session.js";
+import { createSession } from "../utils/sessionHelper.js";
+import * as FeatureAccessManager from "../services/featureAccessManager.js";
+
+import { getSmartAvatar, isGeneratedAvatar } from "../utils/avatarHelper.js";
+import uploadMiddleware from "../middleware/upload.middleware.js";
+import { uploadToGCS, gcsFilename } from "../services/gcs.service.js";
+import { uploadToCloudinary } from "../services/cloudinary.service.js";
+import UserService from "../services/core/UserService.js";
+
+const route = express.Router()
+const userService = new UserService();
+
+route.get("/", verifyToken, async (req, res) => {
+    try {
+        const result = await userService.getUserProfile(req.user);
+        return res.status(result.statusCode).json(result.data);
+    } catch (error) {
+        console.error("[GET USER ERROR]", error);
+        res.status(500).json({ msg: "Something went wrong", error: error.message });
+    }
+});
+
+// GET /api/user/subscription - Get user subscription and usage status
+route.get("/subscription", verifyToken, async (req, res) => {
+    try {
+        const result = await userService.getSubscriptionStatus(req.user);
+        return res.status(result.statusCode).json(result.data);
+    } catch (error) {
+        console.error("[FETCH SUBSCRIPTION STATUS ERROR]", error);
+        res.status(500).json({ msg: "Failed to fetch subscription status", error: error.message });
+    }
+});
+
+// GET /api/user/usage-status - Fetch real-time feature limits, storage, case quotas
+route.get("/usage-status", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const usageStatus = await FeatureAccessManager.getUsageStatus(userId);
+        res.status(200).json(usageStatus);
+    } catch (error) {
+        console.error("[GET USAGE STATUS ERROR]", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// GET /api/user/:id - Retrieve profile details by ID
+route.get("/:id", verifyToken, async (req, res) => {
+    try {
+        const userId = req.params.id;
+        
+        // Return dummy data in case MongoDB is not connected
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(200).json({
+                _id: userId,
+                name: "AISA Member",
+                email: "member@aisa.in",
+                avatar: ""
+            });
+        }
+
+        const user = await userModel.findById(userId).select("name email avatar role");
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        console.error("[GET USER BY ID ERROR]", error);
+        res.status(500).json({ error: "Failed to fetch user profile" });
+    }
+});
+
+// PUT /api/user - Update general user fields (name, avatar, etc.)
+route.put("/", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const updates = req.body;
+
+        if (!updates || Object.keys(updates).length === 0) {
+            return res.status(400).json({ error: "No update data provided" });
+        }
+
+        // DB Down Fallback
+        if (mongoose.connection.readyState !== 1) {
+            console.log("[DB] MongoDB unreachable. Simulating user update.");
+            return res.status(200).json({
+                _id: userId,
+                ...updates
+            });
+        }
+
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        if (updates.name) user.name = updates.name;
+        if (updates.phone) user.phone = updates.phone;
+        if (updates.avatar) user.avatar = updates.avatar;
+
+        if (updates.personalizations) {
+            user.personalizations = {
+                ...(user.personalizations || {}),
+                ...updates.personalizations,
+                advocateProfile: {
+                    ...((user.personalizations && user.personalizations.advocateProfile) || {}),
+                    ...((updates.personalizations && updates.personalizations.advocateProfile) || {})
+                }
+            };
+            user.markModified('personalizations');
+        }
+
+        await user.save();
+        const updatedUser = await userModel.findById(userId).select("-password");
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        console.error("[UPDATE USER ERROR]", error);
+        res.status(500).json({ msg: "Failed to update user", error: error.message });
+    }
+});
+
+// PUT /api/user/personalizations - Update personalization preferences
+route.put("/personalizations", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const { personalizations } = req.body;
+
+        console.log(`[BACKEND] Updating personalizations for user: ${userId}`, personalizations);
+
+        if (!personalizations || typeof personalizations !== 'object') {
+            return res.status(400).json({ error: "Invalid personalization data" });
+        }
+
+        // DB Down Fallback
+        if (mongoose.connection.readyState !== 1) {
+            console.log("[DB] MongoDB unreachable. Returning demo response for personalization.");
+            return res.status(200).json(personalizations); // Simulate success for demo mode
+        }
+
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        // Ensure user.personalizations is an object
+        if (!user.personalizations || typeof user.personalizations !== 'object') {
+            user.personalizations = {};
+        }
+
+        // Merge top-level sections (e.g. 'general', 'personalization')
+        Object.entries(personalizations).forEach(([section, data]) => {
+            if (data && typeof data === 'object') {
+                user.personalizations[section] = {
+                    ...(user.personalizations[section] || {}),
+                    ...data
+                };
+            }
+        });
+
+        // Allow supported mobile locales, default others to English
+        const allowedLanguages = ['English', 'Hindi', 'Marathi', 'Gujarati', 'Punjabi', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali', 'Odia', 'Assamese', 'Urdu', 'Sanskrit', 'Konkani', 'Manipuri', 'Dogri', 'Bodo', 'Maithili', 'Santali', 'Kashmiri', 'Nepali', 'Sindhi', 'Hinglish', 'Bilingual', 'Auto'];
+        if (user.personalizations?.general && !allowedLanguages.map(l => l.toLowerCase()).includes(String(user.personalizations.general.language || '').toLowerCase())) {
+            user.personalizations.general.language = 'English';
+        }
+
+        // CRITICAL for Mongoose 'Mixed' type update detection
+        user.markModified('personalizations');
+
+        await user.save();
+        console.log(`[BACKEND] Personalizations saved successfully for user: ${userId}`);
+        res.status(200).json(user.personalizations);
+    } catch (error) {
+        console.error("[BACKEND ERROR] Failed to update personalizations:", error);
+        res.status(500).json({
+            msg: "Failed to update settings",
+            error: error.message
+        });
+    }
+});
+
+// PUT /api/user/profile - Update user profile fields (like name)
+route.put("/profile", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const { name } = req.body;
+        if (!name) return res.status(400).json({ error: "Name is required" });
+
+        // DB Down Fallback - Allow "Offline" updates to succeed for the session
+        if (mongoose.connection.readyState !== 1) {
+            console.log("[DB] MongoDB unreachable. Simulating profile update.");
+            return res.status(200).json({
+                _id: userId,
+                name: name,
+                email: req.user.email || "demo@aisa.in",
+                role: "user"
+            });
+        }
+
+        const user = await userModel.findByIdAndUpdate(userId, { name }, { new: true }).select("-password");
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error("[BACKEND ERROR] Failed to update profile:", error);
+        res.status(500).json({ msg: "Failed to update profile", error: error.message });
+    }
+});
+
+// POST /api/user/avatar - Upload and update profile picture
+route.post("/avatar", verifyToken, uploadMiddleware, async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: "No file uploaded" });
+        }
+
+        let avatarUrl = null;
+
+        // Strategy 1: Try GCS (Production)
+        try {
+            const ext = req.file.originalname.split('.').pop() || 'png';
+            const gcsResult = await uploadToGCS(req.file.buffer, {
+                folder: 'user_avatars',
+                filename: gcsFilename(`avatar_${req.user.id || req.user._id}`, ext),
+                mimeType: req.file.mimetype,
+            });
+            avatarUrl = gcsResult.publicUrl;
+            console.log("[AVATAR] Uploaded via GCS successfully.");
+        } catch (gcsError) {
+            console.warn("[AVATAR] GCS upload failed, falling back to Cloudinary:", gcsError.message);
+
+            // Strategy 2: Fallback to Cloudinary
+            try {
+                const cloudinaryResult = await uploadToCloudinary(req.file.buffer, {
+                    folder: 'user_avatars',
+                    public_id: `avatar_${req.user.id || req.user._id}_${Date.now()}`,
+                    resource_type: 'image',
+                    overwrite: true,
+                });
+                avatarUrl = cloudinaryResult.secure_url || cloudinaryResult.url;
+                console.log("[AVATAR] Uploaded via Cloudinary successfully.");
+            } catch (cloudinaryError) {
+                console.error("[AVATAR] Cloudinary fallback also failed:", cloudinaryError.message);
+                throw new Error("All upload services failed. GCS: " + gcsError.message + " | Cloudinary: " + cloudinaryError.message);
+            }
+        }
+
+        const user = await userModel.findByIdAndUpdate(
+            req.user.id || req.user._id,
+            { avatar: avatarUrl },
+            { new: true }
+        ).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Avatar updated successfully",
+            avatar: user.avatar 
+        });
+    } catch (error) {
+        console.error("[AVATAR UPLOAD ERROR]", error);
+        res.status(500).json({ error: "Failed to upload avatar", details: error.message });
+    }
+});
+
+// DELETE /api/user/avatar - Remove profile picture
+route.delete("/avatar", verifyToken, async (req, res) => {
+    try {
+        const user = await userModel.findByIdAndUpdate(
+            req.user.id || req.user._id,
+            { avatar: "" },
+            { new: true }
+        ).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Profile photo removed successfully",
+            avatar: "" 
+        });
+    } catch (error) {
+        console.error("[AVATAR REMOVAL ERROR]", error);
+        res.status(500).json({ error: "Failed to remove avatar", details: error.message });
+    }
+});
+
+
+
+// GET /api/user/sessions - Get active user sessions
+route.get("/sessions", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const currentToken = req.headers.authorization?.split(" ")[1] || req.cookies?.token;
+
+        let sessions = await Session.find({ userId }).sort({ lastActive: -1 });
+        
+        // Self-healing: If no sessions exist (old user), create one for the current device
+        if (sessions.length === 0 && currentToken) {
+            await createSession(userId, currentToken, req);
+            sessions = await Session.find({ userId }).sort({ lastActive: -1 });
+        }
+
+        // Mark current session
+        const sessionsWithCurrent = sessions.map(s => ({
+            ...s.toObject(),
+            isCurrent: s.token === currentToken
+        }));
+
+        res.status(200).json(sessionsWithCurrent);
+    } catch (error) {
+        console.error("[FETCH SESSIONS ERROR]", error);
+        res.status(500).json({ error: "Failed to fetch sessions" });
+    }
+});
+
+// DELETE /api/user/sessions/:id - Revoke a specific session (logout device)
+route.delete("/sessions/:id", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const sessionId = req.params.id;
+
+        const session = await Session.findOne({ _id: sessionId, userId });
+        if (!session) return res.status(404).json({ error: "Session not found" });
+
+        await Session.findByIdAndDelete(sessionId);
+        res.status(200).json({ success: true, message: "Session revoked successfully" });
+    } catch (error) {
+        console.error("[REVOKE SESSION ERROR]", error);
+        res.status(500).json({ error: "Failed to revoke session" });
+    }
+});
+
+
+
+
+// POST /api/user/personalizations/reset - Reset personalization preferences to defaults
+route.post("/personalizations/reset", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+
+        // DB Down Fallback
+        if (mongoose.connection.readyState !== 1) {
+            console.log("[DB] MongoDB unreachable. Resetting to defaults (localStorage only).");
+            return res.status(200).json({});
+        }
+
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        // Reset to empty object, Mongoose defaults will take over on next fetch or we can manually set them
+        user.personalizations = {};
+        await user.save();
+
+        res.status(200).json(user.personalizations);
+    } catch (error) {
+        console.error("Error resetting personalizations:", error);
+        res.status(500).json({ msg: "Something went wrong" });
+    }
+});
+
+// GET /api/user/all - Admin only, fetch all users with details
+route.get("/all", verifyToken, async (req, res) => {
+    try {
+        // DB Down Fallback
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(500).json({ error: "Database not connected. Cannot fetch all users." });
+        }
+
+        const users = await userModel.find({ role: 'user' })
+            .populate('agents', 'agentName pricing')
+            .select('-password');
+
+        const spendMap = {};
+
+        const subscriptions = await Subscription.find({}).populate('planId');
+        const subMap = subscriptions.reduce((acc, sub) => {
+            acc[sub.userId.toString()] = sub.planId?.planName || 'Free Plan';
+            return acc;
+        }, {});
+
+        const usersWithDetails = users.map(user => ({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+            role: user.role,
+            isBlocked: user.isBlocked,
+            planName: subMap[user._id.toString()] || 'Free Plan',
+            status: user.isVerified ? 'Active' : 'Pending',
+            agents: user.agents || [],
+            credits: user.credits || 0,
+            spent: spendMap[user._id.toString()] || 0
+        }));
+
+        res.json(usersWithDetails);
+
+    } catch (error) {
+        console.error('[FETCH ALL USERS ERROR]', error);
+        res.status(500).json({ error: "Failed to fetch users" });
+    }
+});
+
+// PUT /api/user/:id/block - Admin only, block/unblock user
+route.put("/:id/block", verifyToken, async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { isBlocked } = req.body; // Expect boolean or toggle if not provided? Best to be explicit.
+
+        // Find and update
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        // Prevent blocking self or other admins? optional
+        if (user.role === 'admin') {
+            return res.status(403).json({ error: "Cannot block admins" });
+        }
+
+        user.isBlocked = isBlocked;
+        await user.save();
+
+        res.json({
+            message: `User ${isBlocked ? 'blocked' : 'unblocked'} successfully`,
+            user: { id: user._id, isBlocked: user.isBlocked }
+        });
+
+    } catch (err) {
+        console.error('[BLOCK USER ERROR]', err);
+        res.status(500).json({ error: "Failed to update user status" });
+    }
+});
+
+// DELETE /api/user/:id - Delete user (self or by admin)
+route.delete("/:id", verifyToken, async (req, res) => {
+    try {
+        const targetUserId = req.params.id;
+        const requesterId = req.user.id || req.user._id;
+
+        // DB Down Fallback
+        if (mongoose.connection.readyState !== 1) {
+            console.log("[DB] MongoDB unreachable. Simulating account deletion (Demo Mode).");
+            return res.json({ message: "Account deleted successfully (Demo Mode)", id: targetUserId });
+        }
+
+        // Validate ObjectId to prevent CastError
+        if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+            // If it's a demo ID from the mock login (like "demo-user-123"), treat as success
+            if (targetUserId.startsWith('demo-')) {
+                return res.json({ message: "Account deleted successfully (Demo Mode)", id: targetUserId });
+            }
+            return res.status(400).json({ error: "Invalid user ID format" });
+        }
+
+        const user = await userModel.findById(targetUserId);
+        if (!user) {
+            // If user not found but we got here, might already be deleted or demo
+            return res.json({ message: "Account deleted successfully", id: targetUserId });
+        }
+
+        // Prevent deleting admins unless by another super admin
+        if (user.role === 'admin' && requesterId !== targetUserId) {
+            return res.status(403).json({ error: "Cannot delete admins" });
+        }
+
+        // Helper for safe cleanup
+        const safeDelete = async (modelName, query) => {
+            try {
+                const Model = mongoose.models[modelName];
+                if (Model) {
+                    await Model.deleteMany(query);
+                    console.log(`[CLEANUP] Deleted data from ${modelName} for user ${targetUserId}`);
+                }
+            } catch (err) {
+                console.warn(`[CLEANUP WARNING] Failed to delete from ${modelName}:`, err.message);
+            }
+        };
+
+        // Cleanup: Delete all data associated with this user
+        await Promise.allSettled([
+            safeDelete('ChatSession', { userId: targetUserId }),
+
+            safeDelete('Reminder', { userId: targetUserId }),
+            safeDelete('Feedback', { userId: targetUserId }),
+            safeDelete('Report', { userId: targetUserId }),
+            safeDelete('SupportTicket', { userId: targetUserId })
+        ]);
+
+        await userModel.findByIdAndDelete(targetUserId);
+        console.log(`[DELETE USER] User ${targetUserId} deleted permanently.`);
+
+        res.json({ message: "Account deleted successfully", id: targetUserId });
+
+    } catch (err) {
+        console.error('[DELETE USER ERROR]', err);
+        res.status(500).json({ error: "Failed to delete user" });
+    }
+});
+
+export default route

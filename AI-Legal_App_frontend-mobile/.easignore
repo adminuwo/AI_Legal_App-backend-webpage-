@@ -1,0 +1,12 @@
+# EAS Build ignore rules for fast tarball uploads
+node_modules/
+.expo/
+.git/
+android/
+ios/
+dist/
+web-build/
+*.apk
+*.aab
+*.tar.gz
+*.log

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Unified Analytics Platform Auto-Tracker -->
+  <script defer src="https://admin.uwo24.com/api/web-stats/tracker.js" data-site="ailegal" data-endpoint="https://admin.uwo24.com/api/web-stats/collect"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI LEGAL™ - Official Google Play Store QR Code Poster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #0B0F17;
+      color: #FFFFFF;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      user-select: none;
+    }
+    .card-container {
+      position: relative;
+      margin-top: 32px;
+      width: 100%;
+      max-width: 360px;
+    }
+    .logo-badge {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #FAF4E5;
+      border: 2px solid #E7D6B5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+      z-index: 10;
+      overflow: hidden;
+    }
+    .logo-badge img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+    }
+    .white-card {
+      background-color: #FFFFFF;
+      color: #0F172A;
+      border-radius: 28px;
+      padding-top: 44px;
+      padding-bottom: 32px;
+      padding-left: 24px;
+      padding-right: 24px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .title {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 2px;
+      color: #0F172A;
+    }
+    .gold-text {
+      color: #C8A34D;
+    }
+    .subtitle {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748B;
+      margin-bottom: 24px;
+      letter-spacing: 0.2px;
+    }
+    .qr-box {
+      padding: 12px;
+      background-color: #FFFFFF;
+      border-radius: 18px;
+      border: 1px solid #F1F5F9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .qr-box img {
+      width: 240px;
+      height: 240px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    .footer-section {
+      margin-top: 28px;
+      text-align: center;
+      max-width: 360px;
+    }
+    .guide-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #CBD5E1;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .play-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 22px;
+      border-radius: 12px;
+      background-color: #000000;
+      border: 1px solid #334155;
+      color: #FFFFFF;
+      text-decoration: none;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .play-button:hover {
+      transform: translateY(-2px);
+      border-color: #C8A34D;
+    }
+    .play-button svg {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .play-button .text-col {
+      text-align: left;
+      line-height: 1.1;
+    }
+    .play-button .get-it {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #94A3B8;
+      text-transform: uppercase;
+    }
+    .play-button .store-name {
+      font-size: 14px;
+      font-weight: 900;
+      color: #FFFFFF;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Card Container -->
+  <div class="card-container">
+    
+    <!-- Top Center Badge with Transparent Official Logo -->
+    <div class="logo-badge">
+      <img src="logo.png" alt="AI LEGAL™ Transparent Logo">
+    </div>
+
+    <!-- White Card -->
+    <div class="white-card">
+      <h1 class="title">AI LEGAL™ <span class="gold-text">App</span></h1>
+      <p class="subtitle">Available on Android</p>
+      
+      <!-- Clean 100% Scannable QR Code (No central badge for perfect camera detection) -->
+      <div class="qr-box">
+        <img 
+          src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.uwo.ailegal" 
+          alt="AI LEGAL Google Play Store QR Code"
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  <div class="footer-section">
+    <p class="guide-text">
+      Scan this QR code using your mobile camera<br>
+      to download <span class="gold-text" style="font-weight: 700;">AI LEGAL™ App</span> from Google Play Store
+    </p>
+
+    <!-- Google Play Store Button -->
+    <a href="https://play.google.com/store/apps/details?id=com.uwo.ailegal" target="_blank" class="play-button">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3.609 1.814L13.792 12 3.61 22.186a2.37 2.37 0 0 1-.61-1.606V3.42c0-.623.228-1.196.609-1.606zm11.3 9.072l2.368-2.368-11.838-6.84 9.47 9.208zm0 2.228l-9.47 9.208 11.838-6.84-2.368-2.368zm1.115-1.114l3.186 1.842c.866.501.866 1.317 0 1.818l-3.186 1.842v-5.502z"/>
+      </svg>
+      <div class="text-col">
+        <div class="get-it">GET IT ON</div>
+        <div class="store-name">Google Play</div>
+      </div>
+    </a>
+  </div>
+
+</body>
+</html>

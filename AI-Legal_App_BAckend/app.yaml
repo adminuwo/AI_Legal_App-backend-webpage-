@@ -1,0 +1,36 @@
+runtime: nodejs20
+instance_class: F2
+automatic_scaling:
+  target_cpu_utilization: 0.65
+  min_instances: 0
+  max_instances: 10
+
+env_variables:
+  NODE_ENV: 'production'
+  PORT: '8080'
+
+  # --- App Config (non-sensitive) ---
+  APP_NAME: 'AISA'
+  APP_DEFAULT_LANGUAGE: 'English'
+  TOKEN_EX: '7d'
+  RAZORPAY_MODE: 'live'
+
+  # --- Web URLs (must be HTTPS for Apple Pay) ---
+  FRONTEND_URL: 'https://aisa24.com'
+  BACKEND_URL: 'https://aisa24.com'
+  WEB_BILLING_URL: 'https://aisa24.com'
+
+  # --- Apple Pay (Payments) ---
+  APPLE_PAY_MERCHANT_ID: 'merchant.com.aisa24.pay'
+  APPLE_PAY_DOMAIN: 'aisa24.com'
+  APPLE_PAY_DISPLAY_NAME: 'AISA'
+
+  # --- Google Cloud (non-sensitive) ---
+  GCP_PROJECT_ID: 'ai-mall-484810'
+  VIDEO_SERVICE_ACCOUNT: 'video-signer@ai-mall-484810.iam.gserviceaccount.com'
+
+  # NOTE: All sensitive keys (OPENAI_API_KEY, CLOUDINARY_API_SECRET, JWT_SECRET,
+  # MONGODB_ATLAS_URI, RAZORPAY_KEY_SECRET, RESEND_API_KEY, GOOGLE_CLIENT_ID etc.)
+  # must be set directly in App Engine Console:
+  # GCP Console → App Engine → Versions → [your version] → Edit → Environment Variables
+  # OR use: gcloud app deploy --set-env-vars KEY=VALUE

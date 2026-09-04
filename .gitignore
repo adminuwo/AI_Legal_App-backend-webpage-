@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.npm/
+
+# Environment variables & secrets
+.env
+.env.*
+.env*.local
+*.env
+!.env.example
+*.keystore
+*.jks
+*.key
+*.p8
+*.p12
+*.pem
+credentials.json
+*credentials*.md
+@uwo__*
+
+# Build outputs & caches
+dist/
+build/
+.expo/
+.next/
+out/
+.gradle/
+*.apk
+*.aab
+*.ipa
+
+# Temporary audit & scratch archives
+ai-legal-audit.zip
+audit_reports/
+test/
+
+# Logs & OS junk
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+.DS_Store
+Thumbs.db
+ehthumbs.db

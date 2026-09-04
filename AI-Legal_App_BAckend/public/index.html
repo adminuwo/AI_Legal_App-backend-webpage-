@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="logo/Logo.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual-viewport" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>AI LEGAL™</title>
+  <meta name="description" content="AI LEGAL™ is a professional legal intelligence platform designed to empower legal professionals with advanced tools for comprehensive research, document analysis, and case preparation." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Blocking theme script: prevents flash of wrong theme on load/refresh -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('personalizations');
+        var theme = 'system';
+        if (saved) {
+          var prefs = JSON.parse(saved);
+          theme = (prefs && prefs.general && prefs.general.theme) ? prefs.general.theme.toLowerCase() : 'system';
+        }
+        var root = document.documentElement;
+        root.classList.remove('light', 'dark');
+        if (theme === 'dark') {
+          root.classList.add('dark');
+        } else if (theme === 'light') {
+          root.classList.add('light');
+        } else {
+          // system
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            root.classList.add('dark');
+          } else {
+            root.classList.add('light');
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="/env-config.js"></script>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18111623156"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-18111623156');
+</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T53GMWGC');</script>
+<!-- End Google Tag Manager -->
+  <script type="module" crossorigin src="/assets/index-vhx3vuKo.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-Nw2yJ03G.js">
+  <link rel="stylesheet" crossorigin href="/assets/vendor-DvB2Xm2x.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-luRsFvFA.css">
+</head>
+
+<body class="bg-background text-foreground">
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T53GMWGC"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+  <div id="root"></div>
+</body>
+
+</html>
