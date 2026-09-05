@@ -11,8 +11,14 @@ let socket;
 export const initSocket = (token) => {
     if (socket && socket.connected) return socket;
 
-    // The API is http://localhost:8080/api, so socket is http://localhost:8080
-    const socketUrl = API.replace('/api', '');
+    // Determine base host URL for socket connection
+    let socketUrl = API;
+    if (socketUrl.endsWith('/api')) {
+        socketUrl = socketUrl.slice(0, -4);
+    }
+    if (!socketUrl || !socketUrl.startsWith('http')) {
+        socketUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080';
+    }
 
     console.log('[Socket] Initializing connection to:', socketUrl);
 

@@ -22,14 +22,16 @@ export const verifyFeatureAccess = (featureKey) => {
                 return next();
             }
 
-            const access = await FeatureAccessManager.checkAccess(userId, featureKey);
+            const workspace = req.query.workspace || req.body?.workspace || req.headers['x-workspace-type'] || req.headers['x-workspace-id'] || req.headers['x-active-workspace-id'] || 'advocate';
+            const access = await FeatureAccessManager.checkAccess(userId, featureKey, workspace);
             if (!access.allowed) {
+                const formattedFeature = featureKey.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
                 return res.status(403).json({
                     success: false,
                     code: "LIMIT_EXCEEDED",
                     title: "Usage Limit Reached",
                     feature: featureKey,
-                    message: `You have used all ${access.limit} ${featureKey.replace(/_/g, ' ')} generations included in your ${access.plan} Plan. Upgrade your subscription to continue.`
+                    message: `You have used all ${access.limit} ${formattedFeature} generations included in your ${access.plan} Plan. Upgrade your subscription to continue.`
                 });
             }
 
@@ -57,8 +59,9 @@ export const verifyStorageAccess = async (req, res, next) => {
     try {
         const userId = req.user.id || req.user._id;
         const incomingBytes = req.headers['content-length'] ? Number(req.headers['content-length']) : 0;
+        const workspace = req.query.workspace || req.body?.workspace || req.headers['x-workspace-type'] || req.headers['x-workspace-id'] || req.headers['x-active-workspace-id'] || 'advocate';
 
-        const check = await FeatureAccessManager.checkStorageAccess(userId, incomingBytes);
+        const check = await FeatureAccessManager.checkStorageAccess(userId, incomingBytes, workspace);
         if (!check.allowed) {
             return res.status(403).json({
                 success: false,
@@ -81,8 +84,9 @@ export const verifyStorageAccess = async (req, res, next) => {
 export const verifyMatterCreationAccess = async (req, res, next) => {
     try {
         const userId = req.user.id || req.user._id;
+        const workspace = req.query.workspace || req.body?.workspace || req.headers['x-workspace-type'] || req.headers['x-workspace-id'] || req.headers['x-active-workspace-id'] || 'advocate';
 
-        const check = await FeatureAccessManager.checkCaseCreationAccess(userId);
+        const check = await FeatureAccessManager.checkCaseCreationAccess(userId, workspace);
         if (!check.allowed) {
             return res.status(403).json({
                 success: false,

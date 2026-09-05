@@ -35,11 +35,11 @@ const TermsOfService = () => {
                         }));
                     }
                 } else {
-                    setSections([]);
+                    setSections(TERMS_OF_SERVICE_DEFAULTS.map((s, i) => ({ ...s, icon: getDynamicIcon(i) })));
                 }
             } catch (err) {
                 console.error("Failed to fetch dynamic policy:", err);
-                setSections([]);
+                setSections(TERMS_OF_SERVICE_DEFAULTS.map((s, i) => ({ ...s, icon: getDynamicIcon(i) })));
             } finally {
                 setLoading(false);
             }

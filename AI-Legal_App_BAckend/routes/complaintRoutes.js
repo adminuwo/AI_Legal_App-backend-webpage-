@@ -18,13 +18,15 @@ const optionalAuth = (req, res, next) => {
     }
 };
 
+import { verifyToken, isAdmin } from '../middleware/authorization.js';
+
 // @route POST /api/complaints - Submit complaint/feedback for an AI response
-router.post('/', optionalAuth, createComplaint);
+router.post('/', verifyToken, createComplaint);
 
 // @route GET /api/complaints - List all complaints for Admin Dashboard
-router.get('/', getComplaints);
+router.get('/', verifyToken, isAdmin, getComplaints);
 
 // @route PATCH /api/complaints/:id/status - Update complaint status
-router.patch('/:id/status', updateComplaintStatus);
+router.patch('/:id/status', verifyToken, isAdmin, updateComplaintStatus);
 
 export default router;

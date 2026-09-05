@@ -1,85 +1,56 @@
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
-import { useLanguage } from '../context/LanguageContext';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Users, CreditCard, Package, Settings, BarChart3,
-  Search, Shield, Ban, Trash2, Plus, Edit2, X,
-  TrendingUp, DollarSign, Activity, Zap,
-  ChevronDown, Save, RefreshCw, ArrowLeft, FileUp,
-  Eye, EyeOff, Check, AlertCircle, FileText, PlusCircle, Headphones, BookOpen,
-  Globe, Cpu, Server, CheckCircle2, XCircle, AlertTriangle, ShieldCheck, UserCheck, Key, Tag
+import { 
+  BarChart3, Users, CreditCard, Package, Ticket, Lightbulb, Bug, AlertTriangle, 
+  MessageSquare, Globe, Settings, Shield, ShieldAlert, Search, RefreshCw, Plus, PlusCircle, 
+  Edit2, Edit3, Trash2, Lock, Unlock, CheckCircle2, XCircle, ExternalLink, Key, DollarSign, 
+  TrendingUp, Activity, HardDrive, Terminal, Send, Eye, EyeOff, ChevronRight, X, 
+  FileText, Check, RotateCw, Building2, UserCheck, Zap, ArrowLeft, Download, Tag, Wrench
 } from 'lucide-react';
-import { getUserData } from '../userStore/userData';
+import { toast } from 'react-hot-toast';
+import { useRecoilValue } from 'recoil';
+import { userData } from '../userStore/userData';
 import { isSuperAdmin } from '../utils/isSuperAdmin';
+import DeleteConfirmModal from '../Components/DeleteConfirmModal';
+import axios from 'axios';
 import { API } from '../types.js';
-import { logo } from '../constants.js';
-import toast from 'react-hot-toast';
 
-const ADMIN_EMAIL = 'admin@uwo24.com';
-const PROD_API_BASE = 'https://ai-legal-app-backend-743928421487.asia-south1.run.app/api';
+const TABS = [
+  { id: 'overview', label: 'Overview', icon: BarChart3 },
+  { id: 'users', label: 'Users', icon: Users },
+  { id: 'billing', label: 'Billing', icon: CreditCard },
+  { id: 'plans', label: 'Plans', icon: Package },
+  { id: 'coupons', label: 'Coupons', icon: Ticket },
+  { id: 'addons', label: 'Add-on Requests', icon: PlusCircle },
+  { id: 'features', label: 'Requests', icon: Lightbulb },
+  { id: 'bugs', label: 'Bugs', icon: Bug },
+  { id: 'crashes', label: 'Crash Reports', icon: AlertTriangle },
+  { id: 'reports', label: 'Response Reports', icon: MessageSquare },
+  { id: 'jurisdiction', label: 'Jurisdiction', icon: Globe },
+  { id: 'settings', label: 'Settings', icon: Settings }
+];
 
-const getLocalApiBase = () => {
-  if (typeof window === 'undefined') return 'http://localhost:8080/api';
-  const host = window.location.hostname;
-  if (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.') || host.startsWith('172.')) {
-    return `http://${host}:8080/api`;
-  }
-  return PROD_API_BASE;
-};
-
-// Live Dynamic API Fetcher with automatic Localhost / Local IP & Production Fallback
-let CURRENT_API_BASE = getLocalApiBase();
-
-async function apiAdminFetch(endpoint, options = {}) {
-  const user = getUserData();
-  let token = localStorage.getItem('token') || user?.token || '';
-
-  if (!token) {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        const p = JSON.parse(storedUser);
-        token = p.token || p.user?.token || '';
-      }
-    } catch (e) {}
-  }
-  
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...(options.headers || {})
-  };
-
-  try {
-    const res = await fetch(CURRENT_API_BASE + endpoint, { ...options, headers });
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    const fallbackBase = CURRENT_API_BASE.includes('8080') ? PROD_API_BASE : 'http://localhost:8080/api';
-    try {
-      const res = await fetch(fallbackBase + endpoint, { ...options, headers });
-      return await res.json();
-    } catch(lErr) {}
-    throw err;
-  }
-}
-
-// ─── Loading Spinner ───
-const LoadingSpinner = () => (
-  <div className="flex flex-col items-center justify-center py-20 gap-3">
-    <RefreshCw className="w-8 h-8 text-amber-600 animate-spin" />
-    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Loading AI Legal™ Admin Console...</span>
-  </div>
-);
-
-// ─── Main Admin Dashboard Component ───
-const AdminDashboard = () => {
-  const { t } = useLanguage();
+export default function AdminDashboard() {
   const navigate = useNavigate();
-  const user = getUserData();
-  const isAdmin = user?.token && (user?.email?.toLowerCase() === ADMIN_EMAIL || user?.role === 'admin' || isSuperAdmin(user));
+  const recoilUserData = useRecoilValue(userData);
+  const user = recoilUserData?.user || null;
 
+  // Authorization Check
+  const isAdmin = useMemo(() => {
+    if (!user) return false;
+    const email = (user.email || '').toLowerCase().trim();
+    return (
+      user.role === 'admin' ||
+      user.role === 'SUPER_ADMIN' ||
+      email === 'aditi@uwo24.com' ||
+      email === 'aditilakhera0@gmail.com' ||
+      email === 'admin@uwo24.com' ||
+      isSuperAdmin(user)
+    );
+  }, [user]);
+
+  // Tab State
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -106,226 +77,247 @@ const AdminDashboard = () => {
     apiUsage: 0,
     storageUsed: 0,
     pendingFeatures: 0,
-    openBugs: 0,
-    dailyActivity: []
+    openBugs: 0
   });
 
   const [usersList, setUsersList] = useState([]);
   const [paymentsList, setPaymentsList] = useState([]);
   const [plansList, setPlansList] = useState([]);
+  const [couponsList, setCouponsList] = useState([]);
+  const [couponFeatureEnabled, setCouponFeatureEnabled] = useState(true);
+  const [couponStats, setCouponStats] = useState({ totalCoupons: 0, activeCoupons: 0, totalDiscountGiven: 0 });
   const [featuresList, setFeaturesList] = useState([]);
   const [bugsList, setBugsList] = useState([]);
+  const [complaintsList, setComplaintsList] = useState([]);
+  const [crashesList, setCrashesList] = useState([]);
+  const [crashStats, setCrashStats] = useState({ total: 0, unresolved: 0 });
+
+  // Enterprise Add-on Requests State & Sync
+  const [addonRequestsList, setAddonRequestsList] = useState(() => {
+    const saved = localStorage.getItem('adminAddonRequests');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return [
+      {
+        _id: 'addon-req-101',
+        addonId: 'evidence-analyst',
+        addonName: 'Evidence Analyst & Forensic Scanner',
+        category: 'Advocate Practitioner Suite',
+        institutionName: 'Rani Durgavati Vishwavidyalaya (RDVV)',
+        institutionEmail: 'admin@rdvv.ac.in',
+        requestedBy: 'University Admin (RDVV)',
+        notes: 'Requested for BA LLB Final Year moot court preparation & evidence examination.',
+        status: 'Pending',
+        createdAt: new Date().toISOString()
+      }
+    ];
+  });
+
+  const handleApproveAddonRequest = (req) => {
+    const updatedList = addonRequestsList.map(item =>
+      item._id === req._id ? { ...item, status: 'Approved' } : item
+    );
+    setAddonRequestsList(updatedList);
+    localStorage.setItem('adminAddonRequests', JSON.stringify(updatedList));
+
+    const approvedStr = localStorage.getItem('approvedAddonsList');
+    let approvedList = approvedStr ? JSON.parse(approvedStr) : [];
+    if (!approvedList.includes(req.addonId)) {
+      approvedList.push(req.addonId);
+    }
+    localStorage.setItem('approvedAddonsList', JSON.stringify(approvedList));
+
+    const featureMap = {
+      'argument-builder': 'argumentBuilder',
+      'evidence-analyst': 'evidenceAnalyst',
+      'contract-analyzer': 'contractAnalyzer',
+      'case-predictor': 'casePredictor',
+      'strategy-engine': 'strategyEngine',
+      'client-connect': 'clientConnect',
+      'client-communication': 'teamCommunication'
+    };
+    const targetKey = featureMap[req.addonId] || req.addonId;
+
+    const rulesStr = localStorage.getItem('enterpriseFeatureAccessRules');
+    let currentRules = rulesStr ? JSON.parse(rulesStr) : {};
+    currentRules[targetKey] = true;
+    localStorage.setItem('enterpriseFeatureAccessRules', JSON.stringify(currentRules));
+
+    toast.success(`✅ Add-on "${req.addonName}" APPROVED & LIVE enabled for ${req.institutionName} students across Web & Mobile app!`);
+  };
+
+  const handleRejectAddonRequest = (req) => {
+    const updatedList = addonRequestsList.map(item =>
+      item._id === req._id ? { ...item, status: 'Rejected' } : item
+    );
+    setAddonRequestsList(updatedList);
+    localStorage.setItem('adminAddonRequests', JSON.stringify(updatedList));
+    toast.error(`❌ Add-on request for "${req.addonName}" rejected.`);
+  };
   const [adminSettings, setAdminSettings] = useState({
     maintenanceMode: false,
     sessionTimeout: 30,
     platformName: 'AI Legal Pro',
+    supportEmail: 'support@uwo24.com',
     aiModel: 'gpt-4-turbo',
     defaultCredits: 50,
     fileUploadLimitMb: 25,
     storageLimitGb: 5,
-    supportEmail: 'admin@uwo24.com'
+    apiKeys: { openai: '••••••••••••1234', razorpayId: '••••••••••••5678' }
   });
 
   // Filter States
   const [userSearch, setUserSearch] = useState('');
   const [userFilter, setUserFilter] = useState('all');
-  const [billingSearch, setBillingSearch] = useState('');
   const [billingFilter, setBillingFilter] = useState('all');
+  const [billingSearch, setBillingSearch] = useState('');
+  const [featureFilter, setFeatureFilter] = useState('all');
+  const [bugSeverityFilter, setBugSeverityFilter] = useState('all');
+  const [bugStatusFilter, setBugStatusFilter] = useState('all');
+  const [crashSourceFilter, setCrashSourceFilter] = useState('all');
 
-  // Modals & Action States
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedUserPlan, setSelectedUserPlan] = useState('advocate_pro');
-  const [selectedUserBillingCycle, setSelectedUserBillingCycle] = useState('monthly');
-  const [selectedUserCreditInput, setSelectedUserCreditInput] = useState('');
-  const [selectedUserResetPassInput, setSelectedUserResetPassInput] = useState('');
-
+  // Modals & Actions States
+  const [editUserModal, setEditUserModal] = useState(null);
   const [creditModalUser, setCreditModalUser] = useState(null);
-  const [creditAmount, setCreditAmount] = useState('50');
-  const [planModalUser, setPlanModalUser] = useState(null);
-  const [newPlanId, setNewPlanId] = useState('advocate_pro');
+  const [creditAdjustment, setCreditAdjustment] = useState({ amount: '50', actionType: 'add', reason: '' });
+  const [subModalUser, setSubModalUser] = useState(null);
+  const [subForm, setSubForm] = useState({ planId: 'advocate_pro', billingCycle: 'monthly' });
+  const [selectedDossierUser, setSelectedDossierUser] = useState(null);
+  const [passwordResetUser, setPasswordResetUser] = useState(null);
+  const [passwordResetVal, setPasswordResetVal] = useState('');
+  const [refundConfirmModal, setRefundConfirmModal] = useState({ isOpen: false, payment: null });
+  const [markPaidConfirmModal, setMarkPaidConfirmModal] = useState({ isOpen: false, payment: null });
 
-  const [editingPlanModal, setEditingPlanModal] = useState(null);
-  const [isCreatingPlanModal, setIsCreatingPlanModal] = useState(false);
+  // Plan CRUD Modal
+  const [planModal, setPlanModal] = useState({ isOpen: false, isEdit: false, planData: null });
   const [planForm, setPlanForm] = useState({
     planId: '',
     planName: '',
-    priceMonthly: 499,
-    priceYearly: 4990,
-    credits: 100,
-    badge: '',
+    priceMonthly: '0',
+    priceYearly: '0',
+    credits: '100',
+    badge: 'PRO',
+    features: '',
     isPopular: false,
-    isActive: true,
-    featuresText: ''
+    isActive: true
   });
+  const [planDeleteConfirmModal, setPlanDeleteConfirmModal] = useState({ isOpen: false, plan: null });
 
-  // Request & Bug Filter & Modal States
-  const [featureFilterState, setFeatureFilterState] = useState('all');
-  const [requestSearch, setRequestSearch] = useState('');
-  const [bugSeverityFilter, setBugSeverityFilter] = useState('all');
-  const [selectedFeatureModal, setSelectedFeatureModal] = useState(null);
-  const [selectedBugModal, setSelectedBugModal] = useState(null);
-  const [devReplyInput, setDevReplyInput] = useState('');
-  const [devStatusInput, setDevStatusInput] = useState('Planned');
-  const [bugDevNotesInput, setBugDevNotesInput] = useState('');
-  const [bugStatusInput, setBugStatusInput] = useState('in_progress');
-
-  // Jurisdiction Panel State
-  const [jSearchQuery, setJSearchQuery] = useState('');
-  const [jSelectedUser, setJSelectedUser] = useState(null);
-  const [jTargetCountry, setJTargetCountry] = useState({ name: 'India', code: 'IN', flag: '🇮🇳' });
-  const [jOverrideType, setJOverrideType] = useState('Temporary');
-  const [jCountryDropdownOpen, setJCountryDropdownOpen] = useState(false);
-  const [jCountrySearch, setJCountrySearch] = useState('');
-  const [jTestQuery, setJTestQuery] = useState('');
-  const [jTestResult, setJTestResult] = useState('');
-  const [jSaving, setJSaving] = useState(false);
-  const [jRunningTest, setJRunningTest] = useState(false);
-
-  // Settings State
-  const [adminPasswordInput, setAdminPasswordInput] = useState('');
-
-  // Coupon States
-  const [couponsList, setCouponsList] = useState([]);
-  const [couponStats, setCouponStats] = useState({ totalCoupons: 0, activeCoupons: 0, expiredCoupons: 0, totalDiscountGiven: 0 });
-  const [couponFeatureEnabled, setCouponFeatureEnabled] = useState(true);
-  const [couponFilterState, setCouponFilterState] = useState('all');
-  const [editingCouponModal, setEditingCouponModal] = useState(null);
-  const [isCreatingCouponModal, setIsCreatingCouponModal] = useState(false);
+  // Coupon CRUD & Stats Modals
+  const [copiedCouponCode, setCopiedCouponCode] = useState(null);
+  const [couponModal, setCouponModal] = useState({ isOpen: false, isEdit: false, couponData: null });
   const [couponForm, setCouponForm] = useState({
     code: '',
     discountType: 'percentage',
-    discountValue: 20,
+    discountValue: '10',
     applicablePlans: ['ALL'],
     billingCycles: ['ALL'],
-    startDate: new Date().toISOString().slice(0, 10),
-    expiryDate: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().slice(0, 10),
-    usageLimit: 100,
-    perUserLimit: 1,
-    minimumPurchase: 0,
-    maximumDiscount: 500,
+    startDate: '',
+    expiryDate: '',
+    usageLimit: '',
+    perUserLimit: '1',
+    minimumPurchase: '',
+    maximumDiscount: '',
     status: 'active'
   });
+  const [couponDetailsModal, setCouponDetailsModal] = useState({ isOpen: false, coupon: null, stats: null, usageHistory: [] });
+  const [couponDeleteConfirmModal, setCouponDeleteConfirmModal] = useState({ isOpen: false, coupon: null });
 
-  // Access Control Redirect
-  useEffect(() => {
-    if (!isAdmin) {
-      navigate('/dashboard/chat', { replace: true });
-    }
-  }, [isAdmin, navigate]);
+  // Feature Requests States & Modals
+  const [featureSearch, setFeatureSearch] = useState('');
+  const [featureFilterState, setFeatureFilterState] = useState('all');
+  const [featureModal, setFeatureModal] = useState({ isOpen: false, feature: null, status: 'Pending', developerAssigned: 'None', adminNote: '' });
+  const [featureDeleteModal, setFeatureDeleteModal] = useState({ isOpen: false, feature: null });
 
-  // Load Data Effect
+  // Bug Details Modal
+  const [bugModal, setBugModal] = useState({ isOpen: false, bug: null, status: 'Open', assignedTo: '' });
+
+  // Crash Detail Modal
+  const [selectedCrash, setSelectedCrash] = useState(null);
+
+  // Response Report Detail Modal
+  const [selectedReport, setSelectedReport] = useState(null);
+
+  // Jurisdiction Sandbox States
+  const [jSelectedUser, setJSelectedUser] = useState(null);
+  const [jTargetCountry, setJTargetCountry] = useState('India');
+  const [jTargetState, setJTargetState] = useState('Gujarat');
+  const [jOverrideType, setJOverrideType] = useState('Temporary');
+  const [jTestQuery, setJTestQuery] = useState('');
+  const [jTestLoading, setJTestLoading] = useState(false);
+  const [jTestResult, setJTestResult] = useState('');
+
+  // Password Change Form
+  const [adminPasswordInput, setAdminPasswordInput] = useState('');
+  const [adminPasswordConfirm, setAdminPasswordConfirm] = useState('');
+
+  // Delete Confirm Modal State
+  const [deleteConfig, setDeleteConfig] = useState({ isOpen: false, type: '', id: '', name: '' });
+
+  // Fetch All Backend Data
   const loadData = async (isSilent = false) => {
+    if (!isAdmin) {
+      setLoading(false);
+      return;
+    }
     if (!isSilent) setLoading(true);
     else setRefreshing(true);
 
     try {
-      const [statsRes, usersRes, billingRes, plansRes, featuresRes, bugsRes, settingsRes, couponsRes] = await Promise.all([
-        apiAdminFetch('/admin/stats').catch(() => ({ success: false })),
-        apiAdminFetch('/admin/users').catch(() => ({ success: false })),
-        apiAdminFetch('/admin/billing').catch(() => ({ success: false })),
-        apiAdminFetch('/admin/plans').catch(() => ({ success: false })),
-        apiAdminFetch('/admin/features').catch(() => ({ success: false })),
-        apiAdminFetch('/admin/bugs').catch(() => ({ success: false })),
-        apiAdminFetch('/admin/settings').catch(() => ({ success: false })),
-        apiAdminFetch('/admin/coupons').catch(() => ({ success: false })),
+      const token = user?.token || localStorage.getItem('token');
+      const tStamp = Date.now();
+      const authHeader = { 
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        } 
+      };
+      const noCacheAuthHeader = authHeader;
+
+      const [statsRes, usersRes, billingRes, plansRes, couponsRes, featuresRes, bugsRes, settingsRes, complaintsRes, crashesRes] = await Promise.all([
+        axios.get(`${API}/admin/stats?_t=${tStamp}`, noCacheAuthHeader).catch((err) => ({ data: { success: false, code: err.response?.data?.code } })),
+        axios.get(`${API}/admin/users?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
+        axios.get(`${API}/admin/billing?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
+        axios.get(`${API}/admin/plans`, authHeader).catch(() => ({ data: { plans: [] } })),
+        axios.get(`${API}/admin/coupons`, authHeader).catch(() => ({ data: { coupons: [], stats: null } })),
+        axios.get(`${API}/admin/feature-requests?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
+        axios.get(`${API}/admin/bug-reports?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
+        axios.get(`${API}/admin/settings`, authHeader).catch(() => ({ data: { settings: null } })),
+        axios.get(`${API}/complaints?limit=200`, authHeader).catch(() => ({ data: { data: [] } })),
+        axios.get(`${API}/admin/crashes?limit=200`, authHeader).catch(() => ({ data: { crashes: [], stats: null } }))
       ]);
 
-      if (statsRes?.stats || statsRes?.success) {
-        const s = statsRes.stats || statsRes;
-        if (s && typeof s === 'object') setStats(prev => ({ ...prev, ...s }));
-      }
-
-      // Users List parsing & seed fallback
-      const userListFetched = usersRes?.list || usersRes?.users || usersRes?.data?.users || usersRes?.data || (Array.isArray(usersRes) ? usersRes : null);
-      if (Array.isArray(userListFetched) && userListFetched.length > 0) {
-        setUsersList(userListFetched);
+      if (statsRes.data?.code === 'SESSION_REVOKED') {
+        toast.error('Session expired or logged in from another device. Please log in again.');
+        setStats(prev => ({ ...prev, revenueMonth: 0, revenueToday: 0, revenueLifetime: 0 }));
+      } else if (statsRes.data?.success && statsRes.data.stats) {
+        setStats(prev => ({ 
+          ...prev, 
+          ...statsRes.data.stats,
+          revenueToday: Number(statsRes.data.stats.revenueToday || 0),
+          revenueMonth: Number(statsRes.data.stats.revenueMonth || 0),
+          revenueLifetime: Number(statsRes.data.stats.revenueLifetime || 0)
+        }));
       } else {
-        setUsersList([
-          { _id: 'u1', name: 'Aditi Lakhera', email: 'aditi@uwo24.com', role: 'SUPER_ADMIN', currentPlan: 'Enterprise Pro', totalCases: 148, isBlocked: false, phone: '+91 9876543210', createdAt: '2025-01-15' },
-          { _id: 'u2', name: 'Advocate Anmol Sharma', email: 'anmol.advocate@gmail.com', role: 'Advocate', currentPlan: 'Professional', totalCases: 52, isBlocked: false, phone: '+91 9812345678', createdAt: '2025-02-10' },
-          { _id: 'u3', name: 'Abha Legal Firm', email: 'contact@abhalegal.com', role: 'Law Firm', currentPlan: 'Enterprise', totalCases: 310, isBlocked: false, phone: '+91 9988776655', createdAt: '2025-03-01' },
-          { _id: 'u4', name: 'Rajesh Kumar & Associates', email: 'rajesh.law@outlook.com', role: 'Advocate', currentPlan: 'Starter', totalCases: 18, isBlocked: false, phone: '+91 9711223344', createdAt: '2025-04-12' },
-          { _id: 'u5', name: 'Priya Mehta Advocate', email: 'priya.mehta@juris.in', role: 'Advocate', currentPlan: 'Free', totalCases: 4, isBlocked: false, phone: '+91 9655443322', createdAt: '2025-05-20' },
-          { _id: 'u6', name: 'Vikramaditya Singh', email: 'vikram.singh@highcourt.in', role: 'Advocate', currentPlan: 'Professional', totalCases: 89, isBlocked: false, phone: '+91 9844332211', createdAt: '2025-06-05' },
-          { _id: 'u7', name: 'Siddharth Roy Legal', email: 'siddharth.roy@law.in', role: 'Advocate', currentPlan: 'Free', totalCases: 2, isBlocked: true, phone: '+91 9733221100', createdAt: '2025-06-18' }
-        ]);
+        setStats(prev => ({ ...prev, revenueMonth: 0, revenueToday: 0, revenueLifetime: 0 }));
       }
-
-      // Billing Payments List
-      const billingFetched = billingRes?.list || billingRes?.payments || billingRes?.data?.payments || billingRes?.data || (Array.isArray(billingRes) ? billingRes : null);
-      if (Array.isArray(billingFetched) && billingFetched.length > 0) {
-        setPaymentsList(billingFetched);
-      } else {
-        setPaymentsList([
-          { _id: 'p1', paymentId: 'pay_NzA162819', userEmail: 'anmol.advocate@gmail.com', amount: 999, status: 'success', date: '2026-07-28', plan: 'Professional' },
-          { _id: 'p2', paymentId: 'pay_NzA162820', userEmail: 'contact@abhalegal.com', amount: 2399, status: 'success', date: '2026-07-27', plan: 'Enterprise' },
-          { _id: 'p3', paymentId: 'pay_NzA162821', userEmail: 'rajesh.law@outlook.com', amount: 499, status: 'success', date: '2026-07-25', plan: 'Starter' },
-          { _id: 'p4', paymentId: 'pay_NzA162822', userEmail: 'vikram.singh@highcourt.in', amount: 999, status: 'success', date: '2026-07-20', plan: 'Professional' }
-        ]);
-      }
-
-      // Plans List
-      const plansFetched = plansRes?.plans || plansRes?.data?.plans || plansRes?.data || (Array.isArray(plansRes) ? plansRes : null);
-      if (Array.isArray(plansFetched) && plansFetched.length > 0) {
-        setPlansList(plansFetched);
-      } else {
-        setPlansList([
-          { _id: 'advocate_basic', planId: 'advocate_basic', planName: 'AI Legal™ Advocate Basic', priceMonthly: 499, priceYearly: 4990, badge: 'ADVOCATE BASIC', isActive: true },
-          { _id: 'advocate_pro', planId: 'advocate_pro', planName: 'AI Legal™ Advocate Pro', priceMonthly: 999, priceYearly: 9990, badge: 'ADVOCATE PRO', isPopular: true, isActive: true },
-          { _id: 'advocate_premium', planId: 'advocate_premium', planName: 'AI Legal™ Advocate Premium', priceMonthly: 2399, priceYearly: 23990, badge: 'ADVOCATE PREMIUM', isActive: true },
-          { _id: 'student_basic', planId: 'student_basic', planName: 'AI Legal™ Student Basic', priceMonthly: 499, priceYearly: 4990, badge: 'STUDENT BASIC', isActive: true },
-          { _id: 'student_pro', planId: 'student_pro', planName: 'AI Legal™ Student Pro', priceMonthly: 999, priceYearly: 9990, badge: 'STUDENT PRO', isPopular: true, isActive: true },
-          { _id: 'student_premium', planId: 'student_premium', planName: 'AI Legal™ Student Premium', priceMonthly: 2399, priceYearly: 23990, badge: 'STUDENT PREMIUM', isActive: true },
-          { _id: 'firm_basic', planId: 'firm_basic', planName: 'AI Legal™ Firm Basic', priceMonthly: 1499, priceYearly: 14990, badge: 'FIRM BASIC', isActive: true },
-          { _id: 'firm_pro', planId: 'firm_pro', planName: 'AI Legal™ Firm Pro', priceMonthly: 2999, priceYearly: 29990, badge: 'FIRM PRO', isPopular: true, isActive: true },
-          { _id: 'firm_premium', planId: 'firm_premium', planName: 'AI Legal™ Firm Premium', priceMonthly: 4999, priceYearly: 49990, badge: 'FIRM PREMIUM', isActive: true },
-          { _id: 'combo_student_advocate', planId: 'combo_student_advocate', planName: 'Student + Advocate Combo', priceMonthly: 1199, priceYearly: 11990, badge: 'STUDENT + ADVOCATE', isActive: true },
-          { _id: 'combo_advocate_firm', planId: 'combo_advocate_firm', planName: 'Advocate + Law Firm Combo', priceMonthly: 1499, priceYearly: 14990, badge: 'ADVOCATE + FIRM', isPopular: true, isActive: true },
-          { _id: 'combo_all_access', planId: 'combo_all_access', planName: 'All Access Ecosystem Pass', priceMonthly: 2399, priceYearly: 23990, badge: 'ALL ACCESS', isActive: true },
-          { _id: 'FREE', planId: 'FREE', planName: 'AI Legal™ Free Plan', priceMonthly: 0, priceYearly: 0, badge: 'FREE TIER', isActive: true }
-        ]);
-      }
-
-      // Bugs List
-      const bugsFetched = bugsRes?.bugs || bugsRes?.list || bugsRes?.data?.bugs || bugsRes?.data || (Array.isArray(bugsRes) ? bugsRes : null);
-      if (Array.isArray(bugsFetched) && bugsFetched.length > 0) {
-        setBugsList(bugsFetched);
-      } else {
-        setBugsList([
-          { _id: 'b1', platform: 'Android', severity: 'Critical', status: 'in_progress', title: 'High Court Case Precedent Search Timeout', description: 'Queries over 500 pages of judgment text experience HTTP 504 gateway timeouts.', device: 'Samsung S24 Ultra', osVersion: 'Android 14', email: 'anmol.advocate@gmail.com', developerAssigned: 'Cloud Infra Team', internalNotes: 'Increasing timeout window to 45s on API Gateway.' },
-          { _id: 'b2', platform: 'Web', severity: 'Major', status: 'open', title: 'PDF OCR Alignment in Vernacular Hindi Drafts', description: 'Hindi font glyphs occasionally misalign during PDF generation.', device: 'MacBook Pro M3', osVersion: 'macOS 15', email: 'priya.mehta@juris.in', developerAssigned: 'Frontend Lead' },
-          { _id: 'b3', platform: 'iOS', severity: 'Minor', status: 'resolved', title: 'Payment Receipt PDF Download Retry Error', description: 'Retrying receipt download after network drop fails silently.', device: 'iPhone 15 Pro', osVersion: 'iOS 17.5', email: 'vikram.singh@highcourt.in', developerAssigned: 'Mobile Team' }
-        ]);
-      }
-
-      // Feature Requests List
-      const featuresFetched = featuresRes?.features || featuresRes?.list || featuresRes?.data?.features || featuresRes?.data || (Array.isArray(featuresRes) ? featuresRes : null);
-      if (Array.isArray(featuresFetched) && featuresFetched.length > 0) {
-        setFeaturesList(featuresFetched);
-      } else {
-        setFeaturesList([
-          { _id: 'fr1', category: 'Court AI Assistant', priority: 'Critical', status: 'Planned', title: 'Supreme Court AI Case Outcome Predictor', description: 'Enable multi-bench historical analytics for landmark Constitutional bench judgements.', email: 'anmol.advocate@gmail.com', userPlan: 'Advocate Pro', developerAssigned: 'Vikram AI Dev', reply: 'Scheduled for v3.2 release cycle.' },
-          { _id: 'fr2', category: 'Document Intelligence', priority: 'Normal', status: 'In Progress', title: 'Bulk PDF Vernacular OCR (Hindi, Marathi, Tamil)', description: 'Support batch processing of scanned court orders in 12 regional languages.', email: 'aditi@uwo24.com', userPlan: 'Enterprise Pro', developerAssigned: 'OCR Engineering Team' },
-          { _id: 'fr3', category: 'Drafting Engine', priority: 'Normal', status: 'Completed', title: 'Custom Law Firm Letterhead Watermark Engine', description: 'Allow advocates to embed custom PNG logos on generated Legal Notices.', email: 'rajesh.law@outlook.com', userPlan: 'Firm Pro', reply: 'Feature live in production!' }
-        ]);
-      }
-
-      // Coupons List
-      const couponsFetched = couponsRes?.coupons || couponsRes?.list || couponsRes?.data?.coupons || couponsRes?.data || (Array.isArray(couponsRes) ? couponsRes : null);
-      if (Array.isArray(couponsFetched) && couponsFetched.length > 0) {
-        setCouponsList(couponsFetched);
-        if (couponsRes?.stats) setCouponStats(couponsRes.stats);
-      } else {
-        setCouponsList([
-          { _id: 'c1', code: 'ADVOCATE50', discountType: 'percentage', discountValue: 50, applicablePlans: ['ALL'], billingCycles: ['ALL'], usedCount: 14, usageLimit: 100, expiryDate: '2026-12-31', status: 'active', computedStatus: 'ACTIVE' },
-          { _id: 'c2', code: 'WELCOME100', discountType: 'fixed', discountValue: 100, applicablePlans: ['advocate_pro'], billingCycles: ['monthly'], usedCount: 42, usageLimit: 500, expiryDate: '2026-09-30', status: 'active', computedStatus: 'ACTIVE' },
-          { _id: 'c3', code: 'STUDENT20', discountType: 'percentage', discountValue: 20, applicablePlans: ['student_basic', 'student_pro'], billingCycles: ['ALL'], usedCount: 8, usageLimit: 50, expiryDate: '2026-08-01', status: 'inactive', computedStatus: 'EXPIRED' }
-        ]);
-      }
-
-      if (settingsRes?.settings) setAdminSettings(prev => ({ ...prev, ...settingsRes.settings }));
+      if (Array.isArray(usersRes.data?.list)) setUsersList(usersRes.data.list);
+      if (Array.isArray(billingRes.data?.list)) setPaymentsList(billingRes.data.list);
+      if (Array.isArray(plansRes.data?.plans)) setPlansList(plansRes.data.plans);
+      if (Array.isArray(couponsRes.data?.coupons)) setCouponsList(couponsRes.data.coupons);
+      if (typeof couponsRes.data?.couponFeatureEnabled === 'boolean') setCouponFeatureEnabled(couponsRes.data.couponFeatureEnabled);
+      if (couponsRes.data?.stats) setCouponStats(couponsRes.data.stats);
+      if (Array.isArray(featuresRes.data?.list)) setFeaturesList(featuresRes.data.list);
+      if (Array.isArray(bugsRes.data?.list)) setBugsList(bugsRes.data.list);
+      if (Array.isArray(complaintsRes.data?.data)) setComplaintsList(complaintsRes.data.data);
+      if (Array.isArray(crashesRes.data?.crashes)) setCrashesList(crashesRes.data.crashes);
+      if (crashesRes.data?.stats) setCrashStats(crashesRes.data.stats);
+      if (settingsRes.data?.settings) setAdminSettings(prev => ({ ...prev, ...settingsRes.data.settings }));
     } catch (err) {
-      console.error('Failed to load admin data:', err);
+      console.error('Failed to load Admin Dashboard data:', err);
+      toast.error('Failed to refresh Admin Portal telemetry.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -333,2669 +325,3379 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    if (!isAdmin) return;
     loadData();
-    const interval = setInterval(() => loadData(true), 30000);
+    const interval = setInterval(() => loadData(true), 20000);
     return () => clearInterval(interval);
   }, [isAdmin]);
 
-  if (!isAdmin) return null;
-
-  // Filtered Users
+  // --- Filtered Users List ---
   const filteredUsers = useMemo(() => {
     return usersList.filter(u => {
-      const matchesSearch = !userSearch || 
-        u.name?.toLowerCase().includes(userSearch.toLowerCase()) || 
-        u.email?.toLowerCase().includes(userSearch.toLowerCase());
-      
-      const planName = (u.currentPlan || u.subscription?.plan || 'FREE').toLowerCase();
-      const isSuspended = u.isBlocked || u.isSuspended;
-      const matchesFilter = 
-        userFilter === 'all' ? true :
-        userFilter === 'free' ? (planName.includes('free') || planName === 'free') :
-        userFilter === 'premium' ? (!planName.includes('free') && planName !== 'free') :
-        userFilter === 'suspended' ? isSuspended : true;
+      const q = userSearch.toLowerCase().trim();
+      const nameMatch = (u.name || u.displayName || '').toLowerCase().includes(q);
+      const emailMatch = (u.email || '').toLowerCase().includes(q);
+      const phoneMatch = (u.phone || '').includes(q);
+      const jurisdictionMatch = (u.jurisdiction || u.country || '').toLowerCase().includes(q);
+      const idMatch = (u._id || '').toLowerCase().includes(q);
+      const searchMatch = !q || nameMatch || emailMatch || phoneMatch || jurisdictionMatch || idMatch;
 
-      return matchesSearch && matchesFilter;
+      const plan = String(u.subscription?.plan || u.currentPlan || 'FREE').toUpperCase();
+      const isBlocked = u.isBlocked === true || u.status === 'Suspended';
+      let filterMatch = true;
+      if (userFilter === 'free') filterMatch = plan === 'FREE' || plan.includes('BASIC');
+      if (userFilter === 'premium') filterMatch = plan !== 'FREE' && !plan.includes('BASIC');
+      if (userFilter === 'suspended') filterMatch = isBlocked;
+
+      return searchMatch && filterMatch;
     });
   }, [usersList, userSearch, userFilter]);
 
-  // Filtered Billing
-  const filteredBilling = useMemo(() => {
+  // --- Live Billing KPIs & Filtered Payments List ---
+  const liveBillingStats = useMemo(() => {
+    let totalRevenue = 0;
+    let successCount = 0;
+    let pendingCount = 0;
+    let refundedCount = 0;
+    let failedCount = 0;
+
+    paymentsList.forEach(p => {
+      const gw = String(p.gateway || '').toLowerCase();
+      const isRazorpay = gw.includes('razorpay');
+      const st = String(p.status || 'success').toLowerCase();
+      const amt = Number(p.amount || 0);
+
+      if (isRazorpay && (st === 'success' || st === 'paid')) {
+        totalRevenue += amt;
+        successCount += 1;
+      } else if (st === 'pending') {
+        pendingCount += 1;
+      } else if (st === 'refunded' || st === 'reversed') {
+        refundedCount += 1;
+      } else if (st === 'failed' || st === 'rejected') {
+        failedCount += 1;
+      }
+    });
+
+    return {
+      totalRevenue,
+      successCount,
+      pendingCount,
+      refundedCount,
+      failedCount,
+      totalCount: paymentsList.length
+    };
+  }, [paymentsList]);
+
+  const filteredPayments = useMemo(() => {
     return paymentsList.filter(p => {
-      const uName = typeof p.userId === 'object' ? p.userId?.name : (p.userName || '');
-      const uEmail = typeof p.userId === 'object' ? p.userId?.email : (p.userEmail || '');
-      const pName = typeof p.planId === 'object' ? p.planId?.planName : (p.planName || p.planId || '');
-      const txnId = p.transactionId || p.paymentId || p.invoiceNumber || p._id || '';
+      const q = billingSearch.toLowerCase().trim();
+      const userName = (p.userName || p.userId?.name || '').toLowerCase();
+      const userEmail = (p.userEmail || p.userId?.email || '').toLowerCase();
+      const txnId = (p.transactionId || p._id || '').toLowerCase();
+      const invoiceNo = (p.invoiceNumber || p._id || '').toLowerCase();
 
-      const searchTarget = `${uName} ${uEmail} ${pName} ${txnId}`.toLowerCase();
-      const matchesSearch = !billingSearch || searchTarget.includes(billingSearch.toLowerCase());
-      
-      const matchesFilter = 
-        billingFilter === 'all' ? true :
-        (p.status || '').toLowerCase() === billingFilter.toLowerCase();
+      const searchMatch = !q || userName.includes(q) || userEmail.includes(q) || txnId.includes(q) || invoiceNo.includes(q);
 
-      return matchesSearch && matchesFilter;
+      const st = String(p.status || 'success').toLowerCase();
+      let filterMatch = true;
+      if (billingFilter === 'success') filterMatch = st === 'success' || st === 'paid';
+      if (billingFilter === 'pending') filterMatch = st === 'pending';
+      if (billingFilter === 'refunded') filterMatch = st === 'refunded' || st === 'reversed';
+      if (billingFilter === 'failed') filterMatch = st === 'failed' || st === 'rejected';
+
+      return searchMatch && filterMatch;
     });
   }, [paymentsList, billingSearch, billingFilter]);
 
-  // Handlers for User Actions
-  const handleToggleSuspend = async (userId) => {
-    try {
-      const res = await apiAdminFetch(`/admin/users/${userId}/toggle-suspend`, { method: 'POST' });
-      if (res.success) {
-        toast.success(res.message || 'User status updated');
-        loadData(true);
-      } else {
-        toast.error(res.message || 'Operation failed');
-      }
-    } catch (e) {
-      toast.error('Failed to toggle suspend status');
+  // --- Filtered Feature Requests List (Backend + Enterprise Custom Proposals) ---
+  const filteredFeatures = useMemo(() => {
+    let combined = [...featuresList];
+    const savedCustom = localStorage.getItem('adminFeatureRequests');
+    if (savedCustom) {
+      try {
+        const parsed = JSON.parse(savedCustom);
+        parsed.forEach(cReq => {
+          if (!combined.some(f => f._id === cReq._id)) {
+            combined.unshift(cReq);
+          }
+        });
+      } catch (e) {}
     }
+
+    return combined.filter(f => {
+      const q = featureSearch.toLowerCase().trim();
+      const titleMatch = (f.title || '').toLowerCase().includes(q);
+      const descMatch = (f.description || '').toLowerCase().includes(q);
+      const categoryMatch = (f.category || '').toLowerCase().includes(q);
+      const emailMatch = (f.email || f.userEmail || '').toLowerCase().includes(q);
+      const priorityMatch = (f.priority || '').toLowerCase().includes(q);
+      const statusMatch = (f.status || '').toLowerCase().includes(q);
+      const devMatch = (f.developerAssigned || '').toLowerCase().includes(q);
+
+      const searchMatch = !q || titleMatch || descMatch || categoryMatch || emailMatch || priorityMatch || statusMatch || devMatch;
+
+      const currentStatus = String(f.status || 'Pending').toLowerCase();
+      const targetFilter = String(featureFilterState).toLowerCase();
+
+      const filterMatch = featureFilterState === 'all' || currentStatus === targetFilter;
+
+      return searchMatch && filterMatch;
+    });
+  }, [featuresList, featureSearch, featureFilterState]);
+
+  // --- Billing CSV Export & Financial Handlers ---
+  const handleExportCSV = () => {
+    if (!paymentsList || paymentsList.length === 0) {
+      toast.error('No payment transactions to export.');
+      return;
+    }
+
+    const headers = ['Transaction ID', 'Invoice Number', 'User Name', 'Email', 'Amount (INR)', 'GST (18%)', 'Gateway', 'Plan', 'Status', 'Date'];
+    const rows = filteredPayments.map(p => {
+      const amt = Number(p.amount || 0);
+      const gst = p.gst ? Number(p.gst).toFixed(2) : (amt * 0.18).toFixed(2);
+      const planName = typeof p.planId === 'object' ? (p.planId?.planName || p.planId?._id) : (p.planId || 'advocate_basic');
+      return [
+        `"${p.transactionId || p._id || ''}"`,
+        `"${p.invoiceNumber || p._id || ''}"`,
+        `"${p.userName || p.userId?.name || 'Advocate Customer'}"`,
+        `"${p.userEmail || p.userId?.email || ''}"`,
+        amt,
+        gst,
+        `"${p.gateway || 'Razorpay'}"`,
+        `"${planName}"`,
+        `"${(p.status || 'SUCCESS').toUpperCase()}"`,
+        `"${p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ''}"`
+      ].join(',');
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'ai-legal-billing-transactions.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Billing transactions exported to CSV.');
   };
 
-  const handleAdjustCredits = async () => {
-    if (!creditModalUser) return;
+  const handleRefundPayment = async (paymentId) => {
+    if (!paymentId) return;
     try {
-      const res = await apiAdminFetch(`/admin/users/${creditModalUser._id}/adjust-credits`, {
-        method: 'POST',
-        body: JSON.stringify({ amount: parseInt(creditAmount) || 50, actionType: 'add' })
+      const token = user?.token || localStorage.getItem('token');
+      await axios.post(`${API}/admin/billing/${paymentId}/refund`, {}, { headers: { Authorization: `Bearer ${token}` } }).catch(async () => {
+        // Fallback endpoint
+        await axios.put(`${API}/admin/billing/${paymentId}`, { status: 'refunded' }, { headers: { Authorization: `Bearer ${token}` } });
       });
-      if (res.success) {
-        toast.success(`Added ${creditAmount} credits to ${creditModalUser.name}`);
-        setCreditModalUser(null);
-        loadData(true);
-      } else {
-        toast.error(res.message || 'Failed to adjust credits');
-      }
-    } catch (e) {
-      toast.error('Credit adjustment failed');
+      toast.success('Payment successfully refunded & reversed.');
+      setRefundConfirmModal({ isOpen: false, payment: null });
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to refund payment transaction.');
     }
   };
 
-  const handleChangePlan = async () => {
-    if (!planModalUser) return;
+  const handleMarkPaymentPaid = async (paymentId) => {
+    if (!paymentId) return;
     try {
-      const res = await apiAdminFetch(`/admin/users/${planModalUser._id}/change-plan`, {
-        method: 'POST',
-        body: JSON.stringify({ planId: newPlanId })
+      const token = user?.token || localStorage.getItem('token');
+      await axios.post(`${API}/admin/billing/${paymentId}/mark-paid`, {}, { headers: { Authorization: `Bearer ${token}` } }).catch(async () => {
+        // Fallback endpoint
+        await axios.put(`${API}/admin/billing/${paymentId}`, { status: 'success' }, { headers: { Authorization: `Bearer ${token}` } });
       });
-      if (res.success) {
-        toast.success(`Plan updated for ${planModalUser.name}`);
-        setPlanModalUser(null);
-        loadData(true);
-      } else {
-        toast.error(res.message || 'Failed to update plan');
-      }
-    } catch (e) {
-      toast.error('Plan update failed');
+      toast.success('Transaction marked as PAID.');
+      setMarkPaidConfirmModal({ isOpen: false, payment: null });
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to update payment status.');
     }
   };
 
-  const handleDeleteUser = async (userId, name) => {
-    if (!window.confirm(`Are you sure you want to delete user ${name}? This action cannot be undone.`)) return;
-    try {
-      const res = await apiAdminFetch(`/admin/users/${userId}`, { method: 'DELETE' });
-      if (res.success) {
-        toast.success(`User ${name} deleted successfully`);
-        loadData(true);
-      } else {
-        toast.error(res.message || 'Failed to delete user');
-      }
-    } catch (e) {
-      toast.error('User deletion error');
-    }
-  };
-
-  // Plan Management Handlers
-  const handleOpenCreatePlan = () => {
+  // --- PLAN CRUD ACTIONS ---
+  const handleOpenPlanCreator = () => {
     setPlanForm({
-      planId: `custom_plan_${Date.now().toString().slice(-4)}`,
+      planId: '',
       planName: '',
-      priceMonthly: 499,
-      priceYearly: 4990,
-      credits: 100,
-      badge: 'CUSTOM',
+      priceMonthly: '0',
+      priceYearly: '0',
+      credits: '100',
+      badge: 'PRO',
+      features: '',
       isPopular: false,
-      isActive: true,
-      featuresText: 'Active Cases: 50\nStorage: 5 GB\nDraft Maker: 20 / month\nCourt Prep Workspace: 10 dossiers / month\nPrecedent Search: Unlimited'
+      isActive: true
     });
-    setIsCreatingPlanModal(true);
-    setEditingPlanModal(null);
+    setPlanModal({ isOpen: true, isEdit: false, planData: null });
   };
 
-  const handleOpenEditPlan = (plan) => {
-    const featText = Array.isArray(plan.features) ? plan.features.join('\n') : (plan.features || '');
+  const handleOpenPlanEdit = (plan) => {
+    if (!plan) return;
+    const featStr = Array.isArray(plan.features) ? plan.features.join('\n') : (plan.features || '');
     setPlanForm({
-      planId: plan.planId || plan._id,
+      planId: plan.planId || plan._id || '',
       planName: plan.planName || plan.name || '',
-      priceMonthly: plan.priceMonthly !== undefined ? plan.priceMonthly : (plan.monthly || 499),
-      priceYearly: plan.priceYearly !== undefined ? plan.priceYearly : (plan.yearly || 4990),
-      credits: plan.credits || 100,
-      badge: plan.badge || '',
+      priceMonthly: String(plan.priceMonthly ?? 0),
+      priceYearly: String(plan.priceYearly ?? 0),
+      credits: String(plan.credits ?? 100),
+      badge: plan.badge || 'PRO',
+      features: featStr,
       isPopular: !!plan.isPopular,
-      isActive: plan.isActive !== false,
-      featuresText: featText
+      isActive: plan.isActive !== false
     });
-    setEditingPlanModal(plan);
-    setIsCreatingPlanModal(false);
+    setPlanModal({ isOpen: true, isEdit: true, planData: plan });
   };
 
-  const handleSavePlanSubmit = async (e) => {
+  const handlePlanSaveSubmit = async (e) => {
     if (e) e.preventDefault();
+    if (!planForm.planName.trim()) {
+      toast.error('Plan display name is required.');
+      return;
+    }
+
     try {
-      const featuresArray = planForm.featuresText
+      const token = user?.token || localStorage.getItem('token');
+      const featureList = planForm.features
         .split('\n')
-        .map(f => f.trim())
+        .map(f => f.replace(/^✓\s*/, '').trim())
         .filter(Boolean);
 
-      const targetPlanId = planForm.planId.trim() || `plan_${Date.now()}`;
       const payload = {
-        planId: targetPlanId,
-        planName: planForm.planName || 'AI Legal Plan',
+        planId: planForm.planId || planForm.planName.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+        planName: planForm.planName.trim(),
+        name: planForm.planName.trim(),
         priceMonthly: Number(planForm.priceMonthly) || 0,
         priceYearly: Number(planForm.priceYearly) || 0,
         credits: Number(planForm.credits) || 0,
-        badge: planForm.badge,
+        badge: planForm.badge ? planForm.badge.toUpperCase().trim() : 'PRO',
+        features: featureList,
         isPopular: planForm.isPopular,
-        isActive: planForm.isActive,
-        features: featuresArray
+        isActive: planForm.isActive
       };
 
-      const endpoint = isCreatingPlanModal ? '/admin/plans' : `/admin/plans/${targetPlanId}`;
-      const method = isCreatingPlanModal ? 'POST' : 'PUT';
-
-      const res = await apiAdminFetch(endpoint, {
-        method,
-        body: JSON.stringify(payload)
-      });
-
-      if (res?.success || res?.plan) {
-        const savedPlan = res.plan || payload;
-        toast.success(isCreatingPlanModal ? 'Plan created successfully' : 'Plan updated successfully');
-        
-        // Update plansList state dynamically
-        setPlansList(prev => {
-          const exists = prev.some(p => (p.planId || p._id) === targetPlanId);
-          if (exists) {
-            return prev.map(p => (p.planId || p._id) === targetPlanId ? { ...p, ...savedPlan } : p);
-          }
-          return [savedPlan, ...prev];
+      if (planModal.isEdit && planModal.planData?._id) {
+        await axios.put(`${API}/admin/plans/${planModal.planData._id}`, payload, { headers: { Authorization: `Bearer ${token}` } }).catch(async () => {
+          // Fallback endpoint
+          await axios.post(`${API}/admin/plans`, payload, { headers: { Authorization: `Bearer ${token}` } });
         });
-
-        setEditingPlanModal(null);
-        setIsCreatingPlanModal(false);
+        toast.success(`Plan "${payload.planName}" updated successfully.`);
       } else {
-        toast.error(res?.message || 'Failed to save plan changes');
+        await axios.post(`${API}/admin/plans`, payload, { headers: { Authorization: `Bearer ${token}` } });
+        toast.success(`New plan "${payload.planName}" created successfully.`);
       }
+
+      setPlanModal({ isOpen: false, isEdit: false, planData: null });
+      loadData(true);
     } catch (err) {
-      toast.error('Error saving plan: ' + err.message);
+      toast.error('Failed to save subscription plan parameters.');
     }
   };
 
-  const handleDeletePlanAction = async (planId) => {
-    if (!window.confirm(`Are you sure you want to delete the plan "${planId}"?`)) return;
+  const handleDeletePlanSubmit = async (planId) => {
+    if (!planId) return;
     try {
-      const res = await apiAdminFetch(`/admin/plans/${planId}`, { method: 'DELETE' });
-      if (res?.success) {
-        toast.success('Plan deleted successfully');
-        setPlansList(prev => prev.filter(p => (p.planId || p._id) !== planId));
-      } else {
-        toast.error(res?.message || 'Failed to delete plan');
-      }
+      const token = user?.token || localStorage.getItem('token');
+      await axios.delete(`${API}/admin/plans/${planId}`, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success('Subscription plan deleted.');
+      setPlanDeleteConfirmModal({ isOpen: false, plan: null });
+      loadData(true);
     } catch (err) {
-      toast.error('Failed to delete plan');
+      toast.error('Failed to delete subscription plan.');
     }
   };
 
-  // ── Requests & Bugs Handlers ──
-  const handleUpdateFeatureStatus = async (featureId, status, reply) => {
+  // --- COUPON CRUD & TELEMETRY ACTIONS ---
+  const handleToggleCouponFeature = async () => {
     try {
-      const res = await apiAdminFetch(`/admin/features/${featureId}`, {
-        method: 'PUT',
-        body: JSON.stringify({ status, reply })
-      });
-      if (res?.success || res?.feature) {
-        toast.success('Feature request updated');
-        setFeaturesList(prev => prev.map(f => f._id === featureId ? { ...f, status, reply } : f));
-        setSelectedFeatureModal(null);
-      } else {
-        toast.error(res?.message || 'Update failed');
-      }
-    } catch (e) {
-      toast.error('Failed to update feature request');
+      const token = user?.token || localStorage.getItem('token');
+      const nextState = !couponFeatureEnabled;
+      await axios.patch(`${API}/admin/coupons/toggle-feature`, { enabled: nextState }, { headers: { Authorization: `Bearer ${token}` } });
+      setCouponFeatureEnabled(nextState);
+      toast.success(`Coupon discount feature is now ${nextState ? 'ACTIVE' : 'INACTIVE'}.`);
+    } catch (err) {
+      toast.error('Failed to toggle global coupon status.');
     }
   };
 
-  const handleDeleteFeature = async (featureId) => {
-    if (!window.confirm('Delete this feature request?')) return;
-    try {
-      const res = await apiAdminFetch(`/admin/features/${featureId}`, { method: 'DELETE' });
-      if (res?.success) {
-        toast.success('Feature request deleted');
-        setFeaturesList(prev => prev.filter(f => f._id !== featureId));
-      }
-    } catch (e) {
-      toast.error('Failed to delete feature request');
-    }
+  const handleCopyCouponCode = (code) => {
+    if (!code) return;
+    navigator.clipboard.writeText(code);
+    setCopiedCouponCode(code);
+    toast.success(`Coupon "${code}" copied to clipboard.`);
+    setTimeout(() => setCopiedCouponCode(null), 2000);
   };
 
-  const handleUpdateBugStatus = async (bugId, status, internalNotes) => {
-    try {
-      const res = await apiAdminFetch(`/admin/bugs/${bugId}`, {
-        method: 'PUT',
-        body: JSON.stringify({ status, internalNotes })
-      });
-      if (res?.success || res?.bug) {
-        toast.success('Bug report updated');
-        setBugsList(prev => prev.map(b => b._id === bugId ? { ...b, status, internalNotes } : b));
-        setSelectedBugModal(null);
-      } else {
-        toast.error(res?.message || 'Update failed');
-      }
-    } catch (e) {
-      toast.error('Failed to update bug report');
-    }
-  };
+  const handleOpenCouponCreator = () => {
+    const today = new Date().toISOString().split('T')[0];
+    const nextMonth = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
 
-  const handleDeleteBug = async (bugId) => {
-    if (!window.confirm('Delete this bug report?')) return;
-    try {
-      const res = await apiAdminFetch(`/admin/bugs/${bugId}`, { method: 'DELETE' });
-      if (res?.success) {
-        toast.success('Bug report deleted');
-        setBugsList(prev => prev.filter(b => b._id !== bugId));
-      }
-    } catch (e) {
-      toast.error('Failed to delete bug report');
-    }
-  };
-
-  // ── Jurisdiction Testing Handlers ──
-  const handleApplyOverride = async () => {
-    if (!jSelectedUser) return toast.error('Please search and select a user first');
-    setJSaving(true);
-    try {
-      const res = await apiAdminFetch('/admin/jurisdiction-override', {
-        method: 'POST',
-        body: JSON.stringify({
-          userId: jSelectedUser._id,
-          country: jTargetCountry.name,
-          countryCode: jTargetCountry.code,
-          overrideType: jOverrideType
-        })
-      });
-      if (res?.success) {
-        toast.success(`Applied ${jOverrideType} Jurisdiction Override: ${jTargetCountry.flag} ${jTargetCountry.name}`);
-        setJSelectedUser(prev => prev ? { ...prev, country: jTargetCountry.name, jurisdiction: jTargetCountry.name } : null);
-      } else {
-        toast.error(res?.message || 'Failed to apply jurisdiction override');
-      }
-    } catch (e) {
-      toast.error('Jurisdiction override error');
-    } finally {
-      setJSaving(false);
-    }
-  };
-
-  const handleRunAITest = async () => {
-    if (!jSelectedUser) return toast.error('Please search and select a user first');
-    if (!jTestQuery) return toast.error('Please enter a test prompt');
-    setJRunningTest(true);
-    setJTestResult('');
-    try {
-      const res = await apiAdminFetch('/admin/jurisdiction-override/test', {
-        method: 'POST',
-        body: JSON.stringify({ userId: jSelectedUser._id, prompt: jTestQuery })
-      });
-      if (res?.success || res?.answer) {
-        setJTestResult(res.answer || res.message || 'AI RAG test passed cleanly.');
-        toast.success('AI Prompt Injection test complete!');
-      } else {
-        toast.error(res?.message || 'AI test failed');
-      }
-    } catch (e) {
-      toast.error('AI test execution failed');
-    } finally {
-      setJRunningTest(false);
-    }
-  };
-
-  const handleResetOverride = async () => {
-    if (!jSelectedUser) return;
-    try {
-      const res = await apiAdminFetch('/admin/jurisdiction-override/reset', {
-        method: 'POST',
-        body: JSON.stringify({ userId: jSelectedUser._id })
-      });
-      if (res?.success) {
-        toast.success('Jurisdiction override reset to user default');
-        setJTestResult('');
-      }
-    } catch (e) {
-      toast.error('Reset failed');
-    }
-  };
-
-  // ── Settings Handlers ──
-  const handleUpdateAdminSettings = async (patch) => {
-    try {
-      const updated = { ...adminSettings, ...patch };
-      setAdminSettings(updated);
-      const res = await apiAdminFetch('/admin/settings', {
-        method: 'PUT',
-        body: JSON.stringify(patch)
-      });
-      if (res?.success) {
-        toast.success('System settings updated');
-      }
-    } catch (e) {
-      toast.error('Failed to update settings');
-    }
-  };
-
-  // ── Coupons Handlers ──
-  const handleOpenCreateCoupon = () => {
     setCouponForm({
       code: '',
       discountType: 'percentage',
-      discountValue: 20,
+      discountValue: '10',
       applicablePlans: ['ALL'],
       billingCycles: ['ALL'],
-      startDate: new Date().toISOString().slice(0, 10),
-      expiryDate: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().slice(0, 10),
-      usageLimit: 100,
-      perUserLimit: 1,
-      minimumPurchase: 0,
-      maximumDiscount: 500,
+      startDate: today,
+      expiryDate: nextMonth,
+      usageLimit: '',
+      perUserLimit: '1',
+      minimumPurchase: '',
+      maximumDiscount: '',
       status: 'active'
     });
-    setIsCreatingCouponModal(true);
-    setEditingCouponModal(null);
+    setCouponModal({ isOpen: true, isEdit: false, couponData: null });
   };
 
-  const handleOpenEditCoupon = (c) => {
+  const handleOpenCouponEdit = (coupon) => {
+    if (!coupon) return;
     setCouponForm({
-      code: c.code || '',
-      discountType: c.discountType || 'percentage',
-      discountValue: c.discountValue || 20,
-      applicablePlans: c.applicablePlans || ['ALL'],
-      billingCycles: c.billingCycles || ['ALL'],
-      startDate: c.startDate ? new Date(c.startDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
-      expiryDate: c.expiryDate ? new Date(c.expiryDate).toISOString().slice(0, 10) : new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().slice(0, 10),
-      usageLimit: c.usageLimit !== null && c.usageLimit !== undefined ? c.usageLimit : '',
-      perUserLimit: c.perUserLimit || 1,
-      minimumPurchase: c.minimumPurchase || 0,
-      maximumDiscount: c.maximumDiscount || '',
-      status: c.status || 'active'
+      code: coupon.code || '',
+      discountType: coupon.discountType || 'percentage',
+      discountValue: String(coupon.discountValue ?? 10),
+      applicablePlans: Array.isArray(coupon.applicablePlans) && coupon.applicablePlans.length > 0 ? coupon.applicablePlans : ['ALL'],
+      billingCycles: Array.isArray(coupon.billingCycles) && coupon.billingCycles.length > 0 ? coupon.billingCycles : ['ALL'],
+      startDate: coupon.startDate ? new Date(coupon.startDate).toISOString().split('T')[0] : '',
+      expiryDate: coupon.expiryDate ? new Date(coupon.expiryDate).toISOString().split('T')[0] : '',
+      usageLimit: coupon.usageLimit !== null && coupon.usageLimit !== undefined ? String(coupon.usageLimit) : '',
+      perUserLimit: String(coupon.perUserLimit ?? 1),
+      minimumPurchase: coupon.minimumPurchase ? String(coupon.minimumPurchase) : '',
+      maximumDiscount: coupon.maximumDiscount ? String(coupon.maximumDiscount) : '',
+      status: coupon.status || 'active'
     });
-    setEditingCouponModal(c);
-    setIsCreatingCouponModal(false);
+    setCouponModal({ isOpen: true, isEdit: true, couponData: coupon });
   };
 
   const handleSaveCouponSubmit = async (e) => {
-    e.preventDefault();
-    if (!couponForm.code) return toast.error('Coupon code is required');
-    if (!couponForm.discountValue) return toast.error('Discount value is required');
+    if (e) e.preventDefault();
+    if (!couponForm.code.trim()) {
+      toast.error('Coupon code is required.');
+      return;
+    }
+    if (!couponForm.expiryDate) {
+      toast.error('Expiry date is required.');
+      return;
+    }
 
     try {
+      const token = user?.token || localStorage.getItem('token');
       const payload = {
-        code: couponForm.code.trim().toUpperCase(),
+        code: couponForm.code.toUpperCase().trim(),
         discountType: couponForm.discountType,
         discountValue: Number(couponForm.discountValue) || 0,
         applicablePlans: couponForm.applicablePlans,
         billingCycles: couponForm.billingCycles,
-        startDate: couponForm.startDate,
+        startDate: couponForm.startDate || new Date().toISOString(),
         expiryDate: couponForm.expiryDate,
-        usageLimit: couponForm.usageLimit !== '' ? Number(couponForm.usageLimit) : null,
+        usageLimit: couponForm.usageLimit ? Number(couponForm.usageLimit) : null,
         perUserLimit: Number(couponForm.perUserLimit) || 1,
-        minimumPurchase: Number(couponForm.minimumPurchase) || 0,
-        maximumDiscount: couponForm.maximumDiscount !== '' ? Number(couponForm.maximumDiscount) : null,
+        minimumPurchase: couponForm.minimumPurchase ? Number(couponForm.minimumPurchase) : 0,
+        maximumDiscount: couponForm.maximumDiscount ? Number(couponForm.maximumDiscount) : null,
         status: couponForm.status
       };
 
-      const targetId = editingCouponModal?._id;
-      const endpoint = isCreatingCouponModal ? '/admin/coupons' : `/admin/coupons/${targetId}`;
-      const method = isCreatingCouponModal ? 'POST' : 'PUT';
-
-      const res = await apiAdminFetch(endpoint, {
-        method,
-        body: JSON.stringify(payload)
-      });
-
-      if (res?.success || res?.coupon) {
-        const savedCoupon = res.coupon || payload;
-        toast.success(isCreatingCouponModal ? 'Coupon created successfully 🎉' : 'Coupon updated successfully');
-        
-        setCouponsList(prev => {
-          const exists = prev.some(c => c._id === targetId || c.code === savedCoupon.code);
-          if (exists) {
-            return prev.map(c => (c._id === targetId || c.code === savedCoupon.code) ? { ...c, ...savedCoupon } : c);
-          }
-          return [savedCoupon, ...prev];
-        });
-
-        setEditingCouponModal(null);
-        setIsCreatingCouponModal(false);
+      if (couponModal.isEdit && couponModal.couponData?._id) {
+        await axios.put(`${API}/admin/coupons/${couponModal.couponData._id}`, payload, { headers: { Authorization: `Bearer ${token}` } });
+        toast.success(`Coupon "${payload.code}" updated successfully.`);
       } else {
-        toast.error(res?.message || 'Failed to save coupon');
+        await axios.post(`${API}/admin/coupons`, payload, { headers: { Authorization: `Bearer ${token}` } });
+        toast.success(`New coupon "${payload.code}" created successfully.`);
       }
-    } catch (err) {
-      toast.error('Error saving coupon: ' + err.message);
-    }
-  };
 
-  const handleToggleCouponStatus = async (couponId, currentStatus) => {
-    try {
-      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-      const res = await apiAdminFetch(`/admin/coupons/${couponId}/status`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status: newStatus })
-      });
-      if (res?.success) {
-        toast.success(`Coupon set to ${newStatus.toUpperCase()}`);
-        setCouponsList(prev => prev.map(c => c._id === couponId ? { ...c, status: newStatus, computedStatus: newStatus.toUpperCase() } : c));
-      }
-    } catch (err) {
-      toast.error('Failed to toggle coupon status');
-    }
-  };
-
-  const handleDeleteCoupon = async (couponId) => {
-    if (!window.confirm('Are you sure you want to delete this coupon?')) return;
-    try {
-      const res = await apiAdminFetch(`/admin/coupons/${couponId}`, { method: 'DELETE' });
-      if (res?.success) {
-        toast.success('Coupon deleted');
-        setCouponsList(prev => prev.filter(c => c._id !== couponId));
-      }
-    } catch (err) {
-      toast.error('Failed to delete coupon');
-    }
-  };
-
-  const handleToggleCouponFeature = async () => {
-    try {
-      const newStatus = !couponFeatureEnabled;
-      setCouponFeatureEnabled(newStatus);
-      const res = await apiAdminFetch('/admin/coupons/toggle-feature', {
-        method: 'PATCH',
-        body: JSON.stringify({ enabled: newStatus })
-      });
-      if (res?.success) {
-        toast.success(`Coupon feature is now ${newStatus ? 'ENABLED' : 'DISABLED'}`);
-      }
-    } catch (err) {
-      toast.error('Failed to toggle coupon feature');
-    }
-  };
-
-  const handleOpenUserDossier = (u) => {
-    setSelectedUser(u);
-    const activePlan = u.subscription?.plan || u.currentPlan || 'advocate_pro';
-    setSelectedUserPlan(activePlan);
-    setSelectedUserBillingCycle('monthly');
-    setSelectedUserCreditInput('');
-    setSelectedUserResetPassInput('');
-  };
-
-  const handleAssignPlanForSelectedUser = async () => {
-    if (!selectedUser || !selectedUserPlan) return;
-    try {
-      const res = await apiAdminFetch(`/admin/users/${selectedUser._id}/change-plan`, {
-        method: 'POST',
-        body: JSON.stringify({ planId: selectedUserPlan, type: selectedUserBillingCycle })
-      });
-      if (res.success || res.user) {
-        const assignedPlan = res.user?.subscription?.plan || res.user?.currentPlan || selectedUserPlan;
-        toast.success(res.message || `Assigned ${assignedPlan} plan to ${selectedUser.name}`);
-        const updatedUserObj = res.user 
-          ? { ...res.user, currentPlan: assignedPlan } 
-          : { ...selectedUser, currentPlan: assignedPlan, subscription: { ...(selectedUser.subscription || {}), plan: assignedPlan } };
-        setSelectedUser(updatedUserObj);
-        setUsersList(prev => prev.map(u => u._id === selectedUser._id ? updatedUserObj : u));
-        loadData(true);
-      } else {
-        toast.error(res.message || 'Failed to assign plan');
-      }
-    } catch (e) {
-      toast.error('Plan assignment error');
-    }
-  };
-
-  const handleExpireSelectedUserPlan = async () => {
-    if (!selectedUser) return;
-    if (!window.confirm(`Are you sure you want to expire the active plan for ${selectedUser.name}?`)) return;
-    try {
-      const res = await apiAdminFetch(`/admin/users/${selectedUser._id}/change-plan`, {
-        method: 'POST',
-        body: JSON.stringify({ expire: true })
-      });
-      toast.success(res.message || 'Subscription forced to expire');
-      const expiredUserObj = { ...selectedUser, currentPlan: 'FREE', subscription: { ...(selectedUser.subscription || {}), plan: 'FREE', status: 'expired' } };
-      setSelectedUser(expiredUserObj);
-      setUsersList(prev => prev.map(u => u._id === selectedUser._id ? expiredUserObj : u));
+      setCouponModal({ isOpen: false, isEdit: false, couponData: null });
       loadData(true);
-    } catch (e) {
-      toast.error('Failed to expire subscription');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to save coupon code.');
     }
   };
 
-  const handleAdjustCreditsForSelectedUser = async () => {
-    if (!selectedUser || !selectedUserCreditInput) return;
+  const handleToggleCouponStatus = async (couponId) => {
+    if (!couponId) return;
     try {
-      const amount = parseInt(selectedUserCreditInput) || 50;
-      const res = await apiAdminFetch(`/admin/users/${selectedUser._id}/adjust-credits`, {
-        method: 'POST',
-        body: JSON.stringify({ amount, actionType: 'add' })
+      const token = user?.token || localStorage.getItem('token');
+      await axios.patch(`${API}/admin/coupons/${couponId}/status`, {}, { headers: { Authorization: `Bearer ${token}` } }).catch(async () => {
+        // Fallback status flip
+        const target = couponsList.find(c => c._id === couponId);
+        const nextStatus = target?.status === 'active' ? 'inactive' : 'active';
+        await axios.put(`${API}/admin/coupons/${couponId}`, { status: nextStatus }, { headers: { Authorization: `Bearer ${token}` } });
       });
-      if (res.success) {
-        toast.success(`Adjusted credits for ${selectedUser.name}`);
-        const newCredits = res.credits !== undefined ? res.credits : ((selectedUser.credits || 0) + amount);
-        setSelectedUser(prev => ({ ...prev, credits: newCredits }));
-        setSelectedUserCreditInput('');
-        loadData(true);
-      } else {
-        toast.error(res.message || 'Failed to adjust credits');
-      }
-    } catch (e) {
-      toast.error('Credit adjustment error');
+      toast.success('Coupon status updated.');
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to update coupon status.');
     }
   };
 
-  const handleResetPasswordForSelectedUser = async () => {
-    if (!selectedUser || !selectedUserResetPassInput) return;
-    if (selectedUserResetPassInput.length < 6) {
-      toast.error('Password must be at least 6 characters long');
+  const handleViewCouponDetails = async (couponId) => {
+    if (!couponId) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      const res = await axios.get(`${API}/admin/coupons/${couponId}`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.data?.success) {
+        setCouponDetailsModal({
+          isOpen: true,
+          coupon: res.data.coupon || res.data.data,
+          stats: res.data.stats || res.data.analytics,
+          usageHistory: res.data.usageHistory || res.data.redemptions || []
+        });
+      } else {
+        const target = couponsList.find(c => c._id === couponId);
+        setCouponDetailsModal({
+          isOpen: true,
+          coupon: target || null,
+          stats: { totalUses: target?.usedCount || 0, totalDiscountGiven: 0, totalRevenueGenerated: 0, averageOrderValue: 0 },
+          usageHistory: []
+        });
+      }
+    } catch (err) {
+      const target = couponsList.find(c => c._id === couponId);
+      setCouponDetailsModal({
+        isOpen: true,
+        coupon: target || null,
+        stats: { totalUses: target?.usedCount || 0, totalDiscountGiven: 0, totalRevenueGenerated: 0, averageOrderValue: 0 },
+        usageHistory: []
+      });
+    }
+  };
+
+  const handleDeleteCouponSubmit = async (couponId) => {
+    if (!couponId) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.delete(`${API}/admin/coupons/${couponId}`, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success('Coupon deleted.');
+      setCouponDeleteConfirmModal({ isOpen: false, coupon: null });
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to delete coupon code.');
+    }
+  };
+
+  // --- USER ACTIONS ---
+  const handleUserRoleSave = async (id, newRole) => {
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.put(`${API}/admin/users/${id}/role`, { role: newRole }, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success(`User role updated to ${newRole}`);
+      setEditUserModal(null);
+      if (selectedDossierUser && selectedDossierUser._id === id) {
+        setSelectedDossierUser({ ...selectedDossierUser, role: newRole });
+      }
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to update user role.');
+    }
+  };
+
+  const handleAdjustCreditsSubmit = async (e) => {
+    if (e) e.preventDefault();
+    const targetUser = creditModalUser || selectedDossierUser;
+    if (!targetUser) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      const res = await axios.post(`${API}/admin/users/${targetUser._id}/credits`, creditAdjustment, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success(`${creditAdjustment.actionType === 'add' ? 'Added' : 'Deducted'} ${creditAdjustment.amount} credits.`);
+      setCreditModalUser(null);
+      if (selectedDossierUser && selectedDossierUser._id === targetUser._id) {
+        setSelectedDossierUser({ ...selectedDossierUser, credits: res.data?.credits ?? (targetUser.credits + parseInt(creditAdjustment.amount)) });
+      }
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to adjust user credits.');
+    }
+  };
+
+  const handleSubscriptionSave = async (e) => {
+    if (e) e.preventDefault();
+    const targetUser = subModalUser || selectedDossierUser;
+    if (!targetUser) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.put(`${API}/admin/users/${targetUser._id}/subscription`, subForm, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success('Subscription plan updated successfully.');
+      setSubModalUser(null);
+      if (selectedDossierUser && selectedDossierUser._id === targetUser._id) {
+        setSelectedDossierUser({ ...selectedDossierUser, currentPlan: subForm.planId, subscription: { plan: subForm.planId, billingCycle: subForm.billingCycle } });
+      }
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to update subscription.');
+    }
+  };
+
+  const handleExpireUserSubscription = async (userId) => {
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.post(`${API}/admin/users/${userId}/change-plan`, { expire: true }, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success('User subscription plan expired.');
+      if (selectedDossierUser && selectedDossierUser._id === userId) {
+        setSelectedDossierUser({ ...selectedDossierUser, currentPlan: 'FREE', subscription: { plan: 'FREE' } });
+      }
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to expire subscription.');
+    }
+  };
+
+  const handleToggleSuspend = async (id, currentStatus) => {
+    const isCurrentlySuspended = currentStatus === 'Suspended' || currentStatus === true;
+    const nextStatus = isCurrentlySuspended ? 'Active' : 'Suspended';
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.put(`${API}/admin/users/${id}/suspend`, { status: nextStatus }, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success(`User account is now ${nextStatus}`);
+      if (selectedDossierUser && selectedDossierUser._id === id) {
+        setSelectedDossierUser({ ...selectedDossierUser, status: nextStatus, isBlocked: !isCurrentlySuspended });
+      }
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to change suspension status.');
+    }
+  };
+
+  const handleResetUserPassword = async (e) => {
+    if (e) e.preventDefault();
+    if (!passwordResetUser || !passwordResetVal) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.post(`${API}/admin/users/${passwordResetUser._id}/reset-password`, { password: passwordResetVal }, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success(`Password updated for ${passwordResetUser.name || passwordResetUser.email}`);
+      setPasswordResetUser(null);
+      setPasswordResetVal('');
+    } catch (err) {
+      toast.error('Failed to reset user password.');
+    }
+  };
+
+  const handleLoginAsUser = async (targetUser) => {
+    if (!targetUser) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      const res = await axios.post(`${API}/admin/users/${targetUser._id}/login-as`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.data?.success && res.data?.token) {
+        localStorage.setItem('token', res.data.token);
+        toast.success(`Authenticated as ${targetUser.name || targetUser.email}`);
+        setSelectedDossierUser(null);
+        navigate('/dashboard');
+      } else {
+        toast.error('Masquerade login failed.');
+      }
+    } catch (err) {
+      toast.error('Failed to authenticate as target user.');
+    }
+  };
+
+  // --- PLAN CRUD ACTIONS ---
+  const handleSavePlan = async (e) => {
+    if (e) e.preventDefault();
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      const payload = {
+        planId: planForm.planId,
+        name: planForm.name,
+        priceMonthly: parseFloat(planForm.priceMonthly) || 0,
+        priceYearly: parseFloat(planForm.priceYearly) || 0,
+        credits: parseInt(planForm.credits) || 100,
+        features: planForm.features.split(',').map(f => f.trim()),
+        isPopular: planForm.isPopular,
+        isActive: planForm.isActive
+      };
+
+      if (planModal.isEdit && planModal.planData?._id) {
+        await axios.put(`${API}/admin/plans/${planModal.planData._id}`, payload, { headers: { Authorization: `Bearer ${token}` } });
+        toast.success('Subscription plan updated.');
+      } else {
+        await axios.post(`${API}/admin/plans`, payload, { headers: { Authorization: `Bearer ${token}` } });
+        toast.success('New subscription plan created.');
+      }
+      setPlanModal({ isOpen: false, isEdit: false, planData: null });
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to save subscription plan.');
+    }
+  };
+
+  // --- COUPON CRUD ACTIONS ---
+  const handleSaveCoupon = async (e) => {
+    if (e) e.preventDefault();
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      const payload = {
+        code: couponForm.code.toUpperCase().trim(),
+        discountType: couponForm.discountType,
+        discountValue: parseFloat(couponForm.discountValue) || 0,
+        expiryDate: couponForm.expiryDate,
+        usageLimit: parseInt(couponForm.usageLimit) || 100,
+        perUserLimit: parseInt(couponForm.perUserLimit) || 1,
+        status: couponForm.status
+      };
+
+      if (couponModal.isEdit && couponModal.couponData?._id) {
+        await axios.put(`${API}/admin/coupons/${couponModal.couponData._id}`, payload, { headers: { Authorization: `Bearer ${token}` } });
+        toast.success('Coupon updated.');
+      } else {
+        await axios.post(`${API}/admin/coupons`, payload, { headers: { Authorization: `Bearer ${token}` } });
+        toast.success('New coupon code created.');
+      }
+      setCouponModal({ isOpen: false, isEdit: false, couponData: null });
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to save coupon.');
+    }
+  };
+
+  const handleToggleGlobalCoupons = async () => {
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      const nextState = !couponFeatureEnabled;
+      await axios.patch(`${API}/admin/coupons/toggle-feature`, { enabled: nextState }, { headers: { Authorization: `Bearer ${token}` } });
+      setCouponFeatureEnabled(nextState);
+      toast.success(`Coupon discount system is now ${nextState ? 'ENABLED' : 'DISABLED'}.`);
+    } catch (err) {
+      toast.error('Failed to toggle coupon engine.');
+    }
+  };
+
+  // --- FEATURE REQUEST ACTIONS ---
+  const handleSaveFeatureStatus = async (e) => {
+    if (e) e.preventDefault();
+    if (!featureModal.feature) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.patch(`${API}/admin/feature-requests/${featureModal.feature._id}`, {
+        status: featureModal.status,
+        developerAssigned: featureModal.developerAssigned,
+        adminNote: featureModal.adminNote,
+        reply: featureModal.adminNote
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success('Feature request updated.');
+      setFeatureModal({ isOpen: false, feature: null, status: 'Pending', developerAssigned: 'None', adminNote: '' });
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to update feature request.');
+    }
+  };
+
+  const handleDeleteFeatureSubmit = async (featureId) => {
+    if (!featureId) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.delete(`${API}/admin/feature-requests/${featureId}`, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success('Feature request deleted.');
+      setFeatureDeleteModal({ isOpen: false, feature: null });
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to delete feature request.');
+    }
+  };
+
+  // --- BUG REPORT TRIAGE ---
+  const handleSaveBugStatus = async () => {
+    if (!bugModal.bug) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.patch(`${API}/admin/bug-reports/${bugModal.bug._id}`, {
+        status: bugModal.status,
+        assignedTo: bugModal.assignedTo
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success('Bug report updated.');
+      setBugModal({ isOpen: false, bug: null, status: 'Open', assignedTo: '' });
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to update bug report.');
+    }
+  };
+
+  // --- CRASH STATUS ---
+  const handleResolveCrash = async (id, status) => {
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.patch(`${API}/admin/crashes/${id}`, { status }, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success(`Crash alert status updated to ${status}.`);
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to update crash status.');
+    }
+  };
+
+  // --- JURISDICTION OVERRIDE & SANDBOX TEST ---
+  const handleSaveJurisdictionOverride = async (e) => {
+    if (e) e.preventDefault();
+    if (!jSelectedUser) {
+      toast.error('Select a target user first.');
       return;
     }
     try {
-      const res = await apiAdminFetch(`/admin/users/${selectedUser._id}/reset-password`, {
-        method: 'POST',
-        body: JSON.stringify({ password: selectedUserResetPassInput })
-      });
-      if (res.success) {
-        toast.success(`Password reset successfully for ${selectedUser.name}`);
-        setSelectedUserResetPassInput('');
-      } else {
-        toast.error(res.message || 'Failed to reset password');
-      }
-    } catch (e) {
-      toast.error('Password reset error');
+      const token = user?.token || localStorage.getItem('token');
+      await axios.post(`${API}/admin/users/${jSelectedUser._id}/jurisdiction-override`, {
+        country: jTargetCountry,
+        state: jTargetState,
+        overrideType: jOverrideType
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success(`Jurisdiction override set to ${jTargetCountry} (${jTargetState}) for ${jSelectedUser.name}.`);
+    } catch (err) {
+      toast.error('Failed to apply jurisdiction override.');
     }
   };
 
-  const handleLoginAsUser = async () => {
-    if (!selectedUser) return;
+  const handleRunJurisdictionTest = async (e) => {
+    if (e) e.preventDefault();
+    if (!jTestQuery.trim()) return;
+
+    setJTestLoading(true);
+    setJTestResult('');
     try {
-      const res = await apiAdminFetch(`/admin/users/${selectedUser._id}/login-as`, { method: 'POST' });
-      if (res.success && res.token) {
-        localStorage.setItem('token', res.token);
-        if (res.user) localStorage.setItem('user', JSON.stringify(res.user));
-        toast.success(`Logged in as ${res.user?.name || selectedUser.name}`);
-        setSelectedUser(null);
-        navigate('/dashboard/chat', { replace: true });
-        window.location.reload();
-      } else {
-        toast.error(res.message || 'Could not authenticate as target user');
-      }
-    } catch (e) {
-      toast.error('Masquerade action failed');
+      const token = user?.token || localStorage.getItem('token');
+      const res = await axios.post(`${API}/admin/jurisdiction-sandbox-test`, {
+        query: jTestQuery,
+        country: jTargetCountry,
+        state: jTargetState
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      setJTestResult(res.data?.response || res.data?.answer || 'Jurisdiction test executed successfully.');
+    } catch (err) {
+      setJTestResult('Test execution failed. Using default statutory fallbacks.');
+    } finally {
+      setJTestLoading(false);
     }
   };
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'users', label: 'Users', icon: Users, badge: usersList.length },
-    { id: 'billing', label: 'Billing', icon: CreditCard },
-    { id: 'plans', label: 'Plans & Pricing', icon: Package },
-    { id: 'coupons', label: 'Coupons', icon: Tag, badge: couponsList.length },
-    { id: 'features', label: 'Requests', icon: Zap },
-    { id: 'bugs', label: 'Bugs', icon: AlertTriangle },
-    { id: 'jurisdiction', label: 'Jurisdiction', icon: Globe },
-    { id: 'settings', label: 'Settings', icon: Settings },
-  ];
+  // --- GLOBAL SETTINGS SAVE ---
+  const handleSaveSettings = async (e) => {
+    if (e) e.preventDefault();
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.put(`${API}/admin/settings`, adminSettings, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success('Global platform settings updated successfully.');
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to update global settings.');
+    }
+  };
+
+  const handleChangeAdminPassword = async (e) => {
+    if (e) e.preventDefault();
+    if (!adminPasswordInput || adminPasswordInput !== adminPasswordConfirm) {
+      toast.error('Passwords do not match.');
+      return;
+    }
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.post(`${API}/admin/change-password`, { newPassword: adminPasswordInput }, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success('Admin password updated successfully.');
+      setAdminPasswordInput('');
+      setAdminPasswordConfirm('');
+    } catch (err) {
+      toast.error('Failed to change admin password.');
+    }
+  };
+
+  // --- GENERAL DELETE CONFIRM ---
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfig.id) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      let url = `${API}/admin/${deleteConfig.type}/${deleteConfig.id}`;
+      if (deleteConfig.type === 'users') url = `${API}/admin/users/${deleteConfig.id}`;
+      if (deleteConfig.type === 'plans') url = `${API}/admin/plans/${deleteConfig.id}`;
+      if (deleteConfig.type === 'coupons') url = `${API}/admin/coupons/${deleteConfig.id}`;
+
+      await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success(`${deleteConfig.name} deleted permanently.`);
+      setDeleteConfig({ isOpen: false, type: '', id: '', name: '' });
+      loadData(true);
+    } catch (err) {
+      toast.error('Failed to delete item.');
+      setDeleteConfig({ isOpen: false, type: '', id: '', name: '' });
+    }
+  };
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F19] flex items-center justify-center p-6">
+        <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-10 max-w-md w-full text-center space-y-6 shadow-xl">
+          <div className="w-16 h-16 rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center mx-auto">
+            <ShieldAlert className="w-8 h-8" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">Admin Access Restricted</h2>
+            <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2 font-medium">
+              You do not have administrative privileges to access the AI Legal™ System Console.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="w-full py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all cursor-pointer"
+          >
+            Back to User Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-16">
-      {/* ── HEADER BANNER ── */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between flex-wrap gap-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F19] text-slate-800 dark:text-zinc-100 flex flex-col font-sans">
+      {/* Top Header */}
+      <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#1E293B]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-zinc-800 shadow-xs px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Dashboard</span>
+          </button>
+
+          <div className="h-5 w-[1px] bg-slate-200 dark:bg-zinc-700" />
+
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 font-black text-xl shadow-xs">
-              ⚖️
+            <div className="w-10 h-10 rounded-xl bg-[#C8A34D]/10 flex items-center justify-center border border-[#C8A34D]/30">
+              <Shield className="w-5 h-5 text-[#C8A34D]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-black text-slate-900 tracking-tight">AI LEGAL ADMIN CONSOLE</h1>
-                <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Enterprise SaaS</span>
+                <h1 className="text-lg font-black tracking-tight text-slate-900 dark:text-white">Admin Portal</h1>
+                <span className="px-2 py-0.5 rounded bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[10px] font-black uppercase tracking-wider">
+                  SUPER ADMIN
+                </span>
               </div>
-              <p className="text-xs font-semibold text-slate-500 mt-0.5">Platform Intelligence & User Governance Dashboard</p>
+              <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">System Telemetry, User Controls & Platform Management</p>
             </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => loadData(true)}
-              disabled={refreshing}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs transition-all disabled:opacity-50"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 text-amber-600 ${refreshing ? 'animate-spin' : ''}`} />
-              <span>{refreshing ? 'Refreshing...' : 'Live Sync'}</span>
-            </button>
           </div>
         </div>
 
-        {/* ── TAB NAVIGATION ── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 overflow-x-auto custom-scrollbar border-t border-slate-100 pt-2 pb-2">
-          {tabs.map(tab => {
-            const Icon = tab.icon;
-            const active = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all whitespace-nowrap ${
-                  active 
-                    ? 'bg-amber-600 text-white shadow-xs' 
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{tab.label}</span>
-                {tab.badge !== undefined && (
-                  <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-extrabold ${active ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>
-                    {tab.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => loadData(true)}
+            className="p-2.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-xl border border-slate-200/80 dark:border-zinc-700 transition-all cursor-pointer flex items-center gap-2 text-xs font-bold"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-[#C8A34D] ${refreshing ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Refresh Data</span>
+          </button>
         </div>
       </header>
 
-      {/* ── MAIN CONTENT AREA ── */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        {loading ? (
-          <LoadingSpinner />
-        ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.15 }}
+      {/* 11 Mobile Tabs Bar */}
+      <nav className="bg-white dark:bg-[#1E293B] border-b border-slate-200/80 dark:border-zinc-800 px-6 py-2 overflow-x-auto custom-scrollbar flex items-center gap-1">
+        {TABS.map(tab => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+                isActive
+                  ? 'bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 shadow-2xs'
+                  : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/60'
+              }`}
             >
-              {/* ═══════════════════════════════════════════════ */}
-              {/* 1. OVERVIEW TAB */}
-              {/* ═══════════════════════════════════════════════ */}
-              {activeTab === 'overview' && (
-                <div className="space-y-6">
-                  {/* Top Metric Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs relative overflow-hidden">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500">TOTAL REGISTERED USERS</span>
-                        <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><Users className="w-4 h-4" /></div>
-                      </div>
-                      <p className="text-3xl font-black text-slate-900">{stats.totalUsers || usersList.length || 0}</p>
-                      <div className="flex items-center gap-3 mt-2 text-xs font-semibold text-slate-500">
-                        <span className="text-emerald-600 font-bold">🟢 {stats.onlineUsers || 0} Online</span>
-                        <span>•</span>
-                        <span>{stats.activeUsers || 0} Active (30d)</span>
-                      </div>
-                    </div>
+              <Icon className="w-4 h-4" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </nav>
 
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs relative overflow-hidden">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500">PLAN COMPOSITION</span>
-                        <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><Package className="w-4 h-4" /></div>
-                      </div>
-                      <p className="text-3xl font-black text-slate-900">{stats.premiumUsers || 0} <span className="text-sm font-bold text-slate-400">Pro</span></p>
-                      <div className="flex items-center gap-3 mt-2 text-xs font-semibold text-slate-500">
-                        <span className="text-slate-600 font-bold">{stats.freeUsers || (stats.totalUsers - stats.premiumUsers)} Free Advocates</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs relative overflow-hidden">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500">MONTHLY REVENUE</span>
-                        <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><DollarSign className="w-4 h-4" /></div>
-                      </div>
-                      <p className="text-3xl font-black text-slate-900">₹{(stats.revenueMonth || 0).toLocaleString('en-IN')}</p>
-                      <div className="flex items-center gap-3 mt-2 text-xs font-semibold text-slate-500">
-                        <span>Today: ₹{stats.revenueToday || 0}</span>
-                        <span>•</span>
-                        <span>Lifetime: ₹{stats.revenueLifetime || 0}</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs relative overflow-hidden">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500">AI RESOURCE SPENT</span>
-                        <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center"><Zap className="w-4 h-4" /></div>
-                      </div>
-                      <p className="text-3xl font-black text-slate-900">{(stats.totalCreditsUsed ?? 0).toLocaleString()}</p>
-                      <div className="flex items-center gap-3 mt-2 text-xs font-semibold text-slate-500">
-                        <span>AI transaction units consumed</span>
-                      </div>
-                    </div>
+      {/* Main Tab Content */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+        {loading ? (
+          <div className="py-24 text-center space-y-3">
+            <RefreshCw className="w-8 h-8 text-[#C8A34D] animate-spin mx-auto" />
+            <p className="text-xs font-bold text-slate-400">Fetching live Admin Console telemetry...</p>
+          </div>
+        ) : activeTab === 'overview' ? (
+          /* TAB 1: OVERVIEW — EXACT MOBILE APP DESIGN & ARCHITECTURE PARITY */
+          <div className="space-y-6">
+            {/* ROW 1: TOP 4 TELEMETRY CARDS IN A SINGLE 4-COLUMN ROW */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* CARD 1: TOTAL REGISTERED USERS */}
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">TOTAL REGISTERED USERS</span>
+                  <div className="p-2 rounded-lg bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20">
+                    <Users className="w-4 h-4" />
                   </div>
-
-                  {/* 7-Day Activity Graph & AI Core Feature Analytics */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Activity Graph */}
-                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h3 className="font-bold text-slate-900 text-base">Daily Activity Graph (7 days)</h3>
-                          <p className="text-xs font-semibold text-slate-500">Aggregated user queries across active workspaces</p>
-                        </div>
-                        <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">Realtime</span>
-                      </div>
-                      <div className="h-44 flex items-end justify-between gap-3 pt-6 px-2">
-                        {(() => {
-                          const dailyList = (Array.isArray(stats.dailyActivity) && stats.dailyActivity.length > 0)
-                            ? stats.dailyActivity
-                            : [
-                                { label: 'Wed', val: 5 },
-                                { label: 'Thu', val: 24 },
-                                { label: 'Fri', val: 73 },
-                                { label: 'Sat', val: 61 },
-                                { label: 'Sun', val: 113 },
-                                { label: 'Mon', val: 37 },
-                                { label: 'Tue', val: 11 },
-                              ];
-                          const maxVal = Math.max(1, ...dailyList.map(d => d.val || 0));
-                          return dailyList.map((day, idx) => (
-                            <div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
-                              <div 
-                                className="w-full bg-amber-500/80 group-hover:bg-amber-600 rounded-t-lg transition-all relative"
-                                style={{ height: `${Math.max(10, ((day.val || 0) / maxVal) * 100)}%` }}
-                              >
-                                <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                                  {day.val}
-                                </span>
-                              </div>
-                              <span className="text-[11px] font-bold text-slate-500">{day.label}</span>
-                            </div>
-                          ));
-                        })()}
-                      </div>
-                    </div>
-
-                    {/* Core AI Analytics */}
-                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                      <h3 className="font-bold text-slate-900 text-base mb-1">AI Feature Core Usage Analytics</h3>
-                      <p className="text-xs font-semibold text-slate-500 mb-4">Real database metrics from generated intelligence records</p>
-                      
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                          <span className="text-[11px] font-bold text-slate-500 block">Cases Managed</span>
-                          <span className="text-xl font-black text-slate-900 mt-1 block">{stats.totalCases ?? 0} cases</span>
-                        </div>
-                        <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                          <span className="text-[11px] font-bold text-slate-500 block">Contracts Analyzed</span>
-                          <span className="text-xl font-black text-slate-900 mt-1 block">{stats.contractsAnalyzed ?? 0} analysis</span>
-                        </div>
-                        <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                          <span className="text-[11px] font-bold text-slate-500 block">Strategy Engine Reports</span>
-                          <span className="text-xl font-black text-slate-900 mt-1 block">{stats.strategyReports ?? 0} reports</span>
-                        </div>
-                        <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                          <span className="text-[11px] font-bold text-slate-500 block">Case Predictor Models</span>
-                          <span className="text-xl font-black text-slate-900 mt-1 block">{stats.casePredictorReports ?? 0} predictions</span>
-                        </div>
-                        <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                          <span className="text-[11px] font-bold text-slate-500 block">Drafts Generated</span>
-                          <span className="text-xl font-black text-slate-900 mt-1 block">{stats.draftsGenerated ?? 0} drafts</span>
-                        </div>
-                        <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                          <span className="text-[11px] font-bold text-slate-500 block">AI Chats Initiated</span>
-                          <span className="text-xl font-black text-slate-900 mt-1 block">{stats.chatUsage ?? 0} chats</span>
-                        </div>
-                        <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                          <span className="text-[11px] font-bold text-slate-500 block">API Transactions</span>
-                          <span className="text-xl font-black text-slate-900 mt-1 block">{stats.apiUsage ?? 0} logs</span>
-                        </div>
-                        <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                          <span className="text-[11px] font-bold text-slate-500 block">Storage Consumption</span>
-                          <span className="text-xl font-black text-slate-900 mt-1 block">{stats.storageUsed ?? 0} MB</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* System Health */}
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between flex-wrap gap-4">
-                    <div className="flex items-center gap-3">
-                      <Server className="w-5 h-5 text-emerald-600" />
-                      <div>
-                        <h4 className="text-sm font-bold text-slate-900">Platform Realtime Health Check</h4>
-                        <p className="text-xs font-semibold text-slate-500">MongoDB Atlas Cluster & AI Vector Store Status</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs font-bold">
-                      <span className="flex items-center gap-1.5 text-emerald-600"><CheckCircle2 className="w-4 h-4" /> DB Connected</span>
-                      <span className="flex items-center gap-1.5 text-emerald-600"><CheckCircle2 className="w-4 h-4" /> AI Models Operational</span>
-                      <span className="flex items-center gap-1.5 text-amber-600"><CheckCircle2 className="w-4 h-4" /> RAG Store Ready</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ═══════════════════════════════════════════════ */}
-              {/* 2. USERS TAB */}
-              {/* ═══════════════════════════════════════════════ */}
-              {activeTab === 'users' && (
-                <div className="space-y-4">
-                  {/* Search & Filter Toolbar */}
-                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between flex-wrap gap-4">
-                    <div className="relative flex-1 min-w-[240px]">
-                      <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                      <input 
-                        type="text"
-                        placeholder="Search by name or email..."
-                        value={userSearch}
-                        onChange={(e) => setUserSearch(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold text-slate-900 focus:outline-hidden focus:border-amber-600"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {['all', 'free', 'premium', 'suspended'].map(filter => (
-                        <button
-                          key={filter}
-                          onClick={() => setUserFilter(filter)}
-                          className={`px-3 py-1.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all ${
-                            userFilter === filter 
-                              ? 'bg-amber-600 text-white' 
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
-                        >
-                          {filter}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Users List */}
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs">
-                        <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-extrabold border-b border-slate-200">
-                          <tr>
-                            <th className="py-3.5 px-4">User</th>
-                            <th className="py-3.5 px-4">Role</th>
-                            <th className="py-3.5 px-4">Current Plan</th>
-                            <th className="py-3.5 px-4">Cases</th>
-                            <th className="py-3.5 px-4">Status</th>
-                            <th className="py-3.5 px-4 text-right">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 font-semibold text-slate-800">
-                          {filteredUsers.length === 0 ? (
-                            <tr>
-                              <td colSpan={6} className="py-12 text-center text-slate-400 font-bold">
-                                No users found matching filter criteria.
-                              </td>
-                            </tr>
-                          ) : (
-                            filteredUsers.map(u => {
-                              const plan = u.subscription?.plan || u.currentPlan || 'FREE';
-                              const isPro = !plan.toLowerCase().includes('free');
-                              const isSuspended = u.isBlocked || u.isSuspended;
-                              return (
-                                <tr key={u._id} className="hover:bg-slate-50/80 transition-colors">
-                                  <td className="py-3.5 px-4">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-full bg-amber-500/10 text-amber-700 font-bold flex items-center justify-center border border-amber-500/20">
-                                        {u.name?.charAt(0) || 'U'}
-                                      </div>
-                                      <div>
-                                        <p className="font-extrabold text-slate-900">{u.name}</p>
-                                        <p className="text-[11px] text-slate-400 font-semibold">{u.email}</p>
-                                      </div>
-                                    </div>
-                                  </td>
-                                  <td className="py-3.5 px-4">
-                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${
-                                      u.role === 'SUPER_ADMIN' || u.role === 'admin' || u.email === ADMIN_EMAIL
-                                        ? 'bg-purple-100 text-purple-800 border border-purple-200'
-                                        : 'bg-slate-100 text-slate-700'
-                                    }`}>
-                                      {u.role || 'User'}
-                                    </span>
-                                  </td>
-                                  <td className="py-3.5 px-4">
-                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ${
-                                      isPro ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'
-                                    }`}>
-                                      {plan}
-                                    </span>
-                                  </td>
-                                  <td className="py-3.5 px-4 font-extrabold text-slate-900">
-                                    {u.totalCases ?? u.casesCount ?? u.projectsCount ?? 0}
-                                  </td>
-                                  <td className="py-3.5 px-4">
-                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ${
-                                      isSuspended ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
-                                    }`}>
-                                      {isSuspended ? 'SUSPENDED' : 'ACTIVE'}
-                                    </span>
-                                  </td>
-                                  <td className="py-3.5 px-4 text-right">
-                                     <button 
-                                       onClick={() => handleOpenUserDossier(u)}
-                                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs transition-all border border-slate-200 shadow-2xs"
-                                       title="View Details / Profile Dossier"
-                                     >
-                                       <Eye className="w-3.5 h-3.5 text-amber-600" />
-                                       <span>View Profile</span>
-                                     </button>
-                                  </td>
-                                </tr>
-                              );
-                            })
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ═══════════════════════════════════════════════ */}
-              {/* 3. BILLING TAB */}
-              {/* ═══════════════════════════════════════════════ */}
-              {activeTab === 'billing' && (
-                <div className="space-y-4">
-                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between flex-wrap gap-4">
-                    <div className="relative flex-1 min-w-[240px]">
-                      <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                      <input 
-                        type="text"
-                        placeholder="Search transactions..."
-                        value={billingSearch}
-                        onChange={(e) => setBillingSearch(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold text-slate-900 focus:outline-hidden"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {['all', 'success', 'failed', 'refunded'].map(filter => (
-                        <button
-                          key={filter}
-                          onClick={() => setBillingFilter(filter)}
-                          className={`px-3 py-1.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all ${
-                            billingFilter === filter 
-                              ? 'bg-amber-600 text-white' 
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
-                        >
-                          {filter}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-extrabold border-b border-slate-200">
-                        <tr>
-                          <th className="py-3.5 px-4">Transaction ID</th>
-                          <th className="py-3.5 px-4">User</th>
-                          <th className="py-3.5 px-4">Plan / Cycle</th>
-                          <th className="py-3.5 px-4">Amount</th>
-                          <th className="py-3.5 px-4">Status</th>
-                          <th className="py-3.5 px-4">Date</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 font-semibold text-slate-800">
-                        {filteredBilling.length === 0 ? (
-                          <tr>
-                            <td colSpan={6} className="py-12 text-center text-slate-400 font-bold">
-                              No payment transactions recorded yet.
-                            </td>
-                          </tr>
-                        ) : (
-                          filteredBilling.map(p => {
-                            const userName = typeof p.userId === 'object' && p.userId ? p.userId.name : (p.userName || p.userEmail || 'Advocate Client');
-                            const userEmail = typeof p.userId === 'object' && p.userId ? p.userId.email : (p.userEmail || '');
-                            
-                            let planDisplayName = typeof p.planId === 'object' && p.planId ? p.planId.planName : (p.planName || p.planId || '');
-                            const rawIdStr = (planDisplayName || '').toString();
-                            if (!planDisplayName || rawIdStr.startsWith('6a6')) {
-                              if (rawIdStr.includes('6a687b18545006804ed9c4aa') || p.amount === 499) planDisplayName = 'AI Legal™ Advocate Basic';
-                              else if (rawIdStr.includes('6a687b18545006804ed9c4ab') || p.amount === 999) planDisplayName = 'AI Legal™ Advocate Pro';
-                              else if (rawIdStr.includes('6a687b18545006804ed9c4ac') || p.amount === 2399) planDisplayName = 'AI Legal™ Advocate Premium';
-                              else if (p.amount === 1499) planDisplayName = 'AI Legal™ Firm Basic';
-                              else if (p.amount === 2999) planDisplayName = 'AI Legal™ Firm Pro';
-                              else if (p.amount === 4999) planDisplayName = 'AI Legal™ Firm Premium';
-                              else planDisplayName = 'AI Legal™ Standard Plan';
-                            }
-                            const cycle = p.billingCycle || p.type || 'monthly';
-                            const txnId = p.transactionId || p.paymentId || p.invoiceNumber || p._id;
-                            const amount = p.amount ?? 499;
-                            const status = (p.status || 'success').toLowerCase();
-                            const pDate = p.createdAt || p.date || Date.now();
-
-                            return (
-                              <tr key={p._id} className="hover:bg-slate-50 transition-colors">
-                                <td className="py-3.5 px-4 font-mono text-[11px] text-slate-600 font-bold truncate max-w-[170px]" title={txnId}>
-                                  {txnId}
-                                </td>
-                                <td className="py-3.5 px-4">
-                                  <div>
-                                    <p className="font-extrabold text-slate-900">{userName}</p>
-                                    {userEmail && <p className="text-[11px] text-slate-400 font-semibold">{userEmail}</p>}
-                                  </div>
-                                </td>
-                                <td className="py-3.5 px-4 font-extrabold text-amber-700">
-                                  {planDisplayName} <span className="text-[11px] font-semibold text-slate-400">({cycle})</span>
-                                </td>
-                                <td className="py-3.5 px-4 font-black text-slate-900">
-                                  ₹{amount}
-                                </td>
-                                <td className="py-3.5 px-4">
-                                  <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${
-                                    status === 'success' ? 'bg-emerald-100 text-emerald-800' :
-                                    status === 'refunded' ? 'bg-amber-100 text-amber-800' :
-                                    'bg-rose-100 text-rose-800'
-                                  }`}>
-                                    {status}
-                                  </span>
-                                </td>
-                                <td className="py-3.5 px-4 text-slate-500 text-[11px] font-bold">
-                                  {new Date(pDate).toLocaleDateString('en-IN')}
-                                </td>
-                              </tr>
-                            );
-                          })
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {/* ═══════════════════════════════════════════════ */}
-              {/* 4. PLANS TAB */}
-              {/* ═══════════════════════════════════════════════ */}
-              {activeTab === 'plans' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between flex-wrap gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-                    <div>
-                      <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                        <span>Master Subscription Plans & Pricing Matrix</span>
-                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                          {plansList.length} Active Plans
-                        </span>
-                      </h3>
-                      <p className="text-xs font-semibold text-slate-500 mt-0.5">
-                        Manage Student, Advocate, Law Firm & Combo plans, edit monthly/yearly prices (₹), AI credits, and feature lists.
-                      </p>
-                    </div>
-                    <button
-                      onClick={handleOpenCreatePlan}
-                      className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs transition-all shadow-xs flex items-center gap-1.5"
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span>+ Create Plan</span>
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {plansList.map(p => {
-                      const mPrice = p.priceMonthly !== undefined ? p.priceMonthly : (p.monthly || 499);
-                      const yPrice = p.priceYearly !== undefined ? p.priceYearly : (p.yearly || 4990);
-                      const pName = p.planName || p.name || p.planId;
-                      const pBadge = p.badge || (p.planId ? p.planId.toUpperCase().replace('_', ' ') : 'PLAN');
-                      const isPopular = !!p.isPopular;
-                      const isActive = p.isActive !== false;
-                      const targetId = p.planId || p._id;
-
-                      return (
-                        <div 
-                          key={targetId} 
-                          className={`bg-white p-5 rounded-2xl border ${isPopular ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-slate-200'} shadow-xs relative flex flex-col justify-between hover:shadow-md transition-all`}
-                        >
-                          <div>
-                            {/* Card Header & Badges */}
-                            <div className="flex items-center justify-between gap-2 mb-2">
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                {pBadge && (
-                                  <span className="bg-amber-100 text-amber-900 text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider">
-                                    {pBadge}
-                                  </span>
-                                )}
-                                {isPopular && (
-                                  <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-md">
-                                    ⭐ POPULAR
-                                  </span>
-                                )}
-                              </div>
-
-                              {/* Edit & Delete Actions */}
-                              <div className="flex items-center gap-1">
-                                <button
-                                  onClick={() => handleOpenEditPlan(p)}
-                                  className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-[11px] transition-all flex items-center gap-1 shadow-xs"
-                                  title="Edit Pricing & Features"
-                                >
-                                  <Edit2 className="w-3 h-3" />
-                                  <span>Edit</span>
-                                </button>
-                                <button
-                                  onClick={() => handleDeletePlanAction(targetId)}
-                                  className="p-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-all"
-                                  title="Delete Plan"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            </div>
-
-                            <h4 className="font-extrabold text-slate-900 text-base">{pName}</h4>
-                            
-                            {/* Pricing & Credits Grid */}
-                            <div className="grid grid-cols-3 gap-2 mt-3 p-2.5 bg-slate-50 rounded-xl border border-slate-200/70 text-center">
-                              <div>
-                                <p className="text-[10px] font-extrabold text-slate-400 uppercase">MONTHLY</p>
-                                <p className="text-sm font-black text-emerald-600 mt-0.5">₹{mPrice.toLocaleString('en-IN')}</p>
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-extrabold text-slate-400 uppercase">YEARLY</p>
-                                <p className="text-sm font-black text-blue-600 mt-0.5">₹{yPrice.toLocaleString('en-IN')}</p>
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-extrabold text-slate-400 uppercase">CREDITS</p>
-                                <p className="text-sm font-black text-amber-600 mt-0.5">{p.credits || 0}</p>
-                              </div>
-                            </div>
-
-                            {/* Features Included List */}
-                            <div className="mt-4 pt-3 border-t border-slate-100">
-                              <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">FEATURES INCLUDED:</p>
-                              {Array.isArray(p.features) && p.features.length > 0 ? (
-                                <div className="space-y-1.5 text-xs font-semibold text-slate-700">
-                                  {p.features.map((f, i) => (
-                                    <div key={i} className="flex items-start gap-1.5">
-                                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                                      <span className="truncate">{f}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : (
-                                <p className="text-xs text-slate-400 italic font-medium">No features listed for this plan.</p>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Footer Status & ID */}
-                          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                            <span>ID: {targetId}</span>
-                            <span className={`font-bold ${isActive ? 'text-emerald-600' : 'text-rose-500'}`}>
-                              {isActive ? '🟢 Active' : '🔴 Disabled'}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* ═══════════════════════════════════════════════ */}
-              {/* 5. COUPONS & PROMO CODE ENGINE TAB */}
-              {/* ═══════════════════════════════════════════════ */}
-              {activeTab === 'coupons' && (
-                <div className="space-y-6">
-                  {/* Top Stats & Engine Control */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">TOTAL COUPONS</span>
-                        <Tag className="w-4 h-4 text-amber-600" />
-                      </div>
-                      <p className="text-2xl font-black text-slate-900">{couponsList.length}</p>
-                      <p className="text-[11px] font-semibold text-slate-400">Created Promo Discounts</p>
-                    </div>
-
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">ACTIVE COUPONS</span>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      </div>
-                      <p className="text-2xl font-black text-emerald-600">
-                        {couponsList.filter(c => (c.status || c.computedStatus) === 'active' || c.computedStatus === 'ACTIVE').length}
-                      </p>
-                      <p className="text-[11px] font-semibold text-slate-400">Available at Checkout</p>
-                    </div>
-
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">TOTAL DISCOUNT SAVED</span>
-                        <DollarSign className="w-4 h-4 text-blue-600" />
-                      </div>
-                      <p className="text-2xl font-black text-blue-600">
-                        ₹{(couponStats.totalDiscountGiven || 14200).toLocaleString('en-IN')}
-                      </p>
-                      <p className="text-[11px] font-semibold text-slate-400">Claimed by Advocates</p>
-                    </div>
-
-                    {/* Global Coupon Engine Switch */}
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">PROMO ENGINE</span>
-                        <Zap className="w-4 h-4 text-amber-600" />
-                      </div>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs font-bold text-slate-800">
-                          {couponFeatureEnabled ? '🟢 Active' : '🔴 Disabled'}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={handleToggleCouponFeature}
-                          className={`px-3 py-1 rounded-xl font-black text-xs transition-all ${
-                            couponFeatureEnabled ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 hover:bg-rose-200'
-                          }`}
-                        >
-                          {couponFeatureEnabled ? 'Enabled' : 'Disabled'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Header Actions & Filter */}
-                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between flex-wrap gap-4">
-                    <div>
-                      <h3 className="text-base font-extrabold text-slate-900">Promo Coupons & Special Pricing Codes</h3>
-                      <p className="text-xs font-semibold text-slate-500 mt-0.5">Manage promotional percentage & flat rupee discounts for advocates and law firms.</p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1.5">
-                        {['all', 'active', 'inactive', 'expired'].map(st => (
-                          <button
-                            key={st}
-                            onClick={() => setCouponFilterState(st)}
-                            className={`px-3 py-1.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all ${
-                              couponFilterState === st 
-                                ? 'bg-amber-600 text-white shadow-xs' 
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                            }`}
-                          >
-                            {st}
-                          </button>
-                        ))}
-                      </div>
-
-                      <button
-                        onClick={handleOpenCreateCoupon}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs transition-all shadow-xs"
-                      >
-                        <Plus className="w-4 h-4" />
-                        <span>+ Create Coupon</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Coupons Cards Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {couponsList
-                      .filter(c => {
-                        if (couponFilterState === 'all') return true;
-                        const statusStr = (c.status || c.computedStatus || '').toLowerCase();
-                        return statusStr === couponFilterState.toLowerCase();
-                      })
-                      .map(c => {
-                        const isPerc = c.discountType === 'percentage';
-                        const usageMax = c.usageLimit || 100;
-                        const used = c.usedCount || 0;
-                        const percentUsed = Math.min(100, Math.round((used / usageMax) * 100));
-                        const isActive = (c.status || c.computedStatus) === 'active' || c.computedStatus === 'ACTIVE';
-
-                        return (
-                          <div key={c._id || c.code} className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 relative overflow-hidden">
-                            <div className="space-y-3">
-                              {/* Card Header: Code & Status */}
-                              <div className="flex items-center justify-between gap-2">
-                                <span className="bg-amber-500/10 border border-amber-500/30 text-amber-800 font-mono font-black text-sm px-3 py-1 rounded-xl tracking-wider">
-                                  🎟️ {c.code}
-                                </span>
-                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase ${
-                                  isActive ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-rose-100 text-rose-800 border border-rose-200'
-                                }`}>
-                                  {isActive ? 'ACTIVE' : 'INACTIVE'}
-                                </span>
-                              </div>
-
-                              {/* Discount Highlight */}
-                              <div>
-                                <p className="text-2xl font-black text-slate-900">
-                                  {isPerc ? `${c.discountValue}% OFF` : `₹${c.discountValue} OFF`}
-                                </p>
-                                <p className="text-xs font-semibold text-slate-400 mt-0.5">
-                                  {isPerc ? `Percentage discount on subscription` : `Flat ₹${c.discountValue} discount`}
-                                </p>
-                              </div>
-
-                              {/* Target Plans & Cycles */}
-                              <div className="space-y-1.5 pt-1 text-xs">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="text-[10px] font-extrabold text-slate-400 uppercase">PLANS:</span>
-                                  {(c.applicablePlans || ['ALL']).map(p => (
-                                    <span key={p} className="bg-slate-100 text-slate-700 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
-                                      {p}
-                                    </span>
-                                  ))}
-                                </div>
-
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-[10px] font-extrabold text-slate-400 uppercase">EXPIRY:</span>
-                                  <span className="font-bold text-slate-700">
-                                    {c.expiryDate ? new Date(c.expiryDate).toLocaleDateString('en-IN') : 'No expiry'}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Usage Progress Bar */}
-                              <div className="space-y-1 pt-2 border-t border-slate-100">
-                                <div className="flex items-center justify-between text-[11px] font-bold text-slate-500">
-                                  <span>Usage: {used} / {c.usageLimit || '∞'}</span>
-                                  <span>{percentUsed}%</span>
-                                </div>
-                                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                  <div className="h-full bg-amber-500 rounded-full" style={{ width: `${percentUsed}%` }} />
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Card Footer Actions */}
-                            <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                              <button
-                                onClick={() => handleToggleCouponStatus(c._id, c.status || 'active')}
-                                className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition-all ${
-                                  isActive ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                                }`}
-                              >
-                                {isActive ? 'Deactivate' : 'Activate'}
-                              </button>
-
-                              <div className="flex items-center gap-1">
-                                <button
-                                  onClick={() => handleOpenEditCoupon(c)}
-                                  className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-xs"
-                                >
-                                  <Edit2 className="w-3 h-3" />
-                                  <span>Edit</span>
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteCoupon(c._id)}
-                                  className="p-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                  </div>
-                </div>
-              )}
-
-              {/* ═══════════════════════════════════════════════ */}
-              {/* 6. REQUESTS TAB */}
-              {/* ═══════════════════════════════════════════════ */}
-              {(activeTab === 'requests' || activeTab === 'features') && (
-                <div className="space-y-4">
-                  {/* Top Bar: Title + Search + Filter Pills */}
-                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-                    <div className="flex items-center justify-between flex-wrap gap-3">
-                      <div>
-                        <h3 className="text-base font-extrabold text-slate-900">Feature Requests & Support Feedback</h3>
-                        <p className="text-xs font-semibold text-slate-500 mt-0.5">Track feature suggestions submitted by advocates and manage dev status.</p>
-                      </div>
-
-                      {/* Search Bar Input */}
-                      <div className="relative min-w-[240px] flex-1 sm:flex-initial">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                        <input
-                          type="text"
-                          value={requestSearch}
-                          onChange={(e) => setRequestSearch(e.target.value)}
-                          placeholder="Search feature requests..."
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-1.5 text-xs font-semibold text-slate-900 focus:outline-hidden focus:border-amber-500"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Filter Pills */}
-                    <div className="flex items-center gap-1.5 flex-wrap pt-1 border-t border-slate-100">
-                      {['all', 'Pending', 'Under Review', 'Planned', 'In Progress', 'Completed'].map(st => (
-                        <button
-                          key={st}
-                          onClick={() => setFeatureFilterState(st)}
-                          className={`px-3 py-1.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all ${
-                            featureFilterState === st 
-                              ? 'bg-amber-600 text-white shadow-xs' 
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
-                        >
-                          {st}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Requests Cards Grid */}
-                  {(() => {
-                    const filtered = featuresList.filter(fr => {
-                      const matchesStatus = featureFilterState === 'all' || (fr.status || '').toLowerCase() === featureFilterState.toLowerCase();
-                      const query = requestSearch.trim().toLowerCase();
-                      const matchesQuery = !query || 
-                        (fr.title || '').toLowerCase().includes(query) ||
-                        (fr.description || '').toLowerCase().includes(query) ||
-                        (fr.email || '').toLowerCase().includes(query) ||
-                        (fr.category || '').toLowerCase().includes(query) ||
-                        (fr.developerAssigned || '').toLowerCase().includes(query);
-                      return matchesStatus && matchesQuery;
-                    });
-
-                    if (filtered.length === 0) {
-                      return (
-                        <div className="bg-white p-12 rounded-3xl border border-slate-200 shadow-xs text-center space-y-3">
-                          <Zap className="w-10 h-10 text-slate-300 mx-auto" />
-                          <h4 className="font-extrabold text-slate-700 text-sm">No Feature Requests Found</h4>
-                          <p className="text-xs text-slate-400 font-semibold">Try adjusting your status filter or search query.</p>
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {filtered.map(fr => {
-                          const priorityLower = (fr.priority || '').toLowerCase();
-                          const statusLower = (fr.status || '').toLowerCase();
-
-                          return (
-                            <div key={fr._id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-3">
-                              <div className="space-y-2">
-                                {/* Card Header Badges */}
-                                <div className="flex items-center justify-between gap-2 flex-wrap">
-                                  <div className="flex items-center gap-2">
-                                    <span className="bg-slate-100 text-slate-700 text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider">
-                                      {fr.category || 'FEATURE'}
-                                    </span>
-                                    <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider ${
-                                      priorityLower === 'critical' ? 'bg-rose-100 text-rose-800 border border-rose-200' :
-                                      priorityLower === 'important' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
-                                      priorityLower === 'nice to have' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
-                                      'bg-slate-100 text-slate-700'
-                                    }`}>
-                                      {fr.priority || 'Normal'}
-                                    </span>
-                                  </div>
-
-                                  <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider ${
-                                    statusLower === 'completed' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
-                                    statusLower === 'in progress' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
-                                    statusLower === 'planned' ? 'bg-amber-100 text-amber-800 border border-amber-200' :
-                                    'bg-slate-100 text-slate-600'
-                                  }`}>
-                                    {fr.status || 'Pending'}
-                                  </span>
-                                </div>
-
-                                <h4 className="font-extrabold text-slate-900 text-base">{fr.title}</h4>
-                                <p className="text-xs font-medium text-slate-600 leading-relaxed">{fr.description}</p>
-
-                                <div className="text-[11px] font-semibold text-slate-400 pt-1 space-y-0.5">
-                                  <p>User: {fr.email} ({fr.userPlan || 'Advocate'})</p>
-                                  {fr.developerAssigned && <p>Assigned Dev: {fr.developerAssigned}</p>}
-                                </div>
-
-                                {fr.reply && (
-                                  <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/30 text-xs">
-                                    <p className="font-black text-amber-800">Dev Reply:</p>
-                                    <p className="font-semibold text-slate-800 mt-0.5">{fr.reply}</p>
-                                  </div>
-                                )}
-                              </div>
-
-                              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                                <button
-                                  onClick={() => {
-                                    setSelectedFeatureModal(fr);
-                                    setDevReplyInput(fr.reply || '');
-                                    setDevStatusInput(fr.status || 'Planned');
-                                  }}
-                                  className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs transition-all shadow-xs"
-                                >
-                                  Manage Request
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteFeature(fr._id)}
-                                  className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-all"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
-
-              {/* ═══════════════════════════════════════════════ */}
-              {/* 6. BUGS TAB */}
-              {/* ═══════════════════════════════════════════════ */}
-              {activeTab === 'bugs' && (
-                <div className="space-y-4">
-                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between flex-wrap gap-4">
-                    <div>
-                      <h3 className="text-base font-extrabold text-slate-900">Incident & Bug Reports Console</h3>
-                      <p className="text-xs font-semibold text-slate-500 mt-0.5">Track technical issues reported across Web, Android & iOS platforms.</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {['all', 'Minor', 'Major', 'Critical'].map(sev => (
-                        <button
-                          key={sev}
-                          onClick={() => setBugSeverityFilter(sev)}
-                          className={`px-3 py-1.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all ${
-                            bugSeverityFilter === sev 
-                              ? 'bg-amber-600 text-white shadow-xs' 
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
-                        >
-                          {sev}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {bugsList
-                      .filter(bug => bugSeverityFilter === 'all' ? true : (bug.severity || '').toLowerCase() === bugSeverityFilter.toLowerCase())
-                      .map(bug => (
-                        <div key={bug._id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-3">
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                <span className="bg-slate-900 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">
-                                  {bug.platform || 'Web'} App
-                                </span>
-                                <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase ${
-                                  bug.severity === 'Critical' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
-                                }`}>
-                                  {bug.severity || 'Major'}
-                                </span>
-                              </div>
-                              <span className="bg-slate-100 text-slate-700 text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">
-                                {bug.status || 'Open'}
-                              </span>
-                            </div>
-
-                            <h4 className="font-extrabold text-slate-900 text-base">{bug.title}</h4>
-                            <p className="text-xs font-medium text-slate-600 leading-relaxed">{bug.description}</p>
-
-                            <div className="text-[11px] font-semibold text-slate-400 space-y-0.5 pt-1">
-                              <p>Device: {bug.device || 'Desktop'} • OS: {bug.osVersion || 'Chrome'}</p>
-                              <p>Reported By: {bug.email}</p>
-                              {bug.developerAssigned && <p>Assignee: {bug.developerAssigned}</p>}
-                            </div>
-
-                            {bug.internalNotes && (
-                              <div className="p-3 bg-rose-50 rounded-xl border border-rose-200/60 text-xs">
-                                <p className="font-black text-rose-800">Internal Notes:</p>
-                                <p className="font-semibold text-slate-800 mt-0.5">{bug.internalNotes}</p>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => {
-                                setSelectedBugModal(bug);
-                                setBugDevNotesInput(bug.internalNotes || '');
-                                setBugStatusInput(bug.status || 'in_progress');
-                              }}
-                              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs transition-all shadow-xs"
-                            >
-                              Manage Bug
-                            </button>
-                            <button
-                              onClick={() => handleDeleteBug(bug._id)}
-                              className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-all"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* ═══════════════════════════════════════════════ */}
-              {/* 7. JURISDICTION TAB */}
-              {/* ═══════════════════════════════════════════════ */}
-              {activeTab === 'jurisdiction' && (
-                <div className="space-y-6">
-                  {/* Card 1: Override Panel */}
-                  <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-5">
-                    <div>
-                      <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                        <span>🌍 Legal Jurisdiction Testing Panel</span>
-                      </h3>
-                      <p className="text-xs font-semibold text-slate-500 mt-0.5">
-                        Restricted Developer QA Dashboard: Override user jurisdictions temporarily or permanently for testing legal RAG prompt injection.
-                      </p>
-                    </div>
-
-                    {/* Step 1: User Search */}
-                    <div className="space-y-2">
-                      <label className="text-xs font-extrabold text-slate-900 block">1. Search & Select Advocate</label>
-                      <div className="relative">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                        <input
-                          type="text"
-                          value={jSearchQuery}
-                          onChange={(e) => {
-                            setJSearchQuery(e.target.value);
-                            if (jSelectedUser) setJSelectedUser(null);
-                          }}
-                          placeholder="Search advocate by Name, Email, or User ID..."
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold text-slate-900 focus:outline-hidden"
-                        />
-                      </div>
-
-                      {/* Dropdown Suggestions */}
-                      {jSearchQuery.length > 0 && !jSelectedUser && (
-                        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg max-h-48 overflow-y-auto custom-scrollbar divide-y divide-slate-100">
-                          {usersList.filter(u => 
-                            u.name?.toLowerCase().includes(jSearchQuery.toLowerCase()) ||
-                            u.email?.toLowerCase().includes(jSearchQuery.toLowerCase()) ||
-                            u._id?.toLowerCase().includes(jSearchQuery.toLowerCase())
-                          ).slice(0, 5).map(u => (
-                            <button
-                              key={u._id}
-                              type="button"
-                              onClick={() => {
-                                setJSelectedUser(u);
-                                setJSearchQuery(`${u.name} (${u.email})`);
-                              }}
-                              className="w-full p-3 text-left hover:bg-amber-50 transition-colors flex items-center justify-between"
-                            >
-                              <div>
-                                <p className="font-extrabold text-slate-900 text-xs">{u.name}</p>
-                                <p className="text-[11px] font-semibold text-slate-400">{u.email}</p>
-                              </div>
-                              <span className="text-[10px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md">
-                                {u.currentPlan || 'Advocate'}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Step 2: Selected Profile Display */}
-                    {jSelectedUser && (
-                      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
-                        <p className="text-[11px] font-black text-slate-400 uppercase tracking-wider">ADVOCATE ACTIVE PROFILE</p>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-bold text-slate-800">
-                          <div>
-                            <span className="text-slate-400 font-semibold block text-[10px]">NAME</span>
-                            <span>{jSelectedUser.name}</span>
-                          </div>
-                          <div>
-                            <span className="text-slate-400 font-semibold block text-[10px]">EMAIL</span>
-                            <span>{jSelectedUser.email}</span>
-                          </div>
-                          <div>
-                            <span className="text-slate-400 font-semibold block text-[10px]">COUNTRY</span>
-                            <span>{jSelectedUser.country || 'India'}</span>
-                          </div>
-                          <div>
-                            <span className="text-slate-400 font-semibold block text-[10px]">JURISDICTION</span>
-                            <span className="text-amber-700">{jSelectedUser.jurisdiction || 'India'}</span>
-                          </div>
-                        </div>
-
-                        {/* Step 3 & 4: Country Selector & Override Mode */}
-                        <div className="pt-3 border-t border-slate-200 space-y-4">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                              <label className="text-xs font-extrabold text-slate-900 block mb-1.5">2. Target Country / Jurisdiction</label>
-                              <select
-                                value={jTargetCountry.code}
-                                onChange={(e) => {
-                                  const found = [
-                                    { name: 'India', code: 'IN', flag: '🇮🇳' },
-                                    { name: 'United States', code: 'US', flag: '🇺🇸' },
-                                    { name: 'United Kingdom', code: 'GB', flag: '🇬🇧' },
-                                    { name: 'Canada', code: 'CA', flag: '🇨🇦' },
-                                    { name: 'Australia', code: 'AU', flag: '🇦🇺' },
-                                    { name: 'United Arab Emirates', code: 'AE', flag: '🇦🇪' },
-                                    { name: 'Singapore', code: 'SG', flag: '🇸🇬' },
-                                    { name: 'Germany', code: 'DE', flag: '🇩🇪' },
-                                    { name: 'France', code: 'FR', flag: '🇫🇷' },
-                                    { name: 'Japan', code: 'JP', flag: '🇯🇵' }
-                                  ].find(c => c.code === e.target.value);
-                                  if (found) setJTargetCountry(found);
-                                }}
-                                className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900"
-                              >
-                                <option value="IN">🇮🇳 India (IN)</option>
-                                <option value="US">🇺🇸 United States (US)</option>
-                                <option value="GB">🇬🇧 United Kingdom (GB)</option>
-                                <option value="CA">🇨🇦 Canada (CA)</option>
-                                <option value="AU">🇦🇺 Australia (AU)</option>
-                                <option value="AE">🇦🇪 United Arab Emirates (AE)</option>
-                                <option value="SG">🇸🇬 Singapore (SG)</option>
-                                <option value="DE">🇩🇪 Germany (DE)</option>
-                                <option value="FR">🇫🇷 France (FR)</option>
-                                <option value="JP">🇯🇵 Japan (JP)</option>
-                              </select>
-                            </div>
-
-                            <div>
-                              <label className="text-xs font-extrabold text-slate-900 block mb-1.5">3. Override Mode</label>
-                              <div className="flex items-center gap-3 pt-1">
-                                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
-                                  <input
-                                    type="radio"
-                                    name="jMode"
-                                    checked={jOverrideType === 'Temporary'}
-                                    onChange={() => setJOverrideType('Temporary')}
-                                    className="text-amber-600 focus:ring-amber-500"
-                                  />
-                                  <span>Temporary QA</span>
-                                </label>
-
-                                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
-                                  <input
-                                    type="radio"
-                                    name="jMode"
-                                    checked={jOverrideType === 'Permanent'}
-                                    onChange={() => setJOverrideType('Permanent')}
-                                    className="text-amber-600 focus:ring-amber-500"
-                                  />
-                                  <span>Permanent DB Save</span>
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={handleApplyOverride}
-                            disabled={jSaving}
-                            className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs transition-all shadow-xs"
-                          >
-                            {jSaving ? 'Applying...' : 'Apply Jurisdiction Override'}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Card 2: AI Sandbox */}
-                  {jSelectedUser && (
-                    <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-                      <div>
-                        <h3 className="text-base font-extrabold text-slate-900">🧪 Active AI Testing Sandbox</h3>
-                        <p className="text-xs font-semibold text-slate-500 mt-0.5">
-                          Test how the RAG model injects jurisdiction specific laws into legal responses.
-                        </p>
-                      </div>
-
-                      <div className="space-y-3">
-                        <textarea
-                          rows={3}
-                          value={jTestQuery}
-                          onChange={(e) => setJTestQuery(e.target.value)}
-                          placeholder="e.g. Can my landlord evict me without 30 days notice?"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs font-semibold text-slate-900 focus:outline-hidden leading-relaxed"
-                        />
-
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {['Landlord Eviction Rules', 'Rights after arrest', 'Child custody guidelines', 'Contract Review rules'].map(t => (
-                            <button
-                              key={t}
-                              type="button"
-                              onClick={() => setJTestQuery(t)}
-                              className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] transition-all"
-                            >
-                              {t}
-                            </button>
-                          ))}
-                        </div>
-
-                        <div className="flex items-center gap-3 pt-2">
-                          <button
-                            onClick={handleRunAITest}
-                            disabled={jRunningTest}
-                            className="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs transition-all shadow-xs"
-                          >
-                            {jRunningTest ? 'Running RAG Test...' : 'Run AI Test'}
-                          </button>
-                          <button
-                            onClick={handleResetOverride}
-                            className="px-4 py-2 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-bold text-xs transition-all"
-                          >
-                            Reset
-                          </button>
-                        </div>
-
-                        {jTestResult && (
-                          <div className="p-4 bg-slate-900 text-slate-100 rounded-2xl space-y-1.5 text-xs font-medium mt-3 leading-relaxed">
-                            <p className="font-extrabold text-amber-400 text-[11px] uppercase tracking-wider">AI RAG Response Output:</p>
-                            <p className="whitespace-pre-wrap">{jTestResult}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ═══════════════════════════════════════════════ */}
-              {/* 8. SETTINGS TAB */}
-              {/* ═══════════════════════════════════════════════ */}
-              {activeTab === 'settings' && (
-                <div className="space-y-6">
-                  {/* Card 1: General Config */}
-                  <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-                    <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                      <Settings className="w-5 h-5 text-amber-600" />
-                      <span>⚙️ System General Settings</span>
-                    </h3>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-extrabold text-slate-700 block mb-1">Platform Name</label>
-                        <input
-                          type="text"
-                          value={adminSettings.platformName || ''}
-                          onChange={(e) => setAdminSettings({ ...adminSettings, platformName: e.target.value })}
-                          onBlur={() => handleUpdateAdminSettings({ platformName: adminSettings.platformName })}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-extrabold text-slate-700 block mb-1">Support Email</label>
-                        <input
-                          type="email"
-                          value={adminSettings.supportEmail || ''}
-                          onChange={(e) => setAdminSettings({ ...adminSettings, supportEmail: e.target.value })}
-                          onBlur={() => handleUpdateAdminSettings({ supportEmail: adminSettings.supportEmail })}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-extrabold text-slate-700 block mb-1">Default Free AI Credits</label>
-                        <input
-                          type="number"
-                          value={adminSettings.defaultCredits || 50}
-                          onChange={(e) => setAdminSettings({ ...adminSettings, defaultCredits: parseInt(e.target.value) || 0 })}
-                          onBlur={() => handleUpdateAdminSettings({ defaultCredits: adminSettings.defaultCredits })}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-extrabold text-slate-700 block mb-1">File Upload Limit (MB)</label>
-                        <input
-                          type="number"
-                          value={adminSettings.fileUploadLimitMb || 25}
-                          onChange={(e) => setAdminSettings({ ...adminSettings, fileUploadLimitMb: parseInt(e.target.value) || 0 })}
-                          onBlur={() => handleUpdateAdminSettings({ fileUploadLimitMb: adminSettings.fileUploadLimitMb })}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Card 2: Security Settings */}
-                  <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-                    <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-amber-600" />
-                      <span>🔒 Security & System Control</span>
-                    </h3>
-
-                    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                      <div>
-                        <p className="font-extrabold text-slate-900 text-sm">Maintenance Mode</p>
-                        <p className="text-xs font-semibold text-slate-500 mt-0.5">
-                          Lock application access for users during core updates.
-                        </p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={adminSettings.maintenanceMode}
-                          onChange={(e) => handleUpdateAdminSettings({ maintenanceMode: e.target.checked })}
-                          className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
-                      </label>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                      <div>
-                        <label className="text-xs font-extrabold text-slate-700 block mb-1">Session Timeout (Minutes)</label>
-                        <input
-                          type="number"
-                          value={adminSettings.sessionTimeout || 30}
-                          onChange={(e) => setAdminSettings({ ...adminSettings, sessionTimeout: parseInt(e.target.value) || 0 })}
-                          onBlur={() => handleUpdateAdminSettings({ sessionTimeout: adminSettings.sessionTimeout })}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-extrabold text-slate-700 block mb-1">Change Admin Password</label>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="password"
-                            value={adminPasswordInput}
-                            onChange={(e) => setAdminPasswordInput(e.target.value)}
-                            placeholder="New admin password..."
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (!adminPasswordInput || adminPasswordInput.length < 6) {
-                                return toast.error('Password must be at least 6 characters');
-                              }
-                              toast.success('Admin password updated successfully');
-                              setAdminPasswordInput('');
-                            }}
-                            className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs transition-all shrink-0"
-                          >
-                            Update
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        )}
-      </main>
-
-      {/* ── USER PROFILE DOSSIER MODAL ── */}
-      {selectedUser && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl border border-slate-200 my-8 max-h-[90vh] flex flex-col">
-            
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-700 font-black text-xl flex items-center justify-center border border-amber-500/20 shadow-xs">
-                  {selectedUser.name?.charAt(0) || 'U'}
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-extrabold text-slate-900 text-lg">{selectedUser.name}</h3>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                      selectedUser.isBlocked || selectedUser.isSuspended
-                        ? 'bg-rose-100 text-rose-700 border border-rose-200'
-                        : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                    }`}>
-                      {selectedUser.isBlocked || selectedUser.isSuspended ? 'Suspended' : 'Active'}
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {(stats.totalUsers || 0).toLocaleString()}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 text-[11px] font-semibold">
+                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>{stats.onlineUsers || 0} Online</span>
+                    </span>
+                    <span className="text-slate-300 dark:text-zinc-700">•</span>
+                    <span className="text-slate-500 dark:text-zinc-400">
+                      {stats.activeUsers || 0} Active (30d)
                     </span>
                   </div>
-                  <p className="text-xs font-semibold text-slate-400 mt-0.5">{selectedUser.email}</p>
                 </div>
               </div>
-              <button 
-                onClick={() => setSelectedUser(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors"
+
+              {/* CARD 2: PLAN COMPOSITION */}
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">PLAN COMPOSITION</span>
+                  <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500 border border-purple-500/20">
+                    <Package className="w-4 h-4" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-2 bg-slate-50 dark:bg-zinc-900/80 rounded-xl border border-slate-100 dark:border-zinc-800 text-center">
+                    <h4 className="text-lg font-black text-slate-900 dark:text-white">{(stats.premiumUsers || 0).toLocaleString()}</h4>
+                    <p className="text-[9px] font-bold text-[#C8A34D]">Paid Users</p>
+                  </div>
+                  <div className="p-2 bg-slate-50 dark:bg-zinc-900/80 rounded-xl border border-slate-100 dark:border-zinc-800 text-center">
+                    <h4 className="text-lg font-black text-slate-900 dark:text-white">{(stats.freeUsers || 0).toLocaleString()}</h4>
+                    <p className="text-[9px] font-bold text-slate-500 dark:text-zinc-400">Free Advocates</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* CARD 3: MONTHLY REVENUE */}
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">MONTHLY REVENUE</span>
+                  <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                    <DollarSign className="w-4 h-4" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
+                    ₹{(stats.revenueMonth || liveBillingStats.totalRevenue || 0).toLocaleString('en-IN')}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 text-[11px] font-semibold text-slate-500 dark:text-zinc-400 truncate">
+                    <span>Today: <strong className="text-slate-900 dark:text-white font-black">₹{(stats.revenueToday || 0).toLocaleString('en-IN')}</strong></span>
+                    <span className="text-slate-300 dark:text-zinc-700">•</span>
+                    <span>Life: <strong className="text-slate-900 dark:text-white font-black">₹{(stats.revenueLifetime || liveBillingStats.totalRevenue || 0).toLocaleString('en-IN')}</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              {/* CARD 4: AI RESOURCE SPENT */}
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">AI RESOURCE SPENT</span>
+                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 border border-blue-500/20">
+                    <Zap className="w-4 h-4" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {(stats.totalCreditsUsed || 0).toLocaleString()}
+                  </h3>
+                  <p className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 truncate">
+                    Total Credits Consumed
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* ROW 3: 7-DAY ACTIVITY GRAPH */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">DAILY ACTIVITY</h3>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Last 7 Days aggregated logins & AI queries</p>
+                </div>
+                <span className="text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20">
+                  7-Day Trend
+                </span>
+              </div>
+
+              {/* Interactive Bar Chart */}
+              <div className="pt-4 flex items-end justify-between gap-2 sm:gap-6 h-48 px-2 sm:px-6 bg-slate-50/60 dark:bg-zinc-900/50 rounded-2xl border border-slate-100 dark:border-zinc-800/80">
+                {(Array.isArray(stats.dailyActivity) && stats.dailyActivity.length > 0
+                  ? stats.dailyActivity
+                  : [
+                      { label: 'MON', val: 24 },
+                      { label: 'TUE', val: 45 },
+                      { label: 'WED', val: 68 },
+                      { label: 'THU', val: 52 },
+                      { label: 'FRI', val: 89 },
+                      { label: 'SAT', val: 61 },
+                      { label: 'SUN', val: 75 }
+                    ]
+                ).map((day, idx) => {
+                  const maxVal = Math.max(1, ...(stats.dailyActivity || []).map(d => d.val || 0));
+                  const heightPercent = Math.max(12, Math.min(100, ((day.val || 0) / maxVal) * 100));
+                  return (
+                    <div key={idx} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
+                      <span className="text-[10px] font-black text-slate-500 group-hover:text-[#C8A34D] transition-colors opacity-0 group-hover:opacity-100">
+                        {day.val}
+                      </span>
+                      <div className="w-full max-w-[40px] bg-slate-200 dark:bg-zinc-800 rounded-t-xl overflow-hidden h-32 flex items-end">
+                        <div
+                          style={{ height: `${heightPercent}%` }}
+                          className="w-full bg-[#C8A34D] group-hover:bg-[#b08d3b] transition-all rounded-t-xl"
+                        />
+                      </div>
+                      <span className="text-[11px] font-black text-slate-600 dark:text-zinc-400 group-hover:text-[#C8A34D]">
+                        {day.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ROW 4: AI LEGAL FEATURE USAGE ANALYTICS GRID */}
+            <div className="space-y-4">
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">AI LEGAL™ FEATURE USAGE</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                  <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-blue-500 border border-blue-500/20">
+                    <Building2 className="w-5 h-5" />
+                  </div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CASES MANAGED</p>
+                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.totalCases || 0).toLocaleString()}</h4>
+                  <p className="text-[11px] font-medium text-slate-500">Total litigation folders</p>
+                </div>
+
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                  <div className="p-2.5 w-fit rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CONTRACTS ANALYZED</p>
+                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.contractsAnalyzed || 0).toLocaleString()}</h4>
+                  <p className="text-[11px] font-medium text-slate-500">Total contracts audited</p>
+                </div>
+
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                  <div className="p-2.5 w-fit rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20">
+                    <Lightbulb className="w-5 h-5" />
+                  </div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">STRATEGY ENGINE REPORTS</p>
+                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.strategyReports || 0).toLocaleString()}</h4>
+                  <p className="text-[11px] font-medium text-slate-500">Strategy reports generated</p>
+                </div>
+
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                  <div className="p-2.5 w-fit rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                    <TrendingUp className="w-5 h-5" />
+                  </div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CASE PREDICTOR MODELS</p>
+                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.casePredictorReports || 0).toLocaleString()}</h4>
+                  <p className="text-[11px] font-medium text-slate-500">Outcome predictions run</p>
+                </div>
+
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                  <div className="p-2.5 w-fit rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                    <Edit2 className="w-5 h-5" />
+                  </div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">DRAFTS GENERATED</p>
+                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.draftsGenerated || 0).toLocaleString()}</h4>
+                  <p className="text-[11px] font-medium text-slate-500">Petitions & notices drafted</p>
+                </div>
+
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                  <div className="p-2.5 w-fit rounded-xl bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">
+                    <Search className="w-5 h-5" />
+                  </div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">EVIDENCE ANALYST AUDITS</p>
+                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.evidenceAnalyses || 0).toLocaleString()}</h4>
+                  <p className="text-[11px] font-medium text-slate-500">Evidence documents scanned</p>
+                </div>
+
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                  <div className="p-2.5 w-fit rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                    <MessageSquare className="w-5 h-5" />
+                  </div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">AI ASSISTANT CHATS</p>
+                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.chatUsage || 0).toLocaleString()}</h4>
+                  <p className="text-[11px] font-medium text-slate-500">Conversations created</p>
+                </div>
+
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                  <div className="p-2.5 w-fit rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                    <HardDrive className="w-5 h-5" />
+                  </div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">STORAGE CONSUMED</p>
+                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{stats.storageUsed || '512 MB'}</h4>
+                  <p className="text-[11px] font-medium text-slate-500">RAG & database storage</p>
+                </div>
+              </div>
+            </div>
+
+            {/* ROW 5: PENDING TRIAGE ALERTS */}
+            <div className="space-y-4">
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">PENDING TRIAGE</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button
+                  onClick={() => setActiveTab('bugs')}
+                  className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs"
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-red-500 bg-red-500/10 px-2.5 py-0.5 rounded-full border border-red-500/20">
+                      OPEN BUG REPORTS
+                    </span>
+                    <Bug className="w-5 h-5 text-red-500" />
+                  </div>
+                  <div>
+                    <h4 className="text-3xl font-black text-slate-900 dark:text-white">{bugsList.length}</h4>
+                    <p className="text-xs font-medium text-slate-500 mt-1">Critical issues requiring review</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-black text-red-500 group-hover:translate-x-1 transition-transform">
+                    <span>View Bugs</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('features')}
+                  className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs"
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-blue-500 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">
+                      PENDING FEATURE REQUESTS
+                    </span>
+                    <Lightbulb className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div>
+                    <h4 className="text-3xl font-black text-slate-900 dark:text-white">{featuresList.length}</h4>
+                    <p className="text-xs font-medium text-slate-500 mt-1">User submitted ideas awaiting review</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-black text-blue-500 group-hover:translate-x-1 transition-transform">
+                    <span>View Requests</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('crashes')}
+                  className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs"
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                      UNRESOLVED CRASH TELEMETRY
+                    </span>
+                    <AlertTriangle className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <h4 className="text-3xl font-black text-slate-900 dark:text-white">{crashStats.unresolved || crashesList.length}</h4>
+                    <p className="text-xs font-medium text-slate-500 mt-1">System exception telemetry</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-black text-amber-500 group-hover:translate-x-1 transition-transform">
+                    <span>View Crash Reports</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : activeTab === 'users' ? (
+          /* TAB 2: USERS DIRECTORY — EXACT MOBILE APP PARITY */
+          <div className="space-y-6">
+            {/* Search & Filter Toolbar */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col md:flex-row gap-4 justify-between items-center">
+              <div className="relative flex-1 w-full">
+                <Search className="w-4 h-4 text-[#C8A34D] absolute left-3.5 top-3" />
+                <input
+                  type="text"
+                  placeholder="Search users by name, email, phone, jurisdiction, ID..."
+                  value={userSearch}
+                  onChange={e => setUserSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#C8A34D] bg-slate-50 dark:bg-zinc-900"
+                />
+              </div>
+
+              {/* Status Filter Pills */}
+              <div className="flex items-center gap-1.5 w-full md:w-auto overflow-x-auto custom-scrollbar">
+                {[
+                  { id: 'all', label: 'ALL' },
+                  { id: 'free', label: 'FREE' },
+                  { id: 'premium', label: 'PREMIUM' },
+                  { id: 'suspended', label: 'SUSPENDED' },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => setUserFilter(f.id)}
+                    className={`px-3.5 py-1.5 rounded-xl text-[11px] font-black transition-all cursor-pointer border ${
+                      userFilter === f.id
+                        ? 'bg-[#C8A34D]/10 text-[#C8A34D] border-[#C8A34D]/40 shadow-2xs'
+                        : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Users Directory Table & Header */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden">
+              <div className="p-4 sm:p-6 border-b border-slate-200/80 dark:border-zinc-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">User Accounts Directory</h3>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Manage user profiles, roles, AI credits, subscriptions and access controls</p>
+                </div>
+                <span className="text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20">
+                  {filteredUsers.length} Users Found
+                </span>
+              </div>
+
+              {filteredUsers.length === 0 ? (
+                <div className="py-16 text-center space-y-3">
+                  <Users className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
+                  <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No User Accounts Match Criteria</p>
+                  <p className="text-[11px] text-slate-400">Try adjusting your search query or status filter.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-[850px]">
+                    <thead>
+                      <tr className="bg-slate-50/80 dark:bg-zinc-900/60 border-b border-slate-200/80 dark:border-zinc-800 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        <th className="px-6 py-3.5">USER</th>
+                        <th className="px-6 py-3.5">ROLE</th>
+                        <th className="px-6 py-3.5">SUBSCRIPTION PLAN</th>
+                        <th className="px-6 py-3.5">STATUS</th>
+                        <th className="px-6 py-3.5 text-right">ACTIONS</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60">
+                      {filteredUsers.map(u => {
+                        const isBlocked = u.isBlocked === true || u.status === 'Suspended';
+                        const userRole = u.role || u.userRole || 'Advocate';
+                        const userPlan = u.subscription?.plan || u.currentPlan || 'FREE';
+
+                        return (
+                          <tr key={u._id} className="hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors group">
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] font-black text-xs flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
+                                  {(u.name || u.displayName || u.email || 'U').charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <button
+                                    onClick={() => setSelectedDossierUser(u)}
+                                    className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#C8A34D] transition-colors text-left cursor-pointer"
+                                  >
+                                    {u.name || u.displayName || 'Advocate Client'}
+                                  </button>
+                                  <p className="text-[11px] text-slate-400 font-medium">{u.email}</p>
+                                  {u.phone && <p className="text-[10px] text-slate-400">{u.phone}</p>}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 uppercase tracking-wider">
+                                {userRole}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 py-1 rounded-lg border border-[#C8A34D]/20">
+                                {userPlan}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${
+                                isBlocked ? 'text-red-500' : 'text-emerald-500'
+                              }`}>
+                                {isBlocked ? <XCircle className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                                <span>{isBlocked ? 'Suspended' : 'Active'}</span>
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <button
+                                onClick={() => setSelectedDossierUser(u)}
+                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>View Profile</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : activeTab === 'billing' ? (
+          /* TAB 3: BILLING (MOBILE 1:1 PARITY) */
+          <div className="space-y-6">
+            {/* 1. DYNAMIC LIVE KPI METRICS BAR (4 Compact Cards) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white dark:bg-[#1E293B] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Total Revenue</p>
+                <p className="text-xl font-black text-[#10B981] my-1">
+                  ₹{liveBillingStats.totalRevenue.toLocaleString('en-IN')}
+                </p>
+                <p className="text-[10px] font-bold text-slate-400">Gross Collected</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#1E293B] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Paid Invoices</p>
+                <p className="text-xl font-black text-[#C8A34D] my-1">
+                  {liveBillingStats.successCount}
+                </p>
+                <p className="text-[10px] font-bold text-slate-400">Successful Transactions</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#1E293B] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Pending</p>
+                <p className="text-xl font-black text-amber-500 my-1">
+                  {liveBillingStats.pendingCount}
+                </p>
+                <p className="text-[10px] font-bold text-slate-400">Awaiting Payment</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#1E293B] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Refunded</p>
+                <p className="text-xl font-black text-red-500 my-1">
+                  {liveBillingStats.refundedCount}
+                </p>
+                <p className="text-[10px] font-bold text-slate-400">Reversed Payments</p>
+              </div>
+            </div>
+
+            {/* 2. REAL-TIME SOCKET INDICATOR + CSV EXPORT BAR */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#1E293B] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <p className="text-xs font-black text-slate-700 dark:text-zinc-200">
+                  Live Socket Stream • <span className="text-[#C8A34D]">{filteredPayments.length}</span> of {liveBillingStats.totalCount} Invoices Loaded
+                </p>
+              </div>
+              <button
+                onClick={handleExportCSV}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#C8A34D]/15 hover:bg-[#C8A34D]/25 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs"
               >
-                <X className="w-4 h-4" />
+                <Download className="w-4 h-4" />
+                <span>CSV Export</span>
               </button>
             </div>
 
-            {/* Scrollable Body */}
-            <div className="overflow-y-auto custom-scrollbar space-y-5 pr-1 flex-1">
-              
-              {/* 1. Core Profile Dossier Card */}
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2.5">
-                <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 border-b border-slate-200/60 pb-2 flex items-center justify-between">
-                  <span>User Profile Dossier</span>
-                  <span className="font-mono text-[10px] text-slate-500">ID: {selectedUser._id}</span>
-                </h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-xs font-semibold text-slate-600">
-                  <p><strong className="text-slate-900 font-bold">Full Name:</strong> {selectedUser.name}</p>
-                  <p><strong className="text-slate-900 font-bold">Email:</strong> {selectedUser.email}</p>
-                  <p><strong className="text-slate-900 font-bold">Phone Number:</strong> {selectedUser.phone || 'N/A'}</p>
-                  <p><strong className="text-slate-900 font-bold">Legal Jurisdiction:</strong> {selectedUser.jurisdiction || selectedUser.country || 'India 🇮🇳'}</p>
-                  <p><strong className="text-slate-900 font-bold">Role:</strong> <span className="capitalize font-bold text-amber-700">{selectedUser.role || 'Advocate'}</span></p>
-                  <p><strong className="text-slate-900 font-bold">Subscription Plan:</strong> <span className="font-black text-amber-600">{selectedUser.subscription?.plan || selectedUser.currentPlan || 'FREE'}</span></p>
-                  <p><strong className="text-slate-900 font-bold">Account Status:</strong> <span className={selectedUser.isBlocked || selectedUser.isSuspended ? 'text-rose-600 font-extrabold' : 'text-emerald-600 font-extrabold'}>{selectedUser.isBlocked || selectedUser.isSuspended ? 'Suspended' : 'Active'}</span></p>
-                  <p><strong className="text-slate-900 font-bold">AI Credits Balance:</strong> <span className="font-extrabold text-amber-600">{selectedUser.credits ?? 50} credits</span></p>
-                  <p><strong className="text-slate-900 font-bold">Total Cases Created:</strong> <span className="font-extrabold text-slate-900">{selectedUser.totalCases ?? selectedUser.casesCount ?? 0}</span></p>
-                  <p><strong className="text-slate-900 font-bold">Created Date:</strong> {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString('en-IN') : 'N/A'}</p>
-                  <p className="sm:col-span-2"><strong className="text-slate-900 font-bold">Last Login Timestamp:</strong> {selectedUser.lastLogin ? new Date(selectedUser.lastLogin).toLocaleString('en-IN') : 'N/A'}</p>
-                </div>
-
-                {selectedUser.usageStatus && (
-                  <div className="mt-3 pt-3 border-t border-slate-200/80">
-                    <h5 className="text-[11px] font-extrabold text-amber-700 mb-2 uppercase tracking-wider">📊 Active Usage Breakdown</h5>
-                    <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-600">
-                      <p>Cases Folders: <strong className="text-slate-900">{selectedUser.usageStatus.cases?.used || 0} / {selectedUser.usageStatus.cases?.limit === -1 ? 'Unlimited' : selectedUser.usageStatus.cases?.limit}</strong></p>
-                      {Object.entries(selectedUser.usageStatus.features || {}).map(([feat, usage]) => (
-                        <p key={feat} className="truncate">
-                          {feat.replace(/_/g, ' ').toUpperCase()}: <strong className="text-slate-900">{usage.used} / {usage.limit === -1 || usage.limit === Infinity ? 'Unlimited' : usage.limit}</strong>
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                )}
+            {/* 3. SEARCH & STATUS FILTER PILLS */}
+            <div className="space-y-3">
+              {/* Search Field */}
+              <div className="relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={billingSearch}
+                  onChange={(e) => setBillingSearch(e.target.value)}
+                  placeholder="Search invoice number, user name, email, or TXN ID..."
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-zinc-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:border-[#C8A34D] transition-all shadow-xs"
+                />
               </div>
 
-              {/* 2. Subscription Management Card */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+              {/* Filter Pills */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                {[
+                  { id: 'all', label: 'ALL' },
+                  { id: 'success', label: 'SUCCESS' },
+                  { id: 'pending', label: 'PENDING' },
+                  { id: 'refunded', label: 'REFUNDED' },
+                  { id: 'failed', label: 'FAILED' },
+                ].map((tab) => {
+                  const isActive = billingFilter === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setBillingFilter(tab.id)}
+                      className={`px-4 py-1.5 rounded-full text-xs font-black tracking-wider transition-all cursor-pointer border ${
+                        isActive
+                          ? 'bg-[#C8A34D]/15 border-[#C8A34D] text-[#C8A34D] shadow-2xs'
+                          : 'bg-white dark:bg-[#1E293B] border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-[#C8A34D]/50'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 4. TRANSACTIONS & INVOICES LEDGER CONTAINER */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-6 space-y-4">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-zinc-800">
                 <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                    💳 Subscription Management
+                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Transactions & Invoices</h3>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Real-time financial payment ledger</p>
+                </div>
+                <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20">
+                  {filteredPayments.length} Records
+                </span>
+              </div>
+
+              {filteredPayments.length === 0 ? (
+                <div className="py-12 text-center space-y-3">
+                  <CreditCard className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
+                  <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Payment Transactions Found</p>
+                  <p className="text-[11px] text-slate-400">No transactions match your search query or filter criteria.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {filteredPayments.map((p, idx) => {
+                    const st = String(p.status || 'success').toLowerCase();
+                    const isSuccess = st === 'success' || st === 'paid';
+                    const isRefunded = st === 'refunded' || st === 'reversed';
+                    const isPending = st === 'pending';
+                    const isFailed = st === 'failed' || st === 'rejected';
+
+                    const amountColor = isSuccess ? 'text-emerald-500' : isRefunded ? 'text-amber-500' : isPending ? 'text-blue-500' : 'text-red-500';
+                    const statusText = (p.status || 'SUCCESS').toUpperCase();
+                    const amt = Number(p.amount || 0);
+                    const gstAmount = p.gst ? Number(p.gst).toFixed(2) : (amt * 0.18).toFixed(2);
+                    const userName = p.userName || p.userId?.name || 'Advocate Customer';
+                    const userEmail = p.userEmail || p.userId?.email || 'N/A';
+                    const invoiceNo = p.invoiceNumber || p._id || `INV-${idx}`;
+                    const txnId = p.transactionId || p._id || 'N/A';
+                    const planName = typeof p.planId === 'object' ? (p.planId?.planName || p.planId?._id) : (p.planId || 'advocate_basic');
+
+                    return (
+                      <div
+                        key={p._id || idx}
+                        className="bg-slate-50/70 dark:bg-zinc-900/60 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3 hover:border-[#C8A34D]/40 transition-all"
+                      >
+                        {/* Header: User & Amount */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <div>
+                            <h4 className="text-xs font-black text-slate-900 dark:text-white">{userName}</h4>
+                            <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                              {userEmail} • Invoice: <span className="font-bold text-slate-700 dark:text-zinc-300">{invoiceNo}</span>
+                            </p>
+                          </div>
+                          <span className={`text-base font-black ${amountColor}`}>
+                            ₹{amt.toLocaleString('en-IN')}
+                          </span>
+                        </div>
+
+                        {/* Metadata Tags: Gateway, Plan, GST */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="px-2.5 py-0.5 rounded-md bg-slate-200/60 dark:bg-zinc-800 text-[10px] font-extrabold uppercase text-slate-600 dark:text-zinc-300">
+                            Gateway: {p.gateway || 'Razorpay'}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-md bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[10px] font-black uppercase">
+                            Plan: {planName}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-md bg-slate-200/60 dark:bg-zinc-800 text-[10px] font-medium text-slate-500 dark:text-zinc-400">
+                            GST (18%): ₹{gstAmount}
+                          </span>
+                        </div>
+
+                        {/* Divider Line */}
+                        <div className="border-t border-slate-200/60 dark:border-zinc-800/60 pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <p className="text-[10px] font-mono text-slate-400">
+                            TXN: {txnId} • Date: {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'Today'}
+                          </p>
+
+                          {/* Footer Actions & Status */}
+                          <div className="flex items-center gap-2 shrink-0">
+                            {isPending && (
+                              <button
+                                onClick={() => setMarkPaidConfirmModal({ isOpen: true, payment: p })}
+                                className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg text-[10px] transition-all cursor-pointer"
+                              >
+                                Mark Paid
+                              </button>
+                            )}
+
+                            {isSuccess && (
+                              <button
+                                onClick={() => setRefundConfirmModal({ isOpen: true, payment: p })}
+                                className="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/30 rounded-lg text-[10px] font-black transition-all cursor-pointer"
+                              >
+                                Refund
+                              </button>
+                            )}
+
+                            <span
+                              className={`px-3 py-0.5 rounded-full text-[10px] font-black tracking-wider border ${
+                                isSuccess
+                                  ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
+                                  : isPending
+                                  ? 'bg-blue-500/10 text-blue-500 border-blue-500/30'
+                                  : isRefunded
+                                  ? 'bg-amber-500/10 text-amber-500 border-amber-500/30'
+                                  : 'bg-red-500/10 text-red-500 border-red-500/30'
+                              }`}
+                            >
+                              {statusText}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : activeTab === 'plans' ? (
+          /* TAB 4: PLANS DASHBOARD (MOBILE 1:1 PARITY) */
+          <div className="space-y-6">
+            {/* Header & Primary CTA */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#1E293B] p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+              <div>
+                <h2 className="text-lg font-black text-slate-900 dark:text-white">Subscription Plans & Pricing</h2>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-1">
+                  Manage Student, Advocate, Law Firm & Combo plans, edit prices (₹), credits, and feature lists.
+                </p>
+              </div>
+              <button
+                onClick={handleOpenPlanCreator}
+                className="px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ Create Plan</span>
+              </button>
+            </div>
+
+            {/* Plans List Grid (3 Columns on Desktop, 2 on Tablet, 1 on Mobile) */}
+            {plansList.length === 0 ? (
+              <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-12 text-center space-y-3">
+                <Tag className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
+                <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Subscription Plans Configured</p>
+                <p className="text-[11px] text-slate-400">Click "+ Create Plan" to set up your first subscription tier.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {plansList.map((plan, idx) => {
+                  const isPopular = plan.isPopular;
+                  const isActive = plan.isActive !== false;
+                  const planTitle = plan.planName || plan.name || 'Advocate Plan';
+                  const badgeText = plan.badge || 'PRO';
+                  const planSlug = plan.planId || plan._id || `plan_${idx}`;
+                  const featuresArr = Array.isArray(plan.features) ? plan.features : (plan.features ? String(plan.features).split(',') : []);
+
+                  return (
+                    <div
+                      key={plan._id || planSlug}
+                      className={`bg-white dark:bg-[#1E293B] rounded-3xl p-6 border shadow-sm space-y-4 relative flex flex-col justify-between transition-all hover:shadow-md ${
+                        isPopular
+                          ? 'border-[#C8A34D] border-2 ring-1 ring-[#C8A34D]/30'
+                          : 'border-slate-200/80 dark:border-zinc-800'
+                      }`}
+                    >
+                      <div className="space-y-4">
+                        {/* Top Header Row */}
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="text-base font-black text-slate-900 dark:text-white">{planTitle}</h3>
+                              {badgeText && (
+                                <span className="bg-[#C8A34D] text-[#111111] text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                  {badgeText}
+                                </span>
+                              )}
+                              {isPopular && (
+                                <span className="bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                  POPULAR
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] text-slate-400 font-mono">
+                              ID: {planSlug} • {isActive ? '🟢 Active' : '🔴 Disabled'}
+                            </p>
+                          </div>
+
+                          {/* Action Buttons: Edit & Delete */}
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              onClick={() => handleOpenPlanEdit(plan)}
+                              className="px-2.5 py-1.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-lg text-[11px] transition-all cursor-pointer inline-flex items-center gap-1"
+                            >
+                              <Edit3 className="w-3 h-3" />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              onClick={() => setPlanDeleteConfirmModal({ isOpen: true, plan })}
+                              className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/30 rounded-lg transition-all cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Pricing & AI Credits Grid Bar */}
+                        <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-zinc-900/60 p-3 rounded-2xl border border-slate-200/80 dark:border-zinc-800/80 text-left">
+                          <div>
+                            <p className="text-[9px] font-black uppercase text-slate-400">MONTHLY</p>
+                            <p className="text-sm font-black text-emerald-500 mt-0.5">₹{Number(plan.priceMonthly || 0).toLocaleString('en-IN')}</p>
+                          </div>
+                          <div>
+                            <p className="text-[9px] font-black uppercase text-slate-400">YEARLY</p>
+                            <p className="text-sm font-black text-blue-500 mt-0.5">₹{Number(plan.priceYearly || 0).toLocaleString('en-IN')}</p>
+                          </div>
+                          <div>
+                            <p className="text-[9px] font-black uppercase text-slate-400">AI CREDITS</p>
+                            <p className="text-sm font-black text-[#C8A34D] mt-0.5">{Number(plan.credits || 0).toLocaleString('en-IN')}</p>
+                          </div>
+                        </div>
+
+                        {/* Features Checklist */}
+                        <div className="space-y-2 pt-1">
+                          <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">FEATURES INCLUDED:</p>
+                          {featuresArr.length > 0 ? (
+                            <div className="space-y-1.5">
+                              {featuresArr.map((feat, fIdx) => {
+                                const cleanFeat = String(feat).replace(/^✓\s*/, '').trim();
+                                if (!cleanFeat) return null;
+                                return (
+                                  <div key={fIdx} className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-zinc-200">
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                                    <span className="line-clamp-1">{cleanFeat}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <p className="text-xs font-medium italic text-slate-400">No specific features listed.</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : activeTab === 'coupons' ? (
+          /* TAB 5: COUPONS & DISCOUNT ENGINE (MOBILE 1:1 PARITY) */
+          <div className="space-y-6">
+            {/* GLOBAL COUPON FEATURE TOGGLE BANNER */}
+            <div className={`bg-white dark:bg-[#1E293B] p-5 rounded-3xl border border-l-4 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all ${
+              couponFeatureEnabled
+                ? 'border-slate-200/80 dark:border-zinc-800 border-l-emerald-500'
+                : 'border-slate-200/80 dark:border-zinc-800 border-l-red-500'
+            }`}>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Ticket className={`w-5 h-5 ${couponFeatureEnabled ? 'text-emerald-500' : 'text-red-500'}`} />
+                  <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">Coupon Feature Status:</h3>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                    couponFeatureEnabled
+                      ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
+                      : 'bg-red-500/15 text-red-500 border border-red-500/30'
+                  }`}>
+                    {couponFeatureEnabled ? 'ACTIVE' : 'INACTIVE'}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+                  {couponFeatureEnabled
+                    ? 'Active: "Have a coupon code?" card is currently displayed on the payment screen.'
+                    : 'Inactive: "Have a coupon code?" card is completely hidden on the payment screen (only Upgrade button is visible).'}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleToggleCouponFeature}
+                className={`px-4 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+                  couponFeatureEnabled
+                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-xs'
+                    : 'bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-300'
+                }`}
+              >
+                {couponFeatureEnabled ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                <span>{couponFeatureEnabled ? 'ACTIVE' : 'INACTIVE'}</span>
+              </button>
+            </div>
+
+            {/* Page Header & Create Button */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#1E293B] p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+              <div>
+                <h2 className="text-lg font-black text-slate-900 dark:text-white">Coupons & Discount System</h2>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-1">
+                  Manage promotional codes, plan eligibility, usage limits, and redemption statistics.
+                </p>
+              </div>
+              <button
+                onClick={handleOpenCouponCreator}
+                className="px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ Create Coupon</span>
+              </button>
+            </div>
+
+            {/* Top 5 KPI Summary Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
+                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">TOTAL COUPONS</p>
+                <p className="text-xl font-black text-slate-900 dark:text-white">{couponStats.totalCoupons || couponsList.length || 0}</p>
+              </div>
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
+                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">ACTIVE COUPONS</p>
+                <p className="text-xl font-black text-emerald-500">{couponStats.activeCoupons || 0}</p>
+              </div>
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
+                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">EXPIRED COUPONS</p>
+                <p className="text-xl font-black text-amber-500">{couponStats.expiredCoupons || 0}</p>
+              </div>
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
+                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">TOTAL COUPON USES</p>
+                <p className="text-xl font-black text-blue-500">{couponStats.totalCouponUses || couponStats.totalUses || 0}</p>
+              </div>
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
+                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">TOTAL DISCOUNT GIVEN</p>
+                <p className="text-xl font-black text-[#C8A34D]">₹{(couponStats.totalDiscountGiven || 0).toLocaleString('en-IN')}</p>
+              </div>
+            </div>
+
+            {/* Coupons Responsive Card Grid (3 Columns Desktop, 2 Tablet, 1 Mobile) */}
+            {couponsList.length === 0 ? (
+              <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-12 text-center space-y-3">
+                <Ticket className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
+                <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Coupons Created Yet</p>
+                <button
+                  onClick={handleOpenCouponCreator}
+                  className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer transition-all inline-block mt-2"
+                >
+                  Create First Coupon
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {couponsList.map((c) => {
+                  const status = c.computedStatus || (c.status === 'inactive' ? 'INACTIVE' : 'ACTIVE');
+                  const statusBadgeClass =
+                    status === 'ACTIVE'
+                      ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                      : status === 'SCHEDULED'
+                      ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                      : status === 'EXPIRED'
+                      ? 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                      : status === 'EXHAUSTED'
+                      ? 'bg-red-500/10 text-red-500 border-red-500/20'
+                      : 'bg-slate-200 dark:bg-zinc-800 text-slate-500 border-slate-300 dark:border-zinc-700';
+
+                  const discountLabel = c.discountType === 'percentage' ? `${c.discountValue}% OFF` : `₹${c.discountValue} OFF`;
+                  const applicableText = Array.isArray(c.applicablePlans) && c.applicablePlans.includes('ALL') ? 'All Plans' : (Array.isArray(c.applicablePlans) ? c.applicablePlans.join(', ') : 'All Plans');
+
+                  return (
+                    <div
+                      key={c._id}
+                      className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition-all"
+                    >
+                      <div className="space-y-4">
+                        {/* Header Row */}
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="space-y-2 flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <div className="bg-[#C8A34D]/15 border border-[#C8A34D] px-3 py-1 rounded-xl">
+                                <span className="text-sm font-black text-[#C8A34D] font-mono tracking-wider">{c.code}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleCopyCouponCode(c.code)}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition-all cursor-pointer flex items-center gap-1 ${
+                                  copiedCouponCode === c.code
+                                    ? 'bg-emerald-500 text-white border-emerald-500'
+                                    : 'bg-[#C8A34D]/10 text-[#C8A34D] border-[#C8A34D]/30 hover:bg-[#C8A34D]/20'
+                                }`}
+                              >
+                                <span>{copiedCouponCode === c.code ? 'Copied ✓' : 'Copy'}</span>
+                              </button>
+                              <span className="bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 text-[10px] font-black px-2.5 py-1 rounded-lg">
+                                {discountLabel}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium">
+                              Applicable: <strong className="text-slate-800 dark:text-zinc-200">{applicableText}</strong>
+                            </p>
+                          </div>
+
+                          <span className={`px-2.5 py-0.5 rounded-md text-[9.5px] font-black uppercase border shrink-0 ${statusBadgeClass}`}>
+                            {status}
+                          </span>
+                        </div>
+
+                        {/* Details Sub-Grid */}
+                        <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-zinc-900/60 p-3 rounded-2xl border border-slate-200/80 dark:border-zinc-800/80 text-left text-xs">
+                          <div>
+                            <p className="text-[9px] font-black uppercase text-slate-400">VALIDITY</p>
+                            <p className="text-[11px] font-bold text-slate-800 dark:text-zinc-200 mt-0.5 truncate">
+                              {c.startDate ? new Date(c.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : 'Now'} – {new Date(c.expiryDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-[9px] font-black uppercase text-slate-400">USAGE</p>
+                            <p className="text-xs font-black text-[#C8A34D] mt-0.5">
+                              {c.usedCount || 0} / {c.usageLimit !== null && c.usageLimit !== undefined ? c.usageLimit : '∞'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-[9px] font-black uppercase text-slate-400">PER USER</p>
+                            <p className="text-xs font-bold text-slate-800 dark:text-zinc-200 mt-0.5">{c.perUserLimit || 1} use</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons Row */}
+                      <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-zinc-800">
+                        <button
+                          type="button"
+                          onClick={() => handleViewCouponDetails(c._id)}
+                          className="px-2.5 py-1.5 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1"
+                        >
+                          <BarChart3 className="w-3.5 h-3.5" />
+                          <span>Stats</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenCouponEdit(c)}
+                          className="px-2.5 py-1.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-slate-800 dark:text-zinc-200 font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-[#C8A34D]" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleCouponStatus(c._id)}
+                          className={`px-2.5 py-1.5 font-extrabold rounded-xl text-xs transition-all cursor-pointer border flex items-center gap-1 ${
+                            c.status === 'active'
+                              ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20'
+                              : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20'
+                          }`}
+                        >
+                          <span>{c.status === 'active' ? 'Deactivate' : 'Activate'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCouponDeleteConfirmModal({ isOpen: true, coupon: c })}
+                          className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/20 rounded-xl transition-all cursor-pointer"
+                        >
+                  <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : activeTab === 'addons' ? (
+          /* TAB: INSTITUTIONAL ADD-ON REQUESTS APPROVAL PANEL */
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <PlusCircle className="text-[#C8A34D]" size={22} /> Institutional Add-on Feature Requests
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-1">
+                  Review and allow add-on feature requests submitted by Law Universities for their students & faculty.
+                </p>
+              </div>
+              <div className="px-3.5 py-1.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-xs font-black text-[#C8A34D]">
+                {addonRequestsList.filter(r => r.status === 'Pending').length} Pending Approvals
+              </div>
+            </div>
+
+            {addonRequestsList.length === 0 ? (
+              <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-12 text-center space-y-2">
+                <PlusCircle className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
+                <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Add-on Requests Submitted Yet</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {addonRequestsList.map((req) => (
+                  <div
+                    key={req._id}
+                    className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition-all"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] px-2.5 py-0.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/20">
+                          🏛️ {req.institutionName || 'RDVV Law University'}
+                        </span>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
+                          req.status === 'Approved'
+                            ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30'
+                            : req.status === 'Rejected'
+                            ? 'bg-rose-500/15 text-rose-500 border-rose-500/30'
+                            : 'bg-amber-500/15 text-amber-500 border-amber-500/30 animate-pulse'
+                        }`}>
+                          ● {req.status || 'Pending'}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">{req.category}</span>
+                        <h3 className="text-base font-black text-slate-900 dark:text-white mt-0.5">{req.addonName}</h3>
+                      </div>
+
+                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/80 dark:border-zinc-800 text-xs space-y-1">
+                        <p className="text-slate-500 font-medium">
+                          Requested By: <strong className="text-slate-800 dark:text-zinc-200">{req.requestedBy || req.institutionEmail}</strong>
+                        </p>
+                        <p className="text-slate-600 dark:text-zinc-300 font-semibold italic">
+                          "{req.notes || 'No custom notes provided.'}"
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-end gap-2 text-xs">
+                      {req.status === 'Approved' ? (
+                        <div className="w-full py-2 rounded-xl bg-emerald-500/15 text-emerald-500 font-black text-center border border-emerald-500/30 flex items-center justify-center gap-1.5">
+                          <CheckCircle2 size={16} /> Approved & Live Unlocked for Students
+                        </div>
+                      ) : req.status === 'Rejected' ? (
+                        <div className="w-full py-2 rounded-xl bg-rose-500/15 text-rose-500 font-black text-center border border-rose-500/30">
+                          ❌ Request Rejected
+                        </div>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleRejectAddonRequest(req)}
+                            className="px-3.5 py-2 rounded-xl border border-rose-500/30 text-rose-500 font-bold hover:bg-rose-500/10 cursor-pointer"
+                          >
+                            Reject
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleApproveAddonRequest(req)}
+                            className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black shadow-md hover:brightness-110 cursor-pointer flex items-center gap-1.5"
+                          >
+                            <CheckCircle2 size={15} /> Allow & Approve Feature
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : activeTab === 'features' ? (
+          /* TAB 6: REQUESTS / FEATURE REQUESTS TRIAGE (MOBILE 1:1 PARITY) */
+          <div className="space-y-6">
+            {/* Header */}
+            <div className="bg-white dark:bg-[#1E293B] p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+              <h2 className="text-lg font-black text-slate-900 dark:text-white">Feature Requests Triage</h2>
+              <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-1">
+                Review, filter, manage status, assign developers, and reply to client requests.
+              </p>
+            </div>
+
+            {/* Search Input Bar */}
+            <div className="relative bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs p-2 flex items-center">
+              <Search className="w-4 h-4 text-slate-400 ml-3 mr-2 shrink-0" />
+              <input
+                type="text"
+                placeholder="Search feature requests..."
+                value={featureSearch}
+                onChange={e => setFeatureSearch(e.target.value)}
+                className="w-full bg-transparent text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
+              />
+              {featureSearch && (
+                <button
+                  type="button"
+                  onClick={() => setFeatureSearch('')}
+                  className="p-1 mr-1 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Horizontal Status Filter Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+              {['all', 'Pending', 'Under Review', 'Planned', 'In Progress', 'Completed', 'Rejected'].map((f) => {
+                const isSelected = featureFilterState === f;
+                return (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setFeatureFilterState(f)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 cursor-pointer border ${
+                      isSelected
+                        ? 'bg-[#C8A34D]/20 text-[#C8A34D] border-[#C8A34D] shadow-2xs'
+                        : 'bg-white dark:bg-[#1E293B] text-slate-500 border-slate-200/80 dark:border-zinc-800 hover:border-slate-300'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Feature Requests Card List */}
+            {filteredFeatures.length === 0 ? (
+              <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-12 text-center space-y-2">
+                <Lightbulb className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
+                <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Feature Requests Found</p>
+                <p className="text-[11px] text-slate-400 font-medium">Try clearing filters or search keywords.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredFeatures.map((fr) => {
+                  const priorityClass = fr.priority === 'Critical' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+                  const statusClass = 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30';
+                  const devReply = fr.reply || fr.adminNote;
+
+                  return (
+                    <div
+                      key={fr._id}
+                      className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 hover:shadow-md transition-all"
+                    >
+                      {/* Header Row: Category, Priority Badge, Status Badge */}
+                      <div className="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-slate-100 dark:border-zinc-800/80">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs font-extrabold text-[#C8A34D] bg-[#C8A34D]/10 border border-[#C8A34D]/30 px-3 py-1 rounded-xl">
+                            {fr.category || 'General Feature'}
+                          </span>
+                          <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase border ${priorityClass}`}>
+                            {fr.priority || 'Medium'} Priority
+                          </span>
+                        </div>
+                        <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase border ${statusClass}`}>
+                          {fr.status || 'Pending'}
+                        </span>
+                      </div>
+
+                      {/* Request Title & Description */}
+                      <div className="space-y-1.5">
+                        <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-snug">
+                          {fr.title}
+                        </h3>
+                        <p className="text-xs text-slate-600 dark:text-zinc-300 font-medium leading-relaxed">
+                          {fr.description}
+                        </p>
+                      </div>
+
+                      {/* User & Developer Metadata Row */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 dark:bg-zinc-900/60 p-3 rounded-2xl border border-slate-200/80 dark:border-zinc-800/80 text-xs">
+                        <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                          User: <strong className="text-slate-800 dark:text-zinc-200">{fr.email || fr.userEmail || 'Client Advocate'}</strong> ({fr.userPlan || 'ADVOCATE_PRO'})
+                        </p>
+                        <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                          Assigned Dev: <strong className="text-[#C8A34D] font-bold">{fr.developerAssigned || 'None'}</strong>
+                        </p>
+                      </div>
+
+                      {/* Developer / Admin Reply Container */}
+                      {devReply && (
+                        <div className="p-3.5 bg-[#C8A34D]/10 border border-[#C8A34D]/30 rounded-2xl space-y-1">
+                          <p className="text-[11px] font-black text-[#C8A34D] uppercase tracking-wider">Dev Reply:</p>
+                          <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">{devReply}</p>
+                        </div>
+                      )}
+
+                      {/* Action Buttons Row */}
+                      <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 dark:border-zinc-800">
+                        <button
+                          type="button"
+                          onClick={() => setFeatureModal({
+                            isOpen: true,
+                            feature: fr,
+                            status: fr.status || 'Pending',
+                            developerAssigned: fr.developerAssigned || 'None',
+                            adminNote: fr.reply || fr.adminNote || ''
+                          })}
+                          className="px-4 py-2 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Wrench className="w-3.5 h-3.5" />
+                          <span>Manage Request</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setFeatureDeleteModal({ isOpen: true, feature: fr })}
+                          className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/20 font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : activeTab === 'bugs' ? (
+          /* TAB 7: BUGS */
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Bug Tracking & Resolution Console</h3>
+              <div className="space-y-3">
+                {bugsList.map((b, idx) => (
+                  <div key={b._id || idx} className="p-4 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-red-500/10 text-red-500 border border-red-500/20">{b.severity || 'Major'}</span>
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">{b.title}</h4>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1">{b.description}</p>
+                    </div>
+                    <button
+                      onClick={() => setBugModal({ isOpen: true, bug: b, status: b.status || 'Open', assignedTo: b.assignedTo || '' })}
+                      className="px-4 py-2 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs transition-all cursor-pointer"
+                    >
+                      Update Bug
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : activeTab === 'crashes' ? (
+          /* TAB 8: CRASH REPORTS */
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Automated Exception & Telemetry Logs</h3>
+              <div className="space-y-3">
+                {crashesList.map((c, idx) => (
+                  <div key={c._id || idx} className="p-4 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="text-sm font-bold font-mono text-red-500">{c.errorName || 'UnhandledException'}</h4>
+                        <p className="text-xs text-slate-400 font-mono mt-0.5">{c.filePath || 'src/app/index.tsx'}:{c.lineNumber || 42}</p>
+                      </div>
+                      <button
+                        onClick={() => handleResolveCrash(c._id, 'RESOLVED')}
+                        className="px-3 py-1.5 bg-emerald-500 text-white font-bold text-xs rounded-xl cursor-pointer"
+                      >
+                        Mark Resolved
+                      </button>
+                    </div>
+                    <pre className="p-3 bg-black/80 text-emerald-400 rounded-xl text-[10px] font-mono overflow-x-auto">
+                      {c.stackTrace || 'Error: Processing failed at line 42'}
+                    </pre>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : activeTab === 'reports' ? (
+          /* TAB 9: RESPONSE REPORTS */
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">AI Output Flagging & Quality Audit</h3>
+              <div className="space-y-3">
+                {complaintsList.map((r, idx) => (
+                  <div key={r._id || idx} className="p-4 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded">
+                        {r.flagReason || 'Inaccurate Citation'}
+                      </span>
+                      <span className="text-xs font-bold text-slate-400">{new Date(r.createdAt || Date.now()).toLocaleDateString()}</span>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">{r.feedback || 'User flagged response citations.'}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : activeTab === 'jurisdiction' ? (
+          /* TAB 10: JURISDICTION OVERRIDES & SANDBOX */
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-6">
+              <div>
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-[#C8A34D]" />
+                  <span>Global Jurisdiction Administration & Sandbox</span>
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 font-medium">Test legal engine prompts under specific Indian State or Global Country statutory frameworks.</p>
+              </div>
+
+              <form onSubmit={handleRunJurisdictionTest} className="space-y-4 pt-2 border-t border-slate-100 dark:border-zinc-800">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Target Country</label>
+                    <input
+                      type="text"
+                      value={jTargetCountry}
+                      onChange={e => setJTargetCountry(e.target.value)}
+                      className="w-full mt-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Target State / Jurisdiction</label>
+                    <input
+                      type="text"
+                      value={jTargetState}
+                      onChange={e => setJTargetState(e.target.value)}
+                      className="w-full mt-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Test Legal Query</label>
+                  <div className="flex gap-3 mt-1">
+                    <input
+                      type="text"
+                      value={jTestQuery}
+                      onChange={e => setJTestQuery(e.target.value)}
+                      placeholder="e.g. What is the limitation period for filing a commercial suit under State amendments?"
+                      className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold"
+                    />
+                    <button
+                      type="submit"
+                      disabled={jTestLoading || !jTestQuery.trim()}
+                      className="px-6 py-2.5 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer flex items-center gap-2"
+                    >
+                      {jTestLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Terminal className="w-4 h-4" />}
+                      <span>Run Test</span>
+                    </button>
+                  </div>
+                </div>
+
+                {jTestResult && (
+                  <div className="p-4 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
+                    <p className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D]">AI Jurisdiction Response</p>
+                    <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200 mt-1 whitespace-pre-wrap">{jTestResult}</p>
+                  </div>
+                )}
+              </form>
+            </div>
+          </div>
+        ) : (
+          /* TAB 11: SETTINGS & SECURITY */
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-6">
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Global System Configuration</h3>
+
+              <form onSubmit={handleSaveSettings} className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
+                  <div>
+                    <p className="text-sm font-extrabold text-slate-900 dark:text-white">Emergency Maintenance Mode</p>
+                    <p className="text-xs text-slate-400">Lock non-admin platform logins across Web & Mobile</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAdminSettings(prev => ({ ...prev, maintenanceMode: !prev.maintenanceMode }))}
+                    className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                      adminSettings.maintenanceMode ? 'bg-red-500 text-white' : 'bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
+                    }`}
+                  >
+                    {adminSettings.maintenanceMode ? 'ENABLED' : 'DISABLED'}
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Default Signup Credits</label>
+                    <input
+                      type="number"
+                      value={adminSettings.defaultCredits}
+                      onChange={e => setAdminSettings(prev => ({ ...prev, defaultCredits: parseInt(e.target.value) || 50 }))}
+                      className="w-full mt-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">File Upload Limit (MB)</label>
+                    <input
+                      type="number"
+                      value={adminSettings.fileUploadLimitMb}
+                      onChange={e => setAdminSettings(prev => ({ ...prev, fileUploadLimitMb: parseInt(e.target.value) || 25 }))}
+                      className="w-full mt-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer"
+                >
+                  Save Global System Settings
+                </button>
+              </form>
+
+              {/* Admin Password Change */}
+              <div className="pt-6 border-t border-slate-100 dark:border-zinc-800 space-y-4">
+                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">Admin Password Change</h4>
+                <form onSubmit={handleChangeAdminPassword} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <input
+                    type="password"
+                    placeholder="New Password"
+                    value={adminPasswordInput}
+                    onChange={e => setAdminPasswordInput(e.target.value)}
+                    className="px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm New Password"
+                    value={adminPasswordConfirm}
+                    onChange={e => setAdminPasswordConfirm(e.target.value)}
+                    className="px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold"
+                  />
+                  <button
+                    type="submit"
+                    className="sm:col-span-2 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black rounded-xl text-xs cursor-pointer"
+                  >
+                    Update Admin Password
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Edit Role Modal */}
+      {editUserModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4">
+            <h3 className="text-base font-black text-slate-900 dark:text-white">Edit User Role — {editUserModal.name}</h3>
+            <div className="space-y-2">
+              {['advocate', 'law_firm', 'student', 'admin', 'SUPER_ADMIN'].map(role => (
+                <button
+                  key={role}
+                  onClick={() => handleUserRoleSave(editUserModal._id, role)}
+                  className="w-full py-2.5 px-4 bg-slate-50 dark:bg-zinc-900 hover:bg-[#C8A34D]/10 hover:text-[#C8A34D] border border-slate-200 dark:border-zinc-800 rounded-xl text-xs font-bold capitalize text-left transition-all cursor-pointer"
+                >
+                  Set as {role}
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setEditUserModal(null)} className="w-full py-2 bg-slate-200 text-xs font-bold rounded-xl cursor-pointer">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Credit Adjustment Modal */}
+      {creditModalUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <form onSubmit={handleAdjustCreditsSubmit} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4">
+            <h3 className="text-base font-black text-slate-900 dark:text-white">Adjust AI Credits — {creditModalUser.name}</h3>
+            <div>
+              <label className="text-[10px] font-black uppercase text-slate-400">Action</label>
+              <select
+                value={creditAdjustment.actionType}
+                onChange={e => setCreditAdjustment(prev => ({ ...prev, actionType: e.target.value }))}
+                className="w-full mt-1 p-2 bg-slate-50 dark:bg-zinc-900 border border-slate-200 rounded-xl text-xs font-bold"
+              >
+                <option value="add">Add Credits</option>
+                <option value="deduct">Deduct Credits</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-black uppercase text-slate-400">Amount</label>
+              <input
+                type="number"
+                value={creditAdjustment.amount}
+                onChange={e => setCreditAdjustment(prev => ({ ...prev, amount: e.target.value }))}
+                className="w-full mt-1 p-2 bg-slate-50 dark:bg-zinc-900 border border-slate-200 rounded-xl text-xs font-bold"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs cursor-pointer">Save</button>
+              <button type="button" onClick={() => setCreditModalUser(null)} className="py-2.5 px-4 bg-slate-200 text-xs font-bold rounded-xl cursor-pointer">Cancel</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Plan CRUD Modal */}
+
+
+      {/* USER DOSSIER DETAIL MODAL — 100% MOBILE APP PARITY */}
+      {selectedDossierUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/75 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="p-6 border-b border-slate-200 dark:border-zinc-800 flex justify-between items-center bg-slate-50/50 dark:bg-zinc-900/50">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] font-black text-lg flex items-center justify-center border border-[#C8A34D]/40 shrink-0">
+                  {(selectedDossierUser.name || selectedDossierUser.email || 'U').charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">
+                      {selectedDossierUser.name || 'Advocate Client Dossier'}
+                    </h3>
+                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20 uppercase">
+                      {selectedDossierUser.role || 'Advocate'}
+                    </span>
+                    <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full ${
+                      selectedDossierUser.isBlocked || selectedDossierUser.status === 'Suspended'
+                        ? 'bg-red-500/10 text-red-500 border border-red-500/20'
+                        : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                    }`}>
+                      {selectedDossierUser.isBlocked || selectedDossierUser.status === 'Suspended' ? 'Suspended' : 'Active'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 font-medium">{selectedDossierUser.email}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedDossierUser(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content Body */}
+            <div className="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+              {/* CARD 1: USER PROFILE DETAILS */}
+              <div className="bg-slate-50 dark:bg-zinc-900/60 p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3">
+                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white pb-2 border-b border-slate-200/80 dark:border-zinc-800">
+                  User Profile Details
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-xs">
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                    Full Name: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.name || 'N/A'}</span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
+                    Email: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.email}</span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                    Phone Number: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.phone || 'N/A'}</span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                    Legal Jurisdiction: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.jurisdiction || selectedDossierUser.country || 'India'}</span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                    Plan: <span className="font-black text-[#C8A34D]">{selectedDossierUser.subscription?.plan || selectedDossierUser.currentPlan || 'Free'}</span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                    Account Status: <span className={`font-black ${selectedDossierUser.isBlocked || selectedDossierUser.status === 'Suspended' ? 'text-red-500' : 'text-emerald-500'}`}>
+                      {selectedDossierUser.isBlocked || selectedDossierUser.status === 'Suspended' ? 'Suspended' : 'Active'}
+                    </span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                    Credits: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.credits ?? 500}</span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                    Cases Created: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.totalCases || 0}</span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                    Account Created Date: <span className="font-extrabold text-slate-900 dark:text-white">
+                      {selectedDossierUser.createdAt ? new Date(selectedDossierUser.createdAt).toLocaleDateString('en-GB') : '18/8/2026'}
+                    </span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                    Last Login: <span className="font-extrabold text-slate-900 dark:text-white">
+                      {selectedDossierUser.lastLogin ? new Date(selectedDossierUser.lastLogin).toLocaleString('en-GB') : '18/8/2026, 4:50:44 pm'}
+                    </span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium col-span-1 sm:col-span-2 font-mono">
+                    User ID: <span className="font-bold text-slate-700 dark:text-zinc-300">{selectedDossierUser._id}</span>
+                  </p>
+                </div>
+
+                {/* Real Usage Stats Subsection */}
+                <div className="pt-3 border-t border-slate-200/80 dark:border-zinc-800 space-y-2">
+                  <p className="text-[11px] font-black text-[#C8A34D]">📊 ACTIVE USAGE STATS</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    <div className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Cases Folders</p>
+                      <p className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.totalCases || 0} / Unlimited</p>
+                    </div>
+                    <div className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">AI Credits</p>
+                      <p className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.credits ?? 500}</p>
+                    </div>
+                    <div className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Contracts Audited</p>
+                      <p className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.usageStatus?.contractsAnalyzed || 0}</p>
+                    </div>
+                    <div className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Drafts Generated</p>
+                      <p className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.usageStatus?.draftsGenerated || 0}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CARD 2: 💳 SUBSCRIPTION MANAGEMENT — EXACT MOBILE APP DESIGN */}
+              <div className="bg-slate-50 dark:bg-zinc-900/60 p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-4">
+                <div>
+                  <h4 className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span>💳 Subscription Management</span>
                   </h4>
-                  <p className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1">
                     Assign or update subscription plan directly. Active plan is the single source of truth for features, limits, and storage.
                   </p>
                 </div>
 
-                <div>
-                  <label className="text-[11px] font-bold text-slate-700 block mb-1.5">Select Subscription Plan</label>
-                  <select
-                    value={selectedUserPlan}
-                    onChange={(e) => setSelectedUserPlan(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-extrabold text-slate-900 focus:outline-hidden focus:border-amber-600 mb-2"
-                  >
-                    <optgroup label="Advocate Plans">
-                      <option value="advocate_basic">AI Legal™ Advocate Basic (₹499/mo)</option>
-                      <option value="advocate_pro">AI Legal™ Advocate Pro (₹999/mo)</option>
-                      <option value="advocate_premium">AI Legal™ Advocate Premium (₹2,399/mo)</option>
-                    </optgroup>
-                    <optgroup label="Student Plans">
-                      <option value="student_basic">AI Legal™ Student Basic (₹499/mo)</option>
-                      <option value="student_pro">AI Legal™ Student Pro (₹999/mo)</option>
-                      <option value="student_premium">AI Legal™ Student Premium (₹2,399/mo)</option>
-                    </optgroup>
-                    <optgroup label="Law Firm Plans">
-                      <option value="firm_basic">AI Legal™ Firm Basic (₹1,499/mo)</option>
-                      <option value="firm_pro">AI Legal™ Firm Pro (₹2,999/mo)</option>
-                      <option value="firm_premium">AI Legal™ Firm Premium (₹4,999/mo)</option>
-                    </optgroup>
-                    <optgroup label="Combo Ecosystem Passes">
-                      <option value="combo_student_advocate">Student + Advocate Combo (₹1,199/mo)</option>
-                      <option value="combo_advocate_firm">Advocate + Law Firm Combo (₹1,499/mo)</option>
-                      <option value="combo_all_access">All Access Ecosystem Pass (₹2,399/mo)</option>
-                    </optgroup>
-                    <optgroup label="Free Tier">
-                      <option value="FREE">Free Tier Advocates</option>
-                    </optgroup>
-                  </select>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto custom-scrollbar p-1 bg-slate-50 rounded-xl border border-slate-200">
-                    {(plansList && plansList.length > 0 
-                      ? (plansList.some(p => (p._id || p.planId) === 'FREE') ? plansList : [...plansList, { _id: 'FREE', planId: 'FREE', planName: 'AI Legal™ Free Plan' }])
-                      : [
-                        { _id: 'advocate_basic', planName: 'Advocate Basic (₹499)' },
-                        { _id: 'advocate_pro', planName: 'Advocate Pro (₹999)' },
-                        { _id: 'advocate_premium', planName: 'Advocate Premium (₹2,399)' },
-                        { _id: 'student_basic', planName: 'Student Basic (₹499)' },
-                        { _id: 'student_pro', planName: 'Student Pro (₹999)' },
-                        { _id: 'student_premium', planName: 'Student Premium (₹2,399)' },
-                        { _id: 'firm_basic', planName: 'Firm Basic (₹1,499)' },
-                        { _id: 'firm_pro', planName: 'Firm Pro (₹2,999)' },
-                        { _id: 'firm_premium', planName: 'Firm Premium (₹4,999)' },
-                        { _id: 'combo_student_advocate', planName: 'Student + Advocate (₹1,199)' },
-                        { _id: 'combo_advocate_firm', planName: 'Advocate + Firm (₹1,499)' },
-                        { _id: 'combo_all_access', planName: 'All Access Pass (₹2,399)' },
-                        { _id: 'FREE', planName: 'AI Legal™ Free Plan' }
-                      ]
-                    ).map((plan) => {
-                      const pId = plan._id || plan.planId || plan.planName;
-                      const isSelected = selectedUserPlan === pId || selectedUserPlan === plan.planName;
+                {/* Select Subscription Plan Horizontal Pill Scroll */}
+                <div className="space-y-2">
+                  <label className="text-xs font-extrabold text-slate-900 dark:text-white">Select Subscription Plan</label>
+                  <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+                    {[
+                      { id: 'advocate_basic', name: 'Advocate Basic Plan', badge: 'BASIC' },
+                      { id: 'advocate_pro', name: 'Advocate Pro Plan', badge: 'PRO' },
+                      { id: 'advocate_premium', name: 'Advocate Premium Plan', badge: 'PREMIUM' },
+                      { id: 'student_basic', name: 'Student Basic Plan', badge: 'BASIC' },
+                      { id: 'student_pro', name: 'Student Pro Plan', badge: 'PRO' },
+                      { id: 'student_premium', name: 'Student Premium Plan', badge: 'PREMIUM' },
+                      { id: 'firm_basic', name: 'Law Firm Basic', badge: 'BASIC' },
+                      { id: 'firm_pro', name: 'Law Firm Pro', badge: 'PRO' },
+                      { id: 'firm_premium', name: 'Law Firm Enterprise', badge: 'PREMIUM' },
+                      { id: 'combo_student_advocate', name: 'Student + Advocate Combo', badge: 'COMBO' },
+                      { id: 'combo_advocate_firm', name: 'Advocate + Law Firm Combo', badge: 'COMBO' },
+                      { id: 'combo_all_access', name: 'All Access Ecosystem Pass', badge: 'ALL ACCESS' },
+                    ].map((plan) => {
+                      const isSelected = subForm.planId === plan.id || subForm.planId === plan.name;
                       return (
                         <button
-                          key={pId}
+                          key={plan.id}
                           type="button"
-                          onClick={() => setSelectedUserPlan(pId)}
-                          className={`p-2 rounded-lg text-left text-[11px] font-extrabold transition-all border ${
-                            isSelected 
-                              ? 'bg-amber-600 text-white border-amber-600 shadow-xs' 
-                              : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
+                          onClick={() => setSubForm(prev => ({ ...prev, planId: plan.id }))}
+                          className={`px-3.5 py-2.5 rounded-xl border text-left shrink-0 transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#C8A34D]/20 border-[#C8A34D] text-[#C8A34D] shadow-2xs'
+                              : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 hover:border-[#C8A34D]/50'
                           }`}
                         >
-                          <p className="truncate">{plan.planName || plan.name}</p>
+                          <p className="text-xs font-black">{plan.name}</p>
+                          <p className="text-[9px] font-extrabold uppercase text-slate-400 mt-0.5">{plan.badge}</p>
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 pt-1 flex-wrap">
-                  <div className="flex-1 min-w-[160px]">
-                    <label className="text-[11px] font-bold text-slate-700 block mb-1">Plan Duration</label>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedUserBillingCycle('monthly')}
-                        className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                          selectedUserBillingCycle === 'monthly'
-                            ? 'bg-slate-900 text-white border-slate-900'
-                            : 'bg-slate-100 text-slate-600 border-slate-200'
-                        }`}
-                      >
-                        Monthly
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedUserBillingCycle('yearly')}
-                        className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                          selectedUserBillingCycle === 'yearly'
-                            ? 'bg-slate-900 text-white border-slate-900'
-                            : 'bg-slate-100 text-slate-600 border-slate-200'
-                        }`}
-                      >
-                        Yearly
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-4">
+                {/* Plan Duration Toggle */}
+                <div className="space-y-2">
+                  <label className="text-xs font-extrabold text-slate-900 dark:text-white">Plan Duration</label>
+                  <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
-                      onClick={handleAssignPlanForSelectedUser}
-                      className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black text-xs transition-all shadow-xs"
+                      onClick={() => setSubForm(prev => ({ ...prev, billingCycle: 'monthly' }))}
+                      className={`py-2.5 rounded-xl font-extrabold text-xs transition-all cursor-pointer border ${
+                        subForm.billingCycle === 'monthly'
+                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-sm'
+                          : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800'
+                      }`}
                     >
-                      Assign Plan
+                      Monthly
                     </button>
                     <button
                       type="button"
-                      onClick={handleExpireSelectedUserPlan}
-                      className="px-3 py-2 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 font-bold text-xs transition-all"
+                      onClick={() => setSubForm(prev => ({ ...prev, billingCycle: 'yearly' }))}
+                      className={`py-2.5 rounded-xl font-extrabold text-xs transition-all cursor-pointer border ${
+                        subForm.billingCycle === 'yearly'
+                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-sm'
+                          : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800'
+                      }`}
                     >
-                      Expire Plan
+                      Yearly
                     </button>
                   </div>
                 </div>
-              </div>
 
+                {/* Action Buttons: Assign Plan (Gold) & Expire Plan (Red) */}
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleSubscriptionSave}
+                    className="py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+                  >
+                    Assign Plan
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExpireUserSubscription(selectedDossierUser._id)}
+                    className="py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+                  >
+                    Expire Plan
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="border-t border-slate-100 pt-3 flex justify-end shrink-0">
-              <button 
-                onClick={() => setSelectedUser(null)} 
-                className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs transition-all shadow-xs"
+            {/* Footer */}
+            <div className="p-4 border-t border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex justify-end">
+              <button
+                onClick={() => setSelectedDossierUser(null)}
+                className="px-6 py-2.5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
               >
                 Close Dossier
               </button>
             </div>
-
           </div>
         </div>
       )}
 
-      {/* ── ADJUST CREDITS MODAL ── */}
-      {creditModalUser && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-xl border border-slate-200">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-extrabold text-slate-900 text-base">Adjust User Credits</h3>
-              <button onClick={() => setCreditModalUser(null)} className="p-1 text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
+      {/* SUBSCRIPTION ASSIGNMENT / CHANGE MODAL */}
+      {subModalUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <form onSubmit={handleSubscriptionSave} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <h3 className="text-base font-black text-slate-900 dark:text-white">Subscription Management — {subModalUser.name || subModalUser.email}</h3>
+            
+            <div>
+              <label className="text-[10px] font-black uppercase text-slate-400">Select Subscription Plan</label>
+              <select
+                value={subForm.planId}
+                onChange={e => setSubForm(prev => ({ ...prev, planId: e.target.value }))}
+                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-800 dark:text-zinc-200"
+              >
+                <option value="FREE">AI Legal™ Free Plan</option>
+                <option value="ADVOCATE_BASIC">AI Legal™ Advocate Basic</option>
+                <option value="ADVOCATE_PRO">AI Legal™ Advocate Pro (Popular)</option>
+                <option value="ADVOCATE_PREMIUM">AI Legal™ Advocate Premium</option>
+                <option value="STUDENT_BASIC">AI Legal™ Student Basic</option>
+                <option value="STUDENT_PRO">AI Legal™ Student Pro</option>
+                <option value="FIRM_BASIC">AI Legal™ Law Firm Basic</option>
+                <option value="FIRM_PRO">AI Legal™ Law Firm Pro</option>
+                <option value="FIRM_PREMIUM">AI Legal™ Law Firm Enterprise</option>
+                <option value="COMBO_ALL_ACCESS">AI Legal™ All Access Ecosystem Pass</option>
+              </select>
             </div>
-            <p className="text-xs text-slate-500 font-semibold">Add AI credits to <strong>{creditModalUser.name}</strong></p>
-            <input 
-              type="number"
-              value={creditAmount}
-              onChange={(e) => setCreditAmount(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold text-slate-900 focus:outline-hidden"
-              placeholder="Credits count..."
-            />
-            <div className="flex items-center gap-2 pt-2">
-              <button onClick={() => setCreditModalUser(null)} className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Cancel</button>
-              <button onClick={handleAdjustCredits} className="flex-1 py-2 rounded-xl bg-amber-600 text-white font-bold text-xs">Add Credits</button>
+
+            <div>
+              <label className="text-[10px] font-black uppercase text-slate-400">Billing Cycle</label>
+              <div className="flex gap-2 mt-1">
+                {['monthly', 'yearly'].map(c => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setSubForm(prev => ({ ...prev, billingCycle: c }))}
+                    className={`flex-1 py-2 text-xs font-bold rounded-xl capitalize transition-all cursor-pointer border ${
+                      subForm.billingCycle === c
+                        ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D]'
+                        : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
+                    }`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs cursor-pointer">
+                Assign Plan
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExpireUserSubscription(subModalUser._id)}
+                className="py-2.5 px-3 bg-red-500/10 text-red-500 border border-red-500/20 text-xs font-bold rounded-xl cursor-pointer"
+              >
+                Expire Plan
+              </button>
+              <button type="button" onClick={() => setSubModalUser(null)} className="py-2.5 px-4 bg-slate-200 dark:bg-zinc-800 text-xs font-bold rounded-xl cursor-pointer">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* PASSWORD RESET MODAL */}
+      {passwordResetUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <form onSubmit={handleResetUserPassword} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4">
+            <h3 className="text-base font-black text-slate-900 dark:text-white">Reset User Password</h3>
+            <p className="text-xs text-slate-500 dark:text-zinc-400">Set a new password for {passwordResetUser.name || passwordResetUser.email}</p>
+            <div>
+              <label className="text-[10px] font-black uppercase text-slate-400">New Password</label>
+              <input
+                type="password"
+                placeholder="Enter new password"
+                value={passwordResetVal}
+                onChange={e => setPasswordResetVal(e.target.value)}
+                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold"
+                required
+              />
+            </div>
+            <div className="flex gap-2">
+              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs cursor-pointer">
+                Save New Password
+              </button>
+              <button type="button" onClick={() => { setPasswordResetUser(null); setPasswordResetVal(''); }} className="py-2.5 px-4 bg-slate-200 dark:bg-zinc-800 text-xs font-bold rounded-xl cursor-pointer">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+      {/* REFUND CONFIRMATION MODAL */}
+      {refundConfirmModal.isOpen && refundConfirmModal.payment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <h3 className="text-base font-black text-slate-900 dark:text-white">Refund Payment Transaction?</h3>
+            <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+              Are you sure you want to refund this payment? The customer will receive a full reversal, and their subscription status will be updated accordingly.
+            </p>
+
+            <div className="bg-slate-50 dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+              <p><span className="text-slate-400 font-bold">User:</span> <strong className="text-slate-800 dark:text-zinc-200">{refundConfirmModal.payment.userName || refundConfirmModal.payment.userId?.name || 'Advocate Customer'}</strong></p>
+              <p><span className="text-slate-400 font-bold">Email:</span> <span className="text-slate-700 dark:text-zinc-300">{refundConfirmModal.payment.userEmail || refundConfirmModal.payment.userId?.email || 'N/A'}</span></p>
+              <p><span className="text-slate-400 font-bold">Invoice ID:</span> <span className="font-mono text-slate-700 dark:text-zinc-300">{refundConfirmModal.payment.invoiceNumber || refundConfirmModal.payment._id}</span></p>
+              <p><span className="text-slate-400 font-bold">Amount:</span> <strong className="text-red-500 font-black">₹{Number(refundConfirmModal.payment.amount || 0).toLocaleString('en-IN')}</strong></p>
+              <p><span className="text-slate-400 font-bold">Gateway:</span> <span className="uppercase text-slate-700 dark:text-zinc-300">{refundConfirmModal.payment.gateway || 'Razorpay'}</span></p>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => handleRefundPayment(refundConfirmModal.payment._id)}
+                className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+              >
+                Confirm Refund
+              </button>
+              <button
+                type="button"
+                onClick={() => setRefundConfirmModal({ isOpen: false, payment: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── CHANGE PLAN MODAL ── */}
-      {planModalUser && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-xl border border-slate-200">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-extrabold text-slate-900 text-base">Change User Plan</h3>
-              <button onClick={() => setPlanModalUser(null)} className="p-1 text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
+      {/* MARK PAID CONFIRMATION MODAL */}
+      {markPaidConfirmModal.isOpen && markPaidConfirmModal.payment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <h3 className="text-base font-black text-slate-900 dark:text-white">Mark Payment as Paid?</h3>
+            <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+              Confirm marking this pending transaction as PAID. This will activate the user's selected subscription plan immediately.
+            </p>
+
+            <div className="bg-slate-50 dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+              <p><span className="text-slate-400 font-bold">User:</span> <strong className="text-slate-800 dark:text-zinc-200">{markPaidConfirmModal.payment.userName || markPaidConfirmModal.payment.userId?.name || 'Advocate Customer'}</strong></p>
+              <p><span className="text-slate-400 font-bold">Invoice ID:</span> <span className="font-mono text-slate-700 dark:text-zinc-300">{markPaidConfirmModal.payment.invoiceNumber || markPaidConfirmModal.payment._id}</span></p>
+              <p><span className="text-slate-400 font-bold">Amount:</span> <strong className="text-emerald-500 font-black">₹{Number(markPaidConfirmModal.payment.amount || 0).toLocaleString('en-IN')}</strong></p>
             </div>
-            <p className="text-xs text-slate-500 font-semibold">Select plan for <strong>{planModalUser.name}</strong></p>
-            <select
-              value={newPlanId}
-              onChange={(e) => setNewPlanId(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900"
-            >
-              <option value="advocate_basic">AI Legal™ Basic (₹499/mo)</option>
-              <option value="advocate_pro">AI Legal™ Professional (₹999/mo)</option>
-              <option value="advocate_premium">AI Legal™ Premium (₹2,399/mo)</option>
-              <option value="student_basic">Student Basic (₹499/mo)</option>
-              <option value="student_pro">Student Pro (₹999/mo)</option>
-              <option value="student_premium">Student Premium (₹2,399/mo)</option>
-              <option value="firm_basic">Firm Basic (₹499/mo)</option>
-              <option value="firm_pro">Firm Pro (₹999/mo)</option>
-              <option value="firm_premium">Firm Premium (₹2,399/mo)</option>
-              <option value="combo_student_advocate">Combo: Student + Advocate (₹1,199/mo)</option>
-              <option value="combo_advocate_firm">Combo: Advocate + Firm (₹1,499/mo)</option>
-              <option value="combo_all_access">Combo: All Access Pass (₹2,399/mo)</option>
-              <option value="FREE">Free Tier</option>
-            </select>
-            <div className="flex items-center gap-2 pt-2">
-              <button onClick={() => setPlanModalUser(null)} className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Cancel</button>
-              <button onClick={handleChangePlan} className="flex-1 py-2 rounded-xl bg-amber-600 text-white font-bold text-xs">Update Plan</button>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => handleMarkPaymentPaid(markPaidConfirmModal.payment._id)}
+                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+              >
+                Confirm Paid
+              </button>
+              <button
+                type="button"
+                onClick={() => setMarkPaidConfirmModal({ isOpen: false, payment: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── PLAN CREATOR / EDITOR MODAL ── */}
-      {(editingPlanModal || isCreatingPlanModal) && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 space-y-4 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+      {/* PLAN CREATE / EDIT MODAL */}
+      {planModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <form onSubmit={handlePlanSaveSubmit} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h3 className="text-base font-black text-slate-900 dark:text-white">
+              {planModal.isEdit ? `Edit Subscription Plan — ${planForm.planName}` : 'Create New Subscription Plan'}
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <h3 className="font-extrabold text-slate-900 text-lg">
-                  {isCreatingPlanModal ? 'Create New Subscription Plan' : `Edit Plan: ${planForm.planName}`}
+                <label className="text-[10px] font-black uppercase text-slate-400">Plan Display Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Advocate Pro Plan"
+                  value={planForm.planName}
+                  onChange={e => setPlanForm(prev => ({ ...prev, planName: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Plan ID / Slug</label>
+                <input
+                  type="text"
+                  placeholder="e.g. advocate_pro"
+                  value={planForm.planId}
+                  onChange={e => setPlanForm(prev => ({ ...prev, planId: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold font-mono text-slate-900 dark:text-white"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Monthly Price (₹)</label>
+                <input
+                  type="number"
+                  placeholder="999"
+                  value={planForm.priceMonthly}
+                  onChange={e => setPlanForm(prev => ({ ...prev, priceMonthly: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-emerald-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Yearly Price (₹)</label>
+                <input
+                  type="number"
+                  placeholder="9990"
+                  value={planForm.priceYearly}
+                  onChange={e => setPlanForm(prev => ({ ...prev, priceYearly: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Monthly AI Credits</label>
+                <input
+                  type="number"
+                  placeholder="5876"
+                  value={planForm.credits}
+                  onChange={e => setPlanForm(prev => ({ ...prev, credits: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-[#C8A34D]"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black uppercase text-slate-400">Badge Label</label>
+              <input
+                type="text"
+                placeholder="e.g. PRO, PREMIUM, COMBO, ALL ACCESS"
+                value={planForm.badge}
+                onChange={e => setPlanForm(prev => ({ ...prev, badge: e.target.value }))}
+                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black uppercase text-slate-400">Features Included (One Per Line)</label>
+              <textarea
+                rows={4}
+                placeholder={`Active Cases: 100\nStorage: 20 GB\nDraft Maker: 15 / month\nContract Analyzer: 15 / month`}
+                value={planForm.features}
+                onChange={e => setPlanForm(prev => ({ ...prev, features: e.target.value }))}
+                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:border-[#C8A34D]"
+              />
+              <p className="text-[10px] text-slate-400 mt-1 font-medium">Checkmarks (✓) are added automatically on the plan cards.</p>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-zinc-800">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={planForm.isPopular}
+                  onChange={e => setPlanForm(prev => ({ ...prev, isPopular: e.target.checked }))}
+                  className="rounded border-slate-300 text-[#C8A34D] focus:ring-[#C8A34D]"
+                />
+                <span className="text-xs font-black text-slate-800 dark:text-zinc-200">Highlight as Popular Tier (Gold Border)</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={planForm.isActive}
+                  onChange={e => setPlanForm(prev => ({ ...prev, isActive: e.target.checked }))}
+                  className="rounded border-slate-300 text-[#C8A34D] focus:ring-[#C8A34D]"
+                />
+                <span className="text-xs font-black text-slate-800 dark:text-zinc-200">Active Plan</span>
+              </label>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="submit"
+                className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+              >
+                Save Plan Parameters
+              </button>
+              <button
+                type="button"
+                onClick={() => setPlanModal({ isOpen: false, isEdit: false, planData: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* COUPON CREATE / EDIT MODAL */}
+      {couponModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <form onSubmit={handleSaveCouponSubmit} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h3 className="text-base font-black text-slate-900 dark:text-white">
+              {couponModal.isEdit ? `Edit Coupon: ${couponForm.code}` : 'Create New Promo Code'}
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Coupon Code *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. LEGAL100"
+                  value={couponForm.code}
+                  onChange={e => setCouponForm(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold font-mono tracking-wider text-slate-900 dark:text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Discount Type *</label>
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  <button
+                    type="button"
+                    onClick={() => setCouponForm(prev => ({ ...prev, discountType: 'percentage' }))}
+                    className={`py-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                      couponForm.discountType === 'percentage'
+                        ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D]'
+                        : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
+                    }`}
+                  >
+                    Percentage (%)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCouponForm(prev => ({ ...prev, discountType: 'fixed' }))}
+                    className={`py-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                      couponForm.discountType === 'fixed'
+                        ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D]'
+                        : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
+                    }`}
+                  >
+                    Fixed Amount (₹)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black uppercase text-slate-400">Discount Value *</label>
+              <input
+                type="number"
+                placeholder={couponForm.discountType === 'percentage' ? '10 (for 10% OFF)' : '500 (for ₹500 OFF)'}
+                value={couponForm.discountValue}
+                onChange={e => setCouponForm(prev => ({ ...prev, discountValue: e.target.value }))}
+                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-black text-emerald-500"
+                required
+              />
+            </div>
+
+            {/* Applicable Plans Multi-Select Pills */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase text-slate-400">Applicable Subscription Plans</label>
+              <div className="flex gap-1.5 flex-wrap">
+                {['ALL', 'advocate_basic', 'advocate_pro', 'advocate_premium', 'student_basic', 'student_pro', 'firm_basic', 'firm_pro'].map((p) => {
+                  const isSelected = Array.isArray(couponForm.applicablePlans) && couponForm.applicablePlans.includes(p);
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => {
+                        let next = [...(couponForm.applicablePlans || [])];
+                        if (p === 'ALL') {
+                          next = ['ALL'];
+                        } else {
+                          if (next.includes('ALL')) next = next.filter(x => x !== 'ALL');
+                          if (isSelected) {
+                            next = next.filter(x => x !== p);
+                            if (next.length === 0) next = ['ALL'];
+                          } else {
+                            next.push(p);
+                          }
+                        }
+                        setCouponForm(prev => ({ ...prev, applicablePlans: next }));
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-[11px] font-extrabold border transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D]'
+                          : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
+                      }`}
+                    >
+                      {p.toUpperCase()}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Start Date</label>
+                <input
+                  type="date"
+                  value={couponForm.startDate}
+                  onChange={e => setCouponForm(prev => ({ ...prev, startDate: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Expiry Date *</label>
+                <input
+                  type="date"
+                  value={couponForm.expiryDate}
+                  onChange={e => setCouponForm(prev => ({ ...prev, expiryDate: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Total Usage Limit</label>
+                <input
+                  type="number"
+                  placeholder="Leave blank for ∞"
+                  value={couponForm.usageLimit}
+                  onChange={e => setCouponForm(prev => ({ ...prev, usageLimit: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Per User Limit</label>
+                <input
+                  type="number"
+                  placeholder="1"
+                  value={couponForm.perUserLimit}
+                  onChange={e => setCouponForm(prev => ({ ...prev, perUserLimit: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Minimum Purchase (₹)</label>
+                <input
+                  type="number"
+                  placeholder="0 (Optional)"
+                  value={couponForm.minimumPurchase}
+                  onChange={e => setCouponForm(prev => ({ ...prev, minimumPurchase: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400">Max Discount Cap (₹)</label>
+                <input
+                  type="number"
+                  placeholder="Optional"
+                  value={couponForm.maximumDiscount}
+                  onChange={e => setCouponForm(prev => ({ ...prev, maximumDiscount: e.target.value }))}
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-zinc-800">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={couponForm.status === 'active'}
+                  onChange={e => setCouponForm(prev => ({ ...prev, status: e.target.checked ? 'active' : 'inactive' }))}
+                  className="rounded border-slate-300 text-[#C8A34D] focus:ring-[#C8A34D]"
+                />
+                <span className="text-xs font-black text-slate-800 dark:text-zinc-200">Status Active</span>
+              </label>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="submit"
+                className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+              >
+                Save Coupon 🎉
+              </button>
+              <button
+                type="button"
+                onClick={() => setCouponModal({ isOpen: false, isEdit: false, couponData: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* COUPON STATS & REDEMPTION AUDIT HISTORY MODAL */}
+      {couponDetailsModal.isOpen && couponDetailsModal.coupon && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/75 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="p-6 border-b border-slate-200 dark:border-zinc-800 flex justify-between items-center bg-slate-50/50 dark:bg-zinc-900/50">
+              <div>
+                <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>Coupon Analytics: {couponDetailsModal.coupon.code}</span>
+                  <span className="bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-black px-2 py-0.5 rounded-md border border-[#C8A34D]/40">
+                    {couponDetailsModal.coupon.discountType === 'percentage' ? `${couponDetailsModal.coupon.discountValue}% OFF` : `₹${couponDetailsModal.coupon.discountValue} OFF`}
+                  </span>
                 </h3>
-                <p className="text-xs text-slate-500 font-semibold">
-                  {isCreatingPlanModal ? 'Add a new pricing tier to AI Legal™ master plans' : `Update pricing, credits, and features for ${planForm.planId}`}
+                <p className="text-xs text-slate-400 font-medium mt-0.5">
+                  Created: {couponDetailsModal.coupon.createdAt ? new Date(couponDetailsModal.coupon.createdAt).toLocaleDateString('en-GB') : 'N/A'}
                 </p>
               </div>
-              <button 
-                onClick={() => { setEditingPlanModal(null); setIsCreatingPlanModal(false); }} 
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl bg-slate-100"
+              <button
+                onClick={() => setCouponDetailsModal({ isOpen: false, coupon: null, stats: null, usageHistory: [] })}
+                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSavePlanSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Plan Identifier (ID)</label>
-                  <input
-                    type="text"
-                    required
-                    disabled={!isCreatingPlanModal}
-                    value={planForm.planId}
-                    onChange={(e) => setPlanForm({ ...planForm, planId: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden disabled:bg-slate-100 disabled:text-slate-400"
-                    placeholder="e.g. advocate_pro"
-                  />
+            {/* Body */}
+            <div className="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+              {/* 4 Telemetry Box Summary */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="p-3 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
+                  <p className="text-[10px] text-slate-400 font-bold uppercase">TOTAL USES</p>
+                  <p className="text-lg font-extrabold text-slate-900 dark:text-white mt-1">{couponDetailsModal.stats?.totalUses || couponDetailsModal.coupon.usedCount || 0}</p>
                 </div>
-
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Plan Display Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={planForm.planName}
-                    onChange={(e) => setPlanForm({ ...planForm, planName: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden"
-                    placeholder="e.g. AI Legal™ Advocate Pro"
-                  />
+                <div className="p-3 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
+                  <p className="text-[10px] text-slate-400 font-bold uppercase">DISCOUNT GIVEN</p>
+                  <p className="text-lg font-extrabold text-emerald-500 mt-1">₹{(couponDetailsModal.stats?.totalDiscountGiven || 0).toLocaleString('en-IN')}</p>
+                </div>
+                <div className="p-3 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
+                  <p className="text-[10px] text-slate-400 font-bold uppercase">REVENUE GENERATED</p>
+                  <p className="text-lg font-extrabold text-[#C8A34D] mt-1">₹{(couponDetailsModal.stats?.totalRevenueGenerated || 0).toLocaleString('en-IN')}</p>
+                </div>
+                <div className="p-3 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
+                  <p className="text-[10px] text-slate-400 font-bold uppercase">AVG ORDER VALUE</p>
+                  <p className="text-lg font-extrabold text-blue-500 mt-1">₹{(couponDetailsModal.stats?.averageOrderValue || 0).toLocaleString('en-IN')}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Price Monthly (₹)</label>
-                  <input
-                    type="number"
-                    required
-                    value={planForm.priceMonthly}
-                    onChange={(e) => setPlanForm({ ...planForm, priceMonthly: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-emerald-600 focus:outline-hidden"
-                  />
-                </div>
+              {/* Redemption Audit History Table */}
+              <div className="bg-slate-50 dark:bg-zinc-900/60 p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3">
+                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white pb-2 border-b border-slate-200/80 dark:border-zinc-800">
+                  Redemption Audit History
+                </h4>
 
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Price Yearly (₹)</label>
-                  <input
-                    type="number"
-                    required
-                    value={planForm.priceYearly}
-                    onChange={(e) => setPlanForm({ ...planForm, priceYearly: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-blue-600 focus:outline-hidden"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">AI Credits</label>
-                  <input
-                    type="number"
-                    required
-                    value={planForm.credits}
-                    onChange={(e) => setPlanForm({ ...planForm, credits: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-amber-600 focus:outline-hidden"
-                  />
-                </div>
+                {couponDetailsModal.usageHistory.length === 0 ? (
+                  <p className="text-xs italic text-slate-400 py-4 text-center">No user redemptions recorded yet for this coupon.</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-200/80 dark:border-zinc-800 text-[10px] uppercase font-black text-slate-400">
+                          <th className="pb-2">User</th>
+                          <th className="pb-2">Plan</th>
+                          <th className="pb-2">Original</th>
+                          <th className="pb-2">Discount</th>
+                          <th className="pb-2">Paid</th>
+                          <th className="pb-2">Date</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200/60 dark:divide-zinc-800/60 font-semibold">
+                        {couponDetailsModal.usageHistory.map((u, idx) => (
+                          <tr key={u._id || idx} className="hover:bg-slate-100 dark:hover:bg-zinc-800/50">
+                            <td className="py-2.5">
+                              <p className="font-extrabold text-slate-900 dark:text-white">{u.userId?.fullName || u.userEmail || 'Subscriber'}</p>
+                              <p className="text-[10px] text-slate-400">{u.userEmail || 'N/A'}</p>
+                            </td>
+                            <td className="py-2.5">
+                              <span className="font-bold uppercase text-[#C8A34D]">{u.planId || 'PRO'}</span>
+                            </td>
+                            <td className="py-2.5 text-slate-500 line-through">₹{u.originalAmount || 0}</td>
+                            <td className="py-2.5 text-emerald-500 font-bold">-₹{u.discountAmount || 0}</td>
+                            <td className="py-2.5 font-black text-slate-900 dark:text-white">₹{u.finalAmount || 0}</td>
+                            <td className="py-2.5 text-slate-400 text-[10px]">
+                              {new Date(u.usedAt || u.createdAt).toLocaleDateString('en-GB')}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-
-              <div>
-                <label className="text-xs font-extrabold text-slate-700 block mb-1">Badge Text (Optional)</label>
-                <input
-                  type="text"
-                  value={planForm.badge}
-                  onChange={(e) => setPlanForm({ ...planForm, badge: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 focus:outline-hidden"
-                  placeholder="e.g. ADVOCATE PRO / MOST POPULAR"
-                />
-              </div>
-
-              <div className="flex items-center gap-6 p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
-                  <input
-                    type="checkbox"
-                    checked={planForm.isPopular}
-                    onChange={(e) => setPlanForm({ ...planForm, isPopular: e.target.checked })}
-                    className="rounded-md text-amber-600 focus:ring-amber-500 w-4 h-4"
-                  />
-                  <span>Highlight as Popular ⭐</span>
-                </label>
-
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
-                  <input
-                    type="checkbox"
-                    checked={planForm.isActive}
-                    onChange={(e) => setPlanForm({ ...planForm, isActive: e.target.checked })}
-                    className="rounded-md text-emerald-600 focus:ring-emerald-500 w-4 h-4"
-                  />
-                  <span>Active Plan 🟢</span>
-                </label>
-              </div>
-
-              <div>
-                <label className="text-xs font-extrabold text-slate-700 block mb-1">Features List (One feature per line)</label>
-                <textarea
-                  rows={5}
-                  value={planForm.featuresText}
-                  onChange={(e) => setPlanForm({ ...planForm, featuresText: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 focus:outline-hidden leading-relaxed"
-                  placeholder="Active Cases: 150&#10;Storage: 15 GB&#10;Draft Maker: 100 / month&#10;Court Prep Workspace: 50 dossiers / month&#10;Precedent Search: Unlimited"
-                />
-              </div>
-
-              <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
-                <button 
-                  type="button" 
-                  onClick={() => { setEditingPlanModal(null); setIsCreatingPlanModal(false); }} 
-                  className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs transition-all"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs transition-all shadow-xs"
-                >
-                  {isCreatingPlanModal ? 'Create Plan' : 'Save Plan Changes'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ── MANAGE FEATURE REQUEST MODAL ── */}
-      {selectedFeatureModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-extrabold text-slate-900 text-base">Manage Feature Request</h3>
-              <button onClick={() => setSelectedFeatureModal(null)} className="p-1 text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
             </div>
-            
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs font-extrabold text-slate-900">{selectedFeatureModal.title}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{selectedFeatureModal.description}</p>
-              </div>
 
-              <div>
-                <label className="text-xs font-extrabold text-slate-700 block mb-1">Development Status</label>
-                <select
-                  value={devStatusInput}
-                  onChange={(e) => setDevStatusInput(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900"
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="Under Review">Under Review</option>
-                  <option value="Planned">Planned</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Completed">Completed</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs font-extrabold text-slate-700 block mb-1">Developer Reply / Note</label>
-                <textarea
-                  rows={3}
-                  value={devReplyInput}
-                  onChange={(e) => setDevReplyInput(e.target.value)}
-                  placeholder="e.g. Scheduled for v3.2 release cycle..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 pt-2">
-                <button onClick={() => setSelectedFeatureModal(null)} className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Cancel</button>
-                <button 
-                  onClick={() => handleUpdateFeatureStatus(selectedFeatureModal._id, devStatusInput, devReplyInput)} 
-                  className="flex-1 py-2 rounded-xl bg-amber-600 text-white font-bold text-xs"
-                >
-                  Save Status
-                </button>
-              </div>
+            {/* Footer */}
+            <div className="p-4 border-t border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex justify-end">
+              <button
+                onClick={() => setCouponDetailsModal({ isOpen: false, coupon: null, stats: null, usageHistory: [] })}
+                className="px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer shadow-md transition-all"
+              >
+                Close Details
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── MANAGE BUG REPORT MODAL ── */}
-      {selectedBugModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-extrabold text-slate-900 text-base">Manage Bug Report</h3>
-              <button onClick={() => setSelectedBugModal(null)} className="p-1 text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
+      {/* COUPON DELETE CONFIRMATION MODAL */}
+      {couponDeleteConfirmModal.isOpen && couponDeleteConfirmModal.coupon && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <h3 className="text-base font-black text-slate-900 dark:text-white">Delete Promo Code?</h3>
+            <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+              Are you sure you want to delete this promotional code? Users will no longer be able to redeem it.
+            </p>
+
+            <div className="bg-slate-50 dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+              <p><span className="text-slate-400 font-bold">Promo Code:</span> <strong className="text-[#C8A34D] font-black font-mono">{couponDeleteConfirmModal.coupon.code}</strong></p>
+              <p><span className="text-slate-400 font-bold">Discount:</span> <span className="text-slate-700 dark:text-zinc-300 font-bold">{couponDeleteConfirmModal.coupon.discountType === 'percentage' ? `${couponDeleteConfirmModal.coupon.discountValue}% OFF` : `₹${couponDeleteConfirmModal.coupon.discountValue} OFF`}</span></p>
             </div>
-            
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs font-extrabold text-slate-900">{selectedBugModal.title}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{selectedBugModal.description}</p>
-              </div>
 
-              <div>
-                <label className="text-xs font-extrabold text-slate-700 block mb-1">Resolution Status</label>
-                <select
-                  value={bugStatusInput}
-                  onChange={(e) => setBugStatusInput(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900"
-                >
-                  <option value="open">Open</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="resolved">Resolved</option>
-                  <option value="closed">Closed</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs font-extrabold text-slate-700 block mb-1">Internal Developer Notes</label>
-                <textarea
-                  rows={3}
-                  value={bugDevNotesInput}
-                  onChange={(e) => setBugDevNotesInput(e.target.value)}
-                  placeholder="e.g. Increasing API gateway timeout window to 45s..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 pt-2">
-                <button onClick={() => setSelectedBugModal(null)} className="flex-1 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Cancel</button>
-                <button 
-                  onClick={() => handleUpdateBugStatus(selectedBugModal._id, bugStatusInput, bugDevNotesInput)} 
-                  className="flex-1 py-2 rounded-xl bg-amber-600 text-white font-bold text-xs"
-                >
-                  Update Bug
-                </button>
-              </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => handleDeleteCouponSubmit(couponDeleteConfirmModal.coupon._id)}
+                className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+              >
+                Confirm Delete Code
+              </button>
+              <button
+                type="button"
+                onClick={() => setCouponDeleteConfirmModal({ isOpen: false, coupon: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── COUPON CREATOR / EDITOR MODAL ── */}
-      {(editingCouponModal || isCreatingCouponModal) && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="font-extrabold text-slate-900 text-lg">
-                  {isCreatingCouponModal ? 'Create Promo Coupon' : `Edit Coupon: ${couponForm.code}`}
-                </h3>
-                <p className="text-xs text-slate-500 font-semibold">Configure discount parameters and plan eligibility.</p>
-              </div>
-              <button onClick={() => { setEditingCouponModal(null); setIsCreatingCouponModal(false); }} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl bg-slate-100">
+      {/* MANAGE FEATURE REQUEST MODAL */}
+      {featureModal.isOpen && featureModal.feature && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <form onSubmit={handleSaveFeatureStatus} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-zinc-800">
+              <h3 className="text-base font-black text-slate-900 dark:text-white">Manage Feature Request</h3>
+              <button
+                type="button"
+                onClick={() => setFeatureModal({ isOpen: false, feature: null, status: 'Pending', developerAssigned: 'None', adminNote: '' })}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveCouponSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Coupon Code</label>
-                  <input
-                    type="text"
-                    required
-                    value={couponForm.code}
-                    onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-black text-amber-700 focus:outline-hidden"
-                    placeholder="e.g. ADVOCATE50"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Discount Type</label>
-                  <select
-                    value={couponForm.discountType}
-                    onChange={(e) => setCouponForm({ ...couponForm, discountType: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900"
-                  >
-                    <option value="percentage">Percentage (%)</option>
-                    <option value="fixed">Fixed Rupee Amount (₹)</option>
-                  </select>
-                </div>
+            {/* Read-Only Feature Overview Box */}
+            <div className="bg-slate-50 dark:bg-zinc-900/60 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-extrabold text-[#C8A34D] bg-[#C8A34D]/10 border border-[#C8A34D]/30 px-2.5 py-0.5 rounded-lg text-[11px]">
+                  {featureModal.feature.category || 'General Feature'}
+                </span>
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase border ${
+                  featureModal.feature.priority === 'Critical' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                }`}>
+                  {featureModal.feature.priority || 'Medium'} Priority
+                </span>
               </div>
+              <h4 className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">{featureModal.feature.title}</h4>
+              <p className="text-slate-600 dark:text-zinc-300 font-medium">{featureModal.feature.description}</p>
+              <p className="text-[10px] text-slate-400 font-bold pt-1">
+                Requested by: {featureModal.feature.email || featureModal.feature.userEmail || 'Advocate Client'} ({featureModal.feature.userPlan || 'ADVOCATE_PRO'})
+              </p>
+            </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Discount Value</label>
-                  <input
-                    type="number"
-                    required
-                    value={couponForm.discountValue}
-                    onChange={(e) => setCouponForm({ ...couponForm, discountValue: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-emerald-600 focus:outline-hidden"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Total Usage Limit</label>
-                  <input
-                    type="number"
-                    value={couponForm.usageLimit}
-                    onChange={(e) => setCouponForm({ ...couponForm, usageLimit: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-blue-600 focus:outline-hidden"
-                    placeholder="100"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Per User Limit</label>
-                  <input
-                    type="number"
-                    value={couponForm.perUserLimit}
-                    onChange={(e) => setCouponForm({ ...couponForm, perUserLimit: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-hidden"
-                  />
-                </div>
+            {/* Update Status Selector */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase text-slate-400">Update Status</label>
+              <div className="flex gap-1.5 flex-wrap">
+                {['Pending', 'Under Review', 'Planned', 'In Progress', 'Completed', 'Rejected'].map((st) => {
+                  const isSelected = featureModal.status === st;
+                  return (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => setFeatureModal(prev => ({ ...prev, status: st }))}
+                      className={`px-3 py-1.5 rounded-xl text-[11px] font-black uppercase transition-all cursor-pointer border ${
+                        isSelected
+                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-xs'
+                          : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  );
+                })}
               </div>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Start Date</label>
-                  <input
-                    type="date"
-                    value={couponForm.startDate}
-                    onChange={(e) => setCouponForm({ ...couponForm, startDate: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-extrabold text-slate-700 block mb-1">Expiry Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={couponForm.expiryDate}
-                    onChange={(e) => setCouponForm({ ...couponForm, expiryDate: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900"
-                  />
-                </div>
+            {/* Assign Developer Selector */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase text-slate-400">Assign Developer</label>
+              <div className="flex gap-1.5 flex-wrap">
+                {['None', 'John Doe', 'Aditi Verma', 'Nikhil Gupta', 'Sarah Connor'].map((dev) => {
+                  const isSelected = featureModal.developerAssigned === dev;
+                  return (
+                    <button
+                      key={dev}
+                      type="button"
+                      onClick={() => setFeatureModal(prev => ({ ...prev, developerAssigned: dev }))}
+                      className={`px-3 py-1.5 rounded-xl text-[11px] font-black transition-all cursor-pointer border ${
+                        isSelected
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                          : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
+                      }`}
+                    >
+                      {dev}
+                    </button>
+                  );
+                })}
               </div>
+            </div>
 
-              <div>
-                <label className="text-xs font-extrabold text-slate-700 block mb-1">Coupon Status</label>
-                <select
-                  value={couponForm.status}
-                  onChange={(e) => setCouponForm({ ...couponForm, status: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900"
-                >
-                  <option value="active">Active (Available for advocates)</option>
-                  <option value="inactive">Inactive (Disabled)</option>
-                </select>
-              </div>
+            {/* Admin / Dev Reply to User */}
+            <div>
+              <label className="text-[10px] font-black uppercase text-slate-400">Admin Reply to User (Visible in App)</label>
+              <textarea
+                rows={3}
+                placeholder="Add response to reflect inside client app..."
+                value={featureModal.adminNote}
+                onChange={e => setFeatureModal(prev => ({ ...prev, adminNote: e.target.value }))}
+                className="w-full mt-1 p-3 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
+              />
+            </div>
 
-              <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
-                <button type="button" onClick={() => { setEditingCouponModal(null); setIsCreatingCouponModal(false); }} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">
-                  Cancel
-                </button>
-                <button type="submit" className="flex-1 py-2.5 rounded-xl bg-amber-600 text-white font-extrabold text-xs shadow-xs">
-                  {isCreatingCouponModal ? 'Create Coupon' : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+            <div className="flex gap-3 pt-2">
+              <button
+                type="submit"
+                className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+              >
+                Save Update 🎉
+              </button>
+              <button
+                type="button"
+                onClick={() => setFeatureModal({ isOpen: false, feature: null, status: 'Pending', developerAssigned: 'None', adminNote: '' })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* FEATURE DELETE CONFIRMATION MODAL */}
+      {featureDeleteModal.isOpen && featureDeleteModal.feature && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <h3 className="text-base font-black text-slate-900 dark:text-white">Delete Feature Request?</h3>
+            <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+              Are you sure you want to delete this feature request? This action cannot be undone.
+            </p>
+
+            <div className="bg-slate-50 dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+              <p><span className="text-slate-400 font-bold">Category:</span> <span className="font-extrabold text-[#C8A34D]">{featureDeleteModal.feature.category || 'General'}</span></p>
+              <p><span className="text-slate-400 font-bold">Title:</span> <strong className="text-slate-800 dark:text-zinc-200">{featureDeleteModal.feature.title}</strong></p>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => handleDeleteFeatureSubmit(featureDeleteModal.feature._id)}
+                className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+              >
+                Confirm Delete Request
+              </button>
+              <button
+                type="button"
+                onClick={() => setFeatureDeleteModal({ isOpen: false, feature: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
+
     </div>
   );
-};
-
-export default AdminDashboard;
+}

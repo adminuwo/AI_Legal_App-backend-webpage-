@@ -2,9 +2,6 @@ import Plan from '../models/Plan.js';
 import AdminSettings from '../models/AdminSettings.js';
 import Payment from '../models/Payment.js';
 import User from '../models/User.js';
-import FeatureRequest from '../models/FeatureRequest.js';
-import BugReport from '../models/BugReport.js';
-import mongoose from 'mongoose';
 
 export const seedAdminData = async () => {
     try {
@@ -80,15 +77,15 @@ export const seedAdminData = async () => {
                 platformName: 'AI Legal™ Pro',
                 supportEmail: 'support@aisa24.com',
                 smtp: {
-                    host: 'smtp.mailtrap.io',
-                    port: 2525,
-                    user: 'admin_test',
-                    pass: 'admin_pass'
+                    host: process.env.SMTP_HOST || '',
+                    port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587,
+                    user: process.env.SMTP_USER || '',
+                    pass: process.env.SMTP_PASS || ''
                 },
                 apiKeys: {
-                    openai: 'sk-proj-test1234567890',
-                    razorpayId: 'rzp_test_123456',
-                    razorpaySecret: 'secret_123456'
+                    openai: process.env.OPENAI_API_KEY || '',
+                    razorpayId: process.env.RAZORPAY_KEY_ID || '',
+                    razorpaySecret: process.env.RAZORPAY_KEY_SECRET || ''
                 },
                 aiModel: 'gpt-4-turbo',
                 defaultCredits: 50,
@@ -98,7 +95,7 @@ export const seedAdminData = async () => {
             console.log('[Seeder] Seeding default admin settings complete.');
         }
 
-        // 3. Seed sample payments if empty
+        // 3. Seed some mock payments if empty
         const paymentCount = await Payment.countDocuments();
         if (paymentCount === 0) {
             console.log('[Seeder] Seeding sample payments for analytics...');
@@ -116,7 +113,7 @@ export const seedAdminData = async () => {
                         gateway: 'Razorpay',
                         transactionId: 'pay_TXN123456789',
                         status: 'success',
-                        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+                        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // 5 days ago
                     },
                     {
                         userId: userObj._id,
@@ -127,89 +124,12 @@ export const seedAdminData = async () => {
                         gateway: 'Razorpay',
                         transactionId: 'pay_TXN123456790',
                         status: 'success',
-                        createdAt: new Date()
+                        createdAt: new Date() // today
                     }
                 ];
                 await Payment.insertMany(samplePayments);
                 console.log('[Seeder] Seeding sample payments complete.');
             }
-        }
-
-        // 4. Seed FeatureRequests if empty
-        const featureCount = await FeatureRequest.countDocuments();
-        if (featureCount === 0) {
-            console.log('[Seeder] Seeding default feature requests into DB...');
-            const adminUser = await User.findOne({}) || { _id: new mongoose.Types.ObjectId(), email: 'aditi@uwo24.com' };
-            await FeatureRequest.insertMany([
-                {
-                    title: 'Supreme Court AI Case Outcome Predictor',
-                    description: 'Enable multi-bench historical analytics for landmark Constitutional bench judgements.',
-                    requestedBy: adminUser._id,
-                    email: adminUser.email || 'anmol.advocate@gmail.com',
-                    userPlan: 'Advocate Pro',
-                    priority: 'Critical',
-                    category: 'Court AI Assistant',
-                    status: 'Planned',
-                    developerAssigned: 'Vikram AI Dev',
-                    reply: 'Scheduled for v3.2 release cycle.'
-                },
-                {
-                    title: 'Bulk PDF Vernacular OCR (Hindi, Marathi, Tamil)',
-                    description: 'Support batch processing of scanned court orders in 12 regional languages.',
-                    requestedBy: adminUser._id,
-                    email: 'aditi@uwo24.com',
-                    userPlan: 'Enterprise Pro',
-                    priority: 'Important',
-                    category: 'Document Intelligence',
-                    status: 'In Progress',
-                    developerAssigned: 'OCR Engineering Team'
-                },
-                {
-                    title: 'Custom Law Firm Letterhead Watermark Engine',
-                    description: 'Allow advocates to embed custom PNG logos on generated Legal Notices.',
-                    requestedBy: adminUser._id,
-                    email: 'rajesh.law@outlook.com',
-                    userPlan: 'Firm Pro',
-                    priority: 'Nice to Have',
-                    category: 'Drafting Engine',
-                    status: 'Completed',
-                    reply: 'Feature live in production!'
-                }
-            ]);
-        }
-
-        // 5. Seed BugReports if empty
-        const bugCount = await BugReport.countDocuments();
-        if (bugCount === 0) {
-            console.log('[Seeder] Seeding default bug reports into DB...');
-            const adminUser = await User.findOne({}) || { _id: new mongoose.Types.ObjectId(), email: 'aditi@uwo24.com' };
-            await BugReport.insertMany([
-                {
-                    title: 'High Court Case Precedent Search Timeout',
-                    description: 'Queries over 500 pages of judgment text experience HTTP 504 gateway timeouts.',
-                    reporter: adminUser._id,
-                    email: 'anmol.advocate@gmail.com',
-                    device: 'Samsung S24 Ultra',
-                    platform: 'Android',
-                    osVersion: 'Android 14',
-                    severity: 'Critical',
-                    status: 'Assigned',
-                    developerAssigned: 'Cloud Infra Team',
-                    internalNotes: 'Increasing timeout window to 45s on API Gateway.'
-                },
-                {
-                    title: 'PDF OCR Alignment in Vernacular Hindi Drafts',
-                    description: 'Hindi font glyphs occasionally misalign during PDF generation.',
-                    reporter: adminUser._id,
-                    email: 'priya.mehta@juris.in',
-                    device: 'MacBook Pro M3',
-                    platform: 'Web',
-                    osVersion: 'macOS 15',
-                    severity: 'Major',
-                    status: 'Open',
-                    developerAssigned: 'Frontend Lead'
-                }
-            ]);
         }
     } catch (error) {
         console.error('[Seeder] Error during data seeding:', error);

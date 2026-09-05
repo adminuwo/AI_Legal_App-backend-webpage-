@@ -5,7 +5,7 @@ import {
   Clock, AlertTriangle, CheckCircle2, RefreshCw, Edit2, 
   Trash2, Archive, ChevronRight, X, ArrowUpRight, TrendingUp,
   Sparkles, Info, Users, ShieldCheck, BookOpen, User, MoreVertical, Activity,
-  Binary, Scale
+  Binary, Scale, Bell, Menu
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
@@ -16,19 +16,53 @@ import toast from 'react-hot-toast';
 import ExperienceRoleSelector from '../Components/ExperienceRoleSelector';
 import StudentDashboardSection from '../Components/StudentDashboardSection';
 import LawFirmDashboardSection from '../Components/LawFirmDashboardSection';
+import LawFirmOnboardingView from '../Components/LawFirmOnboardingView';
+import CreateCaseWizardModal from '../Tools/AI_Legal/components/CreateCaseWizardModal';
+import NotificationCenter from '../Components/NotificationBar/NotificationCenter';
+import { useSubscription } from '../context/SubscriptionContext';
+import { usePersonalization } from '../context/PersonalizationContext';
 
 export default function HomeDashboard() {
   const navigate = useNavigate();
+  const { cases: subCases, storage, features, badge, planDisplayName, triggerUpgradeModal } = useSubscription();
+  const { notifications, fetchNotifications } = usePersonalization();
   const currentUser = useRecoilValue(userData);
   const selectedRole = useRecoilValue(selectedRoleState) || 'advocate';
   const userName = currentUser?.user?.name || "Advocate";
 
+  const unreadNotifCount = (notifications || []).filter(n => !n.isRead).length;
+
   // State Management
   const [cases, setCases] = useState([]);
-  const [notifications, setNotifications] = useState([]);
+  const [pendingInvite, setPendingInvite] = useState(null);
+  const [firmWorkspaces, setFirmWorkspaces] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [error, setError] = useState(null);
+
+  const fetchWorkspaces = async () => {
+    try {
+      const res = await apiService.request('/workspaces');
+      if (res && res.success && Array.isArray(res.workspaces)) {
+        const firms = res.workspaces.filter(w => w.type === 'law_firm');
+        setFirmWorkspaces(firms);
+        if (firms.length > 0) {
+          const activeWsId = localStorage.getItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID');
+          if (!activeWsId || !firms.find(f => (f._id || f.id) === activeWsId)) {
+            localStorage.setItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID', firms[0]._id || firms[0].id);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[HomeDashboard] Failed to fetch workspaces:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedRole === 'law_firm') {
+      fetchWorkspaces();
+    }
+  }, [selectedRole]);
 
   // Modal States
   const [isNewCaseModalOpen, setIsNewCaseModalOpen] = useState(false);
@@ -36,6 +70,7 @@ export default function HomeDashboard() {
   const [activeMenuCaseId, setActiveMenuCaseId] = useState(null);
   const [isBannerVisible, setIsBannerVisible] = useState(true);
   const [isProductGuideOpen, setIsProductGuideOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   // Form States
   const [newCaseForm, setNewCaseForm] = useState({
@@ -67,9 +102,24 @@ export default function HomeDashboard() {
       const data = await apiService.getProjects();
       setCases(data || []);
 
-      // Fetch AI Notifications
-      const notifs = await apiService.getNotifications();
-      setNotifications(notifs || []);
+      // Fetch AI Notifications via PersonalizationContext
+      if (fetchNotifications) fetchNotifications();
+
+      // Fetch Pending Workspace Invitations
+      try {
+        const userStr = localStorage.getItem('user');
+        const token = userStr ? JSON.parse(userStr)?.token : null;
+        if (token) {
+          const inviteRes = await apiService.get('/workspaces/invitations/pending');
+          if (inviteRes?.data?.success && inviteRes?.data?.invitations?.length > 0) {
+            setPendingInvite(inviteRes.data.invitations[0]);
+          } else {
+            setPendingInvite(null);
+          }
+        }
+      } catch (invErr) {
+        console.warn("Pending invitation fetch note:", invErr);
+      }
     } catch (err) {
       console.error("Dashboard synchronization error:", err);
       setError("Failed to fetch current litigation data from the backend.");
@@ -79,12 +129,54 @@ export default function HomeDashboard() {
     }
   };
 
-  // Run on mount and establish background synchronization
+  const handleAcceptInvite = async (inviteId, workspaceId) => {
+    const tid = toast.loading("Accepting firm invitation...");
+    try {
+      const res = await apiService.post(`/workspaces/invitations/${inviteId}/accept`);
+      if (res?.data?.success) {
+        toast.success("Joined firm workspace successfully!", { id: tid });
+        setPendingInvite(null);
+        await fetchDashboardData(true);
+      } else {
+        toast.error(res?.data?.error || "Failed to accept invitation.", { id: tid });
+      }
+    } catch (err) {
+      toast.error(err.message || "Failed to accept invitation.", { id: tid });
+    }
+  };
+
+  const handleRejectInvite = async (inviteId) => {
+    const tid = toast.loading("Rejecting invitation...");
+    try {
+      const res = await apiService.post(`/workspaces/invitations/${inviteId}/reject`);
+      if (res?.data?.success) {
+        toast.success("Invitation rejected.", { id: tid });
+        setPendingInvite(null);
+      } else {
+        toast.error(res?.data?.error || "Failed to reject invitation.", { id: tid });
+      }
+    } catch (err) {
+      toast.error(err.message || "Failed to reject invitation.", { id: tid });
+    }
+  };
+
+  // Run on mount, user/role switch, and establish background synchronization
   useEffect(() => {
     fetchDashboardData();
     const syncInterval = setInterval(() => fetchDashboardData(true), 15000);
-    return () => clearInterval(syncInterval);
-  }, []);
+
+    const handleRoleOrWsChange = () => {
+      fetchDashboardData(true);
+    };
+    window.addEventListener('user_role_changed', handleRoleOrWsChange);
+    window.addEventListener('workspace_changed', handleRoleOrWsChange);
+
+    return () => {
+      clearInterval(syncInterval);
+      window.removeEventListener('user_role_changed', handleRoleOrWsChange);
+      window.removeEventListener('workspace_changed', handleRoleOrWsChange);
+    };
+  }, [currentUser?.user?._id || currentUser?.user?.id || currentUser?.user?.email, selectedRole]);
 
   // Format calendar date
   const formatDate = (date) => {
@@ -395,40 +487,100 @@ export default function HomeDashboard() {
     </div>
   );
 
+  if (selectedRole === 'student') {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A] p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto text-[#111827] dark:text-white font-sans transition-colors">
+        <StudentDashboardSection user={currentUser?.user} cases={cases} />
+      </div>
+    );
+  }
+
+  if (selectedRole === 'law_firm') {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A] p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto text-[#111827] dark:text-white font-sans transition-colors">
+        <LawFirmDashboardSection user={currentUser?.user} cases={cases} workspaces={[]} onRefresh={fetchDashboardData} />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#FFFFFF] pt-24 pb-16 px-6 md:px-16 max-w-6xl mx-auto text-[#111827] font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A] p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto text-[#111827] dark:text-white font-sans transition-colors">
       
       {isLoading ? renderLoadingSkeletons() : (
         <>
           {/* 1. Header Greeting & Primary Action */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-[#F3F4F6]">
-            <div>
+          <div className="flex items-start justify-between gap-3 sm:gap-4 mb-5 sm:mb-6 pb-4 sm:pb-5 border-b border-slate-200 dark:border-slate-800">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#111827]">
-                  Welcome, {selectedRole === 'student' ? 'Student' : selectedRole === 'law_firm' ? 'Law Firm' : 'Advocate'} {userName}
+                <h1 className="text-base sm:text-3xl font-extrabold tracking-tight text-[#111111] dark:text-white truncate">
+                  Welcome, Advocate {userName}
                 </h1>
                 {isSyncing && (
-                  <RefreshCw size={14} className="text-[#6D5DFC] animate-spin" />
+                  <RefreshCw size={14} className="text-[#C8A34D] animate-spin shrink-0" />
                 )}
               </div>
-              <p className="text-xs text-[#6B7280] font-semibold flex items-center gap-2 mt-1.5">
-                <Calendar className="w-4 h-4 text-[#6D5DFC]" />
-                {formatDate(currentTime)}
+              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 mt-1">
+                <Calendar className="w-3.5 h-3.5 text-[#C8A34D] shrink-0" />
+                <span>{formatDate(currentTime)}</span>
               </p>
             </div>
             
-            <button
-              onClick={() => {
-                setNewCaseForm({ name: '', clientName: '', opponentName: '', caseType: '', courtName: '', summary: '', priority: 'Medium' });
-                setIsNewCaseModalOpen(true);
-              }}
-              className="flex items-center gap-2 px-5 py-3 bg-[#6D5DFC] hover:bg-[#5b4edb] text-white rounded-xl text-sm font-bold shadow-sm transition-all active:scale-95 shrink-0 self-start md:self-auto cursor-pointer"
-            >
-              <Plus className="w-4.5 h-4.5" />
-              <span>New Case</span>
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => setIsNotifOpen(true)}
+                className="relative flex items-center gap-2 p-2 sm:px-4 sm:py-2.5 bg-[#C8A34D]/15 hover:bg-[#C8A34D]/25 border border-[#C8A34D]/40 text-[#B48A35] dark:text-[#C8A34D] font-black rounded-xl text-xs sm:text-sm shadow-xs transition-all active:scale-95 cursor-pointer"
+                title="View Updates & System Notifications"
+              >
+                <div className="relative">
+                  <Bell className="w-4.5 h-4.5 sm:w-4.5 sm:h-4.5 text-[#C8A34D]" />
+                  {unreadNotifCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white dark:ring-[#0F172A] animate-pulse" />
+                  )}
+                </div>
+                <span className="hidden sm:inline">Updates & Notifications</span>
+                {unreadNotifCount > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-black">
+                    {unreadNotifCount > 99 ? '99+' : unreadNotifCount}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
 
+          <NotificationCenter isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
+
+          {/* Pending Workspace Invitation Banner */}
+          {pendingInvite && (
+            <div className="mb-8 p-5 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#C8A34D]/40 text-[#0F172A] dark:text-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-bold uppercase tracking-wider">
+                  <Users className="w-3.5 h-3.5 text-[#C8A34D]" />
+                  <span>Pending Firm Invitation</span>
+                </div>
+                <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
+                  Invited to join <strong className="text-[#C8A34D]">{pendingInvite.firmName || pendingInvite.workspaceName || 'Law Firm Workspace'}</strong>
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  Role Designation: <span className="font-semibold text-[#0F172A] dark:text-white">{pendingInvite.role || 'Associate Advocate'}</span>
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
+                <button
+                  onClick={() => handleAcceptInvite(pendingInvite._id || pendingInvite.id, pendingInvite.workspaceId)}
+                  className="flex-1 sm:flex-none px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs rounded-xl shadow-md transition-all cursor-pointer"
+                >
+                  Accept Invitation
+                </button>
+                <button
+                  onClick={() => handleRejectInvite(pendingInvite._id || pendingInvite.id)}
+                  className="flex-1 sm:flex-none px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-xl border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
+                >
+                  Decline
+                </button>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl flex items-center gap-3 text-xs">
@@ -437,32 +589,27 @@ export default function HomeDashboard() {
             </div>
           )}
 
-          {selectedRole === 'student' ? (
-            <StudentDashboardSection user={currentUser?.user} />
-          ) : selectedRole === 'law_firm' ? (
-            <LawFirmDashboardSection user={currentUser?.user} cases={cases} />
-          ) : (
-            <>
-              {/* 2. Today's Overview Statistics Ribbon */}
-              <div className="mb-12">
-            <h2 className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider mb-4">Today&apos;s Overview</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Advocate Litigation Dashboard */}
+          {/* 2. Today's Overview Statistics Ribbon */}
+          <div className="mb-8">
+            <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">Today&apos;s Overview</h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {[
-                { label: "Active Cases", value: totalActiveCases, icon: Briefcase, status: "Active", color: "text-emerald-500 bg-emerald-50" },
-                { label: "Today's Hearings", value: totalTodaysHearingsCount, icon: Gavel, status: totalTodaysHearingsCount > 0 ? "TODAY" : "0 Today", color: totalTodaysHearingsCount > 0 ? "text-rose-500 bg-rose-50" : "text-slate-400 bg-slate-50" },
-                { label: "Pending Drafts", value: totalPendingDrafts, icon: FileText, status: "Pending", color: "text-amber-500 bg-amber-50" },
-                { label: "Pending Research", value: totalPendingResearch, icon: Search, status: "Up to Date", color: "text-indigo-500 bg-indigo-50" }
+                { label: "Active Cases", value: totalActiveCases, icon: Briefcase, status: "Active", color: "text-[#C8A34D] bg-[#C8A34D]/10 border border-[#C8A34D]/25" },
+                { label: "Today's Hearings", value: totalTodaysHearingsCount, icon: Gavel, status: totalTodaysHearingsCount > 0 ? "TODAY" : "0 Today", color: totalTodaysHearingsCount > 0 ? "text-rose-500 bg-rose-50 border border-rose-200" : "text-slate-400 bg-slate-100 dark:bg-slate-800" },
+                { label: "Pending Drafts", value: totalPendingDrafts, icon: FileText, status: "Pending", color: "text-amber-500 bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:border-amber-900/40" },
+                { label: "Pending Research", value: totalPendingResearch, icon: Search, status: "Up to Date", color: "text-emerald-500 bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900/40" }
               ].map((stat, i) => (
-                <div key={i} className="p-6 border border-[#E5E7EB] rounded-2xl bg-white shadow-sm hover:border-[#6D5DFC] hover:shadow-md transition-all flex flex-col justify-between">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest">{stat.label}</span>
-                    <div className={`p-2 rounded-xl ${stat.color}`}>
-                      <stat.icon className="w-5 h-5" />
+                <div key={i} className="p-3.5 sm:p-6 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] shadow-xs hover:border-[#C8A34D] hover:shadow-md transition-all flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sm:tracking-widest truncate">{stat.label}</span>
+                    <div className={`p-1.5 sm:p-2 rounded-xl ${stat.color} shrink-0`}>
+                      <stat.icon className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5" />
                     </div>
                   </div>
-                  <div className="flex items-baseline justify-between mt-2">
-                    <span className="text-3xl font-black text-[#111827]">{stat.value}</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  <div className="flex items-baseline justify-between mt-1 sm:mt-2">
+                    <span className="text-2xl sm:text-3xl font-black text-[#111111] dark:text-white">{stat.value}</span>
+                    <span className="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0">
                       {stat.status}
                     </span>
                   </div>
@@ -471,80 +618,113 @@ export default function HomeDashboard() {
             </div>
           </div>
 
-          {/* 3. Multi-Column Workspace layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-            
-            {/* Left Column (3 spans) */}
-            <div className="lg:col-span-3 space-y-12">
+          {/* 3. Main Workspace Content */}
+          <div className="w-full space-y-6 lg:space-y-8">
 
               {/* Continue Working Card */}
               {continueWorkingCase && (
-                <div className="space-y-4">
-                  <h2 className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">Continue Working</h2>
+                <div className="space-y-2">
+                  <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Continue Working</h2>
                   <div 
                     onClick={() => handleOpenWorkspace(continueWorkingCase._id)}
-                    className="p-6 border border-slate-200/80 rounded-2xl bg-white hover:border-[#6D5DFC] transition-all shadow-sm cursor-pointer relative group overflow-hidden"
+                    className="p-3.5 sm:p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#C8A34D] transition-all shadow-xs cursor-pointer relative group overflow-hidden"
                   >
-                    <div className="absolute right-6 top-6 text-slate-400 group-hover:text-[#6D5DFC] transition-colors">
+                    <div className="absolute right-4 top-4 text-slate-400 group-hover:text-[#C8A34D] transition-colors">
                       <ArrowUpRight size={16} />
                     </div>
-                    <span className="px-2 py-0.5 bg-indigo-50 text-[#6D5DFC] text-[8px] font-bold uppercase tracking-wider rounded">Last Updated Case</span>
-                    <h3 className="text-lg font-black text-slate-900 mt-2">{continueWorkingCase.name}</h3>
-                    <p className="text-xs text-slate-500 font-semibold mt-1 max-w-md truncate">{continueWorkingCase.summary || 'No summary configured yet.'}</p>
+                    <span className="px-2.5 py-0.5 bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25 text-[9px] font-mono font-bold uppercase tracking-wider rounded-full">Last Updated Case</span>
+                    <h3 className="text-base sm:text-xl font-black text-[#111111] dark:text-white mt-1.5 group-hover:text-[#C8A34D] transition-colors truncate">{continueWorkingCase.name}</h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5 max-w-md truncate">{continueWorkingCase.summary || 'No summary configured yet.'}</p>
                     
-                    <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-slate-100 text-[10px] text-slate-500 font-semibold">
-                      <span>Hearings: <strong className="text-slate-800">{continueWorkingCase.hearings?.length || 0}</strong></span>
-                      <span>Evidence: <strong className="text-slate-800">{continueWorkingCase.evidence?.length || 0}</strong></span>
-                      <span>Contracts: <strong className="text-slate-800">{continueWorkingCase.contracts?.length || 0}</strong></span>
+                    <div className="flex items-center gap-3 mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-500 font-semibold overflow-x-auto no-scrollbar">
+                      <span className="shrink-0">Hearings: <strong className="text-[#111111] dark:text-white">{continueWorkingCase.hearings?.length || 0}</strong></span>
+                      <span className="shrink-0">Evidence: <strong className="text-[#111111] dark:text-white">{continueWorkingCase.evidence?.length || 0}</strong></span>
+                      <span className="shrink-0">Contracts: <strong className="text-[#111111] dark:text-white">{continueWorkingCase.contracts?.length || 0}</strong></span>
                     </div>
                   </div>
                 </div>
               )}
 
+              {/* Subscription Entitlements & Usage Summary */}
+              <div className="p-3.5 sm:p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] shadow-xs space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider truncate">Subscription Quotas</span>
+                    <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 shrink-0">{badge}</span>
+                  </div>
+                  <button
+                    onClick={() => triggerUpgradeModal({ title: 'Manage Subscription', message: 'Upgrade your plan to unlock higher limits.' })}
+                    className="text-[11px] sm:text-xs font-bold text-[#C8A34D] hover:underline cursor-pointer shrink-0"
+                  >
+                    Upgrade →
+                  </button>
+                </div>
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-4 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+                  <div className="min-w-0">
+                    <p className="text-[9px] sm:text-xs text-slate-400 font-semibold truncate">Active Matters</p>
+                    <p className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white mt-0.5 truncate">
+                      {subCases?.used || 0} / {subCases?.limit === -1 ? '∞' : (subCases?.limit || 3)}
+                    </p>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[9px] sm:text-xs text-slate-400 font-semibold truncate">Cloud Storage</p>
+                    <p className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white mt-0.5 truncate">
+                      {storage?.usedGB || 0} GB / {storage?.limitGB === -1 ? '∞' : `${storage?.limitGB || 1} GB`}
+                    </p>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[9px] sm:text-xs text-slate-400 font-semibold truncate">AI Queries</p>
+                    <p className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white mt-0.5 truncate">
+                      {features?.ai_chat ? `${features.ai_chat.used} / ${features.ai_chat.limit === -1 ? '∞' : features.ai_chat.limit}` : '0 / 50'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* 3. Quick Actions Row */}
-              <div className="space-y-4">
-                <h2 className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">Quick Actions</h2>
+              <div className="space-y-3">
+                <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Quick Actions</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <button 
                     onClick={() => {
                       setNewCaseForm({ name: '', clientName: '', opponentName: '', caseType: '', courtName: '', summary: '', priority: 'Medium' });
                       setIsNewCaseModalOpen(true);
                     }}
-                    className="p-5 border border-slate-200 rounded-2xl bg-white hover:border-[#6D5DFC] hover:shadow-md transition-all flex items-center gap-4 group cursor-pointer text-left"
+                    className="p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#C8A34D] hover:shadow-md transition-all flex items-center gap-4 group cursor-pointer text-left"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-indigo-50 text-[#6D5DFC] flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform shrink-0">
                       +
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-sm text-slate-900 group-hover:text-[#6D5DFC] transition-colors">New Case</h4>
-                      <p className="text-xs text-slate-500 font-medium mt-0.5">Initialize litigation folder & AI docket</p>
+                      <h4 className="font-extrabold text-sm text-[#111111] dark:text-white group-hover:text-[#C8A34D] transition-colors">New Case</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Initialize litigation folder & AI docket</p>
                     </div>
                   </button>
 
                   <button 
-                    onClick={() => setIsProductGuideOpen(true)}
-                    className="p-5 border border-slate-200 rounded-2xl bg-white hover:border-[#6D5DFC] hover:shadow-md transition-all flex items-center gap-4 group cursor-pointer text-left"
+                    onClick={() => navigate('/dashboard/guide')}
+                    className="p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#C8A34D] hover:shadow-md transition-all flex items-center gap-4 group cursor-pointer text-left"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-amber-50 text-[#C8A34D] flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform shrink-0">
                       ✨
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-sm text-slate-900 group-hover:text-[#6D5DFC] transition-colors">Product Guide</h4>
-                      <p className="text-xs text-slate-500 font-medium mt-0.5">Interactive AI feature walkthrough</p>
+                      <h4 className="font-extrabold text-sm text-[#111111] dark:text-white group-hover:text-[#C8A34D] transition-colors">Product Guide</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Interactive AI feature walkthrough</p>
                     </div>
                   </button>
                 </div>
               </div>
 
               {/* 4. AI Legal Knowledge Hub Card */}
-              <div className="p-6 border border-slate-200 rounded-2xl bg-white shadow-sm space-y-4">
+              <div className="p-4 sm:p-6 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] shadow-xs space-y-3.5">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-amber-50 text-[#C8A34D] border border-amber-200/60 shrink-0">
-                    <BookOpen className="w-5 h-5" />
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25 shrink-0">
+                    <BookOpen className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-extrabold text-slate-900">AI Legal Knowledge Hub</h3>
-                    <p className="text-xs text-slate-500 font-medium mt-0.5">Search Indian laws, sections, judgments, legal procedures and get AI-powered legal answers.</p>
+                    <h3 className="text-base font-extrabold text-[#111111] dark:text-white">AI Legal Knowledge Hub</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Search Indian laws, sections, judgments & legal procedures.</p>
                   </div>
                 </div>
 
@@ -555,21 +735,21 @@ export default function HomeDashboard() {
                     placeholder="Ask any legal question..."
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.target.value.trim()) {
-                        navigate(`/dashboard/chat/new?q=${encodeURIComponent(e.target.value)}`);
+                        navigate(`/dashboard/tools/knowledge-hub?q=${encodeURIComponent(e.target.value)}`);
                       }
                     }}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC] transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white transition-all"
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Trending Searches:</span>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 shrink-0 whitespace-nowrap">
                     {['IPC 420', 'BNS', 'Divorce', 'GST', 'Consumer Rights', 'Labour Law', 'Property', 'RTI', 'Motor Accident'].map((chip, idx) => (
                       <button 
                         key={idx}
-                        onClick={() => navigate(`/dashboard/chat/new?q=${encodeURIComponent(chip)}`)}
-                        className="px-3 py-1 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-[#6D5DFC] text-[#C8A34D] hover:text-[#6D5DFC] rounded-lg text-xs font-bold transition-all cursor-pointer"
+                        onClick={() => navigate(`/dashboard/tools/knowledge-hub?q=${encodeURIComponent(chip)}`)}
+                        className="px-2.5 py-1 bg-slate-50 dark:bg-[#0F172A] hover:bg-[#111111] dark:hover:bg-[#333333] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D] text-[#111111] dark:text-white hover:text-[#C8A34D] rounded-lg text-xs font-bold transition-all cursor-pointer shrink-0 whitespace-nowrap"
                       >
                         {chip}
                       </button>
@@ -577,10 +757,10 @@ export default function HomeDashboard() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex justify-end">
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
                   <button 
-                    onClick={() => navigate('/dashboard/chat/new')}
-                    className="text-xs font-bold text-[#C8A34D] hover:text-[#6D5DFC] flex items-center gap-1.5 cursor-pointer"
+                    onClick={() => navigate('/dashboard/tools/knowledge-hub')}
+                    className="text-xs font-bold text-[#C8A34D] hover:text-[#b08d3b] flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>Open Knowledge Hub</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -590,136 +770,38 @@ export default function HomeDashboard() {
 
               {/* 5. New User Product Guide Banner (Dismissable) */}
               {isBannerVisible && (
-                <div className="p-6 border border-purple-200 rounded-2xl bg-gradient-to-r from-purple-50 via-indigo-50 to-purple-50 relative shadow-sm">
+                <div className="p-6 border border-[#C8A34D]/30 rounded-2xl bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white relative shadow-xs">
                   <button 
                     onClick={() => setIsBannerVisible(false)}
-                    className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-white/60 transition-colors cursor-pointer"
+                    className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                   >
                     <X size={16} />
                   </button>
                   <div className="flex items-center gap-2 mb-1">
-                    <Sparkles className="w-4 h-4 text-purple-600" />
-                    <h3 className="text-sm font-extrabold text-slate-900">New to AI LEGAL?</h3>
+                    <Sparkles className="w-4 h-4 text-[#C8A34D]" />
+                    <h3 className="text-sm font-extrabold text-[#0F172A] dark:text-white">New to AI LEGAL?</h3>
                   </div>
-                  <p className="text-xs text-slate-600 font-semibold mb-3">Meet your AI Product Guide.</p>
-                  <ul className="text-xs text-slate-600 space-y-1.5 mb-4 font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 font-semibold mb-3">Meet your AI Product Guide.</p>
+                  <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mb-4 font-medium">
                     <li className="flex items-center gap-2">• Learn every feature step-by-step.</li>
                     <li className="flex items-center gap-2">• Ask questions in Hindi or English.</li>
                     <li className="flex items-center gap-2">• Get instant help while using the app.</li>
                   </ul>
                   <button 
-                    onClick={() => setIsProductGuideOpen(true)}
-                    className="px-4 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-white text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer"
+                    onClick={() => navigate('/dashboard/guide')}
+                    className="px-4 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] text-xs font-black rounded-xl shadow-xs transition-all cursor-pointer"
                   >
                     Open Product Guide &rarr;
                   </button>
                 </div>
               )}
 
-              {/* Recent Cases List with dropdown dropdown actions */}
-              <div className="space-y-4">
-                <h2 className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">Recent Cases</h2>
-                <div className="space-y-4">
-                  {recentCasesList.slice(0, 4).map((c) => (
-                    <div 
-                      key={c._id} 
-                      className="p-5 border border-[#E5E7EB] rounded-xl bg-white shadow-sm hover:border-[#6D5DFC] transition-all flex items-center justify-between gap-4 relative group"
-                    >
-                      <div className="space-y-1.5 min-w-0 flex-1">
-                        <h3 
-                          onClick={() => handleOpenWorkspace(c._id)}
-                          className="font-bold text-base text-[#111827] truncate hover:text-[#6D5DFC] transition-colors cursor-pointer"
-                        >
-                          {c.name}
-                        </h3>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#6B7280] font-semibold">
-                          <span>Client: <strong className="text-[#111827]">{c.clientName || 'General'}</strong></span>
-                          <span>•</span>
-                          <span>Court: <strong className="text-[#111827]">{c.courtName || 'District Court'}</strong></span>
-                        </div>
-                        <div className="flex items-center gap-2 pt-1">
-                          <span className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wide ${
-                            c.status === 'Archived' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
-                            c.status === 'Closed' ? 'bg-slate-100 text-slate-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                          }`}>
-                            {c.status || 'Active'}
-                          </span>
-                          {c.priority === 'High' && (
-                            <span className="px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-100 rounded text-[8px] font-bold uppercase">High Priority</span>
-                          )}
-                        </div>
-                      </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
-                        <button 
-                          onClick={() => handleOpenWorkspace(c._id)}
-                          className="px-4.5 py-2 bg-[#F9FAFB] hover:bg-indigo-50 hover:text-[#6D5DFC] text-slate-700 rounded-lg text-xs font-bold transition-all border border-slate-200 cursor-pointer"
-                        >
-                          Open
-                        </button>
-                        
-                        {/* 3-dot dropdown dropdown menu */}
-                        <div className="relative">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveMenuCaseId(activeMenuCaseId === c._id ? null : c._id);
-                            }}
-                            className="p-1.5 hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-400 hover:text-slate-600 transition-all cursor-pointer"
-                          >
-                            <MoreVertical size={14} />
-                          </button>
-                          {activeMenuCaseId === c._id && (
-                            <>
-                              <div className="fixed inset-0 z-40" onClick={() => setActiveMenuCaseId(null)} />
-                              <div className="absolute right-0 top-8 w-40 bg-white border border-slate-200 rounded-xl shadow-lg py-1.5 z-50 text-left">
-                                <button
-                                  onClick={() => {
-                                    setEditingCase(c);
-                                    setActiveMenuCaseId(null);
-                                  }}
-                                  className="w-full px-4 py-2 hover:bg-slate-50 text-xs font-semibold text-slate-800 flex items-center gap-2 transition-colors text-left"
-                                >
-                                  <Edit2 size={13} /> Edit Details
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    handleToggleArchive(e, c);
-                                    setActiveMenuCaseId(null);
-                                  }}
-                                  className="w-full px-4 py-2 hover:bg-slate-50 text-xs font-semibold text-slate-800 flex items-center gap-2 transition-colors text-left"
-                                >
-                                  <Archive size={13} /> {c.status === 'Archived' ? 'Restore Case' : 'Archive Case'}
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    handleDeleteCase(e, c._id);
-                                    setActiveMenuCaseId(null);
-                                  }}
-                                  className="w-full px-4 py-2 hover:bg-rose-50 text-xs font-semibold text-rose-600 flex items-center gap-2 transition-colors border-t border-slate-100 text-left"
-                                >
-                                  <Trash2 size={13} /> Delete Case
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {cases.length === 0 && (
-                    <div className="py-12 text-center text-sm text-[#9CA3AF] border border-dashed border-[#E5E7EB] rounded-xl bg-white font-semibold">
-                      No cases found in database. Click New Case above to create your first litigation workspace.
-                    </div>
-                  )}
-                </div>
-              </div>
 
               {/* High Priority Cases List */}
               {highPriorityCasesList.length > 0 && (
-                <div className="space-y-4">
-                  <h2 className="text-xs font-bold text-rose-600 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="space-y-3">
+                  <h2 className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
                     <AlertTriangle size={13} /> High Priority Action Required
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -727,134 +809,32 @@ export default function HomeDashboard() {
                       <div 
                         key={c._id}
                         onClick={() => handleOpenWorkspace(c._id)}
-                        className="p-5 border border-rose-100 rounded-xl bg-rose-50/20 hover:border-rose-300 transition-all cursor-pointer space-y-2"
+                        className="p-5 border border-rose-100 dark:border-rose-900/40 rounded-2xl bg-rose-50/20 dark:bg-rose-950/20 hover:border-rose-300 transition-all cursor-pointer space-y-2"
                       >
-                        <h4 className="font-extrabold text-sm text-slate-900 truncate">{c.name}</h4>
-                        <p className="text-[11px] text-slate-500 font-medium truncate">Court: {c.courtName || 'Not Set'}</p>
-                        <span className="px-2 py-0.5 bg-rose-50 text-rose-700 text-[8px] font-bold uppercase rounded block w-fit">Critical Tracker</span>
+                        <h4 className="font-extrabold text-sm text-slate-900 dark:text-white truncate">{c.name}</h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">Court: {c.courtName || 'Not Set'}</p>
+                        <span className="px-2 py-0.5 bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 text-[8px] font-bold uppercase rounded block w-fit">Critical Tracker</span>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-            </div>
           </div>
-          </>
-          )}
 
-          {/* E. MODAL Dialog: New Case Folder */}
-          <AnimatePresence>
-            {isNewCaseModalOpen && (
-              <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl p-6 overflow-hidden flex flex-col max-h-[90vh]"
-                >
-                  <div className="flex justify-between items-center pb-4 border-b border-slate-100 shrink-0">
-                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Create Case Folder</h3>
-                    <button onClick={() => setIsNewCaseModalOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
-                      <X size={18} />
-                    </button>
-                  </div>
-
-                  <form onSubmit={handleCreateCase} className="space-y-4 py-4 overflow-y-auto flex-1 custom-scrollbar pr-1">
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">Case / Suit Name</label>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. Rajesh Sharma vs Amit Verma"
-                        value={newCaseForm.name}
-                        onChange={e => setNewCaseForm({ ...newCaseForm, name: e.target.value })}
-                        required
-                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC] focus:ring-1 focus:ring-[#6D5DFC]"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">Client Name</label>
-                        <input 
-                          type="text" 
-                          placeholder="Plaintiff Name"
-                          value={newCaseForm.clientName}
-                          onChange={e => setNewCaseForm({ ...newCaseForm, clientName: e.target.value })}
-                          className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC]"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">Opponent Party</label>
-                        <input 
-                          type="text" 
-                          placeholder="Defendant Name"
-                          value={newCaseForm.opponentName}
-                          onChange={e => setNewCaseForm({ ...newCaseForm, opponentName: e.target.value })}
-                          className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC]"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">Legal Domain</label>
-                        <input 
-                          type="text" 
-                          placeholder="e.g. Commercial Contract Law"
-                          value={newCaseForm.caseType}
-                          onChange={e => setNewCaseForm({ ...newCaseForm, caseType: e.target.value })}
-                          className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC]"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">Presiding Court</label>
-                        <input 
-                          type="text" 
-                          placeholder="e.g. Delhi High Court"
-                          value={newCaseForm.courtName}
-                          onChange={e => setNewCaseForm({ ...newCaseForm, courtName: e.target.value })}
-                          className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC]"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">Priority Status</label>
-                      <select 
-                        value={newCaseForm.priority}
-                        onChange={e => setNewCaseForm({ ...newCaseForm, priority: e.target.value })}
-                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC] bg-white"
-                      >
-                        <option value="Low">Low Priority</option>
-                        <option value="Medium">Medium Priority</option>
-                        <option value="High">High Priority</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">Case Statement Summary</label>
-                      <textarea 
-                        placeholder="Provide brief background facts, recovery claim parameters, or timeline baselines..."
-                        value={newCaseForm.summary}
-                        onChange={e => setNewCaseForm({ ...newCaseForm, summary: e.target.value })}
-                        rows={3}
-                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC] resize-none"
-                      />
-                    </div>
-
-                    <button 
-                      type="submit"
-                      className="w-full bg-[#6D5DFC] hover:bg-[#5b4edb] text-white rounded-xl py-3 text-xs font-black uppercase tracking-wider transition-colors mt-2"
-                    >
-                      Save Case Folder
-                    </button>
-                  </form>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
+          {/* E. MODAL Dialog: New Case Folder Wizard */}
+          <CreateCaseWizardModal 
+            isOpen={isNewCaseModalOpen}
+            onClose={() => setIsNewCaseModalOpen(false)}
+            onSuccess={(created) => {
+              if (fetchDashboardCases) {
+                fetchDashboardCases();
+              }
+              if (created && (created._id || created.id)) {
+                navigate(`/dashboard/cases/${created._id || created.id}`);
+              }
+            }}
+          />
 
           {/* F. MODAL Dialog: Edit Case Folder */}
           <AnimatePresence>
@@ -865,11 +845,11 @@ export default function HomeDashboard() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl p-6 overflow-hidden flex flex-col max-h-[90vh]"
+                  className="bg-white dark:bg-[#222222] border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl p-6 overflow-hidden flex flex-col max-h-[90vh]"
                 >
-                  <div className="flex justify-between items-center pb-4 border-b border-slate-100 shrink-0">
-                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Edit Case Details</h3>
-                    <button onClick={() => setEditingCase(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                  <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                    <h3 className="text-sm font-black text-[#111111] dark:text-white uppercase tracking-widest">Edit Case Details</h3>
+                    <button onClick={() => setEditingCase(null)} className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
                       <X size={18} />
                     </button>
                   </div>
@@ -882,7 +862,7 @@ export default function HomeDashboard() {
                         value={editingCase.name}
                         onChange={e => setEditingCase({ ...editingCase, name: e.target.value })}
                         required
-                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC] focus:ring-1 focus:ring-[#6D5DFC]"
+                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] focus:ring-1 focus:ring-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                       />
                     </div>
 
@@ -893,7 +873,7 @@ export default function HomeDashboard() {
                           type="text" 
                           value={editingCase.clientName || ''}
                           onChange={e => setEditingCase({ ...editingCase, clientName: e.target.value })}
-                          className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC]"
+                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                         />
                       </div>
                       <div className="space-y-1">
@@ -902,7 +882,7 @@ export default function HomeDashboard() {
                           type="text" 
                           value={editingCase.opponentName || ''}
                           onChange={e => setEditingCase({ ...editingCase, opponentName: e.target.value })}
-                          className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC]"
+                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                         />
                       </div>
                     </div>
@@ -914,7 +894,7 @@ export default function HomeDashboard() {
                           type="text" 
                           value={editingCase.caseType || ''}
                           onChange={e => setEditingCase({ ...editingCase, caseType: e.target.value })}
-                          className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC]"
+                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                         />
                       </div>
                       <div className="space-y-1">
@@ -923,7 +903,7 @@ export default function HomeDashboard() {
                           type="text" 
                           value={editingCase.courtName || ''}
                           onChange={e => setEditingCase({ ...editingCase, courtName: e.target.value })}
-                          className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC]"
+                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                         />
                       </div>
                     </div>
@@ -933,7 +913,7 @@ export default function HomeDashboard() {
                       <select 
                         value={editingCase.priority || 'Medium'}
                         onChange={e => setEditingCase({ ...editingCase, priority: e.target.value })}
-                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC] bg-white"
+                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] bg-white dark:bg-[#111111] text-[#111111] dark:text-white"
                       >
                         <option value="Low">Low Priority</option>
                         <option value="Medium">Medium Priority</option>
@@ -947,13 +927,13 @@ export default function HomeDashboard() {
                         value={editingCase.summary || ''}
                         onChange={e => setEditingCase({ ...editingCase, summary: e.target.value })}
                         rows={3}
-                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#6D5DFC] resize-none"
+                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] resize-none text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                       />
                     </div>
 
                     <button 
                       type="submit"
-                      className="w-full bg-[#6D5DFC] hover:bg-[#5b4edb] text-white rounded-xl py-3 text-xs font-black uppercase tracking-wider transition-colors mt-2"
+                      className="w-full bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl py-3 text-xs uppercase tracking-wider transition-colors mt-2 cursor-pointer shadow-md"
                     >
                       Save Changes
                     </button>

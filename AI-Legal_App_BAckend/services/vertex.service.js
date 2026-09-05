@@ -428,21 +428,40 @@ export const AskVertexRaw = async (prompt, options = {}) => {
                 contents: [{ role: 'user', parts: [{ text: finalPrompt }] }]
             });
         } catch (execErr) {
-            logger.warn(`[AskVertexRaw] Primary execution failed for ${selectedModelName}: ${execErr.message}. Attempting direct Gemini API Key fallback.`);
+            logger.warn(`[AskVertexRaw] Primary execution failed for ${selectedModelName}: ${execErr.message}. Attempting API Key / OpenAI fallback.`);
             if (process.env.GEMINI_API_KEY) {
-                const { GoogleGenerativeAI } = await import('@google/generative-ai');
-                const directGenAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-                const fallbackModel = directGenAI.getGenerativeModel({
-                    model: 'gemini-2.5-flash',
-                    generationConfig: {
-                        maxOutputTokens: options.maxOutputTokens || 4096,
-                        temperature: options.temperature || 0.7,
-                        ...(options.isJson && { responseMimeType: "application/json" })
-                    },
-                    systemInstruction: globalLanguageInstruction
-                });
-                result = await fallbackModel.generateContent({
-                    contents: [{ role: 'user', parts: [{ text: finalPrompt }] }]
+                try {
+                    const { GoogleGenerativeAI } = await import('@google/generative-ai');
+                    const directGenAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+                    const fallbackModel = directGenAI.getGenerativeModel({
+                        model: 'gemini-2.5-flash',
+                        generationConfig: {
+                            maxOutputTokens: options.maxOutputTokens || 4096,
+                            temperature: options.temperature || 0.7,
+                            ...(options.isJson && { responseMimeType: "application/json" })
+                        },
+                        systemInstruction: globalLanguageInstruction
+                    });
+                    result = await fallbackModel.generateContent({
+                        contents: [{ role: 'user', parts: [{ text: finalPrompt }] }]
+                    });
+                } catch (gemErr) {
+                    if (process.env.OPENAI_API_KEY) {
+                        logger.warn(`[AskVertexRaw] Gemini API Key fallback failed. Falling back to OpenAI...`);
+                        const { askOpenAI } = await import('./openai.service.js');
+                        return await askOpenAI(finalPrompt, null, {
+                            systemInstruction: globalLanguageInstruction,
+                            isJson: options.isJson
+                        });
+                    }
+                    throw gemErr;
+                }
+            } else if (process.env.OPENAI_API_KEY) {
+                logger.warn(`[AskVertexRaw] Gemini API Key missing. Falling back to OpenAI...`);
+                const { askOpenAI } = await import('./openai.service.js');
+                return await askOpenAI(finalPrompt, null, {
+                    systemInstruction: globalLanguageInstruction,
+                    isJson: options.isJson
                 });
             } else {
                 throw execErr;
@@ -585,7 +604,8 @@ export const askVertex = async (prompt, context = null, options = {}) => {
                     { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH }
                 ],
                 generationConfig: {
-                    maxOutputTokens: 4096,
+                    maxOutputTokens: options.maxOutputTokens || (isJsonMode ? 2048 : 4096),
+                    temperature: options.temperature !== undefined ? options.temperature : 0.4,
                     responseMimeType: isJsonMode ? "application/json" : "text/plain"
                 },
                 systemInstruction: systemInstruction,
@@ -781,7 +801,8 @@ export const askVertex = async (prompt, context = null, options = {}) => {
                         systemInstruction,
                         userName: options.userName,
                         language: targetLanguage,
-                        userId: options.userId
+                        userId: options.userId,
+                        isJson: isJsonMode
                     });
                     if (onChunk) {
                         onChunk(aiText);
@@ -810,7 +831,8 @@ export const askVertex = async (prompt, context = null, options = {}) => {
                         systemInstruction,
                         userName: options.userName,
                         language: targetLanguage,
-                        userId: options.userId
+                        userId: options.userId,
+                        isJson: isJsonMode
                     });
                     if (onChunk) {
                         onChunk(aiText);

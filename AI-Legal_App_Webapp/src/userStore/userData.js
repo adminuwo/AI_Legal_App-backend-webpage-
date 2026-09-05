@@ -2,7 +2,7 @@ import { atom } from "recoil"
 
 const getAvatarUrl = (user) => {
   if (!user || !user.email) return "";
-  let baseUrl = window._env_?.VITE_AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || "http://localhost:8080/api";
+  let baseUrl = window._env_?.VITE_AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? "http://localhost:8080/api" : (typeof window !== 'undefined' ? `${window.location.origin}/api` : "http://localhost:8080/api"));
   // Remove /api suffix to get the base host for the proxy avatar URL
   if (baseUrl.endsWith('/api')) {
     baseUrl = baseUrl.slice(0, -4);
@@ -84,12 +84,14 @@ export const clearUser = () => {
   const cookieConsent = localStorage.getItem('aisa_cookie_consent');
   const appTheme = localStorage.getItem('app_theme');
   const appAccent = localStorage.getItem('app_accent');
+  const onboardingDone = localStorage.getItem('ai_legal_onboarding_completed');
   
   localStorage.clear();
   
   if (cookieConsent) localStorage.setItem('aisa_cookie_consent', cookieConsent);
   if (appTheme) localStorage.setItem('app_theme', appTheme);
   if (appAccent) localStorage.setItem('app_accent', appAccent);
+  if (onboardingDone) localStorage.setItem('ai_legal_onboarding_completed', onboardingDone);
 }
 export const updateUser = (updates) => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');

@@ -11,7 +11,7 @@ import { askOpenAI } from '../services/openai.service.js';
 import { detectLanguage } from '../utils/languageDetector.js';
 import { resolveResponseLanguage } from '../utils/languageResolver.js';
 import { getIO } from '../utils/socket.js';
-import { verifyToken } from '../middleware/authorization.js';
+import { verifyToken, authorizeCaseAccess, requireCaseAccess } from '../middleware/authorization.js';
 import * as legalIntelligenceService from '../Tools/AI_Legal/services/legalIntelligence.service.js';
 import uploadMiddleware from '../middleware/upload.middleware.js';
 import { uploadToGCS, gcsFilename } from '../services/gcs.service.js';
@@ -21,11 +21,13 @@ import crypto from 'crypto';
 import { createNotification } from '../services/notificationService.js';
 import { verifyFeatureAccess, verifyStorageAccess, verifyMatterCreationAccess } from '../middleware/subscriptionCheck.middleware.js';
 import * as FeatureAccessManager from '../services/featureAccessManager.js';
+import { generateChatResponse } from '../services/geminiService.js';
 
 import { langStorage } from '../middleware/langContext.js';
 import CaseService from '../services/core/CaseService.js';
 import { createWorkspaceActivity } from '../services/activityService.js';
 import { CaseActivityService } from '../services/CaseActivityService.js';
+import ContractService from '../services/contract.service.js';
 import { AccessControlService } from '../services/accessControl.service.js';
 import { TaskAccessControlService } from '../services/taskAccessControl.service.js';
 import AuditLogService from '../services/auditLog.service.js';
@@ -33,6 +35,75 @@ import AuditLogService from '../services/auditLog.service.js';
 const router = express.Router();
 const caseService = new CaseService();
 
+// @desc    Parse spoken voice text/dictation into structured case fields
+// @route   POST /api/projects/parse-voice-case
+// @access  Private
+router.post('/parse-voice-case', verifyToken, async (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text || !text.trim()) {
+            return res.status(400).json({ success: false, error: 'Voice transcript text is required' });
+        }
+
+        const prompt = `You are an AI legal intake parser. The user spoke or dictated the following details regarding a legal case:
+"${text}"
+
+Extract the legal case metadata into valid JSON format ONLY. 
+Format your output strictly as a JSON object with NO markdown formatting, NO triple backticks, NO extra commentary.
+
+Schema:
+{
+  "caseTitle": "string (e.g. Party A vs Party B or title of case)",
+  "caseCategory": "string (One of: Civil, Criminal, Corporate, Family, Labour, Consumer, Taxation, Arbitration, Property, Intellectual Property, Cyber Crime, Banking, Compliance, Miscellaneous)",
+  "caseType": "string (e.g. Litigation, Advisory, Consultation, Arbitration, Appeal)",
+  "role": "string (One of: Petitioner, Respondent, Complainant, Defendant, Appellant, Accused)",
+  "clientName": "string",
+  "clientMobile": "string (phone number if mentioned)",
+  "clientEmail": "string (email if mentioned)",
+  "clientCompany": "string (company name if mentioned)",
+  "courtName": "string (e.g. Delhi High Court, Tis Hazari District Court, Supreme Court of India)",
+  "courtType": "string (e.g. High Court, District Court, Supreme Court, Consumer Forum, Tribunal)",
+  "state": "string (State name in India if mentioned)",
+  "district": "string (District name if mentioned)",
+  "priority": "string (One of: Low, Medium, High, Urgent)",
+  "status": "Active",
+  "opponentName": "string",
+  "summary": "string (Short summary of the case facts or voice dictation)"
+}
+
+Rules:
+- Infer reasonable defaults if fields are not explicitly mentioned. For example, if priority is not mentioned, default to "Medium". If category is not mentioned, infer from context (e.g. breach of contract = Civil, FIR/theft = Criminal).
+- If client name is mentioned, format it properly.
+- If case title is not explicitly named as "X vs Y", generate a professional title based on parties or subject matter.
+`;
+
+        const aiResponseText = await AskVertexRaw(prompt, {
+            maxOutputTokens: 600,
+            temperature: 0.1,
+            modelOverride: 'gemini-2.5-flash',
+            isJson: true
+        });
+
+        let parsedData = {};
+        if (aiResponseText) {
+            let cleanJson = String(aiResponseText).trim().replace(/^```json/i, '').replace(/^```/i, '').replace(/```$/i, '').trim();
+            try {
+                parsedData = JSON.parse(cleanJson);
+            } catch (e) {
+                console.warn('[parse-voice-case] JSON parse failed, returning fallback extraction:', e);
+            }
+        }
+
+        return res.json({
+            success: true,
+            data: parsedData,
+            rawTranscript: text
+        });
+    } catch (error) {
+        console.error('[parse-voice-case] Error:', error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 const getRequestLanguage = (req) => {
     const store = langStorage.getStore();
@@ -351,9 +422,7 @@ router.post('/', verifyToken, verifyMatterCreationAccess, async (req, res) => {
             leadAdvocate, leadAdvocateUserId, teamMembers, assignedUserIds, workspaceId
         } = req.body;
 
-        if (!name) {
-            return res.status(400).json({ error: 'Project name is required' });
-        }
+        const caseName = name || req.body.title || req.body.caseTitle || req.body.caseName || 'Unspecified Case';
 
         const reqWsType = (req.body.workspaceType || req.headers['x-workspace-type'] || req.body.role || req.headers['x-user-role'] || 'advocate').toLowerCase();
 
@@ -365,7 +434,7 @@ router.post('/', verifyToken, verifyMatterCreationAccess, async (req, res) => {
             workspaceTypeToSave = 'student';
             roleToSave = 'student';
             activeWorkspaceId = 'personal_practice';
-        } else if (reqWsType === 'law_firm' || (activeWorkspaceId && activeWorkspaceId !== 'personal_practice' && !String(activeWorkspaceId).startsWith('personal_') && mongoose.Types.ObjectId.isValid(activeWorkspaceId))) {
+        } else if (reqWsType === 'law_firm' || req.body.role === 'law_firm' || (activeWorkspaceId && activeWorkspaceId !== 'personal_practice' && !String(activeWorkspaceId).startsWith('personal_') && mongoose.Types.ObjectId.isValid(activeWorkspaceId))) {
             workspaceTypeToSave = 'law_firm';
             roleToSave = 'law_firm';
         } else {
@@ -375,7 +444,7 @@ router.post('/', verifyToken, verifyMatterCreationAccess, async (req, res) => {
         }
 
         let project = new Project({
-            name,
+            name: caseName,
             userId: req.user.id,
             role: roleToSave,
             workspaceType: workspaceTypeToSave,
@@ -422,13 +491,16 @@ router.post('/', verifyToken, verifyMatterCreationAccess, async (req, res) => {
 
         await project.save();
 
-        // Socket.IO case creation broadcast
+        // Socket.IO case creation broadcast (user-scoped)
         try {
             const { getIO } = await import('../utils/socket.js');
             const io = getIO();
-            io.emit('case:created', { _id: project._id, name: project.name, userId: project.userId, role: project.role, workspaceType: project.workspaceType });
+            const targetUserRoom = project.userId ? project.userId.toString() : null;
+            if (targetUserRoom) {
+                io.to(targetUserRoom).emit('case:created', { _id: project._id, name: project.name, userId: project.userId, role: project.role, workspaceType: project.workspaceType });
+            }
         } catch (e) {
-            console.warn('[Socket] case:created broadcast failed:', e.message);
+            console.warn('[Socket] case:created emission failed:', e.message);
         }
 
         console.log(`[STRICT WORKSPACE ISOLATION] Case "${project.name}" saved with workspaceId: ${project.workspaceId} (${project.workspaceType}) by user ${req.user.id}`);
@@ -482,22 +554,22 @@ router.get('/', verifyToken, async (req, res) => {
             requestedWsType = userRoleHeader;
         }
         
-        const isLawFirmWs = activeWorkspaceId && activeWorkspaceId !== 'personal_practice' && !String(activeWorkspaceId).startsWith('personal_') && mongoose.Types.ObjectId.isValid(activeWorkspaceId);
+        const isLawFirmWs = requestedWsType === 'law_firm' && activeWorkspaceId && activeWorkspaceId !== 'personal_practice' && !String(activeWorkspaceId).startsWith('personal_') && mongoose.Types.ObjectId.isValid(activeWorkspaceId);
 
-        // Safe legacy case auto-migration
-        await Project.updateMany(
-            { userId: req.user.id, role: 'student', $or: [{ workspaceType: { $exists: false } }, { workspaceType: 'personal' }, { workspaceType: null }] },
-            { $set: { workspaceType: 'student' } }
-        );
-        await Project.updateMany(
-            { userId: req.user.id, role: 'advocate', $or: [{ workspaceType: { $exists: false } }, { workspaceType: 'personal' }, { workspaceType: null }] },
-            { $set: { workspaceType: 'advocate' } }
-        );
+        const authUserId = (req.user?.id || req.user?._id || '').toString();
+        if (!authUserId) {
+            return res.status(401).json({ error: 'User ID missing in token' });
+        }
+
+        let userIdConditions = [authUserId];
+        if (mongoose.Types.ObjectId.isValid(authUserId)) {
+            userIdConditions.push(new mongoose.Types.ObjectId(authUserId));
+        }
 
         let roleQuery = {};
 
-        if (isLawFirmWs || requestedWsType === 'law_firm') {
-            // STRICT LAW FIRM WORKSPACE QUERY (Accessible to all verified firm team members)
+        if (isLawFirmWs) {
+            // STRICT LAW FIRM WORKSPACE QUERY (by specific Law Firm ObjectId)
             const wsIdStr = String(activeWorkspaceId);
             const wsObjId = mongoose.Types.ObjectId.isValid(wsIdStr) ? new mongoose.Types.ObjectId(wsIdStr) : null;
             const wsQueryConditions = wsObjId ? [{ workspaceId: wsIdStr }, { workspaceId: wsObjId }] : [{ workspaceId: wsIdStr }];
@@ -520,38 +592,50 @@ router.get('/', verifyToken, async (req, res) => {
                     $or: wsQueryConditions,
                     workspaceType: 'law_firm',
                     $or: [
-                        { userId: req.user.id },
-                        { assignedMembers: req.user.id },
-                        { assignedUserIds: req.user.id },
-                        { leadAdvocateUserId: req.user.id }
+                        { userId: { $in: userIdConditions } },
+                        { assignedMembers: { $in: userIdConditions } },
+                        { assignedUserIds: { $in: userIdConditions } },
+                        { leadAdvocateUserId: { $in: userIdConditions } }
                     ]
                 };
             }
         } else if (requestedWsType === 'student') {
             // STRICT STUDENT WORKSPACE QUERY
             roleQuery = {
-                userId: req.user.id,
-                $or: [
-                    { workspaceType: 'student' },
-                    { role: 'student' }
+                $and: [
+                    {
+                        $or: [
+                            { userId: { $in: userIdConditions } },
+                            { assignedMembers: { $in: userIdConditions } }
+                        ]
+                    },
+                    {
+                        $or: [
+                            { workspaceType: 'student' },
+                            { role: 'student' }
+                        ]
+                    }
                 ]
             };
         } else {
-            // STRICT ADVOCATE WORKSPACE QUERY
-            const memberships = await WorkspaceMembership.find({
-                $or: [{ userId: req.user.id }, { email: req.user.email }]
-            }).lean();
-            const firmWsIds = memberships.map(m => String(m.workspaceId)).filter(id => mongoose.Types.ObjectId.isValid(id));
-
+            // STRICT ADVOCATE / PERSONAL PRACTICE QUERY
+            // Returns cases owned by or assigned to authenticated user in advocate practice only
             roleQuery = {
-                userId: req.user.id,
-                workspaceType: { $nin: ['student', 'law_firm'] },
-                role: { $ne: 'student' }
+                $and: [
+                    {
+                        $or: [
+                            { userId: { $in: userIdConditions } },
+                            { assignedMembers: { $in: userIdConditions } },
+                            { assignedUserIds: { $in: userIdConditions } },
+                            { leadAdvocateUserId: { $in: userIdConditions } }
+                        ]
+                    },
+                    {
+                        role: { $nin: ['student', 'law_firm'] },
+                        workspaceType: { $nin: ['student', 'law_firm'] }
+                    }
+                ]
             };
-
-            if (firmWsIds.length > 0) {
-                roleQuery.workspaceId = { $nin: firmWsIds };
-            }
         }
 
         // Auto-fix any cases where isLegalCase was not set to true
@@ -719,6 +803,19 @@ router.get('/:id', verifyToken, async (req, res) => {
             return res.status(403).json({ error: 'Access denied to this case' });
         }
 
+        // Strict Role Workspace Scoping Verification
+        const userRoleHeader = (req.query.role || req.headers['x-user-role'] || 'advocate').toLowerCase();
+        const reqWsType = (req.query.workspaceType || req.headers['x-workspace-type'] || userRoleHeader).toLowerCase();
+        if (reqWsType === 'student') {
+            if (project.workspaceType !== 'student' && project.role !== 'student') {
+                return res.status(403).json({ error: 'Access denied: Case does not belong to your active Student workspace' });
+            }
+        } else if (reqWsType === 'advocate') {
+            if (project.workspaceType === 'student' || project.role === 'student') {
+                return res.status(403).json({ error: 'Access denied: Case does not belong to your active Advocate workspace' });
+            }
+        }
+
         // Auto-generate or re-analyze caseIntelligence if missing, stale, or in a different language
         const userLang = getRequestLanguage(req);
         const hasCi = project.caseIntelligence && Object.keys(project.caseIntelligence).length > 0;
@@ -854,11 +951,16 @@ router.put('/:id', verifyToken, async (req, res) => {
         delete updateData.userId;
         delete updateData._id;
 
-        let existingProject = await Project.findOne({ _id: req.params.id, userId: req.user.id });
-        if (!existingProject) {
-            existingProject = await Project.findById(req.params.id);
-        }
-        if (!existingProject) return res.status(404).json({ error: 'Project not found' });
+        let existingProject = await Project.findOne({
+            _id: req.params.id,
+            $or: [
+                { userId: req.user.id },
+                { owner: req.user.id },
+                { assignedUserIds: req.user.id },
+                { 'members.user': req.user.id }
+            ]
+        });
+        if (!existingProject) return res.status(403).json({ error: 'Access denied: Case not found or unauthorized' });
 
         // Apply changes
         Object.assign(existingProject, updateData);
@@ -952,6 +1054,8 @@ router.put('/:id', verifyToken, async (req, res) => {
 
 // @desc    Remove a team member from a case
 // @route   DELETE /api/projects/:id/members/:memberId
+// @desc    Remove member from THIS CASE ONLY (does NOT alter Law Firm membership)
+// @route   DELETE /api/projects/:id/members/:memberId
 // @access  Private
 router.delete('/:id/members/:memberId', verifyToken, async (req, res) => {
     try {
@@ -973,44 +1077,100 @@ router.delete('/:id/members/:memberId', verifyToken, async (req, res) => {
             return res.status(403).json({ success: false, message: 'Not authorized to remove members from this case' });
         }
 
+        let assignedIdx = -1;
+        const assignedMatch = String(memberId).match(/^assigned_(\d+)$/i);
+        if (assignedMatch) {
+            assignedIdx = parseInt(assignedMatch[1], 10);
+        }
+
         const searchTargets = [
             String(memberId).toLowerCase(),
             memberName ? String(memberName).toLowerCase() : '',
             memberName ? String(memberName).replace(/^(adv\.|advocate)\s+/i, '').trim().toLowerCase() : ''
-        ].filter(Boolean);
+        ].map(s => decodeURIComponent(s)).filter(Boolean);
+
+        // If assigned_N index was passed, add exact name at that index to searchTargets
+        if (assignedIdx >= 0 && Array.isArray(project.teamMembers) && project.teamMembers[assignedIdx]) {
+            const itemAtIndex = project.teamMembers[assignedIdx];
+            const nameAtIndex = typeof itemAtIndex === 'string' ? itemAtIndex : itemAtIndex?.name || itemAtIndex?.fullName;
+            if (nameAtIndex) {
+                searchTargets.push(nameAtIndex.toLowerCase());
+                searchTargets.push(nameAtIndex.replace(/^(adv\.|advocate)\s+/i, '').trim().toLowerCase());
+            }
+        }
+
+        const isMatch = (str) => {
+            if (!str) return false;
+            const norm = String(str).toLowerCase().trim();
+            if (!norm) return false;
+            const cleanNorm = norm.replace(/^(adv\.|advocate)\s+/i, '').trim();
+
+            for (const t of searchTargets) {
+                if (!t) continue;
+                if (norm === t) return true;
+                if (cleanNorm && cleanNorm === t) return true;
+                if (norm.includes(t) || t.includes(norm)) return true;
+                if (cleanNorm && cleanNorm.length >= 2 && (cleanNorm.includes(t) || t.includes(cleanNorm))) return true;
+            }
+            return false;
+        };
+
+        // Lead advocate protection check
+        const currentLeadName = (project.leadAdvocate || '').toLowerCase();
+        const isTargetLead = (memberName && isMatch(currentLeadName)) ||
+          (project.caseAssignments && project.caseAssignments.some(ca => 
+            (isMatch(ca.userId) || isMatch(ca.name)) && ca.caseRole === 'Lead Advocate'
+          ));
+
+        if (isTargetLead) {
+            const remainingLeads = (project.caseAssignments || []).filter(ca => 
+              !isMatch(ca.userId) && !isMatch(ca.name) && ca.caseRole === 'Lead Advocate'
+            );
+            if (remainingLeads.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'LEAD_ADVOCATE_REQUIRED',
+                    message: 'This case must have a Lead Advocate. Assign another Lead Advocate before removing this member.'
+                });
+            }
+        }
 
         // Remove from assignedMembers & assignedUserIds
         if (Array.isArray(project.assignedMembers)) {
-            project.assignedMembers = project.assignedMembers.filter(m => !searchTargets.includes(String(m).toLowerCase()));
+            project.assignedMembers = project.assignedMembers.filter((m, idx) => {
+                if (assignedIdx >= 0 && idx === assignedIdx) return false;
+                return !isMatch(m);
+            });
         }
         if (Array.isArray(project.assignedUserIds)) {
-            project.assignedUserIds = project.assignedUserIds.filter(m => !searchTargets.includes(String(m).toLowerCase()));
+            project.assignedUserIds = project.assignedUserIds.filter((m, idx) => {
+                if (assignedIdx >= 0 && idx === assignedIdx) return false;
+                return !isMatch(m);
+            });
         }
 
         // Remove from teamMembers array (filter by string name or object id)
         if (Array.isArray(project.teamMembers)) {
-            project.teamMembers = project.teamMembers.filter(m => {
-                const nameStr = typeof m === 'string' ? m : m.name || m.fullName;
-                const mUserId = typeof m === 'object' ? (m.userId || m.id || m._id) : null;
-                const cleanMName = nameStr ? nameStr.replace(/^(adv\.|advocate)\s+/i, '').trim().toLowerCase() : '';
+            project.teamMembers = project.teamMembers.filter((m, idx) => {
+                if (assignedIdx >= 0 && idx === assignedIdx) return false;
+                const nameStr = typeof m === 'string' ? m : m?.name || m?.fullName;
+                const mUserId = typeof m === 'object' ? (m?.userId || m?.id || m?._id) : null;
 
-                if (mUserId && searchTargets.includes(String(mUserId).toLowerCase())) return false;
-                if (nameStr && searchTargets.includes(nameStr.toLowerCase())) return false;
-                if (cleanMName && searchTargets.includes(cleanMName)) return false;
+                if (mUserId && isMatch(mUserId)) return false;
+                if (nameStr && isMatch(nameStr)) return false;
                 return true;
             });
         }
 
         // Remove from caseAssignments
         if (Array.isArray(project.caseAssignments)) {
-            project.caseAssignments = project.caseAssignments.filter(a => {
-                const uId = String(a.userId || '').toLowerCase();
-                const aName = String(a.name || '').toLowerCase();
-                const cleanAName = aName.replace(/^(adv\.|advocate)\s+/i, '').trim();
+            project.caseAssignments = project.caseAssignments.filter((a, idx) => {
+                if (assignedIdx >= 0 && idx === assignedIdx) return false;
+                const uId = String(a.userId || '');
+                const aName = String(a.name || '');
 
-                if (uId && searchTargets.includes(uId)) return false;
-                if (aName && searchTargets.includes(aName)) return false;
-                if (cleanAName && searchTargets.includes(cleanAName)) return false;
+                if (uId && isMatch(uId)) return false;
+                if (aName && isMatch(aName)) return false;
                 return true;
             });
         }
@@ -1021,6 +1181,25 @@ router.delete('/:id/members/:memberId', verifyToken, async (req, res) => {
         project.markModified('caseAssignments');
 
         await project.save();
+
+        // Record Case Activity
+        try {
+            await CaseActivityService.recordCaseActivity({
+                workspaceId: project.workspaceId || 'personal_practice',
+                caseId: project._id,
+                actorUserId: req.user.id,
+                module: 'team_management',
+                activityCategory: 'team_management',
+                action: 'TEAM_MEMBER_REMOVED',
+                title: `Member Removed from Case`,
+                description: `${memberName || memberId || 'Member'} was removed from the case team.`,
+                relatedEntityType: 'Team',
+                relatedEntityId: memberId,
+                metadata: { caseName: project.name, memberName }
+            });
+        } catch (actErr) {
+            console.warn('[CaseActivity] Error recording member removed:', actErr.message);
+        }
 
         res.json({ success: true, message: 'Member removed from case successfully', project });
     } catch (err) {
@@ -1456,101 +1635,7 @@ router.put('/:id/members/:memberId/role', verifyToken, async (req, res) => {
     }
 });
 
-// @desc Remove member from THIS CASE ONLY (does NOT alter Law Firm membership)
-// @route DELETE /api/projects/:id/members/:memberId
-router.delete('/:id/members/:memberId', verifyToken, async (req, res) => {
-    try {
-        const memberName = req.query.memberName || req.body?.memberName;
-        const workspaceId = req.headers['x-workspace-id'] || req.headers['x-active-workspace-id'] || req.body?.workspaceId || 'personal_practice';
-        const wsIdStr = String(workspaceId);
 
-        const isOwner = await Workspace.exists({ _id: wsIdStr, ownerId: req.user.id });
-        const userDoc = req.user.id ? await User.findById(req.user.id).select('email').lean() : null;
-        const userEmail = userDoc?.email || req.user.email;
-        const memberDoc = await WorkspaceMembership.findOne({
-            workspaceId: wsIdStr,
-            $or: [{ userId: req.user.id }, { email: userEmail }],
-            status: 'Active'
-        });
-
-        const canManage = isOwner || ['Owner', 'Managing Partner', 'Senior Advocate'].includes(memberDoc?.role);
-        if (!canManage) {
-            return res.status(403).json({ success: false, error: 'ACCESS_DENIED', message: 'Only workspace managers or senior advocates can remove members from a case.' });
-        }
-
-        const wsCondition = [wsIdStr];
-        if (mongoose.Types.ObjectId.isValid(wsIdStr)) wsCondition.push(new mongoose.Types.ObjectId(wsIdStr));
-
-        const project = await Project.findOne({
-            _id: req.params.id,
-            $or: [{ workspaceId: { $in: wsCondition } }, { userId: req.user.id }]
-        });
-
-        if (!project) {
-            return res.status(404).json({ success: false, error: 'CASE_NOT_FOUND', message: 'Case workspace not found.' });
-        }
-
-        const targetMemberId = req.params.memberId;
-        const currentLeadName = project.leadAdvocate || '';
-
-        // Check Lead Advocate protection rule
-        const isTargetLead = currentLeadName === memberName || (project.caseAssignments && project.caseAssignments.some(ca => (String(ca.userId) === String(targetMemberId) || ca.name === memberName) && ca.caseRole === 'Lead Advocate'));
-        if (isTargetLead) {
-            const remainingLeads = (project.caseAssignments || []).filter(ca => String(ca.userId) !== String(targetMemberId) && ca.name !== memberName && ca.caseRole === 'Lead Advocate');
-            if (remainingLeads.length === 0) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'LEAD_ADVOCATE_REQUIRED',
-                    message: 'This case must have a Lead Advocate. Assign another Lead Advocate before changing or removing this member.'
-                });
-            }
-        }
-
-        // Remove from case arrays only
-        if (Array.isArray(project.teamMembers)) {
-            project.teamMembers = project.teamMembers.filter(m => typeof m === 'string' ? m !== memberName : m.name !== memberName && String(m.id || m._id || m.userId) !== String(targetMemberId));
-        }
-        if (Array.isArray(project.assignedUserIds)) {
-            project.assignedUserIds = project.assignedUserIds.filter(uid => String(uid) !== String(targetMemberId));
-        }
-        if (Array.isArray(project.assignedMembers)) {
-            project.assignedMembers = project.assignedMembers.filter(uid => String(uid) !== String(targetMemberId));
-        }
-        if (Array.isArray(project.caseAssignments)) {
-            project.caseAssignments = project.caseAssignments.filter(ca => String(ca.userId) !== String(targetMemberId) && ca.name !== memberName);
-        }
-
-        project.markModified('teamMembers');
-        project.markModified('assignedUserIds');
-        project.markModified('assignedMembers');
-        project.markModified('caseAssignments');
-        await project.save();
-
-        // Record Case Activity
-        try {
-            await CaseActivityService.recordCaseActivity({
-                workspaceId: project.workspaceId || wsIdStr,
-                caseId: project._id,
-                actorUserId: req.user.id,
-                module: 'team_management',
-                activityCategory: 'team_management',
-                action: 'TEAM_MEMBER_REMOVED',
-                title: `Member Removed from Case`,
-                description: `${memberName || 'Member'} was removed from the case team.`,
-                relatedEntityType: 'Team',
-                relatedEntityId: targetMemberId,
-                metadata: { caseName: project.name, memberName }
-            });
-        } catch (actErr) {
-            console.warn('[CaseActivity] Error recording member removed:', actErr.message);
-        }
-
-        res.json({ success: true, message: 'Member removed from case successfully', project });
-    } catch (err) {
-        console.error('[RemoveCaseMember] Error:', err);
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
 
 
 // @desc    Schedule a new hearing for a case inside active workspace
@@ -2353,6 +2438,9 @@ router.get('/:id/documents', verifyToken, async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(404).json({ error: 'Case project not found' });
+        if (!authorizeCaseAccess(req.user, project)) {
+            return res.status(403).json({ error: 'Access denied: You do not have permission for this case' });
+        }
 
         const isOwner = String(project.userId) === String(req.user.id || req.user._id) || req.user.role === 'admin' || req.user.role === 'SUPER_ADMIN';
         const accessibleDocs = AccessControlService.filterAndFormatItems(req.user, project, project.documents || [], isOwner);
@@ -2375,6 +2463,9 @@ router.post('/:id/documents', verifyToken, uploadMiddleware, async (req, res) =>
 
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(404).json({ error: 'Case project not found' });
+        if (!authorizeCaseAccess(req.user, project)) {
+            return res.status(403).json({ error: 'Access denied: You do not have permission for this case' });
+        }
 
         let fileUrl = null;
         let storedName = `doc_${Date.now()}`;
@@ -2669,6 +2760,9 @@ router.get('/:id/evidence', verifyToken, async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(404).json({ error: 'Case project not found' });
+        if (!authorizeCaseAccess(req.user, project)) {
+            return res.status(403).json({ error: 'Access denied: You do not have permission for this case' });
+        }
 
         const isOwner = String(project.userId) === String(req.user.id || req.user._id) || req.user.role === 'admin' || req.user.role === 'SUPER_ADMIN';
         const accessibleEvidence = AccessControlService.filterAndFormatItems(req.user, project, project.evidence || [], isOwner);
@@ -2691,6 +2785,9 @@ router.post('/:id/evidence', verifyToken, uploadMiddleware, async (req, res) => 
 
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(404).json({ error: 'Case project not found' });
+        if (!authorizeCaseAccess(req.user, project)) {
+            return res.status(403).json({ error: 'Access denied: You do not have permission for this case' });
+        }
 
         let fileUrl = null;
         let storedName = `ev_${Date.now()}`;
@@ -3089,7 +3186,7 @@ Signatures: Match validated by Plaintiff Advocate.`;
 // @access  Private
 router.get('/:id/analysis/latest', verifyToken, async (req, res) => {
     try {
-        const analysis = await Analysis.findOne({ caseId: req.params.id, userId: req.user.id }).sort({ createdAt: -1 });
+        const analysis = await Analysis.findOne({ caseId: req.params.id }).sort({ createdAt: -1 });
         res.json({ success: true, data: analysis });
     } catch (err) {
         res.status(500).json({ error: 'Failed to retrieve analysis', details: err.message });
@@ -3101,7 +3198,7 @@ router.get('/:id/analysis/latest', verifyToken, async (req, res) => {
 // @access  Private
 router.get('/:id/analysis/history', verifyToken, async (req, res) => {
     try {
-        const history = await Analysis.find({ caseId: req.params.id, userId: req.user.id }).sort({ version: -1 });
+        const history = await Analysis.find({ caseId: req.params.id }).sort({ version: -1 });
         res.json({ success: true, data: history });
     } catch (err) {
         res.status(500).json({ error: 'Failed to retrieve analysis history', details: err.message });
@@ -3244,8 +3341,20 @@ router.post('/:id/analysis-trigger', verifyToken, async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const project = await Project.findOne({ _id: caseId, userId });
-        if (!project) return res.status(404).json({ error: 'Case workspace not found' });
+        let project = await Project.findById(caseId);
+        if (!project) return res.status(404).json({ success: false, error: 'Case workspace not found' });
+
+        const isOwner = String(project.userId) === String(userId);
+        const isLead = String(project.leadAdvocateUserId) === String(userId);
+        const isAssigned = (project.assignedUserIds || []).some(uid => String(uid) === String(userId));
+        const isWorkspaceMember = project.workspaceId ? await WorkspaceMembership.exists({
+            workspaceId: project.workspaceId,
+            $or: [{ userId: req.user.id }, { email: req.user.email }]
+        }) : false;
+
+        if (!isOwner && !isLead && !isAssigned && !isWorkspaceMember) {
+            return res.status(403).json({ success: false, error: 'Not authorized to analyze this case workspace' });
+        }
 
         const summaryText = project.summary || project.caseSummary || '';
 
@@ -3328,7 +3437,7 @@ router.post('/:id/analysis-trigger', verifyToken, async (req, res) => {
         analysisData = verifyAndCleanHallucinatedFacts(analysisData, project);
 
         // Determine Version of analysis
-        const lastAnalysis = await Analysis.findOne({ caseId, userId }).sort({ version: -1 });
+        const lastAnalysis = await Analysis.findOne({ caseId }).sort({ version: -1 });
         const nextVersion = lastAnalysis ? lastAnalysis.version + 1 : 1;
 
         // Calculate confidence (overridden to Low if no evidence is present)
@@ -3398,6 +3507,9 @@ router.post('/:id/personal-analysis-trigger', verifyToken, async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(404).json({ success: false, error: 'Case workspace not found.' });
+        if (!authorizeCaseAccess(req.user, project)) {
+            return res.status(403).json({ success: false, error: 'Access denied: You do not have permission for this case workspace.' });
+        }
 
         const userLang = req.headers['accept-language'] || 'English';
         const analysisData = await legalIntelligenceService.generatePersonalCaseAnalysis(project, userLang);
@@ -3424,6 +3536,9 @@ router.post('/:id/personal-strategy-trigger', verifyToken, async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(404).json({ success: false, error: 'Case workspace not found.' });
+        if (!authorizeCaseAccess(req.user, project)) {
+            return res.status(403).json({ success: false, error: 'Access denied: You do not have permission for this case workspace.' });
+        }
 
         const userLang = req.headers['accept-language'] || 'English';
         const strategyData = await legalIntelligenceService.generatePersonalCaseStrategy(project, project.personalAnalysis, userLang);
@@ -3450,6 +3565,9 @@ router.get('/:id/personal-analysis-latest', verifyToken, async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
         if (!project) return res.status(404).json({ success: false, error: 'Case workspace not found.' });
+        if (!authorizeCaseAccess(req.user, project)) {
+            return res.status(403).json({ success: false, error: 'Access denied: You do not have permission for this case workspace.' });
+        }
 
         res.json({
             success: true,
@@ -3481,10 +3599,11 @@ router.post('/:id/client-connect/draft', verifyToken, verifyFeatureAccess('clien
         // Fetch authenticated user profile to build dynamic signature
         const advocateProfile = await User.findById(req.user.id);
         const rawAdvocateName = (advocateProfile?.fullName || advocateProfile?.name || 'Advocate').trim();
-        const advocateRole = advocateProfile?.role || 'Junior Advocate';
+        const rawRole = (advocateProfile?.role || '').trim();
+        const advocateRole = (rawRole.toUpperCase().includes('ADMIN') || rawRole.toUpperCase().includes('SUPER') || !rawRole) ? 'Lead Advocate' : rawRole;
         const firmName = project.workspaceName || 'ABC Law Associates';
 
-        const dynamicSignature = `Regards,\n\nAdv. ${rawAdvocateName}\n${advocateRole}\n${firmName}`;
+        const dynamicSignature = `Regards,\n\nAdv. ${rawAdvocateName}\nLead Advocate\n${firmName}`;
         const lang = languagePreference || project.courtroomLanguage || 'English';
 
         // Build context based on project/case metadata
@@ -3538,7 +3657,7 @@ Instructions:
 1. Provide a clear, professional Email Subject on the first line formatted as: "SUBJECT: [Your Subject Line Here]"
 2. Write a formal body addressing client "${project.clientName || 'Client'}".
 3. State the purpose clearly, detailing any hearing dates, document/evidence requests, affidavit needs, or fee reminders.
-4. MUST append this exact dynamic signature at the very end:
+4. MUST append this exact dynamic signature at the very end (Do NOT use administrative titles like SUPER_ADMIN or ADMIN, use "Lead Advocate"):
 ${dynamicSignature}
 5. Do NOT include markdown styling or brackets like [Lawyer Name].` 
 : `You are a legal assistant for an enterprise law firm. Write a professional, concise WhatsApp message to client "${project.clientName || 'Client'}".
@@ -3553,7 +3672,7 @@ Instructions:
 1. Respectfully address client "${project.clientName || 'Client'}".
 2. Clearly explain the reasons (hearing reminders, pending docs, fee/payment reminders, affidavits, postponements, evidence).
 3. Keep it readable for WhatsApp with clean spacing and bullet points if needed.
-4. MUST append this exact dynamic signature at the very end:
+4. MUST append this exact dynamic signature at the very end (Do NOT use administrative titles like SUPER_ADMIN or ADMIN, use "Lead Advocate"):
 ${dynamicSignature}
 5. Do NOT use markdown symbols (*, #, __, \`) or bracket placeholders like [Lawyer Name]. Write clean plain text.`;
 
@@ -3583,11 +3702,16 @@ ${dynamicSignature}
             .replace(/#+\s?/g, '')
             .replace(/`/g, '')
             .replace(/^>\s?/gm, '')
-            .replace(/^[\-\*+]\s?/gm, '');
+            .replace(/^[\-\*+]\s?/gm, '')
+            .replace(/SUPER_ADMIN/gi, 'Lead Advocate')
+            .replace(/SUPER ADMIN/gi, 'Lead Advocate')
+            .replace(/SYSTEM_ADMIN/gi, 'Lead Advocate');
 
         if (!cleanDraft.includes(`Adv. ${rawAdvocateName}`)) {
             cleanDraft = cleanDraft + `\n\n${dynamicSignature}`;
         }
+
+        if (req.commitUsage) await req.commitUsage();
 
         res.json({
             success: true,
@@ -3877,6 +4001,11 @@ Never switch to Hindi unless the user explicitly requests it.`;
             }
         }
 
+        // Commit 1 usage upon successful mock courtroom response generation
+        if (req.commitUsage) {
+            await req.commitUsage();
+        }
+
         res.json({ success: true, activeLanguage: activeLang, ...responseObj });
     } catch (err) {
         console.error('[MOCK COURTROOM RESPOND] Error:', err);
@@ -3922,7 +4051,7 @@ Return ONLY the translated text. Do not include quotes, markdown wrapping, or ex
 // @desc    Generate post-hearing performance report
 // @route   POST /api/projects/mock-courtroom/report
 // @access  Public
-router.post('/mock-courtroom/report', verifyToken, async (req, res) => {
+router.post('/mock-courtroom/report', verifyToken, verifyFeatureAccess('mockCourtroom'), async (req, res) => {
     try {
         const { conversationHistory, caseContext } = req.body;
         
@@ -3942,23 +4071,24 @@ Calculate performance scores out of 100 for:
 4. Communication Skills
 5. Confidence
 
-And compile:
-- Strong Arguments
-- Weak Arguments
-- Missed Legal Points
-- Suggestions for Improvement
-- AI Judge's Final Feedback summary
+IMPORTANT SCORING INSTRUCTIONS:
+- You MUST dynamically evaluate the advocate's actual speech length, relevance, legal citations, logic, and objection handling from the transcript.
+- DO NOT default to 88/100 or static scores.
+- Calculate realistic scores based on performance:
+  * Excellent arguments with section/act citations & clear logic: 85 - 98
+  * Average or brief arguments: 65 - 84
+  * Short, weak, off-topic, or poor arguments: 35 - 64
 
 Output a valid JSON block containing:
 {
-  "overallScore": 88,
-  "legalAccuracy": 85,
-  "argumentStrength": 80,
-  "etiquette": 90,
-  "communication": 88,
-  "confidence": 92,
-  "strongArgs": ["list of strong arguments"],
-  "weakArgs": ["list of weak arguments"],
+  "overallScore": 82,
+  "legalAccuracy": 80,
+  "argumentStrength": 78,
+  "etiquette": 85,
+  "communication": 82,
+  "confidence": 80,
+  "strongArgs": ["list of strong arguments based on transcript"],
+  "weakArgs": ["list of weak arguments based on transcript"],
   "missedPoints": ["missed points"],
   "suggestions": ["suggestions"],
   "judgeComment": "Hon'ble Judge's summary comment"
@@ -3966,7 +4096,7 @@ Output a valid JSON block containing:
 Only output the raw JSON block without markdown code blocks.`;
 
         let rawResponse = await askOpenAI(prompt, null, {
-            systemInstruction: "You are a professional legal educator. Always output valid JSON blocks strictly matching the requested format.",
+            systemInstruction: "You are a professional legal educator. Always evaluate the advocate dynamically based on their actual arguments and output valid JSON blocks strictly matching the requested format.",
             temperature: 0.7,
             userId: req.user.id
         });
@@ -3977,23 +4107,41 @@ Only output the raw JSON block without markdown code blocks.`;
         }
 
         const responseObj = JSON.parse(cleanJsonStr);
+        if (req.commitUsage) await req.commitUsage();
         res.json({ success: true, report: responseObj });
     } catch (err) {
         console.error('[MOCK COURTROOM REPORT] Error:', err);
+
+        const advocateMsgs = (req.body.conversationHistory || []).filter(m => m.sender === 'advocate' || m.senderName?.includes('You'));
+        const totalWords = advocateMsgs.reduce((sum, m) => sum + (m.text || '').trim().split(/\s+/).filter(Boolean).length, 0);
+        const textBlob = advocateMsgs.map(m => m.text || '').join(' ').toLowerCase();
+        const legalHits = (textBlob.match(/section|act|evidence|exhibit|presumption|notice|objection|law|court|lord|jurisdiction|statutory/gi) || []).length;
+        
+        const legalAccuracy = Math.min(96, Math.max(45, 55 + legalHits * 5));
+        const argumentStrength = Math.min(95, Math.max(40, 50 + Math.floor(totalWords / 8)));
+        const etiquette = Math.min(98, Math.max(60, 70 + advocateMsgs.length * 4));
+        const communication = Math.min(95, Math.max(50, 65 + Math.floor(totalWords / 12)));
+        const confidence = Math.min(95, Math.max(45, 60 + legalHits * 3 + advocateMsgs.length * 3));
+        const overallScore = Math.round((legalAccuracy + argumentStrength + etiquette + communication + confidence) / 5);
+
         res.json({
             success: true,
             report: {
-                overallScore: 84,
-                legalAccuracy: 80,
-                argumentStrength: 82,
-                etiquette: 88,
-                communication: 85,
-                confidence: 86,
-                strongArgs: ["Presented cheque signature admission arguments clearly."],
-                weakArgs: ["Could emphasize bank returned memo ledger timestamps more."],
-                missedPoints: ["Statutory delivery log citation presumption reference."],
-                suggestions: ["Prepare statutory notice evidence first before verbal submissions."],
-                judgeComment: "Overall counsel demonstrated good courtroom etiquette and legal reasoning. Continued practice will enhance confidence."
+                overallScore,
+                legalAccuracy,
+                argumentStrength,
+                etiquette,
+                communication,
+                confidence,
+                strongArgs: totalWords > 15 
+                  ? ["Presented arguments clearly and interacted with the Court."]
+                  : ["Initiated courtroom submissions."],
+                weakArgs: legalHits === 0 
+                  ? ["Could cite specific statutory sections and case precedents."]
+                  : ["Could elaborate further on evidentiary backing."],
+                missedPoints: ["Statutory delivery log citation & presumption reference under Section 139."],
+                suggestions: ["Incorporate statutory provisions early in your opening statement."],
+                judgeComment: `Counsel completed the hearing session. Total spoken words: ${totalWords}. Continued structured practice will enhance legal reasoning.`
             }
         });
     }
@@ -4078,6 +4226,7 @@ Ensure the JSON is valid and strictly match the schema.`;
         }
 
         const responseObj = JSON.parse(cleanJsonStr);
+        if (req.commitUsage) await req.commitUsage();
         res.json({ success: true, report: responseObj });
     } catch (err) {
         console.error('[MOCK COURTROOM PRACTICE REPORT] Error:', err);
@@ -4117,82 +4266,11 @@ Ensure the JSON is valid and strictly match the schema.`;
 // @access  Private
 router.post('/:id/contracts', verifyToken, uploadMiddleware, async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: "No file uploaded" });
-        }
-        
-        const project = await Project.findOne({ _id: req.params.id, userId: req.user.id });
-        if (!project) return res.status(404).json({ error: "Case not found" });
-
-        // Calculate file checksum hash
-        const checksum = crypto.createHash('md5').update(req.file.buffer).digest('hex');
-
-        // Check duplicates
-        const isDuplicate = project.contracts && project.contracts.some(c => c.hash === checksum);
-        if (isDuplicate) {
-            return res.status(400).json({ error: "This contract file has already been uploaded." });
-        }
-
-        let fileUrl = "";
-        let gcsFilename = "";
-
-        // Upload to GCS
-        try {
-            const uploadParams = {
-                mimetype: req.file.mimetype,
-                originalname: req.file.originalname
-            };
-            const gcsResult = await uploadToGCS(req.file.buffer, uploadParams);
-            fileUrl = gcsResult.url;
-            gcsFilename = gcsResult.filename;
-            console.log("[CONTRACT UPLOAD] Uploaded via GCS successfully:", fileUrl);
-        } catch (gcsError) {
-            console.warn("[CONTRACT UPLOAD] GCS upload failed, trying Cloudinary fallback:", gcsError.message);
-            try {
-                const uploadParams = {
-                    mimetype: req.file.mimetype,
-                    originalname: req.file.originalname
-                };
-                const cloudinaryResult = await uploadToCloudinary(req.file.buffer, uploadParams);
-                fileUrl = cloudinaryResult.secure_url || cloudinaryResult.url;
-                console.log("[CONTRACT UPLOAD] Uploaded via Cloudinary successfully:", fileUrl);
-            } catch (cloudinaryError) {
-                console.error("[CONTRACT UPLOAD] Cloudinary fallback failed:", cloudinaryError.message);
-                return res.status(500).json({
-                    error: "Failed to upload contract file",
-                    details: cloudinaryError.message
-                });
-            }
-        }
-
-        const sizeStr = req.file.size > 1024 * 1024 
-            ? `${(req.file.size / (1024 * 1024)).toFixed(1)} MB` 
-            : `${Math.round(req.file.size / 1024)} KB`;
-
-        const ext = req.file.originalname.split('.').pop()?.toUpperCase() || 'PDF';
-
-        const newContract = {
-            _id: crypto.randomUUID(),
-            name: req.file.originalname,
-            url: fileUrl,
-            storedName: gcsFilename || req.file.originalname,
-            hash: checksum,
-            uploadedDate: new Date(),
-            fileSize: sizeStr,
-            fileType: ext,
-            ocrStatus: 'Complete',
-            aiStatus: 'Not Analyzed',
-            analysisReport: null
-        };
-
-        if (!project.contracts) project.contracts = [];
-        project.contracts.push(newContract);
-        await project.save();
-
+        const newContract = await ContractService.uploadContract(req.params.id, req.file);
         res.status(200).json({ success: true, data: newContract });
     } catch (error) {
         console.error('[CONTRACT UPLOAD ERROR]', error);
-        res.status(500).json({ error: 'Failed to upload case contract', details: error.message });
+        res.status(error.status || 500).json({ error: error.message || 'Failed to upload case contract' });
     }
 });
 
@@ -4201,22 +4279,11 @@ router.post('/:id/contracts', verifyToken, uploadMiddleware, async (req, res) =>
 // @access  Private
 router.delete('/:id/contracts/:contractId', verifyToken, async (req, res) => {
     try {
-        const project = await Project.findOne({ _id: req.params.id, userId: req.user.id });
-        if (!project) return res.status(404).json({ error: 'Project not found' });
-
-        const contractIndex = (project.contracts || []).findIndex(c => 
-            (c._id && c._id.toString() === req.params.contractId) || 
-            (c.id && c.id.toString() === req.params.contractId)
-        );
-        if (contractIndex === -1) return res.status(404).json({ error: 'Contract not found' });
-
-        project.contracts.splice(contractIndex, 1);
-        await project.save();
-
+        await ContractService.deleteContract(req.params.id, req.params.contractId);
         res.status(200).json({ success: true, message: 'Contract deleted successfully.' });
     } catch (error) {
         console.error('[CONTRACT DELETE ERROR]', error);
-        res.status(500).json({ error: 'Failed to delete contract', details: error.message });
+        res.status(error.status || 500).json({ error: error.message || 'Failed to delete contract' });
     }
 });
 
@@ -4225,7 +4292,7 @@ router.delete('/:id/contracts/:contractId', verifyToken, async (req, res) => {
 // @access  Private
 router.post('/:id/contracts/:contractId/analyze', verifyToken, async (req, res) => {
     try {
-        const project = await Project.findOne({ _id: req.params.id, userId: req.user.id });
+        const project = await Project.findById(req.params.id);
         if (!project) return res.status(404).json({ error: 'Project not found' });
 
         const contractIndex = (project.contracts || []).findIndex(c => 

@@ -24,7 +24,7 @@ import React, { useState, useCallback, useRef } from 'react';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const BASE_URL = window._env_?.VITE_AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || "https://aisa24.com/api";
+const BASE_URL = window._env_?.VITE_AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || (typeof window !== 'undefined' ? `${window.location.origin}/api` : "https://aisa24.com/api");
 const APPLE_PAY_MERCHANT_ID = import.meta.env.VITE_APPLE_PAY_MERCHANT_ID || 'merchant.com.aisa24.pay';
 
 // ⚠️ Safety check: Apple Pay REQUIRES HTTPS for both the page AND all API calls.

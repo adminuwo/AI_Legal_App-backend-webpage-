@@ -7,23 +7,26 @@ import AdminSettings from '../models/AdminSettings.js';
 // Fallback pricing map if database plan object doesn't contain prices
 const PLAN_PRICES = {
   FREE: { monthly: 0, yearly: 0 },
-  PRO: { monthly: 499, yearly: 4990 },
   BASIC: { monthly: 499, yearly: 4990 },
-  PREMIUM: { monthly: 999, yearly: 9990 },
+  PRO: { monthly: 999, yearly: 9990 },
   PROFESSIONAL: { monthly: 999, yearly: 9990 },
-  ENTERPRISE: { monthly: 2399, yearly: 23990 },
+  PREMIUM: { monthly: 2399, yearly: 23990 },
+  ENTERPRISE: { monthly: 4999, yearly: 49990 },
 
+  advocate_free: { monthly: 0, yearly: 0 },
   advocate_basic: { monthly: 499, yearly: 4990 },
   advocate_pro: { monthly: 999, yearly: 9990 },
   advocate_premium: { monthly: 2399, yearly: 23990 },
 
+  student_free: { monthly: 0, yearly: 0 },
   student_basic: { monthly: 499, yearly: 4990 },
   student_pro: { monthly: 999, yearly: 9990 },
   student_premium: { monthly: 2399, yearly: 23990 },
 
-  firm_basic: { monthly: 499, yearly: 4990 },
-  firm_pro: { monthly: 999, yearly: 9990 },
-  firm_premium: { monthly: 2399, yearly: 23990 },
+  firm_free: { monthly: 0, yearly: 0 },
+  firm_basic: { monthly: 1499, yearly: 14990 },
+  firm_pro: { monthly: 2999, yearly: 29990 },
+  firm_premium: { monthly: 4999, yearly: 49990 },
 
   combo_student_advocate: { monthly: 1199, yearly: 11990 },
   combo_advocate_firm: { monthly: 1499, yearly: 14990 },

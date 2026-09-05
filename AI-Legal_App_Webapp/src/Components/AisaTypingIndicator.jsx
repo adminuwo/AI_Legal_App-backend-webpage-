@@ -15,9 +15,9 @@ const AisaTypingIndicator = ({ visible = true, message = "Thinking..." }) => {
         {message}
       </span>
       <div className="flex gap-1 ml-1.5 items-center">
-        <span className="w-1.5 h-1.5 bg-[#6D5DFC] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-        <span className="w-1.5 h-1.5 bg-[#6D5DFC] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-        <span className="w-1.5 h-1.5 bg-[#6D5DFC] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+        <span className="w-1.5 h-1.5 bg-[#C8A34D] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+        <span className="w-1.5 h-1.5 bg-[#C8A34D] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+        <span className="w-1.5 h-1.5 bg-[#C8A34D] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
       </div>
     </motion.div>
   );

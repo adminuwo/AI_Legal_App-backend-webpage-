@@ -6,8 +6,188 @@ import Plan from '../models/Plan.js';
 
 // Mappings of feature limits per subscription plan (Default Fallback Matrix)
 export const PLAN_LIMITS = {
+    // Advocate Plans
+    ADVOCATE_FREE: {
+        cases: 3,
+        ai_chat: 100,
+        draft_maker: 2,
+        court_prep: 2,
+        legal_precedent: 2,
+        evidence_analysis: 2,
+        contract_review: 2,
+        strategy_engine: 2,
+        case_predictor: 2,
+        mock_courtroom: 1,
+        client_connect: 1,
+        knowledge_hub: 3
+    },
+    ADVOCATE_BASIC: {
+        cases: 50,
+        ai_chat: 300,
+        draft_maker: 5,
+        court_prep: 5,
+        legal_precedent: 5,
+        evidence_analysis: 5,
+        contract_review: 5,
+        strategy_engine: 5,
+        case_predictor: 5,
+        mock_courtroom: 2,
+        client_connect: 2
+    },
+    ADVOCATE_PRO: {
+        cases: 100,
+        ai_chat: 1000,
+        draft_maker: 15,
+        court_prep: 15,
+        legal_precedent: 15,
+        evidence_analysis: 15,
+        contract_review: 15,
+        strategy_engine: 15,
+        case_predictor: 15,
+        mock_courtroom: 5,
+        client_connect: 5
+    },
+    ADVOCATE_PREMIUM: {
+        cases: 250,
+        ai_chat: Infinity,
+        draft_maker: Infinity,
+        court_prep: Infinity,
+        legal_precedent: Infinity,
+        evidence_analysis: Infinity,
+        contract_review: Infinity,
+        strategy_engine: Infinity,
+        case_predictor: Infinity,
+        mock_courtroom: 15,
+        client_connect: 20
+    },
+
+    // Student Plans
+    STUDENT_FREE: {
+        cases: 3,
+        ai_chat: 100,
+        quiz_practice: 2,
+        draft_maker: 1,
+        legal_precedent: 1,
+        contract_review: 1,
+        evidence_analysis: 1
+    },
+    STUDENT_BASIC: {
+        cases: 25,
+        quiz_practice: Infinity,
+        draft_maker: 5,
+        legal_precedent: 5,
+        contract_review: 5,
+        evidence_analysis: 5,
+        strategy_engine: 5,
+        case_predictor: 5,
+        mock_courtroom: 2,
+        notes_maker: 5
+    },
+    STUDENT_PRO: {
+        cases: 50,
+        quiz_practice: Infinity,
+        draft_maker: 15,
+        legal_precedent: 15,
+        contract_review: 15,
+        evidence_analysis: 15,
+        strategy_engine: 15,
+        case_predictor: 15,
+        mock_courtroom: 5,
+        notes_maker: 15
+    },
+    STUDENT_PREMIUM: {
+        cases: 100,
+        quiz_practice: Infinity,
+        draft_maker: Infinity,
+        legal_precedent: Infinity,
+        contract_review: Infinity,
+        evidence_analysis: Infinity,
+        strategy_engine: Infinity,
+        case_predictor: Infinity,
+        mock_courtroom: 15,
+        notes_maker: Infinity
+    },
+
+    // Law Firm Plans
+    FIRM_FREE: {
+        team_members: 1,
+        cases: 3,
+        ai_chat: 100,
+        draft_maker: 1,
+        contract_review: 1,
+        legal_precedent: 1
+    },
+    FIRM_BASIC: {
+        team_members: 10,
+        cases: 100,
+        draft_maker: 30,
+        legal_precedent: 30,
+        contract_review: 30,
+        evidence_analysis: 30,
+        strategy_engine: 30,
+        case_predictor: 30,
+        mock_courtroom: 10,
+        client_connect: 10
+    },
+    FIRM_PRO: {
+        team_members: 25,
+        cases: 250,
+        draft_maker: 100,
+        legal_precedent: 100,
+        contract_review: 100,
+        evidence_analysis: 100,
+        strategy_engine: 100,
+        case_predictor: 100,
+        mock_courtroom: 25,
+        client_connect: 25
+    },
+    FIRM_PREMIUM: {
+        team_members: 50,
+        cases: 500,
+        draft_maker: Infinity,
+        legal_precedent: Infinity,
+        contract_review: Infinity,
+        evidence_analysis: Infinity,
+        strategy_engine: Infinity,
+        case_predictor: Infinity,
+        mock_courtroom: 50,
+        client_connect: 50
+    },
+
+    // Combo Plans
+    COMBO_STUDENT_ADVOCATE: {
+        cases: 50,
+        quiz_practice: Infinity,
+        draft_maker: 20,
+        contract_review: 20,
+        legal_precedent: 20,
+        mock_courtroom: 5,
+        client_connect: 5
+    },
+    COMBO_ADVOCATE_FIRM: {
+        team_members: 10,
+        cases: 100,
+        draft_maker: 30,
+        contract_review: 30,
+        legal_precedent: 30,
+        mock_courtroom: 10,
+        client_connect: 10
+    },
+    COMBO_ALL_ACCESS: {
+        team_members: 20,
+        cases: 250,
+        quiz_practice: Infinity,
+        draft_maker: Infinity,
+        contract_review: Infinity,
+        legal_precedent: Infinity,
+        mock_courtroom: 15,
+        client_connect: 20
+    },
+
+    // Fallback Generic Tier Keys
     FREE: {
         cases: 3,
+        ai_chat: 100,
         draft_maker: 2,
         court_prep: 2,
         legal_precedent: 2,
@@ -18,10 +198,11 @@ export const PLAN_LIMITS = {
         mock_courtroom: 1,
         client_connect: 1,
         notes_maker: 2,
-        quiz_practice: 5
+        quiz_practice: 2
     },
-    PRO: {
+    BASIC: {
         cases: 50,
+        ai_chat: 300,
         draft_maker: 5,
         court_prep: 5,
         legal_precedent: 5,
@@ -34,8 +215,9 @@ export const PLAN_LIMITS = {
         notes_maker: 5,
         quiz_practice: Infinity
     },
-    PREMIUM: {
+    PRO: {
         cases: 100,
+        ai_chat: 1000,
         draft_maker: 15,
         court_prep: 15,
         legal_precedent: 15,
@@ -48,8 +230,9 @@ export const PLAN_LIMITS = {
         notes_maker: 15,
         quiz_practice: Infinity
     },
-    ENTERPRISE: {
+    PREMIUM: {
         cases: 250,
+        ai_chat: Infinity,
         draft_maker: Infinity,
         court_prep: Infinity,
         legal_precedent: Infinity,
@@ -57,8 +240,23 @@ export const PLAN_LIMITS = {
         contract_review: Infinity,
         strategy_engine: Infinity,
         case_predictor: Infinity,
-        mock_courtroom: Infinity,
-        client_connect: Infinity,
+        case_predictor: Infinity,
+        mock_courtroom: 15,
+        client_connect: 20,
+        notes_maker: Infinity,
+        quiz_practice: Infinity
+    },
+    ENTERPRISE: {
+        cases: 500,
+        draft_maker: Infinity,
+        court_prep: Infinity,
+        legal_precedent: Infinity,
+        evidence_analysis: Infinity,
+        contract_review: Infinity,
+        strategy_engine: Infinity,
+        case_predictor: Infinity,
+        mock_courtroom: 50,
+        client_connect: 50,
         notes_maker: Infinity,
         quiz_practice: Infinity
     },
@@ -116,47 +314,93 @@ export const getDynamicPlanLimits = async () => {
     return PLAN_LIMITS;
 };
 
+export const normalizeWorkspace = (ws) => {
+    const lower = (ws || '').toLowerCase().trim();
+    if (!lower || lower === 'personal_practice' || lower === 'personal' || lower === 'individual' || lower === 'advocate') {
+        return 'advocate';
+    }
+    if (lower === 'law_firm' || lower === 'lawfirm' || lower === 'firm') {
+        return 'lawfirm';
+    }
+    if (lower === 'student') {
+        return 'student';
+    }
+    return lower;
+};
+
 /**
  * Resolves user subscription plan, handling expiries and mapping database plan names
  */
-export const resolveActiveUserPlan = async (user) => {
+export const resolveActiveUserPlan = async (user, targetWorkspace) => {
     if (!user) return 'FREE';
 
-    // SUPER_ADMIN: Permanent unlimited access — bypass all subscription logic
-    if (user.role === 'SUPER_ADMIN') {
+    // SUPER_ADMIN: Permanent unlimited access — bypass all subscription logic strictly for aditi@uwo24.com and aditilakhera0@gmail.com
+    const emailLower = (user.email || '').toLowerCase().trim();
+    if (user.role === 'SUPER_ADMIN' && (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com')) {
         return 'SUPER_ADMIN';
     }
+
+    const normTargetWs = normalizeWorkspace(targetWorkspace);
 
     let plan = 'FREE';
     let status = 'inactive';
     let expiryDate = null;
+    let subWorkspace = null;
 
-    if (user.subscription && user.subscription.plan) {
-        plan = user.subscription.plan;
-        status = user.subscription.status;
-        expiryDate = user.subscription.expiryDate;
+    // 1. Check embedded user.subscription (match workspace or combo)
+    if (user.subscription && user.subscription.plan && (user.subscription.status || '').toLowerCase() === 'active') {
+        const userSubWs = normalizeWorkspace(user.subscription.workspace);
+        const isComboSub = userSubWs === 'combo' || userSubWs === 'all' || (user.subscription.plan || '').toLowerCase().includes('combo');
+        
+        if (!normTargetWs || isComboSub || userSubWs === normTargetWs || !userSubWs) {
+            plan = user.subscription.plan;
+            status = 'active';
+            expiryDate = user.subscription.expiryDate;
+            subWorkspace = user.subscription.workspace;
+        }
     }
 
-    // Try finding subscription object in Subscription collection
+    // 2. Try finding active subscription in Subscription collection for targetWorkspace or combo
     try {
         const Subscription = mongoose.model('Subscription');
+        const allowedWorkspaces = normTargetWs === 'advocate'
+            ? ['advocate', 'personal_practice', 'personal', 'combo', 'all']
+            : normTargetWs === 'lawfirm'
+            ? ['lawfirm', 'law_firm', 'firm', 'combo', 'all']
+            : [normTargetWs, 'combo', 'all'];
+        
         const activeSub = await Subscription.findOne({
-            $or: [{ userId: user._id }, { accountId: user._id }],
-            status: 'active'
-        }).populate('planId');
+            $or: [
+                { userId: user._id, workspace: { $in: allowedWorkspaces } },
+                { accountId: user._id, workspace: { $in: allowedWorkspaces } },
+                { userId: user._id, tier: { $regex: /combo/i } },
+                { accountId: user._id, tier: { $regex: /combo/i } }
+            ],
+            status: { $in: ['active', 'Active'] },
+            tier: { $ne: 'FREE' }
+        }).sort({ createdAt: -1 }).populate('planId');
+
         if (activeSub) {
-            status = 'active';
-            expiryDate = activeSub.expiryDate || activeSub.renewalDate;
-            const pName = activeSub.tier || activeSub.planId?.planId || activeSub.planId?.planName || 'FREE';
-            plan = pName;
+            const subWsLower = normalizeWorkspace(activeSub.workspace);
+            const isComboSub = subWsLower === 'combo' || subWsLower === 'all' || (activeSub.tier || '').toLowerCase().includes('combo');
+            
+            if (!normTargetWs || isComboSub || subWsLower === normTargetWs || !subWsLower) {
+                status = 'active';
+                expiryDate = activeSub.expiryDate || activeSub.renewalDate;
+                const pName = activeSub.tier || activeSub.planId?.planId || activeSub.planId?.planName || plan;
+                if (pName) plan = pName;
+                if (activeSub.workspace) subWorkspace = activeSub.workspace;
+            }
         }
     } catch (e) {
         // Ignored if model not loaded
     }
 
+    const normStatus = (status || '').toLowerCase();
+
     // Check expiry
-    if (status === 'active' && expiryDate && new Date(expiryDate) < new Date()) {
-        if (user.subscription && user.subscription.status === 'active') {
+    if (normStatus === 'active' && expiryDate && new Date(expiryDate) < new Date()) {
+        if (user.subscription && (user.subscription.status || '').toLowerCase() === 'active') {
             user.subscription.plan = 'FREE';
             user.subscription.status = 'expired';
             await user.save().catch(() => {});
@@ -164,42 +408,119 @@ export const resolveActiveUserPlan = async (user) => {
         return 'FREE';
     }
 
-    if (status !== 'active') {
+    if (normStatus !== 'active') {
         return 'FREE';
     }
 
+    // Enforce Plan Workspace Isolation
+    const subPlanLower = (plan || '').toLowerCase();
+    let designatedWs = normalizeWorkspace(subWorkspace);
+
+    // Specific Combo Plan type checks
+    const isStudentAdvCombo = subPlanLower.includes('student_advocate') || subPlanLower.includes('student_adv');
+    const isAdvFirmCombo = subPlanLower.includes('advocate_firm') || subPlanLower.includes('adv_firm') || subPlanLower.includes('adv_law');
+    const isAllAccessPass = subPlanLower.includes('all_access') || subPlanLower.includes('eco_pass') || subPlanLower.includes('all_in_one');
+
+    // Infer designated workspace from plan ID if missing
+    if (!designatedWs || designatedWs === 'advocate') {
+        if (isAllAccessPass) designatedWs = 'all';
+        else if (isStudentAdvCombo) designatedWs = 'student_adv_combo';
+        else if (isAdvFirmCombo) designatedWs = 'adv_firm_combo';
+        else if (subPlanLower.startsWith('advocate_') || subPlanLower.startsWith('adv_')) designatedWs = 'advocate';
+        else if (subPlanLower.startsWith('student_')) designatedWs = 'student';
+        else if (subPlanLower.startsWith('firm_') || subPlanLower.startsWith('lawfirm_')) designatedWs = 'lawfirm';
+        else if (subPlanLower.startsWith('combo_')) designatedWs = 'all';
+    }
+
+    if (normTargetWs) {
+        if (isAllAccessPass || designatedWs === 'all') {
+            // All Access Eco Pass: Valid across ALL workspaces
+        } else if (isStudentAdvCombo || designatedWs === 'student_adv_combo') {
+            // Student + Advocate Combo: Valid ONLY in student and advocate workspaces
+            if (normTargetWs !== 'student' && normTargetWs !== 'advocate') {
+                return 'FREE';
+            }
+        } else if (isAdvFirmCombo || designatedWs === 'adv_firm_combo') {
+            // Advocate + Law Firm Combo: Valid ONLY in advocate and lawfirm workspaces
+            if (normTargetWs !== 'advocate' && normTargetWs !== 'lawfirm') {
+                return 'FREE';
+            }
+        } else if (designatedWs && designatedWs !== normTargetWs) {
+            // Single Workspace Mismatch! e.g., advocate_basic bought for advocate workspace cannot be used in student workspace
+            return 'FREE';
+        }
+    }
+
     const planStr = (plan || '').toUpperCase();
+
+    if (PLAN_LIMITS[planStr]) {
+        return planStr;
+    }
+
+    // Exact plan mappings per workspace tier
     if (planStr === 'ENTERPRISE' || planStr.includes('ENTERPRISE') || planStr.includes('FIRM') || planStr.includes('COMBO')) {
         return 'ENTERPRISE';
     }
-    if (planStr === 'PREMIUM' || planStr.includes('PREMIUM')) {
+    if (planStr.includes('ADVOCATE_PRO') || planStr.includes('PREMIUM') || planStr.includes('STUDENT_PRO')) {
         return 'PREMIUM';
     }
-    if (planStr === 'PRO' || planStr === 'PROFESSIONAL' || planStr.includes('PRO')) {
+    if (planStr.includes('ADVOCATE_BASIC') || planStr.includes('STUDENT_BASIC') || planStr.includes('PRO') || planStr.includes('PROFESSIONAL') || planStr.includes('BASIC')) {
         return 'PRO';
     }
-    if (planStr === 'BASIC' || planStr.includes('BASIC')) {
-        return 'BASIC';
-    }
-    return 'FREE';
+    return planStr || 'FREE';
 };
 
-/**
- * Normalizes features key names
- */
-const normalizeFeatureKey = (feature) => {
-    let key = (feature || '').replace(/-/g, '_');
-    if (key === 'argument_builder') key = 'court_prep';
-    if (key === 'legal_precedents') key = 'legal_precedent';
-    if (key === 'contract_analyzer') key = 'contract_review';
-    if (key === 'evidence_analyst') key = 'evidence_analysis';
-    return key;
+export const normalizeFeatureKey = (feature) => {
+    let key = (feature || '')
+        .replace(/([a-z])([A-Z])/g, '$1_$2')
+        .toLowerCase()
+        .replace(/-/g, '_')
+        .trim();
+
+    if (['notes', 'notesmaker', 'notes_maker', 'ai_notes', 'student_notes', 'student_note', 'legal_notes', 'study_notes'].includes(key)) {
+        return 'notes_maker';
+    }
+    if (['draft', 'drafts', 'drafting', 'draft_maker', 'legal_draft_maker', 'legal_notice_generator', 'legal_fir_generator', 'legal_affidavit_generator', 'draft_generator'].includes(key)) {
+        return 'draft_maker';
+    }
+    if (['court_prep', 'argument_builder', 'legal_argument_builder', 'court_preparation', 'prep'].includes(key)) {
+        return 'court_prep';
+    }
+    if (['legal_precedent', 'legal_precedents', 'precedents', 'case_law', 'legal_case_law_research', 'legal_research_assistant', 'research_assistant', 'case_research', 'knowledge_hub', 'knowledgehub', 'legal_knowledge_hub', 'knowledge_base'].includes(key)) {
+        return 'legal_precedent';
+    }
+    if (['evidence_analysis', 'evidence_analyst', 'evidence_checker', 'legal_evidence_checker', 'evidence'].includes(key)) {
+        return 'evidence_analysis';
+    }
+    if (['contract_review', 'contract_analyzer', 'legal_contract_analyzer', 'contract_analysis', 'contracts'].includes(key)) {
+        return 'contract_review';
+    }
+    if (['strategy_engine', 'legal_strategy_engine', 'case_strategy', 'strategy'].includes(key)) {
+        return 'strategy_engine';
+    }
+    if (['case_predictor', 'legal_case_predictor', 'prediction', 'predictor'].includes(key)) {
+        return 'case_predictor';
+    }
+    if (['mock_courtroom', 'mockcourtroom', 'mockcourtroomtrials', 'courtroom'].includes(key)) {
+        return 'mock_courtroom';
+    }
+    if (['client_connect', 'clientconnect', 'client_communication'].includes(key)) {
+        return 'client_connect';
+    }
+    if (['quiz_practice', 'quiz', 'quiz_mode'].includes(key)) {
+        return 'quiz_practice';
+    }
+    if (['cases', 'case', 'project', 'projects'].includes(key)) {
+        return 'cases';
+    }
+    // Fallback all chat/case assistant/unknown tools to 'ai_chat'
+    return 'ai_chat';
 };
 
 /**
  * Checks usage, processes automatic cycle resets, and returns permission stats
  */
-export const checkAccess = async (userId, feature) => {
+export const checkAccess = async (userId, feature, targetWorkspace) => {
     const user = await User.findById(userId);
     if (!user) {
         return { allowed: false, usedCount: 0, remainingCount: 0, plan: 'FREE', limit: 0 };
@@ -211,13 +532,14 @@ export const checkAccess = async (userId, feature) => {
     }
 
     const normalizedFeature = normalizeFeatureKey(feature);
-    const plan = await resolveActiveUserPlan(user);
+    const plan = await resolveActiveUserPlan(user, targetWorkspace);
     const allPlanLimits = await getDynamicPlanLimits();
     const limits = allPlanLimits[plan] || allPlanLimits.FREE;
 
     // Check cases count limit separately
     if (normalizedFeature === 'cases') {
-        const usedCount = await Project.countDocuments({ userId });
+        const userObjId = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : userId;
+        const usedCount = await Project.countDocuments({ $or: [{ userId }, { userId: userObjId }] });
         const limit = limits.cases;
         const remainingCount = limit === Infinity ? Infinity : Math.max(0, limit - usedCount);
         return {
@@ -229,7 +551,9 @@ export const checkAccess = async (userId, feature) => {
         };
     }
 
-    const limit = limits[normalizedFeature] !== undefined ? limits[normalizedFeature] : 0;
+    const limit = limits[normalizedFeature] !== undefined 
+        ? limits[normalizedFeature] 
+        : (limits['ai_chat'] !== undefined ? limits['ai_chat'] : 100);
     if (limit === Infinity) {
         // Get used count but don't limit
         const usage = await PlanUsage.findOne({ userId, feature: normalizedFeature });
@@ -273,6 +597,7 @@ export const checkAccess = async (userId, feature) => {
     } else {
         if (usage.plan !== plan) {
             usage.plan = plan;
+            usage.usedCount = 0; // Reset usage counter on plan upgrade/change
             await usage.save().catch(() => {});
         }
         if (resetRequired && plan !== 'FREE') {
@@ -294,6 +619,18 @@ export const checkAccess = async (userId, feature) => {
 };
 
 /**
+ * Resets all feature usage records for a specific user upon plan purchase or upgrade
+ */
+export const resetUserPlanUsage = async (userId) => {
+    try {
+        await PlanUsage.deleteMany({ userId });
+        console.log(`[PlanUsage] Reset usage records for user ${userId}`);
+    } catch (err) {
+        console.error('[PlanUsage] Error resetting usage:', err.message);
+    }
+};
+
+/**
  * Increments usage for a specific feature and syncs active plan & remaining count in MongoDB
  */
 export const incrementUsage = async (userId, feature) => {
@@ -305,10 +642,47 @@ export const incrementUsage = async (userId, feature) => {
 
     const allPlanLimits = await getDynamicPlanLimits();
     const limits = allPlanLimits[plan] || PLAN_LIMITS.FREE;
-    const limit = limits[normalizedFeature] !== undefined ? limits[normalizedFeature] : 0;
+    const limit = limits[normalizedFeature] !== undefined ? limits[normalizedFeature] : (limits['ai_chat'] !== undefined ? limits['ai_chat'] : 100);
+
+    // Consolidate legacy unnormalized records if normalizedFeature is ai_chat
+    if (normalizedFeature === 'ai_chat') {
+        try {
+            const legacyRecords = await PlanUsage.find({ 
+                userId, 
+                feature: { $in: ['legal_my_case', 'my_case', 'caseAssistant', 'case_assistant', 'general', 'normal_chat'] } 
+            });
+            if (legacyRecords.length > 0) {
+                let legacySum = 0;
+                legacyRecords.forEach(r => { legacySum += (r.usedCount || 0); });
+                await PlanUsage.deleteMany({ _id: { $in: legacyRecords.map(r => r._id) } });
+                await PlanUsage.findOneAndUpdate(
+                    { userId, feature: 'ai_chat' },
+                    { $inc: { usedCount: legacySum } },
+                    { upsert: true }
+                );
+            }
+        } catch (legErr) {
+            console.warn('[Legacy PlanUsage Consolidation Warning]', legErr.message);
+        }
+    }
 
     const existingUsage = await PlanUsage.findOne({ userId, feature: normalizedFeature });
-    const newUsedCount = (existingUsage ? existingUsage.usedCount : 0) + 1;
+    const currentUsed = existingUsage ? existingUsage.usedCount : 0;
+    
+    // Check limit enforcement (unless SUPER_ADMIN or limit === Infinity)
+    if (user && user.role !== 'SUPER_ADMIN' && limit !== Infinity && currentUsed >= limit) {
+        const remainingCount = 0;
+        return {
+            feature: normalizedFeature,
+            usedCount: currentUsed,
+            remainingCount,
+            limit,
+            plan,
+            exceeded: true
+        };
+    }
+
+    const newUsedCount = currentUsed + 1;
     const remainingCount = limit === Infinity ? -1 : Math.max(0, limit - newUsedCount);
 
     const updated = await PlanUsage.findOneAndUpdate(
@@ -323,6 +697,28 @@ export const incrementUsage = async (userId, feature) => {
         },
         { upsert: true, new: true }
     );
+
+    // Socket.IO Real-Time Cross-Platform Broadcast to User's Channel
+    try {
+        const { getIO } = await import('../utils/socket.js');
+        const io = getIO();
+        if (io) {
+            io.to(userId.toString()).emit('feature_usage_updated', {
+                userId: userId.toString(),
+                featureKey: normalizedFeature,
+                feature: normalizedFeature,
+                usedCount: updated.usedCount,
+                limit,
+                remainingCount,
+                remaining: remainingCount,
+                plan,
+                timestamp: Date.now()
+            });
+            console.log(`📡 [Socket] Emitted feature_usage_updated to user ${userId} -> ${normalizedFeature}: ${updated.usedCount}/${limit} (${remainingCount} left)`);
+        }
+    } catch (sockErr) {
+        console.warn('⚠️ [Socket Broadcast Warning]', sockErr.message);
+    }
 
     return {
         feature: normalizedFeature,
@@ -339,6 +735,169 @@ export const incrementUsage = async (userId, feature) => {
 export const seedDatabasePlans = async () => {
     try {
         const masterPlans = [
+            // Advocate Plans
+            {
+                planId: 'advocate_free',
+                planName: 'Advocate Free Tier',
+                priceMonthly: 0,
+                priceYearly: 0,
+                credits: 500,
+                badge: 'FREE TIER',
+                storageGB: 1,
+                limits: PLAN_LIMITS.ADVOCATE_FREE
+            },
+            {
+                planId: 'advocate_basic',
+                planName: 'Advocate Basic Plan',
+                priceMonthly: 499,
+                priceYearly: 4990,
+                credits: 2940,
+                badge: 'BASIC',
+                storageGB: 5,
+                limits: PLAN_LIMITS.ADVOCATE_BASIC
+            },
+            {
+                planId: 'advocate_pro',
+                planName: 'Advocate Pro Plan',
+                priceMonthly: 999,
+                priceYearly: 9990,
+                credits: 5876,
+                badge: 'PRO',
+                isPopular: true,
+                storageGB: 20,
+                limits: PLAN_LIMITS.ADVOCATE_PRO
+            },
+            {
+                planId: 'advocate_premium',
+                planName: 'Advocate Premium Plan',
+                priceMonthly: 2399,
+                priceYearly: 23990,
+                credits: 14700,
+                badge: 'PREMIUM',
+                storageGB: 100,
+                limits: PLAN_LIMITS.ADVOCATE_PREMIUM
+            },
+
+            // Student Plans
+            {
+                planId: 'student_free',
+                planName: 'Student Free Tier',
+                priceMonthly: 0,
+                priceYearly: 0,
+                credits: 500,
+                badge: 'FREE TIER',
+                storageGB: 0.5,
+                limits: PLAN_LIMITS.STUDENT_FREE
+            },
+            {
+                planId: 'student_basic',
+                planName: 'Student Basic Plan',
+                priceMonthly: 499,
+                priceYearly: 4990,
+                credits: 2940,
+                badge: 'BASIC',
+                storageGB: 5,
+                limits: PLAN_LIMITS.STUDENT_BASIC
+            },
+            {
+                planId: 'student_pro',
+                planName: 'Student Pro Plan',
+                priceMonthly: 999,
+                priceYearly: 9990,
+                credits: 5876,
+                badge: 'PRO',
+                isPopular: true,
+                storageGB: 20,
+                limits: PLAN_LIMITS.STUDENT_PRO
+            },
+            {
+                planId: 'student_premium',
+                planName: 'Student Premium Plan',
+                priceMonthly: 2399,
+                priceYearly: 23990,
+                credits: 14700,
+                badge: 'PREMIUM',
+                storageGB: 50,
+                limits: PLAN_LIMITS.STUDENT_PREMIUM
+            },
+
+            // Law Firm Plans
+            {
+                planId: 'firm_free',
+                planName: 'Law Firm Free Tier',
+                priceMonthly: 0,
+                priceYearly: 0,
+                credits: 500,
+                badge: 'FREE TIER',
+                storageGB: 0.5,
+                limits: PLAN_LIMITS.FIRM_FREE
+            },
+            {
+                planId: 'firm_basic',
+                planName: 'Law Firm Basic Plan',
+                priceMonthly: 1499,
+                priceYearly: 14990,
+                credits: 8800,
+                badge: 'FIRM BASIC',
+                storageGB: 25,
+                limits: PLAN_LIMITS.FIRM_BASIC
+            },
+            {
+                planId: 'firm_pro',
+                planName: 'Law Firm Pro Plan',
+                priceMonthly: 2999,
+                priceYearly: 29990,
+                credits: 17600,
+                badge: 'FIRM PRO',
+                isPopular: true,
+                storageGB: 100,
+                limits: PLAN_LIMITS.FIRM_PRO
+            },
+            {
+                planId: 'firm_premium',
+                planName: 'Law Firm Premium Plan',
+                priceMonthly: 4999,
+                priceYearly: 49990,
+                credits: 30000,
+                badge: 'FIRM PREMIUM',
+                storageGB: 500,
+                limits: PLAN_LIMITS.FIRM_PREMIUM
+            },
+
+            // Special Combo Access Plans
+            {
+                planId: 'combo_student_advocate',
+                planName: 'Student + Advocate Combo',
+                priceMonthly: 1199,
+                priceYearly: 11990,
+                credits: 7050,
+                badge: 'COMBO',
+                storageGB: 25,
+                limits: PLAN_LIMITS.COMBO_STUDENT_ADVOCATE
+            },
+            {
+                planId: 'combo_advocate_firm',
+                planName: 'Advocate + Law Firm Combo',
+                priceMonthly: 1499,
+                priceYearly: 14990,
+                credits: 8800,
+                badge: 'COMBO',
+                isPopular: true,
+                storageGB: 50,
+                limits: PLAN_LIMITS.COMBO_ADVOCATE_FIRM
+            },
+            {
+                planId: 'combo_all_access',
+                planName: 'Combo All-Access Pass',
+                priceMonthly: 2399,
+                priceYearly: 23990,
+                credits: 14700,
+                badge: 'ALL ACCESS',
+                storageGB: 100,
+                limits: PLAN_LIMITS.COMBO_ALL_ACCESS
+            },
+
+            // Master Generic Fallbacks
             {
                 planId: 'FREE',
                 planName: 'AI Legal™ Free',
@@ -354,17 +913,17 @@ export const seedDatabasePlans = async () => {
                 planName: 'AI Legal™ Basic',
                 priceMonthly: 499,
                 priceYearly: 4990,
-                credits: 1000,
+                credits: 2940,
                 badge: 'BASIC',
                 storageGB: 5,
-                limits: PLAN_LIMITS.PRO
+                limits: PLAN_LIMITS.BASIC
             },
             {
                 planId: 'PRO',
                 planName: 'AI Legal™ Professional',
                 priceMonthly: 999,
                 priceYearly: 9990,
-                credits: 3000,
+                credits: 5876,
                 badge: 'PROFESSIONAL',
                 isPopular: true,
                 storageGB: 20,
@@ -373,9 +932,9 @@ export const seedDatabasePlans = async () => {
             {
                 planId: 'PREMIUM',
                 planName: 'AI Legal™ Premium',
-                priceMonthly: 1999,
-                priceYearly: 19990,
-                credits: 8000,
+                priceMonthly: 2399,
+                priceYearly: 23990,
+                credits: 14700,
                 badge: 'PREMIUM',
                 storageGB: 100,
                 limits: PLAN_LIMITS.PREMIUM
@@ -385,7 +944,7 @@ export const seedDatabasePlans = async () => {
                 planName: 'Firm Premium / Enterprise',
                 priceMonthly: 4999,
                 priceYearly: 49990,
-                credits: 25000,
+                credits: 30000,
                 badge: 'ENTERPRISE',
                 storageGB: 500,
                 limits: PLAN_LIMITS.ENTERPRISE
@@ -410,6 +969,21 @@ seedDatabasePlans();
 
 // Mappings of storage limits per subscription plan (in GB)
 export const STORAGE_LIMITS = {
+    ADVOCATE_FREE: 1,
+    ADVOCATE_BASIC: 5,
+    ADVOCATE_PRO: 20,
+    ADVOCATE_PREMIUM: 100,
+    STUDENT_FREE: 0.5,
+    STUDENT_BASIC: 5,
+    STUDENT_PRO: 20,
+    STUDENT_PREMIUM: 50,
+    FIRM_FREE: 0.5,
+    FIRM_BASIC: 25,
+    FIRM_PRO: 100,
+    FIRM_PREMIUM: 500,
+    COMBO_STUDENT_ADVOCATE: 25,
+    COMBO_ADVOCATE_FIRM: 50,
+    COMBO_ALL_ACCESS: 100,
     FREE: 1,
     BASIC: 5,
     PRO: 20,
@@ -421,7 +995,7 @@ export const STORAGE_LIMITS = {
 /**
  * Calculates current storage used by user across all projects, documents & vault files (in Bytes and GB)
  */
-export const getUserStorageUsage = async (userId) => {
+export const getUserStorageUsage = async (userId, targetWorkspace) => {
     try {
         const projects = await Project.find({ userId }).select('documents files evidenceVault attachments storageUsedBytes');
         let totalBytes = 0;
@@ -447,7 +1021,7 @@ export const getUserStorageUsage = async (userId) => {
         });
 
         const user = await User.findById(userId);
-        const plan = user ? await resolveActiveUserPlan(user) : 'FREE';
+        const plan = user ? await resolveActiveUserPlan(user, targetWorkspace) : 'FREE';
         const limitGB = STORAGE_LIMITS[plan] !== undefined ? STORAGE_LIMITS[plan] : STORAGE_LIMITS.FREE;
 
         const usedMB = Number((totalBytes / (1024 * 1024)).toFixed(2));
@@ -473,7 +1047,7 @@ export const getUserStorageUsage = async (userId) => {
 /**
  * Validates if user has enough storage left before uploading incoming file
  */
-export const checkStorageAccess = async (userId, incomingFileSizeBytes = 0) => {
+export const checkStorageAccess = async (userId, incomingFileSizeBytes = 0, targetWorkspace) => {
     const user = await User.findById(userId);
     if (!user) {
         return { allowed: false, code: 'UNAUTHORIZED', message: 'User not found.' };
@@ -482,7 +1056,7 @@ export const checkStorageAccess = async (userId, incomingFileSizeBytes = 0) => {
         return { allowed: true, usedGB: 0, limitGB: Infinity, remainingGB: Infinity };
     }
 
-    const storageStats = await getUserStorageUsage(userId);
+    const storageStats = await getUserStorageUsage(userId, targetWorkspace);
     const limitBytes = storageStats.limitGB === Infinity ? Infinity : storageStats.limitGB * 1024 * 1024 * 1024;
     const projectedTotalBytes = storageStats.usedBytes + incomingFileSizeBytes;
 
@@ -505,7 +1079,7 @@ export const checkStorageAccess = async (userId, incomingFileSizeBytes = 0) => {
 /**
  * Validates if user can create a new Matter / Case folder
  */
-export const checkCaseCreationAccess = async (userId) => {
+export const checkCaseCreationAccess = async (userId, targetWorkspace) => {
     const user = await User.findById(userId);
     if (!user) {
         return { allowed: false, code: 'UNAUTHORIZED', message: 'User not found.' };
@@ -514,11 +1088,12 @@ export const checkCaseCreationAccess = async (userId) => {
         return { allowed: true, used: 0, limit: Infinity };
     }
 
-    const plan = await resolveActiveUserPlan(user);
+    const plan = await resolveActiveUserPlan(user, targetWorkspace);
     const allPlanLimits = await getDynamicPlanLimits();
     const limits = allPlanLimits[plan] || allPlanLimits.FREE;
     const limit = limits.cases;
-    const usedCount = await Project.countDocuments({ userId });
+    const userObjId = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : userId;
+    const usedCount = await Project.countDocuments({ $or: [{ userId }, { userId: userObjId }] });
 
     if (limit !== Infinity && usedCount >= limit) {
         return {
@@ -541,17 +1116,24 @@ export const checkCaseCreationAccess = async (userId) => {
 /**
  * Returns comprehensive usage details for a user
  */
-export const getUsageStatus = async (userId) => {
+export const getUsageStatus = async (userId, targetWorkspace) => {
     const user = await User.findById(userId);
     if (!user) {
         return { plan: 'FREE', badge: 'FREE', cases: { used: 0, limit: 3, remaining: 3 }, features: {} };
     }
 
-    // Auto-heal/verify role for aditi@uwo24.com
-    if (user.email && user.email.toLowerCase().trim() === 'aditi@uwo24.com' && user.role !== 'SUPER_ADMIN') {
-        user.role = 'SUPER_ADMIN';
+    // Auto-heal/verify role strictly for aditi@uwo24.com and aditilakhera0@gmail.com
+    const emailLower = (user.email || '').toLowerCase().trim();
+    if (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
+        if (user.role !== 'SUPER_ADMIN') {
+            user.role = 'SUPER_ADMIN';
+            await user.save();
+            console.log(`[Self-Healing] Upgraded ${user.email} to SUPER_ADMIN in getUsageStatus`);
+        }
+    } else if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
+        user.role = 'user';
         await user.save();
-        console.log(`[Self-Healing] Upgraded ${user.email} to SUPER_ADMIN in getUsageStatus`);
+        console.log(`[Self-Healing] Reset non-aditi account ${user.email} to user role`);
     }
 
     const storageStats = await getUserStorageUsage(userId);
@@ -581,7 +1163,7 @@ export const getUsageStatus = async (userId) => {
         };
     }
 
-    const plan = await resolveActiveUserPlan(user);
+    const plan = await resolveActiveUserPlan(user, targetWorkspace);
     const allPlanLimits = await getDynamicPlanLimits();
     const limits = allPlanLimits[plan] || allPlanLimits.FREE;
 
@@ -594,7 +1176,8 @@ export const getUsageStatus = async (userId) => {
     const usageRecords = await PlanUsage.find({ userId });
     const usageMap = {};
     usageRecords.forEach(r => {
-        usageMap[r.feature] = r.usedCount;
+        const normKey = normalizeFeatureKey(r.feature);
+        usageMap[normKey] = (usageMap[normKey] || 0) + (r.usedCount || 0);
     });
 
     const features = {};

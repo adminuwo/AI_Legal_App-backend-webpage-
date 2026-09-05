@@ -22,7 +22,12 @@ export const validateEnvironment = () => {
   }
 
   if (missingVars.length > 0) {
-    console.warn(`⚠️ Warning: Missing environment variables: ${missingVars.join(', ')}`);
+    if (appConfig.isProduction) {
+      console.error(`🚨 FATAL: Missing required environment variables in production: ${missingVars.join(', ')}`);
+      process.exit(1);
+    } else {
+      console.warn(`⚠️ Warning: Missing environment variables: ${missingVars.join(', ')}`);
+    }
   } else {
     console.log('✅ Environment configuration validated cleanly.');
   }

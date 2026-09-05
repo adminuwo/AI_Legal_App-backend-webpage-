@@ -438,6 +438,11 @@ DO NOT include any prefix. Keep it under 80 words for maximum impact.`,
                 existing.value = config.value;
                 existing.lastUpdated = Date.now();
                 await existing.save();
+            } else if (config.key === 'AISA_CONVERSATIONAL_RULES') {
+                logger.info(`[ConfigService] Synchronizing AISA_CONVERSATIONAL_RULES to legal domain lock.`);
+                existing.value = config.value;
+                existing.lastUpdated = Date.now();
+                await existing.save();
             } else if (config.key === 'FEATURE_COSTS') {
                 // FORCE UPDATE: Ensure feature costs perfectly reflect the latest 50% profit margin calculations
                 logger.info(`[ConfigService] Synchronizing FEATURE_COSTS to latest default algorithm.`);

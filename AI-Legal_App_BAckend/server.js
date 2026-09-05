@@ -1,4 +1,5 @@
 import express, { urlencoded } from "express";
+import cors from "cors";
 import 'dotenv/config';
 import fs from 'fs';
 
@@ -63,6 +64,8 @@ import bugReportRoutes from './routes/bugReportRoutes.js';
 import courtOrderRoutes from './routes/courtOrderRoutes.js';
 import workspaceRoutes from './routes/workspaceRoutes.js';
 import studentNoteRoutes from './routes/studentNoteRoutes.js';
+import appUpdateRoutes from './routes/appUpdateRoutes.js';
+import enterpriseRoutes from './routes/enterpriseRoutes.js';
 
 import { startPlanExpiryService } from './services/planExpiryService.js';
 import { langMiddleware } from './middleware/langContext.js';
@@ -126,21 +129,94 @@ connectDB().then(async () => {
 
 // Middleware
 
-// Permissive CORS Middleware
+// HTTP Security Headers & CORS Middleware (BSA-006, MSA-012, P0-04)
+const STATIC_CORS_ORIGINS = [
+  'https://uwo24.com',
+  'https://www.uwo24.com',
+  'https://aisa.uwo24.com',
+  'https://ailegal.aisa24.com',
+  'https://www.ailegal.aisa24.com',
+  'https://api.ailegal.com',
+  'http://localhost:8080',
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:19006',
+  'http://localhost:8081',
+  'http://127.0.0.1:8080',
+  'http://127.0.0.1:3000'
+];
+
+const ALLOWED_DOMAIN_PATTERNS = [
+  /\.uwo24\.com$/,
+  /\.aisa24\.com$/,
+  /\.run\.app$/,
+  /\.vercel\.app$/,
+  /\.netlify\.app$/,
+  /\.pages\.dev$/
+];
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return false;
+  
+  // 1. Check static whitelist
+  if (STATIC_CORS_ORIGINS.includes(origin)) return true;
+
+  // 2. Check process.env.ALLOWED_CORS_ORIGINS or CLIENT_URL
+  const envOrigins = (process.env.ALLOWED_CORS_ORIGINS || process.env.CLIENT_URL || '')
+    .split(',')
+    .map(o => o.trim())
+    .filter(Boolean);
+  if (envOrigins.includes(origin)) return true;
+
+  // 3. Check domain patterns
+  try {
+    const url = new URL(origin);
+    const hostname = url.hostname;
+    if (ALLOWED_DOMAIN_PATTERNS.some(pattern => pattern.test(hostname))) {
+      return true;
+    }
+  } catch (e) {
+    // invalid URL format
+  }
+
+  // 4. In development allow any origin
+  if (process.env.NODE_ENV !== 'production') return true;
+
+  return false;
+};
+
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
+  const origin = req.headers.origin || req.headers.Origin;
   if (origin) {
     res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
   }
+  res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, content-type, Authorization, authorization, Accept, accept, X-Requested-With, x-requested-with, x-device-fingerprint, Origin, origin, X-App-Language, x-app-language, X-App-Locale, x-app-locale, x-active-workspace-id, *');
+  const requestHeaders = req.headers['access-control-request-headers'];
+  if (requestHeaders) {
+    res.setHeader('Access-Control-Allow-Headers', requestHeaders);
+  } else {
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, content-type, Authorization, authorization, Accept, accept, X-Requested-With, x-requested-with, x-device-fingerprint, X-Device-Fingerprint, x-device-id, X-Device-Id, x-device-name, X-Device-Name, x-device-platform, X-Device-Platform, x-app-version, X-App-Version, Origin, origin, X-App-Language, x-app-language, X-App-Locale, x-app-locale, x-active-workspace-id, X-Active-Workspace-Id, x-user-role, X-User-Role, x-workspace-type, X-Workspace-Type, x-workspace-id, X-Workspace-Id, X-Client-Version, x-client-version, X-Platform, *');
+  }
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
   next();
 });
+
+app.use(cors({
+  origin: function (origin, callback) {
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: '*',
+  optionsSuccessStatus: 200
+}));
 app.use(cookieParser())
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100mb" }));
@@ -159,8 +235,14 @@ app.use((req, res, next) => {
 // app.use(fileUpload()); // Removed to avoid conflict with Multer (New AIBASE)
 
 
-// Serve static frontend files from 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static frontend files from 'public' directory with no-cache on HTML
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }
+}));
 
 // Serve Standalone AI Legal Pricing Subscription Web Portal
 app.get(['/legal-pricing', '/subscription-checkout'], (req, res) => {
@@ -239,6 +321,7 @@ app.use('/api/connectors', connectorsRoutes);
 app.use('/api/pricing', pricingRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/enterprise', enterpriseRoutes);
 
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/media', mediaProxyRoutes);
@@ -254,10 +337,9 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/admin/settings', adminSettingsRoutes);
 app.use('/api/admin/feature-requests', featureRequestRoutes);
 app.use('/api/admin/bug-reports', bugReportRoutes);
-app.use('/api/admin/features', featureRequestRoutes);
-app.use('/api/admin/bugs', bugReportRoutes);
 
 // Public / User access submissions
+app.use('/api/app-update', appUpdateRoutes);
 app.use('/api/feature-requests', featureRequestRoutes);
 app.use('/api/bug-reports', bugReportRoutes);
 
@@ -290,6 +372,7 @@ app.use('/api/aibase/knowledge', verifyToken, creditMiddleware, knowledgeRoute);
 // SPA Catch-all to serve index.html for unknown non-API routes
 app.use((req, res, next) => {
   if (req.method === 'GET' && !req.path.startsWith('/api')) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     return res.sendFile(path.join(__dirname, 'public', 'index.html'));
   }
   next();
@@ -305,10 +388,35 @@ app.use((req, res) => {
   });
 });
 
-// Global Error Handler
-app.use((err, req, res, next) => {
+// Global Error Handler & Crash Logger
+app.use(async (err, req, res, next) => {
   console.error("[SERVER ERROR]", err.stack);
-  res.status(500).json({ error: 'Internal Server Error' });
+  try {
+    const CrashLog = (await import('./models/CrashLog.js')).default;
+    await CrashLog.create({
+      errorName: err.name || 'ServerError',
+      message: err.message || 'Internal Server Error',
+      stack: err.stack || '',
+      source: 'backend',
+      platform: 'NodeServer',
+      userId: req.user ? (req.user.id || req.user._id) : null,
+      userEmail: req.user ? req.user.email : '',
+      route: `${req.method} ${req.originalUrl}`,
+      severity: 'CRITICAL',
+      status: 'UNRESOLVED',
+      metadata: { query: req.query }
+    });
+  } catch (logErr) {
+    console.error('[CrashLog Save Error]', logErr.message);
+  }
+  if (!res.headersSent) {
+    const isProd = process.env.NODE_ENV === 'production';
+    res.status(500).json({
+      success: false,
+      error: 'Internal Server Error',
+      message: isProd ? 'An unexpected server error occurred. Please try again.' : err.message
+    });
+  }
 });
 
 // Start listening

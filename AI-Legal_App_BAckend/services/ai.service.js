@@ -18,7 +18,7 @@ import * as configService from './configService.js';
 import { detectLanguage } from '../utils/languageDetector.js';
 import { resolveResponseLanguage } from '../utils/languageResolver.js';
 import { classifyIntent } from './intent/intentClassifier.js';
-import { getLegalPrompt, LEGAL_DISCLAIMER } from '../Tools/AI_Legal/legalPrompts.js';
+import { getLegalPrompt, LEGAL_DISCLAIMER, GLOBAL_RULES } from '../Tools/AI_Legal/legalPrompts.js';
 import { safeParseLLMJson } from '../utils/jsonUtils.js';
 import { performGlobalDatabaseSearch } from "../utils/aiMemorySystem.js";
 
@@ -214,17 +214,19 @@ To perform a conversion, you MUST respond with a JSON action strictly in this fo
   "target_format": "pdf"
 }
 Maintain any text response outside the JSON block.`;
-        } else if (mode === 'LEGAL_TOOLKIT') {
+        } else if (mode === 'LEGAL_TOOLKIT' || mode === 'NORMAL_CHAT' || mode === 'CHAT' || !mode) {
             toolRestrictions = `\n\n### MODE: LEGAL SYSTEM ACTIVE — STRICT DOMAIN LOCK ⚖️
 - You are a Senior Legal Assistant specialist EXCLUSIVELY for legal matters.
-- 🚨 ABSOLUTE RESTRICTION: You MUST ONLY respond to queries related to: law, legal acts, IPC/CrPC/CPC sections, court procedures, legal documents, contracts, FIR, rights, legal strategy, affidavits, legal notices, evidence, case analysis, or any legal guidance.
+- 🚨 ABSOLUTE RESTRICTION: You MUST ONLY respond to queries related to: law, legal acts, IPC/CrPC/CPC/BNS/BNSS/BSA sections, court procedures, legal documents, contracts, FIR, rights, legal strategy, affidavits, legal notices, evidence, case analysis, or any legal guidance.
 - 🌐 MULTILINGUAL & LANGUAGE COMMAND MANDATE:
   - If the user requests a language or language switch (e.g. "Marathi me smjhao", "Explain in Sanskrit", "Explain in Tamil", "Translate into Gujarati", "कन्नडदल्लि हेळि", "अब से हिंदी में जवाब दो"), you MUST IMMEDIATELY accept and fulfill the request in ${resolvedLang.language}.
   - DO NOT reject or output refusal messages when the user specifies a language preference.
   - If prior conversation history exists, re-explain or summarize the last legal topic in ${resolvedLang.language}.
   - If no prior context exists, greet the user in ${resolvedLang.language} as AI Legal™ Assistant and invite them to ask their legal question.
   - NEVER output "I can only assist in English", "I only support English and Hindi", "I cannot explain in ${resolvedLang.language}", or similar restrictive messages.
-- 🚫 STRICTLY REFUSE any non-legal query that is completely unrelated to law (e.g., entertainment, science, weather, math, recipes, sports, jokes, etc.) by politely refusing in ${resolvedLang.language}.
+- 🚫 STRICT NON-LEGAL DOMAIN REFUSAL: If the user asks ANY question or topic that is NOT related to law or legal matters (e.g. recipes, cooking, entertainment, sports, movies, coding/programming, algorithms, math, weather, non-legal trivia, science, etc.), you MUST IMMEDIATELY politely decline to answer:
+  "I am AI Legal™ Assistant, specialized strictly in legal queries, Indian laws, court procedures, and legal guidance. Your question appears to be outside the legal domain. Please ask any legal-related question." (Translate appropriately into user's language if asked in Hindi/other languages).
+- 📊 LEGAL COMPARISON & DIFFERENCE MANDATE: Whenever the user asks for a difference, distinction, or comparison between legal terms, concepts, acts, sections, or offences (e.g. "What is the difference between crime and wrong", "IPC vs BNS", "Civil vs Criminal", "Lease vs License"), you MUST present the comparison using a clean, well-structured Markdown Table with proper column headers (| Aspect / Basis | Concept A | Concept B |) and alignment separator (|---|---|---|). 🚨 STRICT RULE: Do NOT use asterisks '*' or double asterisks '**' (such as writing "**Definition**") inside table headers or cell text. Write raw text like "Definition" instead of "**Definition**". Keep all text inside table cells clean and plain text. Provide detailed comparative rows (Definition, Applicable Law, Nature of Injury, Remedy, Burden of Proof, Examples).
 - DO NOT include any legal disclaimers, warnings, or professional advice notices in the response. The system appends these automatically.`;
 
             if (caseContext) {
@@ -354,7 +356,7 @@ Maintain any text response outside the JSON block.`;
         const lastAssistantMessageObj = [...(combinedHistory || [])].reverse().find(m => (m.role === 'model' || m.role === 'assistant') && (m.content || m.text));
         const lastAssistantContent = lastAssistantMessageObj ? (lastAssistantMessageObj.content || lastAssistantMessageObj.text || '') : null;
 
-        const isTransformationCommand = /\b(explain in|translate|translate into|in hindi|in marathi|in sanskrit|in tamil|in telugu|in kannada|in gujarati|in bengali|in punjabi|in urdu|hindi me|marathi me|sanskrit me|tamil me|kannada me|telugu me|gujarati me|make it shorter|shorter|make it formal|make it simple|simplify|expand|summarize|add more points|add points|add examples|give citations|continue|convert to table|convert into table|convert into points|remove point|advocate-friendly|re-explain|rephrase)\b/i.test(message) || (message.trim().split(/\s+/).length <= 4 && (combinedHistory.length > 0 || !!lastAssistantContent));
+        const isTransformationCommand = /\b(explain in|translate|translate into|in hindi|in marathi|in sanskrit|in tamil|in telugu|in kannada|in gujarati|in bengali|in punjabi|in urdu|hindi me|marathi me|sanskrit me|tamil me|kannada me|telugu me|gujarati me|make it shorter|shorter|make it formal|make it simple|simplify|expand|summarize|add more points|add points|add examples|give citations|continue|convert to table|convert into table|convert into points|remove point|advocate-friendly|re-explain|rephrase|and \d+|what about|give grounds|grounds|punishment|meaning|explain this|this|that|it|same|above|previous one|short krdo|formal krdo|simple me|detail me|bnao|krdo|kaise|kya|kyun)\b/i.test(message) || (message.trim().split(/\s+/).length <= 5 && (combinedHistory.length > 0 || !!lastAssistantContent));
 
         let followUpContext = "";
         if (isTransformationCommand && lastAssistantContent) {
@@ -379,22 +381,34 @@ STRICT MANDATE FOR THIS TURN:
 
         const memorySystemRules = `
 ========================
-🧠 PERSISTENT CONVERSATION MEMORY & CONTEXT RULES (MANDATORY)
+🧠 PERSISTENT CONVERSATION MEMORY & HUMAN-LANGUAGE UNDERSTANDING RULES (MANDATORY)
 ========================
-1. ABSOLUTE PROHIBITION ON MEMORY REFUSAL MESSAGES:
+1. HUMAN-LANGUAGE & HINGLISH UNDERSTANDING:
+   - Seamlessly understand natural, informal human typing across Hinglish, Roman Hindi (e.g., "mujhe bail application bnana h", "thoda simple language me", "grounds strong kro", "ispe precedent btao", "case ka summary btao", "defence ka kya h"), Devanagari Hindi, and casual English.
+   - Respond naturally in the user's preferred language/script without forcing the user to retype in formal English.
+   - TYPO & ABBREVIATION TOLERANCE: Interpret common typos and shorthand (e.g., "alw" -> law, "argumnt" -> argument, "crpc" -> CrPC, "bns" -> BNS, "ipc" -> IPC, "punishmnt" -> punishment, "sec" -> section, "docmnt" -> document, "oppo party" -> opposing party, "judgmnt" -> judgment, "defendent" -> defendant, "petitoner" -> petitioner).
+   - NEVER output strict refusal/interrogation messages like "'alw' is not a legal term" or "Please provide 5 details". Infer intent and context naturally.
+
+2. MULTI-TURN CONVERSATION CONTINUITY & PRONOUN RESOLUTION:
+   - Treat every prompt as part of an active conversation thread. Words like "this", "that", "it", "same", "above", "previous one", "the second point", "and 406?", "make it shorter", "now give example", "and punishment?" MUST be bound to the prior user turns and assistant responses.
+   - If the user asks "and 406?" after discussing Section 420, understand that 406 refers to Section 406 of the same Penal Code (IPC/BNS). DO NOT ask "406 of what?".
+   - Preserve all user-provided facts (Client name, court, opponent, facts, objectives) throughout the entire conversation. Never ask the user to re-provide details already stated in this chat.
+
+3. INTENT-FIRST FULFILLMENT (NO ROBOTIC QUESTIONNAIRES):
+   - Immediately fulfill user requests using available conversation context.
+   - If optional details are missing for a draft or document, generate the best possible draft and insert clear placeholders (e.g., "[Insert Hearing Date]") rather than delaying with a long questionnaire.
+
+4. ABSOLUTE PROHIBITION ON MEMORY REFUSAL MESSAGES:
    - NEVER output phrases like "I don't have the capability to recall past conversations", "I cannot remember previous conversations", "I don't have access to previous conversations", "I cannot recall", "I don't have memory", or "As an AI, I don't remember past chats".
-   - ALWAYS inspect the provided [USER PERMANENT CONVERSATION & LEGAL MEMORY ARCHIVE] in your context.
-   - If the user asks what was discussed previously (e.g. "Tumhe yaad hai humne pehle kis topic pr baat kiya tha", "What were we discussing?", "Do you remember?"), summarize the topics/titles from [USER PREVIOUS CHAT SESSIONS ARCHIVE] directly in ${userLanguage}.
-   - If NO memory records exist for a brand new user, respond politely in ${userLanguage} (e.g., "I couldn't find any previous discussion records in our database. How can I assist you with your legal queries today?").
-2. NEVER LOSE CONTEXT: Never treat user messages as isolated requests. Always maintain continuity with prior user messages, prior assistant answers, uploaded documents, generated drafts, and selected matters.
-3. IMPLICIT FOLLOW-UPS: Short phrases ("Explain this", "Translate it", "Make it shorter", "Continue", "Add more points", "Explain in Marathi", "Explain in Hindi") ALWAYS refer to the immediately preceding response/draft unless explicitly stated otherwise.
-4. LANGUAGE LOCK: Once a language is specified or requested (e.g., "Explain in Hindi", "Continue in Marathi", "अब से हिंदी में जवाब दो"), lock and keep that response language for all subsequent responses until changed.
-5. DRAFT PRESERVATION: Generated legal drafts (Notices, Agreements, Affidavits, FIRs) remain active and editable. Instructions like "make it shorter", "make formal", "translate to Marathi" edit the existing draft rather than starting an unrelated new topic.
+   - If the user asks what was discussed previously, summarize the past discussion context directly in the active language.
+
+5. DRAFT PRESERVATION & TRANSFORMATION:
+   - Generated drafts (Notices, Agreements, Affidavits, FIRs) remain active and editable. Instructions like "make it shorter", "make formal", "translate to Hindi", "add deadline" edit the existing draft rather than starting an unrelated topic.
 6. MEMORY RESET: Only reset memory when the user explicitly requests: "Start a new topic", "Forget previous conversation", "Clear context", or "Reset".
 `;
 
         // Construct dynamic instruction with unified multilingual language context and persistent memory rules appended
-        const dynamicSystemInstruction = memorySystemRules + followUpContext + ((toolName === 'legal_contract_analyzer'
+        const dynamicSystemInstruction = GLOBAL_RULES + "\n\n" + memorySystemRules + followUpContext + ((toolName === 'legal_contract_analyzer'
             ? (systemInstruction || "") + `\n\n${getLegalPrompt('legal_contract_analyzer')}`
             : (systemInstruction || "") + personaContext + toolRestrictions) + summaryContext + crossSearchContext) + `\n\n${langContext}`;
 
@@ -527,7 +541,7 @@ STRICT MANDATE FOR THIS TURN:
                 logger.info(`[RAG-Pipeline] Generating final answer using RAG context...`);
                 const ragResponse = await vertexService.askVertex(promptWithMemory, labeledRagContext, {
                     userName,
-                    systemInstruction: `${ragInstructionWithLink}\n\n${langSwitchRule}\n\n### LANGUAGE RULE: ${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`,
+                    systemInstruction: `${ragInstructionWithLink}\n\n### LANGUAGE RULE: ${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`,
                     mode: 'RAG',
                     isLegalTool: isLegalMode,
                     toolName,
@@ -562,7 +576,7 @@ STRICT MANDATE FOR THIS TURN:
 
                     const finalSystemInstruction = toolName === 'legal_contract_analyzer'
                         ? dynamicSystemInstruction
-                        : `${dynamicSystemInstruction}\n\n${langSwitchRule}\n\n### LANGUAGE RULE: ${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`;
+                        : `${dynamicSystemInstruction}\n\n### LANGUAGE RULE: ${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`;
                     aiResponse = await openaiService.askOpenAI(promptWithMemory, null, {
                         systemInstruction: finalSystemInstruction,
                         userName,
@@ -575,7 +589,7 @@ STRICT MANDATE FOR THIS TURN:
 
                     const finalSystemInstruction = toolName === 'legal_contract_analyzer'
                         ? dynamicSystemInstruction
-                        : `${dynamicSystemInstruction}\n\n${langSwitchRule}\n\n### LANGUAGE RULE: ${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`;
+                        : `${dynamicSystemInstruction}\n\n### LANGUAGE RULE: ${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`;
                     
                     aiResponse = await groqService.askGroq(promptWithMemory, null, {
                         systemInstruction: finalSystemInstruction,
@@ -619,7 +633,7 @@ STRICT MANDATE FOR THIS TURN:
                             aiResponse = await askOpenAI(promptWithMemory, null, {
                                 userName,
                                 systemInstruction: finalSystemInstruction,
-                                language: targetLanguage,
+                                language: userLanguage,
                                 userId
                             });
                         } else {

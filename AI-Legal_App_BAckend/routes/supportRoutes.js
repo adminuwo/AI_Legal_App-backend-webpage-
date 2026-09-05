@@ -5,12 +5,39 @@ import { sendAdminNotification } from '../services/emailService.js';
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+import { verifyToken } from '../middleware/authorization.js';
+
+router.post('/', verifyToken, async (req, res) => {
     try {
         const {
             name,
             email,
             issueType,
+            message,
+            title,
+            priority,
+            category,
+            device,
+            appVersion,
+            steps,
+            whyNeeded,
+            whoBenefit,
+            attachments,
+            diagnosticLogs
+        } = req.body;
+
+        const resolvedEmail = req.user?.email || email;
+        const resolvedName = (req.user?.name || req.user?.fullName) || name || "AISA User";
+        const userId = req.user?.id || req.user?._id || null;
+
+        if (!resolvedEmail || !message) {
+            return res.status(400).json({ error: 'Missing required fields (email or message)' });
+        }
+
+        const newTicket = new SupportTicket({
+            name: resolvedName,
+            email: resolvedEmail,
+            issueType: issueType || 'Technical Support',
             message,
             userId,
             title,
@@ -21,32 +48,9 @@ router.post('/', async (req, res) => {
             steps,
             whyNeeded,
             whoBenefit,
-            attachments,
-            diagnosticLogs,
-            status
-        } = req.body;
-
-        if (!email || !message) {
-            return res.status(400).json({ error: 'Missing required fields (email or message)' });
-        }
-
-        const newTicket = new SupportTicket({
-            name: name || "AISA User",
-            email,
-            issueType: issueType || 'Technical Support',
-            message,
-            userId: userId || null,
-            title,
-            priority,
-            category,
-            device,
-            appVersion,
-            steps,
-            whyNeeded,
-            whoBenefit,
             attachments: attachments || [],
             diagnosticLogs: diagnosticLogs || null,
-            status: status || 'pending'
+            status: 'pending'
         });
 
         await newTicket.save();

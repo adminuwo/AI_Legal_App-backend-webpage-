@@ -1,12 +1,12 @@
 /**
- * Returns true if the given user object has the SUPER_ADMIN role.
- * Use this instead of hardcoded email checks throughout the web app.
- * Future Super Admins automatically receive access by having role = 'SUPER_ADMIN'.
+ * Returns true ONLY if the given user object belongs to the authorized Super Admin (aditi@uwo24.com).
  *
  * @param {object|null} user - The user object from getUserData() or JWT payload
  * @returns {boolean}
  */
 export const isSuperAdmin = (user) => {
-    if (!user) return false;
-    return user.role === 'SUPER_ADMIN';
+    if (!user || !user.email) return false;
+    const emailLower = (user.email || '').toLowerCase().trim();
+    return emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com' || user.role === 'SUPER_ADMIN';
 };
+

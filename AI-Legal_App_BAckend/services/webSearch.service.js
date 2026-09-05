@@ -80,7 +80,7 @@ export const performSearch = async (query, userLanguage = 'English') => {
         const apiKey = process.env.OPENAI_API_KEY;
         if (apiKey) {
             const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-                model: 'gpt-4o-search-preview',
+                model: 'gpt-4o',
                 messages: [{ role: 'user', content: query }]
             }, { headers: { 'Authorization': `Bearer ${apiKey}` }, timeout: 45000 });
 

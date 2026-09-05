@@ -65,8 +65,11 @@ const idbGetAllKeys = () => new Promise((resolve, reject) => {
 // Helper for authorized/anonymous requests
 const getAuthHeaders = () => {
   const token = getUserData()?.token || localStorage.getItem("token");
+  const activeRole = localStorage.getItem("user_selected_role") || "advocate";
   const headers = {
-    'X-Device-Fingerprint': getDeviceFingerprint()
+    'X-Device-Fingerprint': getDeviceFingerprint(),
+    'X-User-Role': activeRole,
+    'X-Workspace-Type': activeRole
   };
   if (token && token !== 'undefined' && token !== 'null') {
     headers.Authorization = `Bearer ${token}`;
@@ -78,12 +81,25 @@ const getAuthHeaders = () => {
 
 export const chatStorageService = {
 
-  async getSessions(projectId, queryText = "") {
+  async getSessions(scope = 'global', queryText = "", caseId = null) {
     try {
       const params = {};
-      if (projectId && projectId !== 'default' && projectId !== 'all') params.projectId = projectId;
-      if (projectId === 'all') params.all = 'true';
+      if (scope === 'global') {
+        params.scope = 'global';
+      } else if (scope === 'student_tutor') {
+        params.scope = 'student_tutor';
+      } else if (scope === 'case' || caseId) {
+        params.scope = 'case';
+        const targetPid = caseId || (scope !== 'case' && scope !== 'all' && scope !== 'global' ? scope : null);
+        if (targetPid) params.projectId = targetPid;
+      } else if (scope === 'all') {
+        params.all = 'true';
+      } else if (scope) {
+        params.scope = 'case';
+        params.projectId = scope;
+      }
       if (queryText) params.q = queryText;
+
       const response = await axios.get(`${API_BASE_URL}/chat`, {
         params,
         headers: getAuthHeaders(),
@@ -93,11 +109,10 @@ export const chatStorageService = {
 
       // Requirement: Temporarily combine guestChats + userChats in UI to avoid flicker
       const guestChatsRaw = localStorage.getItem("guestChats");
-      if (guestChatsRaw) {
+      if (guestChatsRaw && scope === 'global') {
         try {
           const guestChats = JSON.parse(guestChatsRaw);
           guestChats.forEach(gc => {
-            // Only add if not already in dbSessions (to avoid double entry after sync)
             if (!dbSessions.find(s => s.sessionId === gc.sessionId)) {
               dbSessions.push(gc);
             }
@@ -234,11 +249,16 @@ export const chatStorageService = {
         } catch (e) { console.error("Guest localStorage save failed", e); }
       }
 
+      const activeRole = localStorage.getItem("user_selected_role") || "advocate";
       const finalProjectId = (projectId === 'default' || projectId === 'all') ? null : (projectId || (message.projectId === 'default' ? null : message.projectId));
+      const convType = message.conversationType || (activeRole === 'student' ? 'student_tutor' : (finalProjectId ? 'case' : (message.activeTool && message.activeTool !== 'legal_my_case' ? 'tool' : 'global')));
       await axios.post(`${API_BASE_URL}/chat/${sessionId}/message`, { 
         message, 
         title, 
         projectId: finalProjectId,
+        conversationType: convType,
+        role: activeRole,
+        workspaceType: activeRole,
         mode: message.mode,
         activeTool: message.activeTool
       }, {
@@ -285,6 +305,73 @@ export const chatStorageService = {
         });
       } catch (error) {
         console.error("Backend delete failed", error.message);
+      }
+    }
+  },
+
+  async clearAllSessions(scope = 'global', caseId = null, sessionsList = []) {
+    // 1. Remove guestChats from localStorage only if global or all scope
+    if (scope === 'global' || scope === 'all') {
+      localStorage.removeItem("guestChats");
+    }
+
+    // 2. Clear IndexedDB keys for provided sessions in scope
+    if (Array.isArray(sessionsList) && sessionsList.length > 0) {
+      for (const s of sessionsList) {
+        if (s.sessionId) {
+          try {
+            await idbDel(`chat_history_${s.sessionId}`);
+            await idbDel(`chat_meta_${s.sessionId}`);
+          } catch (e) {}
+        }
+      }
+    } else if (scope === 'global' || scope === 'all') {
+      try {
+        const keys = await idbGetAllKeys();
+        for (const key of keys) {
+          if (key.startsWith("chat_history_") || key.startsWith("chat_meta_")) {
+            await idbDel(key);
+          }
+        }
+      } catch (e) {
+        console.warn("IndexedDB clear all failed", e);
+      }
+    }
+
+    // 3. Clear Backend with scope & projectId
+    try {
+      const activeRole = localStorage.getItem("user_selected_role") || "advocate";
+      const params = { role: activeRole };
+      if (scope === 'student_tutor' || activeRole === 'student') {
+        params.scope = 'student_tutor';
+      } else if (scope === 'global') {
+        params.scope = 'global';
+      } else if (scope === 'case' || caseId) {
+        params.scope = 'case';
+        const targetPid = caseId || (scope !== 'case' && scope !== 'all' && scope !== 'global' ? scope : null);
+        if (targetPid) params.projectId = targetPid;
+      }
+
+      await axios.delete(`${API_BASE_URL}/chat/clear-all`, {
+        params,
+        headers: getAuthHeaders(),
+        withCredentials: true
+      });
+    } catch (error) {
+      console.error("Backend clear-all failed, trying session-by-session delete", error.message);
+    }
+
+    // Fallback: Delete each session sequentially from API if provided
+    if (Array.isArray(sessionsList) && sessionsList.length > 0) {
+      for (const s of sessionsList) {
+        if (s.sessionId) {
+          try {
+            await axios.delete(`${API_BASE_URL}/chat/${s.sessionId}`, {
+              headers: getAuthHeaders(),
+              withCredentials: true
+            });
+          } catch (e) {}
+        }
       }
     }
   },

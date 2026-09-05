@@ -16,7 +16,14 @@ async function resetPass() {
     await mongoose.connect(uri, { family: 4 });
     console.log('Connected to DB:', mongoose.connection.name);
 
-    const hashedPassword = await bcrypt.hash('Aditi@123', 10);
+    const targetEmail = process.env.TARGET_EMAIL;
+    const newPassword = process.env.NEW_PASSWORD;
+    if (!targetEmail || !newPassword) {
+      console.error('Please set TARGET_EMAIL and NEW_PASSWORD environment variables.');
+      process.exit(1);
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     const updateObj = {
       password: hashedPassword,
       failedAttempts: 0,
@@ -24,16 +31,10 @@ async function resetPass() {
     };
 
     const res1 = await mongoose.connection.db.collection('users').updateOne(
-      { email: 'aditi@uwo24.com' },
+      { email: targetEmail.toLowerCase() },
       { $set: updateObj }
     );
-    console.log('aditi@uwo24.com reset result:', res1.modifiedCount);
-
-    const res2 = await mongoose.connection.db.collection('users').updateOne(
-      { email: 'aditilakhera0@gmail.com' },
-      { $set: updateObj }
-    );
-    console.log('aditilakhera0@gmail.com reset result:', res2.modifiedCount);
+    console.log(`${targetEmail} reset result:`, res1.modifiedCount);
 
     process.exit(0);
   } catch (err) {

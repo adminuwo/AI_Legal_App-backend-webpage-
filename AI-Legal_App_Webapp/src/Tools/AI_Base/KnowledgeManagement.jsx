@@ -376,7 +376,7 @@ const KnowledgeManagement = () => {
                                                 onClick={() => {
                                                     const user = JSON.parse(localStorage.getItem('user') || '{}');
                                                     const token = user.token || '';
-                                                    const baseUrl = window._env_?.VITE_AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || 'http://localhost:8080/api';
+                                                    const baseUrl = window._env_?.VITE_AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8080/api' : (typeof window !== 'undefined' ? `${window.location.origin}/api` : 'http://localhost:8080/api'));
                                                     window.open(`${baseUrl}/aibase/knowledge/download/${item.id}?token=${token}`, '_blank');
                                                 }}
                                                 className="p-2 text-subtext hover:text-emerald-400 hover:bg-emerald-400/10 rounded-md transition-all"

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useRecoilValue } from 'recoil';
+import { selectedRoleState } from '../../userStore/userData';
 import { useNavigate } from 'react-router-dom';
 import { 
   Search, X, Pin, Star, Trash2, Edit2, Archive, Copy, 
@@ -102,27 +104,23 @@ const DEFAULT_TOOL_CONFIG = {
 };
 
 const FILTER_OPTIONS = [
-  { id: 'all', label: 'All' },
-  { id: 'legal_my_case', label: 'Assistant' },
-  { id: 'legal_draft_maker', label: 'Draft Maker' },
-  { id: 'legal_research', label: 'Research' },
-  { id: 'legal_contract_analyzer', label: 'Contracts' },
-  { id: 'legal_evidence_checker', label: 'Evidence' },
-  { id: 'legal_argument_builder', label: 'Arguments' },
-  { id: 'legal_case_predictor', label: 'Predictor' },
-  { id: 'legal_strategy_engine', label: 'Strategy' },
-  { id: 'legal_research_assistant', label: 'Research Assistant' }
+  { id: 'all', label: 'All Chat History' }
 ];
 
 const AIHistoryPanel = ({
-  isOpen,
-  onClose,
-  width,
+  isOpen = false,
+  onClose = () => {},
+  width = 360,
   onStartResize,
   currentSessionId,
-  onSelectSession
+  activeSessionId = null,
+  activeCaseId = null,
+  scope = 'global',
+  caseName = '',
+  onSelectSession = () => {}
 }) => {
   const navigate = useNavigate();
+  const selectedRole = useRecoilValue(selectedRoleState) || 'advocate';
   const panelRef = useRef(null);
   const filterScrollRef = useRef(null);
   
@@ -130,11 +128,27 @@ const AIHistoryPanel = ({
   const [sessions, setSessions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
   const [renameSessionId, setRenameSessionId] = useState(null);
   const [renameValue, setRenameValue] = useState('');
   const [menuOpenId, setMenuOpenId] = useState(null);
+  const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false);
+
+  const currentScope = (scope === 'case' || activeCaseId) ? 'case' : (selectedRole === 'student' ? 'student_tutor' : 'global');
+
+  // Clear all history handler
+  const handleClearAllHistory = async () => {
+    const tid = toast.loading("Clearing chat history...");
+    try {
+      await chatStorageService.clearAllSessions(currentScope, activeCaseId, sessions);
+      setSessions([]);
+      toast.success("✨ History cleared successfully!", { id: tid });
+      setIsConfirmClearOpen(false);
+    } catch (err) {
+      console.error("Failed to clear history", err);
+      toast.error("Failed to clear history", { id: tid });
+    }
+  };
 
   // local storage metadata items
   const [pinnedChats, setPinnedChats] = useState(() => {
@@ -156,11 +170,11 @@ const AIHistoryPanel = ({
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
-  // Load all sessions
+  // Load scoped sessions
   const loadSessions = useCallback(async (search = '') => {
     setIsLoading(true);
     try {
-      const data = await chatStorageService.getSessions('all', search);
+      const data = await chatStorageService.getSessions(currentScope, search, activeCaseId);
       setSessions(data || []);
     } catch (err) {
       console.error("[HISTORY] Load failed:", err);
@@ -168,9 +182,9 @@ const AIHistoryPanel = ({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [currentScope, activeCaseId]);
 
-  // Reload history when open or when search/filters change
+  // Reload history when open or when search query changes
   useEffect(() => {
     if (isOpen) {
       loadSessions(debouncedSearch);
@@ -419,7 +433,7 @@ const AIHistoryPanel = ({
     setMenuOpenId(null);
   };
 
-  // Grouping sessions
+  // Grouping sessions — Only show pure AI Assistant chat history (exclude background tool sessions)
   const filteredSessions = useMemo(() => {
     return sessions.filter((s) => {
       // 1. Archive filter
@@ -430,22 +444,40 @@ const AIHistoryPanel = ({
         if (isArchived) return false;
       }
 
-      // 2. Tab Filter
-      if (activeFilter !== 'all') {
-        const toolId = s.activeTool || 'legal_my_case';
-        if (activeFilter === 'legal_my_case') {
-          // Copilot handles legal_my_case and unassigned tools
-          return toolId === 'legal_my_case' || !s.activeTool;
-        }
-        // Special case for general research
-        if (activeFilter === 'legal_research') {
-          return toolId === 'legal_research' || toolId === 'legal_precedents';
-        }
-        return toolId === activeFilter;
+      // 2. Strict Chat Filter: Must be legal_my_case, legal_tutor, or unassigned tool
+      const toolId = s.activeTool || 'legal_my_case';
+      if (toolId !== 'legal_my_case' && toolId !== 'legal_tutor' && toolId !== 'chat' && toolId !== 'NORMAL_CHAT' && toolId !== 'none' && toolId !== '') {
+        return false;
       }
+
+      // 3. Exclude automated tool titles, advocate submissions, mock courtroom turns, performance reports, etc.
+      const titleLower = (s.title || '').toLowerCase();
+      const excludedKeywords = [
+        'advocate submission',
+        'judicial performance',
+        'performance report',
+        'research the relevant law',
+        'write email draft',
+        'write whatsapp draft',
+        'mock courtroom',
+        'courtroom practice',
+        'client connect',
+        'start ai mock courtroom',
+        'evidence analyst',
+        'contract analyzer',
+        'argument builder',
+        'case predictor',
+        'strategy engine',
+        'turn '
+      ];
+
+      if (excludedKeywords.some(kw => titleLower.includes(kw))) {
+        return false;
+      }
+
       return true;
     });
-  }, [sessions, activeFilter, archivedChats, showArchivedOnly]);
+  }, [sessions, archivedChats, showArchivedOnly]);
 
   const groupedSessions = useMemo(() => {
     const groups = {
@@ -532,32 +564,18 @@ const AIHistoryPanel = ({
 
         {/* Panel Header */}
         <div className="p-4 border-b border-slate-100 dark:border-zinc-800/60 shrink-0 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-base font-extrabold text-slate-800 dark:text-zinc-100">🗂 AI History Vault</span>
+          <div className="flex items-center gap-2 overflow-hidden">
+            <span className="text-sm font-extrabold text-slate-800 dark:text-zinc-100 truncate max-w-[230px]">
+              {currentScope === 'case' 
+                ? `🗂 Case History ${caseName ? `• ${caseName}` : ''}`
+                : (selectedRole === 'student' ? '🗂 AI Legal Tutor History' : '🗂 AI Legal Assistant History')
+              }
+            </span>
             {showArchivedOnly && (
-              <span className="text-[10px] px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 rounded-full font-bold uppercase tracking-wider">Archived</span>
+              <span className="text-[10px] px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 rounded-full font-bold uppercase tracking-wider shrink-0">Archived</span>
             )}
           </div>
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setShowArchivedOnly(!showArchivedOnly)}
-              className={`p-1.5 rounded-lg transition-colors text-xs font-bold uppercase tracking-wider border cursor-pointer ${
-                showArchivedOnly 
-                  ? 'bg-amber-500/10 border-amber-500/20 text-amber-600' 
-                  : 'hover:bg-slate-50 dark:hover:bg-zinc-800/50 border-slate-200 dark:border-zinc-800 text-slate-500'
-              }`}
-              title={showArchivedOnly ? "Show Main History" : "Show Archived Conversations"}
-            >
-              <Archive className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => loadSessions(debouncedSearch)}
-              disabled={isLoading}
-              className="p-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800/50 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer transition-colors"
-              title="Refresh History"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-            </button>
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={onClose}
               className="p-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800/50 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer transition-colors"
@@ -590,34 +608,28 @@ const AIHistoryPanel = ({
           </div>
         </div>
 
-        {/* Filter Tab Row */}
+        {/* Action Row: Scope Pill + Clear All Button */}
         {!showArchivedOnly && (
-          <div 
-            ref={filterScrollRef}
-            className="px-4 pb-2 border-b border-slate-100 dark:border-zinc-800/60 shrink-0 overflow-x-auto flex flex-nowrap gap-1.5 scrollbar-none select-none cursor-grab active:cursor-grabbing"
-          >
-            {FILTER_OPTIONS.map((opt) => {
-              const active = activeFilter === opt.id;
-              const config = TOOL_CONFIG[opt.id] || DEFAULT_TOOL_CONFIG;
-              return (
-                <button
-                  key={opt.id}
-                  onClick={() => setActiveFilter(opt.id)}
-                  style={{
-                    backgroundColor: active ? `${config.color}15` : '',
-                    borderColor: active ? `${config.color}35` : '',
-                    color: active ? config.color : ''
-                  }}
-                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all border shrink-0 cursor-pointer ${
-                    active 
-                      ? 'shadow-xs border-solid' 
-                      : 'border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/10 text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-300'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
+          <div className="px-4 pb-2 border-b border-slate-100 dark:border-zinc-800/60 shrink-0 flex items-center justify-between gap-2">
+            <span
+              className="px-3 py-1 rounded-full text-xs font-bold border shrink-0 bg-purple-50 dark:bg-purple-950/30 text-[#6D5DFC] border-purple-200 dark:border-purple-900/40 cursor-default"
+            >
+              {currentScope === 'case' 
+                ? 'Current Case History' 
+                : (selectedRole === 'student' ? 'Tutor History' : 'Global Assistant History')
+              }
+            </span>
+
+            {sessions.length > 0 && (
+              <button
+                onClick={() => setIsConfirmClearOpen(true)}
+                className="px-2.5 py-1 rounded-full text-[11px] font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 flex items-center gap-1.5 transition-all shrink-0 cursor-pointer shadow-2xs"
+                title="Clear All Chat History"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Clear All</span>
+              </button>
+            )}
           </div>
         )}
 
@@ -653,176 +665,77 @@ const AIHistoryPanel = ({
 
                   {list.map((session) => {
                     const active = currentSessionId === session.sessionId;
-                    const toolId = session.activeTool || 'legal_my_case';
-                    const config = TOOL_CONFIG[toolId] || DEFAULT_TOOL_CONFIG;
-                    const isPinned = pinnedChats.includes(session.sessionId);
-                    const isFav = favoriteChats.includes(session.sessionId);
 
                     return (
                       <div
                         key={session.sessionId}
                         onClick={() => onSelectSession(session)}
-                        className={`group relative flex flex-col p-3 rounded-2xl border transition-all cursor-pointer shadow-2xs hover:shadow-xs ${
+                        className={`group relative flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${
                           active
-                            ? `bg-white dark:bg-[#121321] border-[#6D5DFC]/40 dark:border-[#8b5cf6]/40 shadow-sm`
-                            : `bg-slate-50/50 hover:bg-white dark:bg-zinc-900/10 dark:hover:bg-zinc-800/20 border-slate-100/80 hover:border-slate-200 dark:border-zinc-800/40 dark:hover:border-zinc-700/40`
+                            ? `bg-white dark:bg-[#121321] border-[#C8A34D] text-slate-900 dark:text-white shadow-xs`
+                            : `bg-slate-50/70 hover:bg-white dark:bg-zinc-900/20 dark:hover:bg-zinc-800/40 border-slate-200/60 dark:border-zinc-800/60`
                         }`}
                       >
-                        {/* Top Line: Tool Tag & Metadata Actions */}
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${config.bgClass} ${config.textClass} border ${config.borderClass}`}>
-                            <span>{config.emoji}</span>
-                            <span>{config.name}</span>
-                          </span>
-
-                          <div className="flex items-center gap-1 shrink-0">
-                            {isFav && <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />}
-                            {isPinned && <Pin className="w-3.5 h-3.5 text-[#6D5DFC] dark:text-[#8b5cf6] rotate-45" />}
-                            
-                            {/* Action dropdown menu */}
-                            <div className="relative select-none z-30">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setMenuOpenId(menuOpenId === session.sessionId ? null : session.sessionId);
+                        <div className="flex-1 min-w-0 pr-2">
+                          {renameSessionId === session.sessionId ? (
+                            <div 
+                              className="flex items-center gap-1.5 w-full"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <input
+                                type="text"
+                                value={renameValue}
+                                onChange={(e) => setRenameValue(e.target.value)}
+                                onBlur={() => handleRename(session.sessionId)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleRename(session.sessionId);
+                                  if (e.key === 'Escape') setRenameSessionId(null);
                                 }}
-                                className="p-1 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-md text-slate-400 hover:text-slate-600 transition-colors cursor-pointer opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
+                                className="w-full px-2 py-1 border border-[#C8A34D] rounded-lg text-xs bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-100 outline-none font-semibold"
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => handleRename(session.sessionId)}
+                                className="px-2.5 py-1 bg-[#C8A34D] text-[#111] rounded-lg text-xs font-black cursor-pointer"
                               >
-                                <MoreVertical className="w-3.5 h-3.5" />
+                                Save
                               </button>
-                              
-                              {menuOpenId === session.sessionId && (
-                                <>
-                                  <div className="fixed inset-0 z-40" onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); }} />
-                                  <div className="absolute right-0 mt-1 w-44 bg-white dark:bg-[#161726] border border-slate-100 dark:border-zinc-800 rounded-xl shadow-xl py-1.5 z-50 text-left font-sans text-xs font-semibold select-none text-slate-600 dark:text-zinc-300">
-                                    <button
-                                      onClick={(e) => handlePin(e, session.sessionId)}
-                                      className="w-full px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800/60 flex items-center gap-2 transition-colors"
-                                    >
-                                      <Pin className="w-3.5 h-3.5 text-slate-400" />
-                                      {isPinned ? 'Unpin Chat' : 'Pin Chat'}
-                                    </button>
-                                    <button
-                                      onClick={(e) => handleFavorite(e, session.sessionId)}
-                                      className="w-full px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800/60 flex items-center gap-2 transition-colors"
-                                    >
-                                      <Star className="w-3.5 h-3.5 text-slate-400" />
-                                      {isFav ? 'Unfavorite' : 'Mark Favorite'}
-                                    </button>
-                                    <button
-                                      onClick={(e) => handleArchive(e, session.sessionId)}
-                                      className="w-full px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800/60 flex items-center gap-2 transition-colors"
-                                    >
-                                      <Archive className="w-3.5 h-3.5 text-slate-400" />
-                                      {showArchivedOnly ? 'Unarchive' : 'Archive Chat'}
-                                    </button>
-                                    <button
-                                      onClick={(e) => startRename(e, session)}
-                                      className="w-full px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800/60 flex items-center gap-2 transition-colors"
-                                    >
-                                      <Edit2 className="w-3.5 h-3.5 text-slate-400" />
-                                      Rename
-                                    </button>
-                                    <button
-                                      onClick={(e) => handleDuplicate(e, session)}
-                                      className="w-full px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800/60 flex items-center gap-2 transition-colors"
-                                    >
-                                      <Copy className="w-3.5 h-3.5 text-slate-400" />
-                                      Duplicate
-                                    </button>
-                                    <div className="h-[1px] bg-slate-100 dark:bg-zinc-800/60 my-1 mx-2" />
-                                    <button
-                                      onClick={(e) => handleExport(e, session, 'txt')}
-                                      className="w-full px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800/60 flex items-center gap-2 transition-colors"
-                                    >
-                                      <Download className="w-3.5 h-3.5 text-slate-400" />
-                                      Export as TXT
-                                    </button>
-                                    <button
-                                      onClick={(e) => handleExport(e, session, 'json')}
-                                      className="w-full px-3 py-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800/60 flex items-center gap-2 transition-colors"
-                                    >
-                                      <Download className="w-3.5 h-3.5 text-slate-400" />
-                                      Export as JSON
-                                    </button>
-                                    <div className="h-[1px] bg-slate-100 dark:bg-zinc-800/60 my-1 mx-2" />
-                                    <button
-                                      onClick={(e) => handleDelete(e, session.sessionId)}
-                                      className="w-full px-3 py-1.5 hover:bg-rose-50 dark:hover:bg-rose-950/20 text-rose-500 hover:text-rose-600 flex items-center gap-2 font-bold transition-colors"
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                      Delete Chat
-                                    </button>
-                                  </div>
-                                </>
-                              )}
                             </div>
-                          </div>
+                          ) : (
+                            <div className="space-y-1">
+                              <h5 className="text-xs font-black text-slate-800 dark:text-zinc-100 truncate leading-snug">
+                                {session.title || 'Untitled Conversation'}
+                              </h5>
+                              <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-zinc-500 font-bold uppercase tracking-wider">
+                                <span>
+                                  {new Date(session.lastModified).toLocaleDateString([], { month: 'short', day: 'numeric' })} • {new Date(session.lastModified).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                                {session.projectId?.name && (
+                                  <span className="text-[#C8A34D] truncate max-w-[100px]">
+                                    • {session.projectId.name}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
 
-                        {/* Middle Line: Conversation Title or Rename input */}
-                        {renameSessionId === session.sessionId ? (
-                          <div 
-                            className="flex items-center gap-1.5 w-full mt-0.5"
-                            onClick={(e) => e.stopPropagation()}
+                        {/* Direct Action Icons: Edit & Delete */}
+                        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={(e) => startRename(e, session)}
+                            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer"
+                            title="Rename Chat"
                           >
-                            <input
-                              type="text"
-                              value={renameValue}
-                              onChange={(e) => setRenameValue(e.target.value)}
-                              onBlur={() => handleRename(session.sessionId)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleRename(session.sessionId);
-                                if (e.key === 'Escape') setRenameSessionId(null);
-                              }}
-                              className="w-full px-2 py-0.5 border border-[#6D5DFC] rounded-lg text-sm bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-100 outline-none"
-                              autoFocus
-                            />
-                            <button
-                              onClick={() => handleRename(session.sessionId)}
-                              className="px-2 py-0.5 bg-[#6D5DFC] hover:bg-[#5a4ec2] text-white rounded-lg text-xs font-bold"
-                            >
-                              Save
-                            </button>
-                          </div>
-                        ) : (
-                          <h5 className="text-xs font-bold text-slate-800 dark:text-zinc-100 truncate leading-snug tracking-tight pr-4">
-                            {session.title || 'Untitled Conversation'}
-                          </h5>
-                        )}
-
-                        {/* Case display badge */}
-                        {session.projectId?.name && (
-                          <div 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onClose();
-                              navigate(`/dashboard/cases/${session.projectId._id || session.projectId}`);
-                            }}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 hover:bg-slate-200/80 dark:bg-zinc-800/40 dark:hover:bg-zinc-800 text-slate-500 dark:text-zinc-400 rounded-md border border-slate-200/50 dark:border-zinc-800/50 mt-1.5 w-fit max-w-full text-[9px] font-bold tracking-wide transition-colors group/case"
-                            title="Click to view Case Workspace directly"
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => handleDelete(e, session.sessionId)}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors cursor-pointer"
+                            title="Delete Chat"
                           >
-                            <Briefcase className="w-3 h-3 text-indigo-500/70" />
-                            <span className="truncate uppercase max-w-[180px] group-hover/case:text-[#6D5DFC]">
-                              {session.projectId.name}
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Bottom line: Timestamp / Info */}
-                        <div className="flex items-center justify-between text-[9px] text-slate-400 dark:text-zinc-500 font-bold uppercase tracking-wider mt-2 pt-1.5 border-t border-slate-100/50 dark:border-zinc-800/30">
-                          <span>
-                            {new Date(session.lastModified).toLocaleDateString([], {
-                              month: 'short',
-                              day: 'numeric'
-                            })}
-                          </span>
-                          <span>
-                            {new Date(session.lastModified).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </span>
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
                     );
@@ -833,6 +746,42 @@ const AIHistoryPanel = ({
           )}
         </div>
       </div>
+
+      {/* Confirm Clear All Modal */}
+      {isConfirmClearOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-[1100] p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 w-full max-w-xs shadow-2xl space-y-4 text-center">
+            <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-slate-800 dark:text-zinc-100">
+                {currentScope === 'case' ? 'Clear all case conversations?' : 'Clear all conversations?'}
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
+                {currentScope === 'case' 
+                  ? 'This will permanently delete all Case Assistant conversations for this case.'
+                  : 'This will permanently delete all conversations from this assistant.'
+                }
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsConfirmClearOpen(false)}
+                className="flex-1 py-2 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleClearAllHistory}
+                className="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

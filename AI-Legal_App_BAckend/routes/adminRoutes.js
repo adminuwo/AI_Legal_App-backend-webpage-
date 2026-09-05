@@ -28,7 +28,11 @@ import {
     exportBillingCsv,
     applyJurisdictionOverride,
     resetJurisdictionOverride,
-    testJurisdictionAI
+    testJurisdictionAI,
+    reportCrashLog,
+    getCrashLogs,
+    updateCrashStatus,
+    clearCrashLogs
 } from '../controllers/adminPortalController.js';
 
 const router = express.Router();
@@ -88,5 +92,11 @@ router.delete('/coupons/:id', verifyToken, isAdmin, adminDeleteCoupon);
 
 // Document Intelligence / Parsing Utilities
 router.post('/parse-legal-doc', verifyToken, isAdmin, upload.single('file'), parseLegalDoc);
+
+// Crash Logs Management
+router.post('/crashes', reportCrashLog);
+router.get('/crashes', verifyToken, isAdmin, getCrashLogs);
+router.patch('/crashes/:id/status', verifyToken, isAdmin, updateCrashStatus);
+router.delete('/crashes/clear', verifyToken, isAdmin, clearCrashLogs);
 
 export default router;

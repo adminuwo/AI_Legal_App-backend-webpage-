@@ -59,20 +59,28 @@ export const verifyGooglePlaySubscription = async (req, res) => {
       purchaseToken.startsWith('sandbox_') ||
       purchaseToken.includes('test') ||
       orderId?.startsWith('GPA.0000-0000-0000-00000') ||
-      orderId?.startsWith('GPA.SANDBOX') ||
-      process.env.NODE_ENV === 'development' ||
-      !process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_KEY;
+      orderId?.startsWith('GPA.SANDBOX');
 
-    console.log('\n============================================================');
-    console.log('💳 [GOOGLE PLAY IAP SUBSCRIPTION VERIFICATION VERIFIED]');
-    console.log(`📦 Product ID    : ${productId}`);
-    console.log(`👤 User ID       : ${userId}`);
-    console.log(`🎟️ PurchaseToken : ${purchaseToken}`);
-    console.log(`🏷️ Order ID      : ${orderId || 'GPA.SANDBOX-AUTOGEN'}`);
-    console.log(`🏢 Target Workspace: ${workspace}`);
-    console.log(`🔄 Billing Cycle : ${billingCycle}`);
-    console.log(`🧪 Environment   : ${isSandboxToken ? 'GOOGLE PLAY SANDBOX / TEST MODE' : 'PRODUCTION'}`);
-    console.log('============================================================\n');
+    if (process.env.NODE_ENV === 'production' && isSandboxToken) {
+      return res.status(400).json({ success: false, message: 'Sandbox purchase tokens are not permitted in production' });
+    }
+
+    if (process.env.NODE_ENV === 'production' && !process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_KEY) {
+      return res.status(503).json({ success: false, message: 'Google Play verification service is unconfigured' });
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('\n============================================================');
+      console.log('💳 [GOOGLE PLAY IAP SUBSCRIPTION VERIFICATION VERIFIED]');
+      console.log(`📦 Product ID    : ${productId}`);
+      console.log(`👤 User ID       : ${userId}`);
+      console.log(`🎟️ PurchaseToken : ${purchaseToken ? purchaseToken.substring(0, 8) + '...' : ''}`);
+      console.log(`🏷️ Order ID      : ${orderId || 'GPA.SANDBOX-AUTOGEN'}`);
+      console.log(`🏢 Target Workspace: ${workspace}`);
+      console.log(`🔄 Billing Cycle : ${billingCycle}`);
+      console.log(`🧪 Environment   : ${isSandboxToken ? 'GOOGLE PLAY SANDBOX / TEST MODE' : 'PRODUCTION'}`);
+      console.log('============================================================\n');
+    }
 
     let verificationDetails = {
       verified: true,
@@ -97,11 +105,16 @@ export const verifyGooglePlaySubscription = async (req, res) => {
         });
 
         if (playRes.data) {
-          console.log('[GooglePlayIAP] Live Play Console response:', playRes.data.paymentState);
-          verificationDetails.playResponse = playRes.data;
+          if (process.env.NODE_ENV !== 'production') {
+            console.log('[GooglePlayIAP] Live Play Console response status:', playRes.data.paymentState);
+          }
+          verificationDetails.playResponse = { paymentState: playRes.data.paymentState };
         }
       } catch (googleApiErr) {
-        console.warn('[GooglePlayIAP] Google Play API verification fallback:', googleApiErr.message);
+        console.warn('[GooglePlayIAP] Google Play API verification failed:', googleApiErr.message);
+        if (process.env.NODE_ENV === 'production') {
+          return res.status(400).json({ success: false, message: 'Google Play subscription verification failed.' });
+        }
       }
     }
 
@@ -119,7 +132,7 @@ export const verifyGooglePlaySubscription = async (req, res) => {
     const pricingMap = {
       advocate_basic: 499, advocate_pro: 999, advocate_premium: 2399,
       student_basic: 499, student_pro: 999, student_premium: 2399,
-      firm_basic: 499, firm_pro: 999, firm_premium: 2399,
+      firm_basic: 1499, firm_pro: 2999, firm_premium: 4999,
       combo_student_advocate: 1199, combo_advocate_firm: 1499, combo_all_access: 2399,
     };
 

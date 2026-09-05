@@ -49,7 +49,7 @@ try {
  * @param {number} [expiresInMinutes=10080] - (7 days default)
  * @returns {Promise<string>}
  */
-export const getSignedUrl = async (gcsPath, expiresInMinutes = 10080) => {
+export const getSignedUrl = async (gcsPath, expiresInMinutes = 60) => {
     try {
         const file = bucket.file(gcsPath);
         const expires = Date.now() + expiresInMinutes * 60 * 1000;
@@ -62,9 +62,6 @@ export const getSignedUrl = async (gcsPath, expiresInMinutes = 10080) => {
         return url;
 
     } catch (err) {
-        // LOCAL DEV FALLBACK: User ADC (gcloud auth application-default login) doesn't have
-        // client_email, so V4 signed URL signing fails.
-        // Strategy 1: Use IAM signBlob API — works with user ADC via REST call (no client_email needed)
         if (err.message?.includes('client_email') || err.message?.includes('Cannot sign') || err.message?.includes('sign')) {
             logger.warn(`[GCS] Signed URL failed (no client_email) — trying IAM signBlob fallback...`);
             try {
@@ -79,19 +76,20 @@ export const getSignedUrl = async (gcsPath, expiresInMinutes = 10080) => {
                 logger.info(`[GCS] IAM signBlob fallback succeeded`);
                 return signedUrl;
             } catch (iamErr) {
-                logger.warn(`[GCS] IAM signing also failed (${iamErr.message.substring(0, 80)}) — trying makePublic...`);
+                logger.warn(`[GCS] IAM signing also failed (${iamErr.message.substring(0, 80)})`);
             }
 
-            // Strategy 2: makePublic — last resort for local dev
-            try {
-                const file = bucket.file(gcsPath);
-                await file.makePublic();
-                const publicUrl = `https://storage.googleapis.com/${BUCKET_NAME}/${gcsPath}`;
-                logger.info(`[GCS] makePublic fallback success: ${publicUrl}`);
-                return publicUrl;
-            } catch (pubErr) {
-                logger.error(`[GCS] makePublic fallback also failed: ${pubErr.message}`);
-                // Fall through to throw original signing error
+            // makePublic fallback ONLY permitted in development
+            if (process.env.NODE_ENV !== 'production') {
+                try {
+                    const file = bucket.file(gcsPath);
+                    await file.makePublic();
+                    const publicUrl = `https://storage.googleapis.com/${BUCKET_NAME}/${gcsPath}`;
+                    logger.info(`[GCS] makePublic fallback success: ${publicUrl}`);
+                    return publicUrl;
+                } catch (pubErr) {
+                    logger.error(`[GCS] makePublic fallback also failed: ${pubErr.message}`);
+                }
             }
         }
         console.error('[GCS SIGNING ERROR]', err.response?.data || err.message);

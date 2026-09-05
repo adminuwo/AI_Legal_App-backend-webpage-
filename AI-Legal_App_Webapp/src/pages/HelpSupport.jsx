@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Search, Mail, Phone, MessageSquare, ChevronDown, ChevronUp, 
-  Star, Bug, Sparkles, FileText, ArrowUpRight, Scale, MessageCircle
+  Star, Bug, Sparkles, FileText, ArrowUpRight, Scale, MessageCircle, Menu
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -212,8 +212,8 @@ const HelpSupport = () => {
       {/* Header */}
       <div className="border-b border-slate-100 pb-6">
         <div className="flex items-center gap-3 text-[#6D5DFC] mb-2">
-          <Scale className="w-8 h-8" />
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight">AI Legal™ Support Center</h1>
+          <Scale className="w-8 h-8 shrink-0" />
+          <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">AI Legal™ Support Center</h1>
         </div>
         <p className="text-xs font-semibold text-slate-400 mt-1">Get immediate assistance, search FAQs, report issues, and share feedback.</p>
       </div>

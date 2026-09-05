@@ -28,6 +28,13 @@ import * as configService from "../services/configService.js";
 import Knowledge from "../models/Knowledge.model.js";
 import * as webSearchService from "../services/webSearch.service.js";
 import * as deepSearchService from "../services/deepSearch.service.js";
+
+const sanitizeProjectId = (pid) => {
+  if (!pid || pid === 'default' || pid === 'all' || pid === 'null' || pid === 'undefined') return null;
+  if (typeof pid === 'string' && mongoose.Types.ObjectId.isValid(pid)) return pid;
+  if (pid instanceof mongoose.Types.ObjectId) return pid;
+  return null;
+};
 import memoryService from "../services/memory.service.js";
 import * as aiService from "../services/ai.service.js";
 import { uploadAttachment } from "../controllers/chat.controller.js";
@@ -117,6 +124,9 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
     'legal_case_predictor': 'legal_case_predictor',
     'legal_evidence_checker': 'legal_evidence_checker',
     'legal_research_assistant': 'legal_research_assistant',
+    'legal_knowledge_hub': 'legal_knowledge_hub',
+    'knowledgeHub': 'legal_knowledge_hub',
+    'knowledge_hub': 'legal_knowledge_hub',
     'legal_my_case': 'legal_my_case',
     'caseAssistant': 'legal_my_case'
   };
@@ -153,18 +163,36 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
       if (req.user.email && req.user.email.toLowerCase() === 'admin@uwo24.com') {
         console.log(`[Admin-Bypass] Granting immediate access to admin@uwo24.com`);
       } else {
+        const userId = req.user.id || req.user._id;
+        const targetTool = req.body.activeTool || req.body.toolName || req.body.tool || 'ai_chat';
+        try {
+          const FeatureAccessManager = await import('../services/featureAccessManager.js');
+          const accessCheck = await FeatureAccessManager.checkAccess(userId, targetTool);
+          if (accessCheck && !accessCheck.allowed) {
+            return res.status(200).json({
+              success: false,
+              code: 'LIMIT_EXCEEDED',
+              error: 'LIMIT_EXCEEDED',
+              feature: targetTool,
+              message: `You have reached your monthly limit of ${accessCheck.limit} ${targetTool === 'ai_chat' ? 'AI chats' : targetTool}. Please upgrade your plan to continue.`
+            });
+          }
+        } catch (accErr) {
+          console.warn('[FeatureAccessCheck Error]', accErr.message);
+        }
+
         // Verify activeTool subscription access & trial limits
         if (req.body.activeTool) {
-          const userRec = await userModel.findById(req.user.id || req.user._id);
+          const userRec = await userModel.findById(userId);
           if (userRec) {
             const subCheck = await checkFeatureSubscription(userRec, req.body.activeTool);
             if (!subCheck.success) {
-              return res.status(200).json(subCheck); // Return 200 with standard custom error response for frontend compatibility
+              return res.status(200).json(subCheck);
             }
           }
         }
         try {
-          await subscriptionService.checkCredits(req.user.id || req.user._id, toolsRequested, req.body);
+          await subscriptionService.checkCredits(userId, toolsRequested, req.body);
         } catch (subError) {
           return res.status(403).json({ success: false, code: subError.message === "PREMIUM_RESTRICTED" ? "PREMIUM_ONLY" : "OUT_OF_CREDITS", message: subError.message });
         }
@@ -325,6 +353,7 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
       res.flushHeaders?.();
 
       let fullText = '';
+      let session = null;
       const streamOnChunk = (chunk) => {
         if (chunk && res.writable) {
           fullText += chunk;
@@ -367,21 +396,26 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
 
         // Session persistence (same as non-stream path)
         if (!skipSession) {
-          let session = await ChatSession.findOne({ sessionId });
+          session = await ChatSession.findOne({ sessionId });
           const userId = req.user ? req.user.id : null;
           const isGenericTitle = !session || session.title === 'New Chat' || session.title === 'Greeting' || session.title === 'General Chat' || (session.title && session.title.includes('...'));
 
           if (!session) {
             const words = (content || '').trim().split(/\s+/);
             const aiTitle = words.slice(0, 5).join(' ') + (words.length > 5 ? '...' : '') || 'New Chat';
+            const reqPid = sanitizeProjectId(req.body.projectId || req.body.caseId);
+            const reqTool = req.body.activeTool || null;
+            const autoConvType = req.body.conversationType || (reqPid ? 'case' : (reqTool && reqTool !== 'legal_my_case' && reqTool !== 'none' ? 'tool' : 'global'));
+
             session = new ChatSession({
               sessionId: sessionId || `temp_${Date.now()}`,
               userId: userId || null,
               guestId: req.guest?.guestId || null,
-              projectId: (req.body.projectId === 'default' || req.body.projectId === 'all') ? null : (req.body.projectId || null),
+              projectId: reqPid,
+              conversationType: autoConvType,
               title: aiTitle || 'New Chat',
               detectedMode: detectedMode || 'NORMAL_CHAT',
-              activeTool: req.body.activeTool || null,
+              activeTool: reqTool,
               messages: []
             });
             if (userId) await userModel.findByIdAndUpdate(userId, { $addToSet: { chatSessions: session._id } });
@@ -393,6 +427,8 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
 
           if (detectedMode) session.detectedMode = detectedMode;
           if (req.body.activeTool) session.activeTool = req.body.activeTool;
+          if (req.body.conversationType) session.conversationType = req.body.conversationType;
+          else if (session.projectId) session.conversationType = 'case';
 
           const hasUserMsg = session.messages.some(m => m.id === userMsgId || (m.role === 'user' && m.content === content));
           if (!hasUserMsg) {
@@ -437,11 +473,27 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
               }
             })();
           }
+        }
 
+        const finalUserId = req.user?.id || req.user?._id;
+        const activeToolStream = req.body.activeTool || req.body.toolName || req.body.tool || req.body.featureKey || req.body.feature || (req.body.mode && req.body.mode !== 'CHAT' && req.body.mode !== 'NORMAL_CHAT' ? req.body.mode : 'ai_chat');
+        let streamUsageStatus = null;
+        if (finalUserId) {
+          try {
+            const FeatureAccessManager = await import('../services/featureAccessManager.js');
+            const normTool = FeatureAccessManager.normalizeFeatureKey(activeToolStream);
+            await FeatureAccessManager.incrementUsage(finalUserId, normTool);
+            streamUsageStatus = await FeatureAccessManager.getUsageStatus(finalUserId);
+          } catch (uErr) {
+            console.error('[CHAT STREAM FEATURE USAGE DEDUCTION ERROR]', uErr);
+          }
+        }
+
+        if (!skipSession) {
           // Send final metadata
-          res.write(`data: ${JSON.stringify({ done: true, title: session.title, sessionId: session.sessionId, sources: searchSources, suggestions: chatResponse.suggestions || [], isRealTime: isWebSearchResponse })}\n\n`);
+          res.write(`data: ${JSON.stringify({ done: true, title: session?.title, sessionId: session?.sessionId, sources: searchSources, suggestions: chatResponse.suggestions || [], isRealTime: isWebSearchResponse, usageStatus: streamUsageStatus })}\n\n`);
         } else {
-          res.write(`data: ${JSON.stringify({ done: true, sources: searchSources, suggestions: chatResponse.suggestions || [], isRealTime: isWebSearchResponse })}\n\n`);
+          res.write(`data: ${JSON.stringify({ done: true, sources: searchSources, suggestions: chatResponse.suggestions || [], isRealTime: isWebSearchResponse, usageStatus: streamUsageStatus })}\n\n`);
         }
 
         if (res.writable) res.end();
@@ -546,16 +598,35 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
     const userId = req.user ? req.user.id : null;
 
     if (!session) {
+      const reqUserRole = (req.body.role || req.headers['x-user-role'] || req.body.workspaceType || req.headers['x-workspace-type'] || 'advocate').toLowerCase();
+      const isStudent = reqUserRole === 'student' || req.body.conversationType === 'student_tutor';
+
       const words = (content || "").trim().split(/\s+/);
       const aiTitle = words.slice(0, 5).join(' ') + (words.length > 5 ? '...' : '') || "New Chat";
+      const cleanPid = sanitizeProjectId(req.body.projectId || req.body.caseId);
+      const reqTool = req.body.activeTool || null;
+      let autoConvType = req.body.conversationType;
+      let autoAssistantType = isStudent ? 'legal_tutor' : 'legal_assistant';
+
+      if (isStudent) {
+        autoConvType = 'student_tutor';
+        autoAssistantType = 'legal_tutor';
+      } else if (!autoConvType) {
+        autoConvType = cleanPid ? 'case' : (reqTool && reqTool !== 'legal_my_case' && reqTool !== 'none' ? 'tool' : 'global');
+      }
+
       session = new ChatSession({
         sessionId: sessionId || `temp_${Date.now()}`,
         userId: userId || null,
         guestId: req.guest?.guestId || null,
-        projectId: (req.body.projectId === 'default' || req.body.projectId === 'all') ? null : (req.body.projectId || null),
+        workspaceId: isStudent ? 'student' : (req.body.workspaceId || 'personal_practice'),
+        workspaceType: isStudent ? 'student' : 'advocate',
+        assistantType: autoAssistantType,
+        projectId: cleanPid,
+        conversationType: autoConvType,
         title: aiTitle || "New Chat",
-        detectedMode: detectedMode || 'NORMAL_CHAT',
-        activeTool: req.body.activeTool || null,
+        detectedMode: detectedMode || (isStudent ? 'STUDENT_TUTOR' : 'NORMAL_CHAT'),
+        activeTool: isStudent ? 'legal_tutor' : reqTool,
         messages: []
       });
       if (userId) await userModel.findByIdAndUpdate(userId, { $addToSet: { chatSessions: session._id } });
@@ -566,9 +637,25 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
         if (aiTitle) session.title = aiTitle;
       }
       
-      // Update mode and tool if provided
+      const reqUserRole = (req.body.role || req.headers['x-user-role'] || req.body.workspaceType || req.headers['x-workspace-type'] || 'advocate').toLowerCase();
+      const isStudent = reqUserRole === 'student' || req.body.conversationType === 'student_tutor';
+
+      if (isStudent) {
+        session.workspaceType = 'student';
+        session.assistantType = 'legal_tutor';
+        session.conversationType = 'student_tutor';
+      }
+
+      // Update mode, tool, and projectId if provided
       if (detectedMode) session.detectedMode = detectedMode;
       if (req.body.activeTool) session.activeTool = req.body.activeTool;
+      const cleanPid = sanitizeProjectId(req.body.projectId || req.body.caseId);
+      if (cleanPid) {
+        session.projectId = cleanPid;
+        session.conversationType = 'case';
+      } else if (req.body.conversationType) {
+        session.conversationType = req.body.conversationType;
+      }
       
       session.lastModified = Date.now();
       await session.save();
@@ -633,10 +720,13 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
           }
         })();
 
-        if (req.body.activeTool) {
+        const activeTool = req.body.activeTool || req.body.toolName || req.body.tool || req.body.featureKey || req.body.feature || (req.body.mode && req.body.mode !== 'CHAT' && req.body.mode !== 'NORMAL_CHAT' ? req.body.mode : 'ai_chat');
+
+        if (finalUserId) {
             try {
                 const FeatureAccessManager = await import('../services/featureAccessManager.js');
-                await FeatureAccessManager.incrementUsage(finalUserId, req.body.activeTool);
+                const normTool = FeatureAccessManager.normalizeFeatureKey(activeTool);
+                await FeatureAccessManager.incrementUsage(finalUserId, normTool);
                 finalResponse.usageStatus = await FeatureAccessManager.getUsageStatus(finalUserId);
             } catch (uErr) {
                 console.error('[CHAT FEATURE USAGE DEDUCTION ERROR]', uErr);
@@ -658,7 +748,7 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
 // --- SESSION LIST ---
 router.get('/', optionalVerifyToken, identifyGuest, async (req, res) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.id || req.user?._id;
     const guestId = req.guest?.guestId;
 
     if (!userId && !guestId) return res.json([]);
@@ -666,12 +756,20 @@ router.get('/', optionalVerifyToken, identifyGuest, async (req, res) => {
 
     let sessions = [];
     const projectId = req.query.projectId;
+    const reqScope = req.query.scope || req.query.type || req.query.conversationType;
 
     const query = {};
     const reqWorkspaceId = req.query.workspaceId || req.headers['x-workspace-id'];
 
     if (userId) {
-      query.userId = userId;
+      const uIdObj = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : null;
+      const userQueries = [userId, String(userId)];
+      if (uIdObj) userQueries.push(uIdObj);
+      query.userId = { $in: userQueries };
+
+      const userRole = (req.query.role || req.headers['x-user-role'] || 'advocate').toLowerCase();
+      const resolvedScope = reqScope || (userRole === 'student' ? 'student_tutor' : 'global');
+
       if (reqWorkspaceId) {
         if (reqWorkspaceId === 'personal_practice') {
           query.$or = [
@@ -684,13 +782,37 @@ router.get('/', optionalVerifyToken, identifyGuest, async (req, res) => {
           query.workspaceId = reqWorkspaceId;
         }
       }
-      if (req.query.all === 'true' || projectId === 'all') {
-        // Skip projectId filter to return all chats
-      } else if (projectId && projectId !== 'null' && projectId !== 'undefined' && projectId !== 'default') {
-        query.projectId = projectId;
-      } else if (!reqWorkspaceId) {
-        // If no projectId or 'null', return chats where projectId is null or doesn't exist
+
+      // Explicit Assistant Scope Isolation
+      if (resolvedScope === 'student_tutor' || userRole === 'student') {
         query.projectId = { $in: [null, undefined] };
+        query.$or = [
+          { conversationType: 'student_tutor' },
+          { assistantType: 'legal_tutor' },
+          { workspaceType: 'student' },
+          { role: 'student' },
+          { detectedMode: 'STUDENT_TUTOR' }
+        ];
+      } else if (resolvedScope === 'case' || (projectId && projectId !== 'all' && projectId !== 'default')) {
+        const cleanPid = sanitizeProjectId(projectId);
+        if (cleanPid) {
+          const pIdObj = mongoose.Types.ObjectId.isValid(cleanPid) ? new mongoose.Types.ObjectId(cleanPid) : null;
+          const pQueries = [cleanPid, String(cleanPid)];
+          if (pIdObj) pQueries.push(pIdObj);
+          query.projectId = { $in: pQueries };
+        }
+        query.conversationType = { $ne: 'global' };
+      } else if (resolvedScope === 'tool') {
+        query.conversationType = 'tool';
+        query.activeTool = { $ne: null, $nin: ['legal_my_case', ''] };
+      } else if (req.query.all === 'true' || projectId === 'all') {
+        // Skip scope filter to return all chats
+      } else {
+        // Advocate AI Legal Assistant Global Scope
+        query.conversationType = { $in: ['global', null] };
+        query.projectId = { $in: [null, undefined] };
+        query.assistantType = { $ne: 'legal_tutor' };
+        query.workspaceType = { $ne: 'student' };
       }
     } else if (guestId) {
       query.guestId = guestId;
@@ -831,7 +953,7 @@ router.post('/:sessionId/message', optionalVerifyToken, identifyGuest, async (re
   try {
     const { sessionId } = req.params;
     const { message, title } = req.body;
-    const userId = req.user?.id;
+    const userId = req.user?.id || req.user?._id;
     const guestId = req.guest?.guestId;
 
     // 1. LIMIT & CREDIT CHECKS FOR GUESTS
@@ -840,27 +962,39 @@ router.post('/:sessionId/message', optionalVerifyToken, identifyGuest, async (re
       return res.status(403).json({ error: "LIMIT_REACHED", reason: limitCheck.reason });
     }
 
-    if (!message) return res.status(400).json({ error: 'Message is required' });
-
+    const reqUserRole = (req.body.role || req.headers['x-user-role'] || req.body.workspaceType || req.headers['x-workspace-type'] || 'advocate').toLowerCase();
+    const isStudent = reqUserRole === 'student' || req.body.conversationType === 'student_tutor';
+    const reqWorkspaceType = isStudent ? 'student' : (req.body.workspaceType || req.headers['x-workspace-type'] || 'personal');
     const reqWorkspaceId = req.body.workspaceId || req.headers['x-workspace-id'] || 'personal_practice';
-    const reqWorkspaceType = req.body.workspaceType || req.headers['x-workspace-type'] || 'personal';
-    const meta = WorkspaceAIContextService.getAssistantMetadata(reqWorkspaceType);
 
     let session = await ChatSession.findOne({ sessionId });
 
     if (!session) {
       // Create new session if it doesn't exist
+      const cleanPid = sanitizeProjectId(req.body.projectId || req.body.caseId);
+      const reqTool = req.body.activeTool || null;
+      let autoConvType = req.body.conversationType;
+      let autoAssistantType = isStudent ? 'legal_tutor' : 'legal_assistant';
+
+      if (isStudent) {
+        autoConvType = 'student_tutor';
+        autoAssistantType = 'legal_tutor';
+      } else if (!autoConvType) {
+        autoConvType = cleanPid ? 'case' : (reqTool && reqTool !== 'legal_my_case' && reqTool !== 'none' ? 'tool' : 'global');
+      }
+
       session = new ChatSession({
         sessionId,
         userId: userId || null,
         guestId: guestId || null,
         workspaceId: reqWorkspaceId,
-        workspaceType: reqWorkspaceType,
-        assistantType: meta.assistantType,
-        projectId: (req.body.projectId === 'default' || req.body.projectId === 'all') ? null : (req.body.projectId || null),
+        workspaceType: isStudent ? 'student' : reqWorkspaceType,
+        assistantType: autoAssistantType,
+        projectId: cleanPid,
+        conversationType: autoConvType,
         title: title || "New Chat",
         detectedMode: req.body.mode || 'NORMAL_CHAT',
-        activeTool: req.body.activeTool || null,
+        activeTool: reqTool,
         messages: []
       });
       if (userId) await userModel.findByIdAndUpdate(userId, { $addToSet: { chatSessions: session._id } });
@@ -878,6 +1012,13 @@ router.post('/:sessionId/message', optionalVerifyToken, identifyGuest, async (re
       // Update metadata on existing session if provided
       if (req.body.mode) session.detectedMode = req.body.mode;
       if (req.body.activeTool) session.activeTool = req.body.activeTool;
+      const cleanPid = sanitizeProjectId(req.body.projectId || req.body.caseId);
+      if (cleanPid) {
+        session.projectId = cleanPid;
+        session.conversationType = 'case';
+      } else if (req.body.conversationType) {
+        session.conversationType = req.body.conversationType;
+      }
     }
 
     // Upsert message
@@ -906,7 +1047,7 @@ router.post('/:sessionId/message', optionalVerifyToken, identifyGuest, async (re
 router.delete('/:sessionId/message/:messageId', optionalVerifyToken, identifyGuest, async (req, res) => {
   try {
     const { sessionId, messageId } = req.params;
-    const userId = req.user?.id;
+    const userId = req.user?.id || req.user?._id;
     const guestId = req.guest?.guestId;
 
     const session = await ChatSession.findOne({ sessionId });
@@ -994,7 +1135,7 @@ router.patch('/:sessionId/title', optionalVerifyToken, identifyGuest, async (req
   try {
     const { sessionId } = req.params;
     const { title } = req.body;
-    const userId = req.user?.id;
+    const userId = req.user?.id || req.user?._id;
     const guestId = req.guest?.guestId;
 
     if (!title) return res.status(400).json({ error: 'Title is required' });
@@ -1018,11 +1159,68 @@ router.patch('/:sessionId/title', optionalVerifyToken, identifyGuest, async (req
   }
 });
 
+// --- CLEAR ALL SESSIONS ---
+router.delete('/clear-all', optionalVerifyToken, identifyGuest, async (req, res) => {
+  try {
+    const userId = req.user?.id || req.user?._id;
+    const guestId = req.guest?.guestId;
+    const fingerprint = req.headers['x-device-fingerprint'];
+    const userRole = (req.query.role || req.headers['x-user-role'] || 'advocate').toLowerCase();
+    const reqScope = req.query.scope || req.query.type || (userRole === 'student' ? 'student_tutor' : 'global');
+    const projectId = req.query.projectId;
+
+    if (userId) {
+      const uIdObj = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : null;
+      const userQueries = [userId, String(userId)];
+      if (uIdObj) userQueries.push(uIdObj);
+
+      const deleteFilter = { userId: { $in: userQueries } };
+
+      if (reqScope === 'student_tutor' || userRole === 'student') {
+        deleteFilter.projectId = { $in: [null, undefined] };
+        deleteFilter.$or = [
+          { conversationType: 'student_tutor' },
+          { assistantType: 'legal_tutor' },
+          { workspaceType: 'student' }
+        ];
+      } else if (reqScope === 'case' || projectId) {
+        const cleanPid = sanitizeProjectId(projectId);
+        if (cleanPid) {
+          const pIdObj = mongoose.Types.ObjectId.isValid(cleanPid) ? new mongoose.Types.ObjectId(cleanPid) : null;
+          deleteFilter.projectId = { $in: [cleanPid, String(cleanPid), ...(pIdObj ? [pIdObj] : [])] };
+        }
+      } else {
+        // Global Advocate Legal Assistant
+        deleteFilter.projectId = { $in: [null, undefined] };
+        deleteFilter.conversationType = { $in: ['global', null] };
+        deleteFilter.assistantType = { $ne: 'legal_tutor' };
+        deleteFilter.workspaceType = { $ne: 'student' };
+      }
+
+      await ChatSession.deleteMany(deleteFilter);
+      await userModel.findByIdAndUpdate(userId, { chatSessions: [] });
+    }
+    
+    if (guestId) {
+      await ChatSession.deleteMany({ guestId });
+    }
+
+    if (fingerprint && !userId && !guestId) {
+      await ChatSession.deleteMany({ deviceFingerprint: fingerprint });
+    }
+
+    res.json({ message: 'All chat history cleared successfully' });
+  } catch (err) {
+    console.error('[CLEAR ALL CHATS ERROR]', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- DELETE SESSION ---
 router.delete('/:sessionId', optionalVerifyToken, identifyGuest, async (req, res) => {
   try {
     const { sessionId } = req.params;
-    const userId = req.user?.id;
+    const userId = req.user?.id || req.user?._id;
     const guestId = req.guest?.guestId;
 
     const session = await ChatSession.findOne({ sessionId });
@@ -1120,7 +1318,7 @@ router.post('/:sessionId/share/email', optionalVerifyToken, identifyGuest, async
 router.post('/duplicate', optionalVerifyToken, identifyGuest, async (req, res) => {
   try {
     const { shareId } = req.body;
-    const userId = req.user?.id; // Scoped strictly from req.user (JWT) for security
+    const userId = req.user?.id || req.user?._id; // Scoped strictly from req.user (JWT) for security
     const guestId = req.guest?.guestId;
 
     console.log(`[DUPLICATE REQUEST] shareId: ${shareId}, userId: ${userId}`);

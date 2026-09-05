@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const jwtConfig = {
-  secret: process.env.JWT_SECRET || 'default_jwt_secret_dev_only',
+  secret: process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'default_jwt_secret_dev_only'),
   expiresIn: process.env.JWT_EXPIRES_IN || '30d',
   cookieName: 'token',
   cookieOptions: {

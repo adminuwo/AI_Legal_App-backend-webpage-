@@ -19,9 +19,11 @@ import {
     getEntitlementsApi,
     getUsageApi,
     resetUsageApi,
+    recordUsageApi,
     getPaymentHistory,
     adminGetSubscribers,
     cancelSubscriptionApi,
+    enableSubscriptionAutoRenewApi,
     verifyApplePurchase,
     verifyGooglePlayPurchase
 } from '../controllers/subscriptionV1Controller.js';
@@ -43,20 +45,22 @@ router.get('/current', verifyToken, getCurrentSubscription);
 router.get('/plans', getPlansConfig);
 router.post('/validate-coupon', optionalVerifyToken, validateCouponApi);
 router.post('/generate-checkout-token', verifyToken, generateCheckoutToken);
-router.post('/create-order', optionalVerifyToken, createSubscriptionOrder);
-router.post('/verify-payment', optionalVerifyToken, verifySubscriptionPaymentV1);
+router.post('/create-order', verifyToken, createSubscriptionOrder);
+router.post('/verify-payment', verifyToken, verifySubscriptionPaymentV1);
 router.post('/cancel', verifyToken, cancelSubscriptionApi);
+router.post('/enable-autorenew', verifyToken, enableSubscriptionAutoRenewApi);
 router.get('/entitlements', verifyToken, getEntitlementsApi);
 router.get('/usage', verifyToken, getUsageApi);
+router.post('/record-usage', verifyToken, recordUsageApi);
 router.post('/reset-usage', verifyToken, resetUsageApi);
 router.get('/payments/history', verifyToken, getPaymentHistory);
 router.get('/admin/subscribers', verifyToken, isAdmin, adminGetSubscribers);
 
 // --- Apple In-App Purchase (StoreKit) Endpoints ---
-router.post('/apple/verify', optionalVerifyToken, verifyApplePurchase);
+router.post('/apple/verify', verifyToken, verifyApplePurchase);
 
 // --- Google Play Billing (IAP) Endpoints ---
-router.post('/google-play/verify', optionalVerifyToken, verifyGooglePlaySubscription);
+router.post('/google-play/verify', verifyToken, verifyGooglePlaySubscription);
 router.post('/google-play/restore', verifyToken, restoreGooglePlayPurchases);
 
 // --- Legacy Backwards Compatibility Routes ---

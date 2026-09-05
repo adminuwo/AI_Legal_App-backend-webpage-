@@ -10,7 +10,8 @@ export const PLAN_ENTITLEMENT_MAP = {
   advocate: {
     FREE: {
       activeCases: 3,
-      storage: 1024, // 1 GB (1024 MB)
+      storage: 1024, // 1 GB
+      aiChatLimit: 50,
       draftMakerLimit: 2,
       precedentLimit: 2,
       evidenceLimit: 2,
@@ -20,10 +21,12 @@ export const PLAN_ENTITLEMENT_MAP = {
       mockCourtLimit: 1,
       clientConnectLimit: 1,
       aiCaseAnalysisLimit: 2,
+      knowledgeHubLimit: 3,
     },
     BASIC: {
       activeCases: 50,
       storage: 5120, // 5 GB
+      aiChatLimit: 300,
       draftMakerLimit: 5,
       precedentLimit: 5,
       evidenceLimit: 5,
@@ -37,6 +40,7 @@ export const PLAN_ENTITLEMENT_MAP = {
     PROFESSIONAL: {
       activeCases: 100,
       storage: 20480, // 20 GB
+      aiChatLimit: 1000,
       draftMakerLimit: 15,
       precedentLimit: 15,
       evidenceLimit: 15,
@@ -50,6 +54,7 @@ export const PLAN_ENTITLEMENT_MAP = {
     PREMIUM: {
       activeCases: 250,
       storage: 102400, // 100 GB
+      aiChatLimit: -1, // Unlimited
       draftMakerLimit: -1, // Unlimited (Fair Usage Policy: 500/mo)
       precedentLimit: -1,
       evidenceLimit: -1,
@@ -66,20 +71,24 @@ export const PLAN_ENTITLEMENT_MAP = {
   student: {
     FREE: {
       activeCases: 3,
-      storage: 500,
+      storage: 500, // 500 MB
+      aiChatLimit: 50,
       draftMakerLimit: 1,
       precedentLimit: 1,
       evidenceLimit: 1,
       contractLimit: 1,
-      strategyLimit: 1,
-      predictorLimit: 1,
+      strategyLimit: 0,
+      predictorLimit: 0,
       mockCourtLimit: 0,
       clientConnectLimit: 0,
       aiCaseAnalysisLimit: 1,
+      quizLimit: 2,
+      notesMakerLimit: 0,
     },
     BASIC: {
       activeCases: 25,
       storage: 5120, // 5 GB
+      aiChatLimit: 300,
       draftMakerLimit: 5,
       precedentLimit: 5,
       evidenceLimit: 5,
@@ -89,10 +98,13 @@ export const PLAN_ENTITLEMENT_MAP = {
       mockCourtLimit: 2,
       clientConnectLimit: 0,
       aiCaseAnalysisLimit: 5,
+      quizLimit: -1, // Unlimited
+      notesMakerLimit: 5,
     },
     PROFESSIONAL: {
       activeCases: 50,
       storage: 20480, // 20 GB
+      aiChatLimit: 1000,
       draftMakerLimit: 15,
       precedentLimit: 15,
       evidenceLimit: 15,
@@ -102,10 +114,13 @@ export const PLAN_ENTITLEMENT_MAP = {
       mockCourtLimit: 5,
       clientConnectLimit: 0,
       aiCaseAnalysisLimit: 15,
+      quizLimit: -1, // Unlimited
+      notesMakerLimit: 15,
     },
     PREMIUM: {
       activeCases: 100,
       storage: 51200, // 50 GB
+      aiChatLimit: -1,
       draftMakerLimit: -1,
       precedentLimit: -1,
       evidenceLimit: -1,
@@ -115,27 +130,33 @@ export const PLAN_ENTITLEMENT_MAP = {
       mockCourtLimit: 15,
       clientConnectLimit: 0,
       aiCaseAnalysisLimit: -1,
+      quizLimit: -1, // Unlimited
+      notesMakerLimit: -1, // Unlimited
     },
   },
 
   // Law Firm Workspace Plans
   lawfirm: {
     FREE: {
+      teamMembers: 1,
       activeCases: 3,
-      storage: 500,
+      storage: 500, // 500 MB
+      aiChatLimit: 50,
       draftMakerLimit: 1,
       precedentLimit: 1,
-      evidenceLimit: 1,
+      evidenceLimit: 0,
       contractLimit: 1,
-      strategyLimit: 1,
-      predictorLimit: 1,
+      strategyLimit: 0,
+      predictorLimit: 0,
       mockCourtLimit: 0,
       clientConnectLimit: 0,
       aiCaseAnalysisLimit: 1,
     },
     BASIC: {
+      teamMembers: 10,
       activeCases: 100,
       storage: 25600, // 25 GB Shared Storage
+      aiChatLimit: 1500,
       draftMakerLimit: 30,
       precedentLimit: 30,
       evidenceLimit: 30,
@@ -147,8 +168,10 @@ export const PLAN_ENTITLEMENT_MAP = {
       aiCaseAnalysisLimit: 30,
     },
     PROFESSIONAL: {
+      teamMembers: 25,
       activeCases: 250,
       storage: 102400, // 100 GB Shared Storage
+      aiChatLimit: 3500,
       draftMakerLimit: 100,
       precedentLimit: 100,
       evidenceLimit: 100,
@@ -160,8 +183,10 @@ export const PLAN_ENTITLEMENT_MAP = {
       aiCaseAnalysisLimit: 100,
     },
     PREMIUM: {
+      teamMembers: 50,
       activeCases: 500,
       storage: 512000, // 500 GB Shared Storage
+      aiChatLimit: -1,
       draftMakerLimit: -1,
       precedentLimit: -1,
       evidenceLimit: -1,
@@ -183,6 +208,7 @@ export class EntitlementService {
    */
   static getToolLimitField(toolName) {
     const t = (toolName || '').toLowerCase();
+    if (t.includes('chat') || t.includes('tutor') || t.includes('assistant') || t.includes('copilot')) return 'aiChatLimit';
     if (t.includes('draft')) return 'draftMakerLimit';
     if (t.includes('precedent') || t.includes('research')) return 'precedentLimit';
     if (t.includes('evidence')) return 'evidenceLimit';
@@ -198,17 +224,43 @@ export class EntitlementService {
    * Fetch active subscription & entitlements for a given account and workspace
    */
   static async getEntitlements(userId, targetWorkspace = 'advocate') {
-    const ws = targetWorkspace.toLowerCase();
+    const ws = (targetWorkspace || 'advocate').toLowerCase().replace('law_firm', 'lawfirm');
     const user = await User.findById(userId);
 
-    // Active subscription
+    // Active subscription for THIS workspace or COMBO workspace
     const activeSub = await Subscription.findOne({
       accountId: userId,
-      status: 'active',
+      status: { $in: ['active', 'Active'] },
       expiryDate: { $gt: new Date() },
+      $or: [
+        { workspace: ws },
+        { workspace: 'combo' },
+        { workspace: 'all' },
+        { tier: { $regex: /combo/i } }
+      ]
     }).sort({ createdAt: -1 });
 
-    let activeTier = activeSub ? activeSub.tier : 'FREE';
+    let activeTier = 'FREE';
+    if (activeSub) {
+      activeTier = activeSub.tier || 'FREE';
+    } else if (user && user.subscription && (user.subscription.status || '').toLowerCase() === 'active') {
+      const userWs = (user.subscription.workspace || '').toLowerCase().replace('law_firm', 'lawfirm');
+      const userPlan = (user.subscription.plan || '').toLowerCase();
+      if (userWs === ws || userWs === 'combo' || userWs === 'all' || userPlan.includes('combo')) {
+        activeTier = user.subscription.plan || 'FREE';
+      }
+    }
+
+    let normTier = (activeTier || 'FREE').toUpperCase();
+    if (normTier.includes('ENTERPRISE') || normTier.includes('FIRM') || normTier.includes('COMBO')) {
+      normTier = 'PREMIUM'; // High tier for Firm/Combo
+    } else if (normTier.includes('PREMIUM') || normTier.includes('PROFESSIONAL') || normTier.includes('ADVOCATE_PRO') || normTier.includes('STUDENT_PRO')) {
+      normTier = 'PROFESSIONAL';
+    } else if (normTier.includes('BASIC') || normTier.includes('PRO') || normTier.includes('ADVOCATE_BASIC') || normTier.includes('STUDENT_BASIC')) {
+      normTier = 'BASIC';
+    } else {
+      normTier = 'FREE';
+    }
 
     // Fetch matching SubscriptionItem for target workspace
     let subItem = null;
@@ -220,7 +272,7 @@ export class EntitlementService {
     }
 
     // Fallback to default limits if no custom item exists
-    const defaultLimits = PLAN_ENTITLEMENT_MAP[ws]?.[activeTier] || PLAN_ENTITLEMENT_MAP.advocate.FREE;
+    const defaultLimits = PLAN_ENTITLEMENT_MAP[ws]?.[normTier] || PLAN_ENTITLEMENT_MAP[ws]?.FREE || PLAN_ENTITLEMENT_MAP.advocate.FREE;
     const limits = subItem
       ? {
           activeCases: subItem.activeCases,

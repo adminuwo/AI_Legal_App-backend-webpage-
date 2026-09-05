@@ -70,15 +70,33 @@ apiClient.interceptors.request.use(
     }
 
     const userLocale = getLocaleForLanguage(userLang);
-    const activeWsId = localStorage.getItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID') || 'personal_practice';
-    const activeWsType = localStorage.getItem('AI_LEGAL_ACTIVE_WORKSPACE_TYPE') || (activeWsId === 'personal_practice' ? 'personal' : 'law_firm');
+    const activeRole = localStorage.getItem('user_selected_role') || 'advocate';
+    const activeWsId = activeRole === 'law_firm' ? (localStorage.getItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID') || 'personal_practice') : 'personal_practice';
 
-    if (config.data && typeof config.data === 'object' && !(config.data instanceof FormData)) {
+    config.baseURL = API;
+
+    const deviceId = localStorage.getItem('aisa_device_id') || 'web_client';
+    config.headers['X-User-Role'] = activeRole;
+    config.headers['X-Workspace-Type'] = activeRole;
+    config.headers['X-Active-Workspace-Id'] = activeWsId;
+    config.headers['X-Device-Id'] = deviceId;
+
+    const isGet = (config.method || '').toLowerCase() === 'get';
+
+    if (isGet) {
+      config.params = {
+        role: activeRole,
+        workspaceType: activeRole,
+        workspaceId: activeWsId,
+        ...(config.params || {}),
+      };
+    } else if (config.data && typeof config.data === 'object' && !(config.data instanceof FormData)) {
       config.data.preferred_response_language = userLang;
       config.data.language = userLang;
       config.data.locale = userLocale;
+      if (!config.data.role) config.data.role = activeRole;
+      if (!config.data.workspaceType) config.data.workspaceType = activeRole;
       if (!config.data.workspaceId) config.data.workspaceId = activeWsId;
-      if (!config.data.workspaceType) config.data.workspaceType = activeWsType;
     }
 
     return config;
@@ -120,9 +138,18 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      const isRevoked = error.response?.data?.code === 'SESSION_REVOKED';
       // Clear user data and redirect to login on unauthorized
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        if (isRevoked) {
+          sessionStorage.setItem('aisa_revoked_toast', 'Your session was signed out because the account was logged in from another device.');
+        }
+        window.location.href = '/login';
+      }
     }
 
     if (error.response?.status === 403 && error.response?.data?.code === 'OUT_OF_CREDITS') {
@@ -1567,6 +1594,139 @@ export const apiService = {
       return response.data;
     } catch (error) {
       console.error('[Frontend] autoAnalyzeCase failed:', error?.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  async postClientConnectDraft(projectId, payload) {
+    try {
+      const response = await apiClient.post(`/projects/${projectId}/client-connect/draft`, payload);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to generate client connect draft:', error);
+      throw error;
+    }
+  },
+
+  async postClientConnectLog(projectId, payload) {
+    try {
+      const response = await apiClient.post(`/projects/${projectId}/client-connect/log`, payload);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to log client connect communication:', error);
+      throw error;
+    }
+  },
+
+  async deleteClientConnectLog(projectId, logId) {
+    try {
+      const endpoint = logId ? `/projects/${projectId}/client-connect/logs/${logId}` : `/projects/${projectId}/client-connect/logs`;
+      const response = await apiClient.delete(endpoint);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to delete client connect log:', error);
+      throw error;
+    }
+  },
+
+  async request(urlOrConfig, config) {
+    if (typeof urlOrConfig === 'string') {
+      return apiClient.get(urlOrConfig, config);
+    }
+    return apiClient.request(urlOrConfig);
+  },
+  async get(url, config) {
+    return apiClient.get(url, config);
+  },
+  async post(url, data, config) {
+    return apiClient.post(url, data, config);
+  },
+  async put(url, data, config) {
+    return apiClient.put(url, data, config);
+  },
+  async delete(url, config) {
+    return apiClient.delete(url, config);
+  },
+
+  async triggerPersonalAnalysis(caseId) {
+    try {
+      const response = await apiClient.post(`/projects/${caseId}/personal-analysis-trigger`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to trigger personal case analysis:', error);
+      throw error;
+    }
+  },
+
+  async getPersonalAnalysisLatest(caseId) {
+    try {
+      const response = await apiClient.get(`/projects/${caseId}/personal-analysis-latest`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch latest personal case analysis:', error);
+      throw error;
+    }
+  },
+
+  // --- Dedicated Case Chat API ---
+  async getCaseChat(caseId) {
+    try {
+      const response = await apiClient.get(`/projects/${caseId}/case-chat`);
+      return response.data;
+    } catch (error) {
+      console.warn("Failed to get case chat:", error);
+      return { success: false };
+    }
+  },
+
+  async getCaseChatMessages(caseId) {
+    try {
+      const response = await apiClient.get(`/projects/${caseId}/case-chat/messages`);
+      return response.data;
+    } catch (error) {
+      console.warn("Failed to get case chat messages:", error);
+      return { success: false, messages: [] };
+    }
+  },
+
+  async postCaseChatMessage(caseId, payload) {
+    try {
+      const response = await apiClient.post(`/projects/${caseId}/case-chat/messages`, payload);
+      return response.data;
+    } catch (error) {
+      console.warn("Failed to post case chat message:", error);
+      return { success: false };
+    }
+  },
+
+  // --- Workspace Activities API (Real-time App & Web Sync) ---
+  async getCaseWorkspaceActivities(caseId) {
+    try {
+      const response = await apiClient.get(`/workspace-activities/cases/${caseId}/activities`);
+      return response.data;
+    } catch (error) {
+      console.warn("Failed to fetch case workspace activities:", error);
+      return { success: false, activities: [] };
+    }
+  },
+
+  async deleteWorkspaceActivity(activityId) {
+    try {
+      const response = await apiClient.delete(`/workspace-activities/detail/${activityId}`);
+      return response.data;
+    } catch (error) {
+      console.warn("Failed to delete workspace activity:", error);
+      return { success: false };
+    }
+  },
+
+  // --- UWO SSO Central Auth Login ---
+  async uwoLogin(credentials) {
+    try {
+      const response = await apiClient.post('/auth/sso/uwo-login', credentials);
+      return response.data;
+    } catch (error) {
+      console.error("UWO Login failed:", error);
       throw error;
     }
   }

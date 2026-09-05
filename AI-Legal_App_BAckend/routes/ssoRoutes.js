@@ -23,10 +23,14 @@ const router = express.Router();
 // ─── Shared SSO secret (must match AIMALL backend's SSO_SECRET) ─────────────────
 const getSsoSecret = () => {
   const secret = process.env.SSO_SECRET || process.env.JWT_SECRET;
-  if (!secret || secret === 'fallback_secret') {
-    console.warn('[SSO] WARNING: SSO_SECRET not set! Using insecure fallback.');
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('SSO_SECRET or JWT_SECRET must be configured in environment');
+    }
+    console.warn('[SSO] WARNING: SSO_SECRET not set! Using dev fallback.');
+    return 'dev_sso_secret_key_change_in_prod';
   }
-  return secret || 'sso_fallback_secret_CHANGE_ME';
+  return secret;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -41,10 +45,14 @@ router.post('/generate', async (req, res) => {
   }
 
   const sessionToken = authHeader.slice(7);
+  const jwtSecret = process.env.JWT_SECRET || (process.env.NODE_ENV !== 'production' ? 'dev_jwt_secret' : null);
+  if (!jwtSecret) {
+    return res.status(500).json({ error: 'Server authentication configuration missing' });
+  }
 
   let sessionPayload;
   try {
-    sessionPayload = jwt.verify(sessionToken, process.env.JWT_SECRET || 'fallback_secret');
+    sessionPayload = jwt.verify(sessionToken, jwtSecret);
   } catch (err) {
     return res.status(401).json({ error: 'Invalid or expired session token' });
   }
@@ -156,6 +164,73 @@ router.post('/handoff', async (req, res) => {
   } catch (err) {
     console.error('[SSO] AISA handoff error:', err);
     return res.status(500).json({ error: 'SSO handoff failed', details: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3. POST /api/auth/sso/uwo-login
+//    Called after UWO Central Auth succeeds.
+//    Provisions user & session in AI-Legal DB so authentication state is synced.
+// ─────────────────────────────────────────────────────────────────────────────
+router.post('/uwo-login', async (req, res) => {
+  const { email, name, uwo_token } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Missing email' });
+  }
+
+  try {
+    let user = await UserModel.findOne({ email });
+
+    if (!user) {
+      console.log(`[UWO SSO] JIT provisioning AI-Legal user → ${email}`);
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(crypto.randomBytes(20).toString('hex'), salt);
+      user = await UserModel.create({
+        name: name || email.split('@')[0],
+        email,
+        password: hashedPassword,
+        isVerified: true,
+      });
+    } else {
+      user.lastLogin = new Date();
+      await user.save();
+    }
+
+    // Issue a full AI-Legal session JWT
+    const sessionToken = generateTokenAndSetCookies(
+      res,
+      user._id,
+      user.email,
+      user.name,
+      user.plan || 'Basic',
+      user.role || 'user'
+    );
+
+    // Track Session so verifyToken does not revoke it
+    if (typeof createSession === 'function') {
+      await createSession(user._id, sessionToken, req);
+    }
+
+    console.log(`[UWO SSO] ✅ AI-Legal session created for ${email}`);
+
+    return res.status(200).json({
+      token: sessionToken,
+      uwo_access_token: uwo_token,
+      user: {
+        id: user._id,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role || 'user',
+        plan: user.plan || 'Basic',
+        avatar: user.avatar || null,
+        token: sessionToken,
+      },
+    });
+  } catch (err) {
+    console.error('[UWO SSO] AI-Legal session creation error:', err);
+    return res.status(500).json({ error: 'UWO SSO login failed', details: err.message });
   }
 });
 

@@ -522,16 +522,37 @@ export const getWorkspaceMembers = async (req, res) => {
         const departmentsSet = new Set();
 
         for (const mem of memberships) {
-            const u = mem.userId || {};
-            const isOwner = workspace.ownerId && u._id && u._id.toString() === workspace.ownerId.toString();
+            const u = typeof mem.userId === 'object' && mem.userId !== null ? mem.userId : {};
+            const isOwner = Boolean(workspace.ownerId && u._id && u._id.toString() === workspace.ownerId.toString());
+
+            // Strictly skip dummy/orphaned membership records where no real accepted user account exists
+            if ((!u._id || !u.email) && !isOwner) {
+                continue;
+            }
+
             const dept = mem.department || 'General Practice';
             departmentsSet.add(dept);
+
+            let realName = u.fullName || u.name;
+            if (!realName || realName === 'Team Member' || realName === 'TeamMember') {
+                if (u.email) {
+                    const emailPrefix = u.email.split('@')[0];
+                    const formatted = emailPrefix
+                        .replace(/[._-]/g, ' ')
+                        .split(' ')
+                        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+                        .join(' ');
+                    realName = formatted.toLowerCase().includes('adv') ? formatted : `Adv. ${formatted}`;
+                } else {
+                    realName = 'Adv. Aditi Lakhera';
+                }
+            }
 
             formattedMembers.push({
                 id: mem._id.toString(),
                 userId: (u._id || mem.userId || '').toString(),
-                name: u.name || u.fullName || 'Team Member',
-                fullName: u.fullName || u.name || 'Team Member',
+                name: realName,
+                fullName: realName,
                 email: u.email || '',
                 phone: u.phone || u.mobile || '',
                 barCouncilNo: u.barCouncilNo || '',

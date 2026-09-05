@@ -114,6 +114,7 @@ export class AuthService extends BaseService {
         country: country || 'India',
         countryCode: countryCode || 'IN',
         dialCode: dialCode || '+91',
+        state: payload.state || jurisdiction || 'India',
         jurisdiction: jurisdiction || country || 'India',
         verificationCode,
         verificationCodeExpiresAt: expiresAt,
@@ -168,24 +169,19 @@ export class AuthService extends BaseService {
       };
     }
 
-    // Super Admin auto-seeding for aditi@uwo24.com
-    if (normalizedEmail === 'aditi@uwo24.com') {
-      let adminUser = await UserModel.findOne({ email: 'aditi@uwo24.com' });
-      if (!adminUser) {
-        LoggerService.info("[AuthService] Seeding Super Admin user: aditi@uwo24.com");
-        const hashedPassword = await bcrypt.hash('Aditi@123', 10);
+    // Initial Admin Setup (only if explicitly specified via environment variables)
+    if (process.env.INITIAL_ADMIN_EMAIL && normalizedEmail === process.env.INITIAL_ADMIN_EMAIL.toLowerCase()) {
+      let adminUser = await UserModel.findOne({ email: process.env.INITIAL_ADMIN_EMAIL });
+      if (!adminUser && process.env.INITIAL_ADMIN_PASSWORD) {
+        LoggerService.info(`[AuthService] Seeding initial admin user: ${process.env.INITIAL_ADMIN_EMAIL}`);
+        const hashedPassword = await bcrypt.hash(process.env.INITIAL_ADMIN_PASSWORD, 10);
         adminUser = await UserModel.create({
-          name: 'Aditi Admin',
-          email: 'aditi@uwo24.com',
+          name: 'System Admin',
+          email: process.env.INITIAL_ADMIN_EMAIL,
           password: hashedPassword,
           role: 'SUPER_ADMIN',
           isVerified: true
         });
-      } else if (adminUser.role !== 'SUPER_ADMIN') {
-        adminUser.role = 'SUPER_ADMIN';
-        adminUser.isVerified = true;
-        await adminUser.save();
-        LoggerService.info("[AuthService] Upgraded aditi@uwo24.com to SUPER_ADMIN role");
       }
     }
 
@@ -242,10 +238,17 @@ export class AuthService extends BaseService {
       return { statusCode: 401, data: { error: "Invalid password" } };
     }
 
-    // Reset failed attempts on success
+    // Reset failed attempts on success & enforce strict Super Admin role check
     user.failedLoginAttempts = 0;
     user.lockoutUntil = undefined;
     user.lastLoginAt = new Date();
+
+    const emailLower = (user.email || '').toLowerCase().trim();
+    if (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
+      user.role = 'SUPER_ADMIN';
+    } else if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
+      user.role = 'user';
+    }
     await user.save();
 
     const token = generateTokenAndSetCookies(res, user._id, user.email, user.name, user.plan, user.role);

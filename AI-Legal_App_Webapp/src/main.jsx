@@ -16,7 +16,7 @@ import ErrorBoundary from './Components/ErrorBoundary';
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
   || import.meta.env.AISA_GOOGLE_CLIENT_ID
   || (typeof window !== 'undefined' && window._env_?.AISA_GOOGLE_CLIENT_ID)
-  || 'dummy_client_id_to_prevent_crash';
+  || '743928421487-e5qcqaqldrr8v39574urvsc18icsb476.apps.googleusercontent.com';
 
 // ─── Visual Viewport Manager ───
 // Definitive fix for Android Chrome mobile keyboard push-up.

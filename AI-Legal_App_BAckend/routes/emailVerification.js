@@ -4,6 +4,7 @@ import PendingRegistration from "../models/PendingRegistration.js";
 import { welcomeEmail } from "../utils/Email.js";
 import generateTokenAndSetCookies from "../utils/generateTokenAndSetCookies.js";
 import { getSmartAvatar } from "../utils/avatarHelper.js";
+import { resolveLanguageFromState } from "../utils/geoLanguageResolver.js";
 
 const router = express.Router();
 
@@ -15,41 +16,37 @@ router.post("/", async (req, res) => {
         const inputCode = (code || '').toString().trim();
 
         if (!normalizedEmail || !inputCode) {
-            return res.status(400).json({ success: false, error: "Email and OTP code are required" });
+            return res.status(400).json({ success: false, error: "Email and verification code are required" });
         }
 
         // 1. Find PendingRegistration record
         const pendingReg = await PendingRegistration.findOne({ email: normalizedEmail });
 
         if (!pendingReg) {
-            // Check if user is already created and verified
-            const existingUser = await userModel.findOne({ email: new RegExp('^' + normalizedEmail + '$', 'i') });
-            if (existingUser && existingUser.isVerified) {
-                return res.status(400).json({ success: false, error: "Account already verified. Please log in." });
-            }
-            return res.status(400).json({ success: false, error: "Registration session expired or invalid request. Please sign up again." });
+            return res.status(404).json({ success: false, error: "No pending verification found for this email. Please request a new code." });
         }
 
-        // 2. Validate OTP matching across primary code, history array (10-min window), or master code
-        const storedCode = String(pendingReg.verificationCode || '').trim();
-        const isMasterCode = inputCode === '123456' || inputCode === '999999' || inputCode === '000000';
-        
-        const isPrimaryMatch = storedCode === inputCode && (!pendingReg.verificationCodeExpiresAt || pendingReg.verificationCodeExpiresAt >= new Date());
-        
-        const isPreviousMatch = Array.isArray(pendingReg.previousCodes) && pendingReg.previousCodes.some(c => 
-            String(c.code).trim() === inputCode && new Date(c.expiresAt) >= new Date()
+        // 2. Check if code has expired
+        if (pendingReg.verificationCodeExpiresAt && new Date() > new Date(pendingReg.verificationCodeExpiresAt)) {
+            return res.status(400).json({ success: false, error: "Verification code has expired. Please request a new code." });
+        }
+
+        // 3. Compare code
+        const storedCode = (pendingReg.verificationCode || '').toString().trim();
+        const isPrimaryMatch = storedCode === inputCode;
+        const isPreviousMatch = (pendingReg.previousCodes || []).some(
+            c => c.code && String(c.code).trim() === inputCode && new Date(c.expiresAt) >= new Date()
         );
 
-        console.log(`[VERIFY OTP] Email: "${normalizedEmail}" | Input: "${inputCode}" | Stored: "${storedCode}" | PrimaryMatch: ${isPrimaryMatch} | PreviousMatch: ${isPreviousMatch}`);
-
-        if (!isPrimaryMatch && !isPreviousMatch && !isMasterCode) {
+        if (!isPrimaryMatch && !isPreviousMatch) {
             pendingReg.attempts = (pendingReg.attempts || 0) + 1;
             await pendingReg.save();
-            return res.status(400).json({ success: false, error: "Invalid OTP code. Please enter any 6-digit code received in your email or 123456." });
+            return res.status(400).json({ success: false, error: "Invalid verification code." });
         }
 
         // 4. STEP 5: CREATE ACCOUNT ONLY NOW AFTER SUCCESSFUL OTP VERIFICATION
         const avatarUrl = await getSmartAvatar(pendingReg.email, pendingReg.name);
+        const resolvedLanguage = resolveLanguageFromState(pendingReg.state || pendingReg.jurisdiction);
         
         const newUser = await userModel.create({
             name: pendingReg.name,
@@ -64,6 +61,14 @@ router.post("/", async (req, res) => {
             isVerified: true,
             credits: 500,
             avatar: avatarUrl,
+            personalizations: {
+                general: {
+                    language: resolvedLanguage,
+                    state: pendingReg.state || pendingReg.jurisdiction || 'India',
+                    timeFormat: '12-hour',
+                    dateFormat: 'DD/MM/YYYY'
+                }
+            },
             subscription: {
                 plan: 'FREE',
                 status: 'active',
@@ -100,6 +105,10 @@ router.post("/", async (req, res) => {
 
         // Generate Auth JWT Token
         const token = generateTokenAndSetCookies(res, newUser._id, newUser.email, newUser.name, 'FREE', newUser.role);
+
+        // Track Device Session
+        const { createSession } = await import("../utils/sessionHelper.js");
+        await createSession(newUser._id, token, req);
 
         // STEP 7: Send Welcome Confirmation Email
         welcomeEmail(newUser.name, newUser.email).catch(err => console.error("Welcome email error:", err));

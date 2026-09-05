@@ -31,12 +31,15 @@ import PrivacyPolicy from './landingpage/PrivacyPolicy.jsx';
 import TermsOfService from './landingpage/TermsOfService.jsx';
 import CookiePolicy from './landingpage/CookiePolicy.jsx';
 import LegalPricingPortal from './pages/LegalPricingPortal.jsx';
+import EnterprisePage from './pages/EnterprisePage.jsx';
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { lazy, Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
 import CookieConsentBanner from './landingpage/CookieConsentBanner';
 import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute.jsx';
+import { SubscriptionProvider, useSubscription } from './context/SubscriptionContext';
+import SubscriptionUpgradeModal from './Components/SubscriptionUpgradeModal';
 const AiBase = lazy(() => import('./Tools/AI_Base/AI_Base').catch(() => ({ default: () => <div className="flex h-full items-center justify-center text-subtext">AI Base Module not found.</div> })));
 
 // Vendor Imports Removed
@@ -52,6 +55,35 @@ const HomeDashboard = lazy(() => import('./pages/HomeDashboard'));
 const SettingsPage = lazy(() => import('./pages/Settings'));
 const HelpSupport = lazy(() => import('./pages/HelpSupport'));
 const AiToolsPage = lazy(() => import('./pages/AiToolsPage'));
+const ProductGuideWorkspace = lazy(() => import('./pages/Workspace/ProductGuideWorkspace'));
+const KnowledgeHubWorkspace = lazy(() => import('./pages/Workspace/KnowledgeHubWorkspace'));
+const DraftMakerWorkspace = lazy(() => import('./pages/DraftMakerWorkspace'));
+const ArgumentBuilderWorkspace = lazy(() => import('./pages/ArgumentBuilderWorkspace'));
+const LegalPrecedentsWorkspace = lazy(() => import('./pages/LegalPrecedentsWorkspace'));
+const EvidenceAnalystWorkspace = lazy(() => import('./pages/EvidenceAnalystWorkspace'));
+const ContractAnalyzerWorkspace = lazy(() => import('./pages/ContractAnalyzerWorkspace'));
+const CasePredictorWorkspace = lazy(() => import('./pages/CasePredictorWorkspace'));
+const StrategyEngineWorkspace = lazy(() => import('./pages/StrategyEngineWorkspace'));
+const MockCourtroomWorkspace = lazy(() => import('./pages/MockCourtroomWorkspace'));
+const ClientConnectWorkspace = lazy(() => import('./pages/ClientConnectWorkspace'));
+const QuizPracticeWorkspace = lazy(() => import('./pages/QuizPracticeWorkspace'));
+const NotesMakerWorkspace = lazy(() => import('./pages/NotesMakerWorkspace'));
+const MobileAppPage = lazy(() => import('./pages/MobileAppPage'));
+
+const EnterpriseSetupPage = lazy(() => import('./pages/Enterprise/EnterpriseSetupPage'));
+const EnterpriseDashboardLayout = lazy(() => import('./pages/Enterprise/EnterpriseDashboardLayout'));
+const EnterpriseOverview = lazy(() => import('./pages/Enterprise/EnterpriseOverview'));
+const EnterpriseStudents = lazy(() => import('./pages/Enterprise/EnterpriseStudents'));
+const EnterpriseFaculty = lazy(() => import('./pages/Enterprise/EnterpriseFaculty'));
+const EnterpriseAcademic = lazy(() => import('./pages/Enterprise/EnterpriseAcademic'));
+const EnterpriseCurriculum = lazy(() => import('./pages/Enterprise/EnterpriseCurriculum'));
+const EnterpriseFeatureAccess = lazy(() => import('./pages/Enterprise/EnterpriseFeatureAccess'));
+const EnterpriseUsageCredits = lazy(() => import('./pages/Enterprise/EnterpriseUsageCredits'));
+const EnterpriseAnalytics = lazy(() => import('./pages/Enterprise/EnterpriseAnalytics'));
+const EnterpriseAnnouncements = lazy(() => import('./pages/Enterprise/EnterpriseAnnouncements'));
+const EnterpriseAddons = lazy(() => import('./pages/Enterprise/EnterpriseAddons'));
+const EnterpriseReports = lazy(() => import('./pages/Enterprise/EnterpriseReports'));
+const EnterpriseSettings = lazy(() => import('./pages/Enterprise/EnterpriseSettings'));
 
 const isAuthenticated = () => {
   const tokenStr = localStorage.getItem('token');
@@ -63,10 +95,20 @@ const isAuthenticated = () => {
 // ------------------------------
 // Home Redirect Component
 // ------------------------------
-// Always displays the landing page on root to satisfy Google OAuth Branding verification.
-// Users can explicitly enter the dashboard using CTA buttons.
+// Redirects unauthenticated users directly to /onboarding without delay.
 const HomeRedirect = () => {
-  return <SplashScreen />;
+  const hasToken = isAuthenticated();
+
+  if (hasToken) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const onboardingDone = localStorage.getItem('ai_legal_onboarding_completed');
+  if (onboardingDone) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Navigate to="/onboarding" replace />;
 };
 
 // ------------------------------
@@ -111,95 +153,13 @@ const MobileNotificationBell = ({ onClick }) => {
   );
 };
 
-// ─── SCROLL SHOW/HIDE LOGIC (FIXED VERSION 🔥) ───
+// ─── SCROLL SHOW/HIDE LOGIC (PERMANENTLY VISIBLE HEADER) ───
 const useScrollNavbar = () => {
-  const [visible, setVisible] = useState(true);
-  const lastScrollY = useRef(new Map());
-  const ticking = useRef(false);
-  const isLocked = useRef(false);
-  const lockTimeout = useRef(null);
-  // Use a ref to mirror `visible` so the scroll handler never becomes stale
-  // without needing `visible` in the effect dependency array.
-  const visibleRef = useRef(true);
-  const scrollThreshold = 15;
-
-  useEffect(() => {
-    const handleScroll = (e) => {
-      if (isLocked.current) return;
-
-      const target = e.target;
-
-      // In DashboardLayout, the document itself does not scroll (fixed inset-0).
-      // Any document scroll events are bogus (mobile browser UI shifts, etc) and cause flickering.
-      if (target === document || target === document.documentElement || target === window) {
-        return;
-      }
-
-      const isChat = target.classList && target.classList.contains('chatgpt-container');
-      const isMain = target.tagName === 'MAIN';
-
-      // Only track scroll events from our known scrollable containers
-      if (!isChat && !isMain) return;
-
-      if (!ticking.current) {
-        window.requestAnimationFrame(() => {
-          const targetKey = isChat ? 'chat' : 'main';
-          const currentScrollY = target.scrollTop ?? 0;
-          const prevScrollY = lastScrollY.current.get(targetKey) || 0;
-
-          // Always show at top (with a small buffer for bounce)
-          if (currentScrollY <= 10) {
-            if (!visibleRef.current) {
-              visibleRef.current = true;
-              setVisible(true);
-              isLocked.current = true;
-              clearTimeout(lockTimeout.current);
-              lockTimeout.current = setTimeout(() => { isLocked.current = false; }, 300);
-            }
-            lastScrollY.current.set(targetKey, currentScrollY);
-            ticking.current = false;
-            return;
-          }
-
-          const diff = currentScrollY - prevScrollY;
-          if (Math.abs(diff) > scrollThreshold) {
-            if (currentScrollY > prevScrollY) {
-              // scroll down
-              if (visibleRef.current) {
-                visibleRef.current = false;
-                setVisible(false);
-                isLocked.current = true;
-                clearTimeout(lockTimeout.current);
-                lockTimeout.current = setTimeout(() => { isLocked.current = false; }, 300);
-              }
-            } else {
-              // scroll up
-              if (!visibleRef.current) {
-                visibleRef.current = true;
-                setVisible(true);
-                isLocked.current = true;
-                clearTimeout(lockTimeout.current);
-                lockTimeout.current = setTimeout(() => { isLocked.current = false; }, 300);
-              }
-            }
-            lastScrollY.current.set(targetKey, currentScrollY);
-          }
-          ticking.current = false;
-        });
-        ticking.current = true;
-      }
-    };
-
-    // Use capture: true to catch scroll events from child containers like #chat-container
-    // NOTE: No `visible` in deps — visibleRef keeps the handler fresh without re-registration
-    window.addEventListener("scroll", handleScroll, { capture: true, passive: true });
-    return () => window.removeEventListener("scroll", handleScroll, { capture: true, passive: true });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return visible;
+  return true;
 };
 
 const DashboardLayout = () => {
+  const { isUpgradeModalOpen, closeUpgradeModal, upgradeModalData } = useSubscription();
   const [tglState, setTglState] = useRecoilState(toggleState);
   const isSidebarOpen = tglState.sidebarOpen;
   const setIsSidebarOpen = (val) => setTglState(prev => ({ ...prev, sidebarOpen: val }));
@@ -234,6 +194,28 @@ const DashboardLayout = () => {
   const allowNavbar = !isHiddenTool;
 
   const showOnScroll = useScrollNavbar();
+
+  const mainRef = useRef(null);
+
+  // Scroll main container to top on route change
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTo(0, 0);
+    }
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Listen for sidebar toggle events from workspace sub-components
+  useEffect(() => {
+    const handleToggle = () => setIsSidebarOpen(prev => !prev);
+    const handleOpen = () => setIsSidebarOpen(true);
+    window.addEventListener('open_sidebar', handleOpen);
+    window.addEventListener('toggle_sidebar', handleToggle);
+    return () => {
+      window.removeEventListener('open_sidebar', handleOpen);
+      window.removeEventListener('toggle_sidebar', handleToggle);
+    };
+  }, []);
 
   // Sync CSS variable for child pages top-padding
   useEffect(() => {
@@ -288,19 +270,22 @@ const DashboardLayout = () => {
         {/* ─── FINAL RENDER (Navbar) ─── */}
         {allowNavbar && !isFullScreen && !isSidebarOpen && !tglState.focusMode && (
           <div
-            className={`navbar fixed top-0 left-0 right-0 z-[1001] transition-transform duration-300 lg:left-[280px]
-              ${showOnScroll ? "translate-y-0" : "-translate-y-full"}`}
+            className="navbar fixed top-0 left-0 right-0 z-[1001] bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800 lg:border-none lg:bg-transparent lg:backdrop-blur-none translate-y-0"
           >
-            <div className="flex items-center justify-between lg:justify-end px-6 py-3 bg-transparent shrink-0">
+            <div className="flex items-center justify-between px-4 py-2.5 lg:justify-end shrink-0">
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsSidebarOpen(true)}
-                className="lg:hidden w-10 h-10 flex items-center justify-center bg-transparent rounded-xl border border-transparent text-primary"
+                className="lg:hidden w-9 h-9 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-[#C8A34D] cursor-pointer shadow-2xs"
+                aria-label="Open Navigation Menu"
               >
-                <Menu className="w-6 h-6 stroke-[2.5]" />
+                <Menu className="w-5 h-5 stroke-[2.5]" />
               </motion.button>
 
-
+              <div className="lg:hidden flex items-center gap-2">
+                <img src="/logo/logo_transparent.png" alt="AI LEGAL" className="w-5 h-5 object-contain" />
+                <span className="font-black text-xs tracking-tight text-[#111111] dark:text-white">AI LEGAL<span className="text-[#C8A34D]">.</span></span>
+              </div>
             </div>
           </div>
         )}
@@ -308,8 +293,8 @@ const DashboardLayout = () => {
         <NotificationCenter isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
         {/* Outlet for pages */}
         <main
-          className={`flex-1 ${(location.pathname.includes('/chat') || location.pathname.includes('/case')) ? 'overflow-hidden' : 'overflow-y-auto'} relative w-full scroll-smooth p-0 scrollbar-hide transition-all duration-300 ease-in-out`}
-          style={{ paddingTop: '0px' }}
+          ref={mainRef}
+          className={`flex-1 ${(location.pathname.includes('/chat') || (location.pathname.includes('/case') && !location.pathname.includes('case-predictor'))) ? 'overflow-hidden' : 'overflow-y-auto'} relative w-full scroll-smooth p-0 scrollbar-hide transition-all duration-300 ease-in-out ${allowNavbar ? 'pt-14 lg:pt-0' : ''}`}
         >
           <Suspense fallback={
             <div className="flex h-full w-full items-center justify-center bg-transparent">
@@ -336,6 +321,11 @@ const DashboardLayout = () => {
           />
         )}
       </AnimatePresence>
+      <SubscriptionUpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={closeUpgradeModal}
+        data={upgradeModalData}
+      />
     </div>
   );
 };
@@ -424,18 +414,18 @@ const NavigateProvider = () => {
   const [tglState] = useRecoilState(toggleState);
 
   return (
-    <SSOInterceptor>
-      <Toaster
-        position="top-right"
-        containerStyle={{ zIndex: 99999 }}
-        toastOptions={{
-          duration: 2500, // Reduced from default to meet user request for 2-3 sec auto-close
-          className: '!bg-white dark:!bg-[#1E2438] !text-slate-800 dark:!text-white !border !border-slate-100 dark:!border-white/10 !shadow-lg',
-        }}
-      />
-      <CreditUpsellPopup />
-      <CookieConsentBanner />
-      <Routes>
+    <SubscriptionProvider>
+      <SSOInterceptor>
+        <Toaster
+          position="top-right"
+          containerStyle={{ zIndex: 99999 }}
+          toastOptions={{
+            duration: 2500, // Reduced from default to meet user request for 2-3 sec auto-close
+            className: '!bg-white dark:!bg-[#1E2438] !text-slate-800 dark:!text-white !border !border-slate-100 dark:!border-white/10 !shadow-lg',
+          }}
+        />
+        <CreditUpsellPopup />
+        <Routes>
         {/* Public Routes */}
         <Route path={AppRoute.LANDING} element={<HomeRedirect />} />
         <Route path="/splash" element={<SplashScreen />} />
@@ -454,7 +444,34 @@ const NavigateProvider = () => {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/legal-pricing" element={<LegalPricingPortal />} />
         <Route path="/subscription-checkout" element={<LegalPricingPortal />} />
+        <Route path="/enterprise" element={<EnterprisePage />} />
+        <Route path="/enterprise/setup" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Enterprise Setup...</div>}>
+            <EnterpriseSetupPage />
+          </Suspense>
+        } />
+
+        <Route path="/dashboard/enterprise" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Enterprise Dashboard...</div>}>
+            <EnterpriseDashboardLayout />
+          </Suspense>
+        }>
+          <Route index element={<EnterpriseOverview />} />
+          <Route path="students" element={<EnterpriseStudents />} />
+          <Route path="faculty" element={<EnterpriseFaculty />} />
+          <Route path="academic" element={<EnterpriseAcademic />} />
+          <Route path="curriculum" element={<EnterpriseCurriculum />} />
+          <Route path="feature-access" element={<EnterpriseFeatureAccess />} />
+          <Route path="usage-credits" element={<EnterpriseUsageCredits />} />
+          <Route path="analytics" element={<EnterpriseAnalytics />} />
+          <Route path="announcements" element={<EnterpriseAnnouncements />} />
+          <Route path="add-ons" element={<EnterpriseAddons />} />
+          <Route path="reports" element={<EnterpriseReports />} />
+          <Route path="settings" element={<EnterpriseSettings />} />
+        </Route>
+
         <Route path="/share/:shareId" element={<SharedChat />} />
+        <Route path="/mobile-app" element={<Navigate to="/dashboard/mobile-app" replace />} />
 
         {/* Dashboard (Protected) */}
         <Route
@@ -462,6 +479,7 @@ const NavigateProvider = () => {
           element={<DashboardLayout />}
         >
           <Route index element={<HomeDashboard />} />
+          <Route path="home" element={<HomeDashboard />} />
           <Route path="chat" element={<Navigate to="new" replace state={{ forceGlobal: true }} />} />
           <Route path="chat/:sessionId" element={<LegalWorkspace />} />
           <Route path="cases" element={<LegalWorkspace />} />
@@ -483,17 +501,101 @@ const NavigateProvider = () => {
           } />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="profile" element={<SettingsPage />} />
+          <Route path="guide" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Product Guide...</div>}>
+              <ProductGuideWorkspace />
+            </Suspense>
+          } />
+          <Route path="tools/product-guide" element={<Navigate to="/dashboard/guide" replace />} />
+          <Route path="product-guide" element={<Navigate to="/dashboard/guide" replace />} />
+          <Route path="tools/knowledge-hub" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading AI Knowledge Hub...</div>}>
+              <KnowledgeHubWorkspace />
+            </Suspense>
+          } />
+          <Route path="knowledge-hub" element={<Navigate to="/dashboard/tools/knowledge-hub" replace />} />
           <Route path="tools" element={
             <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading AI Tools...</div>}>
               <AiToolsPage />
             </Suspense>
           } />
+          <Route path="tools/draft-maker" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Draft Maker...</div>}>
+              <DraftMakerWorkspace />
+            </Suspense>
+          } />
+          <Route path="draft-maker" element={<Navigate to="/dashboard/tools/draft-maker" replace />} />
+          <Route path="tools/argument-builder" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Argument Builder...</div>}>
+              <ArgumentBuilderWorkspace />
+            </Suspense>
+          } />
+          <Route path="argument-builder" element={<Navigate to="/dashboard/tools/argument-builder" replace />} />
+          <Route path="tools/legal-precedents" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Legal Precedents...</div>}>
+              <LegalPrecedentsWorkspace />
+            </Suspense>
+          } />
+          <Route path="legal-precedents" element={<Navigate to="/dashboard/tools/legal-precedents" replace />} />
+          <Route path="tools/evidence-analyst" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Evidence Analyst...</div>}>
+              <EvidenceAnalystWorkspace />
+            </Suspense>
+          } />
+          <Route path="evidence-analyst" element={<Navigate to="/dashboard/tools/evidence-analyst" replace />} />
+          <Route path="tools/contract-analyzer" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Contract Analyzer...</div>}>
+              <ContractAnalyzerWorkspace />
+            </Suspense>
+          } />
+          <Route path="contract-analyzer" element={<Navigate to="/dashboard/tools/contract-analyzer" replace />} />
+          <Route path="tools/case-predictor" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Case Predictor...</div>}>
+              <CasePredictorWorkspace />
+            </Suspense>
+          } />
+          <Route path="case-predictor" element={<Navigate to="/dashboard/tools/case-predictor" replace />} />
+          <Route path="tools/strategy-engine" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Strategy Engine...</div>}>
+              <StrategyEngineWorkspace />
+            </Suspense>
+          } />
+          <Route path="strategy-engine" element={<Navigate to="/dashboard/tools/strategy-engine" replace />} />
+          <Route path="tools/mock-courtroom" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading AI Mock Courtroom...</div>}>
+              <MockCourtroomWorkspace />
+            </Suspense>
+          } />
+          <Route path="mock-courtroom" element={<Navigate to="/dashboard/tools/mock-courtroom" replace />} />
+          <Route path="tools/client-connect" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading AI Client Connect...</div>}>
+              <ClientConnectWorkspace />
+            </Suspense>
+          } />
+          <Route path="client-connect" element={<Navigate to="/dashboard/tools/client-connect" replace />} />
+          <Route path="tools/quiz-practice" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Quiz & MCQ Practice...</div>}>
+              <QuizPracticeWorkspace />
+            </Suspense>
+          } />
+          <Route path="quiz-practice" element={<Navigate to="/dashboard/tools/quiz-practice" replace />} />
+          <Route path="tools/notes-maker" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading AI Notes Maker...</div>}>
+              <NotesMakerWorkspace />
+            </Suspense>
+          } />
+          <Route path="notes-maker" element={<Navigate to="/dashboard/tools/notes-maker" replace />} />
           <Route path="knowledge-vault" element={<PlaceholderPage title="Knowledge Vault" />} />
           <Route path="court-diary" element={<PlaceholderPage title="Court Diary" />} />
           <Route path="templates" element={<PlaceholderPage title="Templates" />} />
           <Route path="calculator" element={<PlaceholderPage title="Legal Calculator" />} />
           <Route path="downloads" element={<PlaceholderPage title="Downloads" />} />
           <Route path="bookmarks" element={<PlaceholderPage title="Bookmarks" />} />
+          <Route path="mobile-app" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Mobile App Ecosystem...</div>}>
+              <MobileAppPage />
+            </Suspense>
+          } />
           <Route path="help-support" element={<HelpSupport />} />
         </Route>
 
@@ -502,9 +604,9 @@ const NavigateProvider = () => {
 
 
         {/* Catch All */}
-        <Route path="*" element={<Navigate to={AppRoute.LANDING} replace />} />
       </Routes>
     </SSOInterceptor>
+  </SubscriptionProvider>
   );
 };
 

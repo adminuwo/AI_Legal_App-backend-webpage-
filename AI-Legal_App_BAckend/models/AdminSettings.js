@@ -63,6 +63,24 @@ const AdminSettingsSchema = new mongoose.Schema({
     notificationSettings: {
         emailRelays: { type: Boolean, default: true },
         smsAlerts: { type: Boolean, default: false }
+    },
+    appUpdate: {
+        android: {
+            minimumSupportedVersion: { type: String, default: '1.0.0' },
+            updatePolicy: { type: String, enum: ['optional', 'mandatory'], default: 'optional' },
+            title: { type: String, default: 'AI LEGAL™ Update Available' },
+            message: { type: String, default: 'A new version of AI LEGAL™ is available with improvements and bug fixes.' },
+            storeUrl: { type: String, default: 'https://play.google.com/store/apps/details?id=com.uwo.ailegal' },
+            enabled: { type: Boolean, default: true }
+        },
+        ios: {
+            minimumSupportedVersion: { type: String, default: '1.0.0' },
+            updatePolicy: { type: String, enum: ['optional', 'mandatory'], default: 'optional' },
+            title: { type: String, default: 'AI LEGAL™ Update Available' },
+            message: { type: String, default: 'A new version of AI LEGAL™ is available with improvements and bug fixes.' },
+            storeUrl: { type: String, default: 'https://apps.apple.com/app/ai-legal/id123456789' },
+            enabled: { type: Boolean, default: true }
+        }
     }
 }, { timestamps: true });
 

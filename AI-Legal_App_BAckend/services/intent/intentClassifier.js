@@ -103,6 +103,18 @@ ${toolList}
  */
 export const classifyIntent = async (message, attachments = [], conversationSummary = '') => {
     try {
+        const lowerMsg = (message || '').toLowerCase().trim();
+        const hasSpecialTriggers = (attachments && attachments.length > 0) || 
+            lowerMsg.includes('stock:') || 
+            lowerMsg.includes('@gmail') || 
+            lowerMsg.includes('convert pdf') || 
+            lowerMsg.includes('convert docx');
+
+        // Fast-path 0ms response for standard text messages & legal queries to eliminate extra LLM roundtrip
+        if (!hasSpecialTriggers) {
+            return buildFallbackResult(message, attachments);
+        }
+
         if (!OPENAI_API_KEY) {
             logger.warn('[IntentClassifier] OPENAI_API_KEY not set. Using fallback classification.');
             return buildFallbackResult(message, attachments);

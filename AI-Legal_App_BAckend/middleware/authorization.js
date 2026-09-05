@@ -5,71 +5,47 @@ import mongoose from "mongoose";
 export const verifyToken = async (req, res, next) => {
     let token = null;
     
-    if (req.headers.authorization) {
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
         token = req.headers.authorization.split(" ")[1];
-    } else if (req.query.token) {
-        token = req.query.token;
     } else if (req.cookies?.token) {
         token = req.cookies.token;
     }
 
     if (!token || token === 'undefined' || token === 'null') {
-        if (req.originalUrl && req.originalUrl.includes('/admin')) {
-            req.user = { id: 'admin-auto-id', email: 'admin@uwo24.com', role: 'SUPER_ADMIN' };
-            req.workspaceId = 'personal_practice';
-            return next();
-        }
-        return res.status(401).json({ error: "No token provided" });
+        return res.status(401).json({ error: "Authentication required" });
     }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        // --- Session Validation ---
-        // Check if the session still exists in the database
-        // Only skip check if DB is down or it's a demo/admin token
-        if (mongoose.connection.readyState === 1 && !decoded.id.startsWith?.('demo-')) {
-            
-            // Grace period: If the token was issued within the last 60 seconds,
-            // skip the session DB check. This handles the race condition where
-            // createSession() hasn't fully persisted yet right after login.
-            const tokenAge = Math.floor(Date.now() / 1000) - (decoded.iat || 0);
-            const isVeryFresh = tokenAge < 60; // 60-second grace window
-            
-            if (!isVeryFresh) {
-                const sessionExists = await Session.findOne({ userId: decoded.id, token });
-                if (!sessionExists) {
-                    // Auto-heal session for valid signed JWT token
-                    try {
-                        await Session.create({
-                            userId: decoded.id,
-                            token,
-                            lastActive: Date.now()
-                        });
-                    } catch (sErr) {
-                        // ignore duplicate
-                    }
-                } else {
-                    // Update last active time silently
-                    Session.updateOne({ _id: sessionExists._id }, { lastActive: Date.now() }).catch(err => {});
-                }
-            }
-        }
+        // --- Session Validation & Revocation Gate ---
+        if (mongoose.connection.readyState === 1 && decoded.id && !decoded.id.toString().startsWith('demo-')) {
+            const activeSession = await Session.findOne({ 
+                userId: decoded.id, 
+                token, 
+                isActive: true 
+            });
 
-        // Auto-heal / force SUPER_ADMIN role for primary admin emails
-        if (decoded.email && (decoded.email.toLowerCase().trim() === 'aditi@uwo24.com' || decoded.email.toLowerCase().trim() === 'admin@uwo24.com')) {
-            decoded.role = 'SUPER_ADMIN';
+            if (!activeSession) {
+                return res.status(401).json({ 
+                    success: false,
+                    code: "SESSION_REVOKED", 
+                    error: "Your session was signed out because the account was logged in from another device." 
+                });
+            }
+
+            // Throttled update of lastActive timestamp
+            const now = Date.now();
+            if (!activeSession.lastActive || now - new Date(activeSession.lastActive).getTime() > 60000) {
+                Session.updateOne({ _id: activeSession._id }, { $set: { lastActive: now } }).catch(() => {});
+            }
+            req.sessionId = activeSession._id.toString();
         }
 
         req.user = decoded;
         req.workspaceId = req.headers['x-active-workspace-id'] || 'personal_practice';
         next();
     } catch (error) {
-        if (req.originalUrl && req.originalUrl.includes('/admin')) {
-            req.user = { id: 'admin-auto-id', email: 'admin@uwo24.com', role: 'SUPER_ADMIN' };
-            req.workspaceId = 'personal_practice';
-            return next();
-        }
         console.error(`[AUTH ERROR] JWT Verification Failed: ${error.message}`);
         return res.status(401).json({ error: "Invalid or expired token" });
     }
@@ -78,7 +54,7 @@ export const verifyToken = async (req, res, next) => {
 export const optionalVerifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
         req.user = null;
         req.workspaceId = 'personal_practice';
         return next();
@@ -97,7 +73,6 @@ export const optionalVerifyToken = (req, res, next) => {
         req.user = decoded;
         req.workspaceId = req.headers['x-active-workspace-id'] || 'personal_practice';
     } catch (error) {
-        // Token present but invalid/expired - treat as guest
         req.user = null;
         req.workspaceId = 'personal_practice';
     }
@@ -107,11 +82,11 @@ export const optionalVerifyToken = (req, res, next) => {
 export const isAdmin = async (req, res, next) => {
     try {
         if (!req.user || !req.user.id) {
-            req.user = { id: 'admin-auto-id', email: 'admin@uwo24.com', role: 'SUPER_ADMIN' };
-            return next();
+            return res.status(401).json({ error: "Authentication required" });
         }
 
-        if (req.user.role === 'SUPER_ADMIN' || req.user.role === 'admin') {
+        const emailLower = (req.user.email || '').toLowerCase().trim();
+        if (req.user.role === 'SUPER_ADMIN' || req.user.role === 'admin' || emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
             return next();
         }
 
@@ -119,16 +94,90 @@ export const isAdmin = async (req, res, next) => {
         const user = await User.findById(req.user.id);
 
         if (user) {
-            if (user.role !== 'SUPER_ADMIN' && user.role !== 'admin') {
-                user.role = 'SUPER_ADMIN';
-                await user.save().catch(() => {});
+            const dbEmailLower = (user.email || '').toLowerCase().trim();
+            if (user.role === 'SUPER_ADMIN' || user.role === 'admin' || dbEmailLower === 'aditi@uwo24.com' || dbEmailLower === 'aditilakhera0@gmail.com') {
+                req.user.role = user.role || 'SUPER_ADMIN';
+                return next();
             }
-            return next();
         }
 
-        return next();
+        return res.status(403).json({ error: "Forbidden: Admin privileges required" });
     } catch (err) {
         console.error("isAdmin middleware error:", err);
-        return next();
+        return res.status(500).json({ error: "Internal server error during authorization check" });
     }
 };
+
+/**
+ * Mandatory Centralized Tenant Isolation & IDOR Authorization Gate
+ * Verifies that the authenticated user is the owner, creator, assigned member,
+ * or workspace participant of the given project/case object.
+ */
+export const authorizeCaseAccess = (user, project, capability = 'read') => {
+    if (!user || (!user.id && !user._id)) {
+        return false;
+    }
+    if (!project) {
+        return false;
+    }
+
+    // Administrative override
+    if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
+        return true;
+    }
+
+    const userIdStr = String(user.id || user._id);
+    const ownerIdStr = project.userId ? String(project.userId._id || project.userId) : null;
+    const creatorIdStr = project.owner ? String(project.owner._id || project.owner) : null;
+
+    // 1. Owner or Creator direct match
+    if (ownerIdStr === userIdStr || creatorIdStr === userIdStr) {
+        return true;
+    }
+
+    // 2. Assigned team member IDs match
+    if (Array.isArray(project.assignedUserIds)) {
+        const isAssigned = project.assignedUserIds.some(id => String(id?._id || id) === userIdStr);
+        if (isAssigned) return true;
+    }
+
+    // 3. Workspace team members array match
+    if (Array.isArray(project.members)) {
+        const isMember = project.members.some(m => String(m?.user?._id || m?.user || m) === userIdStr);
+        if (isMember) return true;
+    }
+
+    return false;
+};
+
+/**
+ * Express Middleware Gate: Enforces Case Level Isolation for specific routes
+ */
+export const requireCaseAccess = (paramKey = 'id', capability = 'read') => {
+    return async (req, res, next) => {
+        try {
+            const caseId = req.params[paramKey] || req.body?.projectId || req.query?.projectId;
+            if (!caseId) {
+                return res.status(400).json({ error: 'Case / Project ID parameter is required' });
+            }
+
+            const Project = (await import('../models/Project.js')).default;
+            const project = await Project.findById(caseId);
+            if (!project) {
+                return res.status(404).json({ error: 'Case / Project not found' });
+            }
+
+            const isAuthorized = authorizeCaseAccess(req.user, project, capability);
+            if (!isAuthorized) {
+                return res.status(403).json({ error: 'Access denied: You do not have permission for this case' });
+            }
+
+            req.project = project;
+            next();
+        } catch (err) {
+            console.error('[requireCaseAccess Error]', err);
+            return res.status(500).json({ error: 'Internal error checking case authorization' });
+        }
+    };
+};
+

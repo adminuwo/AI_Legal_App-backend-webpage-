@@ -55,11 +55,54 @@ export const AppRoute = {
   TERMS_OF_SERVICE: "/terms",
   COOKIE_POLICY: "/cookie-policy",
   ADMIN_DASHBOARD: "/dashboard/admin",
+  MOBILE_APP: "/dashboard/mobile-app",
 };
 
-const API = window._env_?.VITE_AISA_BACKEND_API || window._env_?.AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || "https://ai-legal-app-backend-743928421487.asia-south1.run.app/api";
+const getApiUrl = () => {
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:8080/api';
+    }
+    if (window._env_?.VITE_AISA_BACKEND_API || window._env_?.AISA_BACKEND_API) {
+      return window._env_?.VITE_AISA_BACKEND_API || window._env_?.AISA_BACKEND_API;
+    }
+    if (import.meta.env.VITE_AISA_BACKEND_API) {
+      return import.meta.env.VITE_AISA_BACKEND_API;
+    }
+    return `${window.location.origin}/api`;
+  }
+  return 'http://localhost:8080/api';
+};
+
+export const getUnifiedApiBaseUrl = () => {
+  const envUrl = window._env_?.VITE_UNIFIED_BACKEND_API || import.meta.env.VITE_UNIFIED_BACKEND_API;
+
+  if (typeof window !== 'undefined' && window.location) {
+    const currentHost = window.location.hostname;
+    if (currentHost && currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+      if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+        return envUrl.trim().replace(/\/+$/, '');
+      }
+      return 'https://unified-dashboard-977864306871.asia-south1.run.app/api';
+    }
+  }
+
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+    return envUrl.trim().replace(/\/+$/, '');
+  }
+
+  return 'http://localhost:8000/api';
+};
+
+const API = getApiUrl();
+const UNIFIED_API = getUnifiedApiBaseUrl();
 
 const apis = {
+  unifiedAuth: {
+    register: `${UNIFIED_API}/auth/register`,
+    login: `${UNIFIED_API}/auth/login`,
+  },
+  uwoLogin: `${API}/auth/sso/uwo-login`,
   resetPassword: `${API}/auth/reset-password-otp`,
   user: `${API}/user`,
   profile: `${API}/user/profile`,
@@ -114,7 +157,24 @@ const apis = {
 
   imageProxy: `${API}/image/proxy`,
   precedents: `${API}/precedents`,
+  appUpdateConfig: `${API}/app-update/config`,
   baseUrl: API,
 };
 
+export const appendLanguagePromptModifier = (message, language) => {
+  if (!language || language === 'English') return message;
+  
+  if (language === 'Bilingual') {
+    return `${message}\n\n[INSTRUCTION: Please generate the response in Bilingual style (English + Hindi). Use English for headings, titles, and structural labels. Use Hindi for descriptions, explanations, and subtitles. Where appropriate, write in English with key sentences explained in Hindi. Do NOT translate client names, case numbers, evidence names, file names, phone numbers, emails, and legal section numbers. Keep them in their original form.]`;
+  }
+  
+  if (language.startsWith('Bilingual (English + ') || language.startsWith('English + ')) {
+    const targetLang = language.replace('Bilingual (English + ', '').replace('English + ', '').replace(')', '');
+    return `${message}\n\n[INSTRUCTION: Please generate the response in Bilingual style (English + ${targetLang}). Use English for headings, titles, and structural labels. Use ${targetLang} for descriptions, explanations, and subtitles. Where appropriate, write in English with key sentences explained in ${targetLang}. Do NOT translate client names, case numbers, evidence names, file names, phone numbers, emails, and legal section numbers. Keep them in their original form.]`;
+  }
+  
+  return `${message}\n\n[INSTRUCTION: Please generate the response in ${language}. All analysis, descriptions, and headings must be in ${language}. Do NOT translate client names, case numbers, evidence names, file names, phone numbers, emails, and legal section numbers. Keep them in their original form.]`;
+};
+
 export { API, apis };
+

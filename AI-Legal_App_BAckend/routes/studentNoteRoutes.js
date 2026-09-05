@@ -51,6 +51,7 @@ router.post('/', verifyToken, verifyFeatureAccess('notes_maker'), async (req, re
 
         if (req.commitUsage) await req.commitUsage();
         const FeatureAccessManager = await import('../services/featureAccessManager.js');
+        await FeatureAccessManager.incrementUsage(userId, 'notes_maker');
         const latestUsageStatus = await FeatureAccessManager.getUsageStatus(userId);
 
         res.status(201).json({ success: true, note: newNote, usageStatus: latestUsageStatus });

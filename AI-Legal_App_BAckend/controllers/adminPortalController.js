@@ -11,13 +11,14 @@ import StrategyHistory from '../models/StrategyHistory.js';
 import ChatSession from '../models/ChatSession.js';
 import BugReport from '../models/BugReport.js';
 import FeatureRequest from '../models/FeatureRequest.js';
+import CrashLog from '../models/CrashLog.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { getIO } from '../utils/socket.js';
 import * as FeatureAccessManager from '../services/featureAccessManager.js';
 
 // Helper: Broadcast real-time refresh to all connected admin clients
-const broadcastAdminRefresh = (type, data) => {
+export const broadcastAdminRefresh = (type, data) => {
     try {
         const io = getIO();
         io.emit('admin:refresh', { type, data });
@@ -29,23 +30,10 @@ const broadcastAdminRefresh = (type, data) => {
 // 1. Live Aggregated Admin Stats
 export const getAdminStats = async (req, res) => {
     try {
-        // Users stats
-        const totalUsers = await User.countDocuments();
-        const activeUsers = await User.countDocuments({ lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } });
-        const onlineUsers = await User.countDocuments({ lastLogin: { $gte: new Date(Date.now() - 5 * 60 * 1000) } }); // Active within 5 minutes
-        
-        // Count premium vs free users dynamically across both User and Subscription models
-        const premiumUsersFromUser = await User.countDocuments({
-            'subscription.plan': { $exists: true, $nin: ['FREE', 'Free', 'free', '', null] }
-        });
-        const premiumUsersFromSub = await Subscription.countDocuments({
-            tier: { $exists: true, $nin: ['FREE', 'Free', 'free', '', null] },
-            status: 'active'
-        });
-        const premiumUsers = Math.max(premiumUsersFromUser, premiumUsersFromSub);
-        const freeUsers = Math.max(0, totalUsers - premiumUsers);
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
 
-        // Revenue calculations (Payments collection + User active subscription records)
         const todayStart = new Date();
         todayStart.setHours(0,0,0,0);
         
@@ -53,82 +41,70 @@ export const getAdminStats = async (req, res) => {
         monthStart.setDate(1);
         monthStart.setHours(0,0,0,0);
 
-        const revTodayAgg = await Payment.aggregate([
-            { $match: { status: 'success', createdAt: { $gte: todayStart } } },
-            { $group: { _id: null, total: { $sum: '$amount' } } }
+        const [
+            totalUsers,
+            activeUsers,
+            onlineUsers,
+            premiumUsersFromUser,
+            premiumUsersFromSub,
+            revTodayAgg,
+            revMonthAgg,
+            revLifetimeAgg,
+            creditUsageData,
+            totalCases,
+            contractsAnalyzed,
+            strategyReports,
+            casePredictorReports,
+            chatUsage,
+            pendingFeatures,
+            openBugs,
+            draftsGenerated,
+            evidenceAnalyses,
+            courtPrepSessions,
+            apiUsage
+        ] = await Promise.all([
+            User.countDocuments(),
+            User.countDocuments({ lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } }),
+            User.countDocuments({ lastLogin: { $gte: new Date(Date.now() - 5 * 60 * 1000) } }),
+            User.countDocuments({ 'subscription.plan': { $exists: true, $nin: ['FREE', 'Free', 'free', '', null] } }),
+            Subscription.countDocuments({ tier: { $exists: true, $nin: ['FREE', 'Free', 'free', '', null] }, status: 'active' }),
+            Payment.aggregate([
+                { $match: { gateway: { $regex: /^razorpay$/i }, status: { $in: ['success', 'paid', 'captured'] }, amount: { $gt: 0 }, createdAt: { $gte: todayStart } } },
+                { $group: { _id: null, total: { $sum: '$amount' } } }
+            ]),
+            Payment.aggregate([
+                { $match: { gateway: { $regex: /^razorpay$/i }, status: { $in: ['success', 'paid', 'captured'] }, amount: { $gt: 0 }, createdAt: { $gte: monthStart } } },
+                { $group: { _id: null, total: { $sum: '$amount' } } }
+            ]),
+            Payment.aggregate([
+                { $match: { gateway: { $regex: /^razorpay$/i }, status: { $in: ['success', 'paid', 'captured'] }, amount: { $gt: 0 } } },
+                { $group: { _id: null, total: { $sum: '$amount' } } }
+            ]),
+            CreditLog.aggregate([
+                { $match: { credits: { $lt: 0 } } },
+                { $group: { _id: null, totalUsed: { $sum: { $abs: "$credits" } } } }
+            ]),
+            Project.countDocuments(),
+            ContractAnalysis.countDocuments(),
+            StrategyHistory.countDocuments(),
+            CasePrediction.countDocuments(),
+            ChatSession.countDocuments(),
+            FeatureRequest.countDocuments({ status: { $in: ['Pending', 'Under Review', 'In Progress'] } }),
+            BugReport.countDocuments({ status: { $in: ['Open', 'Assigned', 'Fixing', 'Testing'] } }),
+            CreditLog.countDocuments({ $or: [{ action: { $regex: /draft/i } }, { description: { $regex: /draft/i } }] }),
+            CreditLog.countDocuments({ $or: [{ action: { $regex: /evidence|ocr|scan|contract/i } }, { description: { $regex: /evidence|ocr|scan|contract/i } }] }),
+            CreditLog.countDocuments({ $or: [{ action: { $regex: /court|dossier|prep/i } }, { description: { $regex: /court|dossier|prep/i } }] }),
+            CreditLog.countDocuments()
         ]);
-        const revMonthAgg = await Payment.aggregate([
-            { $match: { status: 'success', createdAt: { $gte: monthStart } } },
-            { $group: { _id: null, total: { $sum: '$amount' } } }
-        ]);
-        const revLifetimeAgg = await Payment.aggregate([
-            { $match: { status: 'success' } },
-            { $group: { _id: null, total: { $sum: '$amount' } } }
-        ]);
+
+        const premiumUsers = Math.max(premiumUsersFromUser, premiumUsersFromSub);
+        const freeUsers = Math.max(0, totalUsers - premiumUsers);
 
         let revenueToday = revTodayAgg[0]?.total || 0;
         let revenueMonth = revMonthAgg[0]?.total || 0;
         let revenueLifetime = revLifetimeAgg[0]?.total || 0;
 
-        const userRevTodayAgg = await User.aggregate([
-            { $match: { 'subscription.status': 'active', 'subscription.purchaseDate': { $gte: todayStart } } },
-            { $group: { _id: null, total: { $sum: '$subscription.amount' } } }
-        ]);
-        const userRevMonthAgg = await User.aggregate([
-            { $match: { 'subscription.status': 'active', 'subscription.purchaseDate': { $gte: monthStart } } },
-            { $group: { _id: null, total: { $sum: '$subscription.amount' } } }
-        ]);
-        const userRevLifetimeAgg = await User.aggregate([
-            { $match: { 'subscription.status': 'active' } },
-            { $group: { _id: null, total: { $sum: '$subscription.amount' } } }
-        ]);
-
-        revenueToday += userRevTodayAgg[0]?.total || 0;
-        revenueMonth += userRevMonthAgg[0]?.total || 0;
-        revenueLifetime += userRevLifetimeAgg[0]?.total || 0;
-
-        // AI Credit Usage logs (Sum of all negative credit logs in DB)
-        const creditUsageData = await CreditLog.aggregate([
-            { $match: { credits: { $lt: 0 } } },
-            { $group: { _id: null, totalUsed: { $sum: { $abs: "$credits" } } } }
-        ]);
         const totalCreditsUsed = creditUsageData[0]?.totalUsed || 0;
-
-        // Real Tool usage counts from database collections
-        const totalCases = await Project.countDocuments();
-        const contractsAnalyzed = await ContractAnalysis.countDocuments();
-        const strategyReports = await StrategyHistory.countDocuments();
-        const casePredictorReports = await CasePrediction.countDocuments();
-        const chatUsage = await ChatSession.countDocuments();
-
-        const draftsGenerated = await CreditLog.countDocuments({
-            $or: [
-                { action: { $regex: /draft/i } },
-                { description: { $regex: /draft/i } }
-            ]
-        });
-
-        const evidenceAnalyses = await CreditLog.countDocuments({
-            $or: [
-                { action: { $regex: /evidence|ocr|scan|contract/i } },
-                { description: { $regex: /evidence|ocr|scan|contract/i } }
-            ]
-        });
-
-        const courtPrepSessions = await CreditLog.countDocuments({
-            $or: [
-                { action: { $regex: /court|dossier|prep/i } },
-                { description: { $regex: /court|dossier|prep/i } }
-            ]
-        });
-
-        const apiUsage = await CreditLog.countDocuments();
-
-        // Pending and open items
-        const pendingFeatures = await FeatureRequest.countDocuments({ status: { $in: ['Pending', 'Under Review', 'In Progress'] } });
-        const openBugs = await BugReport.countDocuments({ status: { $in: ['Open', 'Assigned', 'Fixing', 'Testing'] } });
-
-        // Storage estimate from real records
         const storageUsed = Math.round(totalCases * 1.5 + contractsAnalyzed * 0.8) || 0; // in MB
 
         // Real 7-day daily activity graph aggregated from MongoDB
@@ -640,70 +616,117 @@ export const resetUserPassword = async (req, res) => {
 // 11. Payments & Invoices list
 export const getAllBilling = async (req, res) => {
     try {
-        const { status, page = 1, limit = 50 } = req.query;
+        const { status, page = 1, limit = 100 } = req.query;
         const query = {};
-        if (status && status !== 'all') query.status = status;
+        if (status && status !== 'all') {
+            if (status === 'success') query.status = { $in: ['success', 'paid'] };
+            else query.status = status;
+        }
 
         const skip = (Number(page) - 1) * Number(limit);
-        let rawList = await Payment.find(query)
-            .populate('userId', 'name email phone role')
-            .populate('planId', 'planName priceMonthly priceYearly')
+        const rawPayments = await Payment.find(query)
+            .populate('userId', 'name email')
+            .populate('planId', 'planName')
             .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(Number(limit));
+            .limit(Number(limit) * 2);
 
-        // Deduplicate test payments per user per day to prevent duplicate logs
+        const PaymentHistory = mongoose.model('PaymentHistory');
+        const rawHistories = await PaymentHistory.find({})
+            .populate('accountId', 'name email')
+            .sort({ createdAt: -1 })
+            .limit(Number(limit) * 2);
+
+        const rawList = [];
+
+        rawPayments.forEach(p => {
+            rawList.push({
+                _id: p._id?.toString(),
+                userId: p.userId || { name: 'User', email: 'N/A' },
+                planId: p.planId || 'advocate_pro',
+                invoiceNumber: p.invoiceNumber || `INV-${p._id?.toString().slice(-6)}`,
+                amount: p.amount || 0,
+                gst: p.gst || (p.amount || 0) * 0.18,
+                gateway: p.gateway || 'Razorpay',
+                transactionId: p.transactionId || `txn_${p._id?.toString()}`,
+                status: p.status === 'paid' ? 'success' : (p.status || 'success'),
+                createdAt: p.createdAt || new Date(),
+                rawSource: 'Payment'
+            });
+        });
+
+        rawHistories.forEach(ph => {
+            const txnId = ph.transactionId || ph.razorpayPaymentId || ph.orderId || ph._id?.toString();
+            const normStatus = ph.status === 'paid' ? 'success' : (ph.status || 'success');
+            rawList.push({
+                _id: ph._id?.toString(),
+                userId: ph.accountId || { name: 'User', email: 'N/A' },
+                planId: ph.planId || 'advocate_pro',
+                invoiceNumber: ph.invoice || `INV-${ph._id?.toString().slice(-6)}`,
+                amount: ph.amount || 0,
+                gst: (ph.amount || 0) * 0.18,
+                gateway: ph.gateway || ph.paymentMethod || 'Razorpay',
+                transactionId: txnId,
+                status: normStatus,
+                createdAt: ph.createdAt || ph.paidAt || new Date(),
+                rawSource: 'PaymentHistory'
+            });
+        });
+
+        rawList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
         const seenKeys = new Set();
         const deduplicatedList = [];
-        for (const p of rawList) {
-            const uId = typeof p.userId === 'object' && p.userId ? p.userId._id : (p.userId || p.userEmail);
-            const dateStr = p.createdAt ? new Date(p.createdAt).toISOString().slice(0, 13) : 'now'; // hourly bucket
-            const key = `${uId}_${p.amount}_${dateStr}`;
-            if (!seenKeys.has(key)) {
-                seenKeys.add(key);
-                deduplicatedList.push(p);
+
+        for (const item of rawList) {
+            const keysToRegister = [];
+
+            if (item._id) keysToRegister.push(`id_${item._id}`);
+            if (item.transactionId && item.transactionId !== 'N/A') {
+                keysToRegister.push(`txn_${item.transactionId}`);
             }
-        }
+            if (item.invoiceNumber && item.invoiceNumber !== 'N/A') {
+                keysToRegister.push(`inv_${item.invoiceNumber}`);
+            }
 
-        let list = deduplicatedList;
+            const userEmail = typeof item.userId === 'object' ? item.userId?.email : item.userId;
+            const timeWindow = item.createdAt ? Math.floor(new Date(item.createdAt).getTime() / 30000) : 0;
+            if (userEmail && item.amount) {
+                keysToRegister.push(`composite_${userEmail}_${item.amount}_${timeWindow}`);
+            }
 
-        // If Payment collection is sparse, build dynamic billing entries from registered users in database
-        if (!list || list.length === 0) {
-            const users = await User.find({}).select('name email subscription currentPlan createdAt role').limit(50);
-            const generatedPayments = [];
-            for (const u of users) {
-                const planKey = u.subscription?.plan || u.currentPlan || 'FREE';
-                let amount = 0;
-                let pName = 'Free Tier Advocates';
-                if (planKey.includes('PRO') || planKey.includes('advocate_pro')) { amount = 999; pName = 'AI Legal™ Advocate Pro'; }
-                else if (planKey.includes('PREMIUM') || planKey.includes('advocate_premium')) { amount = 2399; pName = 'AI Legal™ Advocate Premium'; }
-                else if (planKey.includes('BASIC') || planKey.includes('advocate_basic')) { amount = 499; pName = 'AI Legal™ Advocate Basic'; }
-                else if (planKey.includes('FIRM') || planKey.includes('firm')) { amount = 2999; pName = 'AI Legal™ Firm Pro'; }
-                else if (planKey.includes('COMBO') || planKey.includes('combo')) { amount = 1499; pName = 'Ecosystem Combo Pass'; }
+            const isDuplicate = keysToRegister.some(k => seenKeys.has(k));
+            if (!isDuplicate) {
+                keysToRegister.forEach(k => seenKeys.add(k));
 
-                if (!status || status === 'all' || status === 'success') {
-                    generatedPayments.push({
-                        _id: `pay_${u._id}`,
-                        paymentId: `pay_${String(u._id).slice(-8)}`,
-                        userId: { _id: u._id, name: u.name, email: u.email },
-                        planId: { _id: planKey, planName: pName },
-                        planName: pName,
-                        amount: amount || 499,
-                        gst: Math.round((amount || 499) * 0.18),
-                        gateway: 'Razorpay PG',
-                        invoiceNumber: `INV-2026-${String(u._id).slice(-6).toUpperCase()}`,
-                        transactionId: `txn_rzp_${String(u._id).slice(-10)}`,
-                        status: 'success',
-                        createdAt: u.createdAt || new Date(),
-                        billingCycle: u.subscription?.billingCycle || 'monthly'
-                    });
+                if (!status || status === 'all' || item.status === status) {
+                    deduplicatedList.push(item);
                 }
             }
-            list = generatedPayments;
         }
 
-        const total = list.length;
-        res.status(200).json({ success: true, list, payments: list, total, page: Number(page), limit: Number(limit) });
+        const paginatedList = deduplicatedList.slice(skip, skip + Number(limit));
+
+        const totalRevenue = deduplicatedList.reduce((acc, p) => (/^razorpay$/i.test(String(p.gateway || '')) && (p.status === 'success' || p.status === 'paid')) ? acc + (p.amount || 0) : acc, 0);
+        const successCount = deduplicatedList.filter(p => p.status === 'success' || p.status === 'paid').length;
+        const pendingCount = deduplicatedList.filter(p => p.status === 'pending').length;
+        const refundedCount = deduplicatedList.filter(p => p.status === 'refunded').length;
+        const failedCount = deduplicatedList.filter(p => p.status === 'failed').length;
+
+        res.status(200).json({
+            success: true,
+            list: paginatedList,
+            payments: paginatedList,
+            total: deduplicatedList.length,
+            page: Number(page),
+            limit: Number(limit),
+            metrics: {
+                totalRevenue,
+                successCount,
+                pendingCount,
+                refundedCount,
+                failedCount
+            }
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -873,4 +896,101 @@ export const testJurisdictionAI = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// 18. CRASH LOGGING & MANAGEMENT CONTROLLERS
+export const reportCrashLog = async (req, res) => {
+    try {
+        const { errorName, message, stack, source, platform, appVersion, route, severity, metadata } = req.body;
+        const userId = req.user ? (req.user.id || req.user._id) : null;
+        const userEmail = req.user ? req.user.email : (req.body.userEmail || '');
+
+        const crash = await CrashLog.create({
+            errorName: errorName || 'Error',
+            message: message || 'Unknown error occurred',
+            stack: stack || '',
+            source: source || 'frontend',
+            platform: platform || 'Unknown',
+            appVersion: appVersion || '1.0.0',
+            userId,
+            userEmail,
+            route: route || '',
+            severity: severity || 'HIGH',
+            status: 'UNRESOLVED',
+            metadata: metadata || {}
+        });
+
+        broadcastAdminRefresh('crash:new', crash);
+
+        res.status(201).json({ success: true, crash });
+    } catch (error) {
+        console.error('[reportCrashLog] Error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const getCrashLogs = async (req, res) => {
+    try {
+        const { source, platform, status, severity, search } = req.query;
+        const query = {};
+
+        if (source && source !== 'all') query.source = source;
+        if (platform && platform !== 'all') query.platform = platform;
+        if (status && status !== 'all') query.status = status;
+        if (severity && severity !== 'all') query.severity = severity;
+        if (search) {
+            query.$or = [
+                { message: { $regex: search, $options: 'i' } },
+                { errorName: { $regex: search, $options: 'i' } },
+                { userEmail: { $regex: search, $options: 'i' } },
+                { route: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const crashes = await CrashLog.find(query)
+            .sort({ createdAt: -1 })
+            .limit(200)
+            .lean();
+
+        const stats = {
+            total: await CrashLog.countDocuments(),
+            unresolved: await CrashLog.countDocuments({ status: 'UNRESOLVED' }),
+            frontend: await CrashLog.countDocuments({ source: 'frontend' }),
+            backend: await CrashLog.countDocuments({ source: 'backend' }),
+            critical: await CrashLog.countDocuments({ severity: 'CRITICAL' })
+        };
+
+        res.status(200).json({ success: true, crashes, stats });
+    } catch (error) {
+        console.error('[getCrashLogs] Error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const updateCrashStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const crash = await CrashLog.findByIdAndUpdate(id, { status }, { new: true });
+        if (!crash) {
+            return res.status(404).json({ success: false, message: 'Crash record not found' });
+        }
+
+        broadcastAdminRefresh('crash:update', crash);
+        res.status(200).json({ success: true, crash });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const clearCrashLogs = async (req, res) => {
+    try {
+        const result = await CrashLog.deleteMany({ status: 'RESOLVED' });
+        broadcastAdminRefresh('crash:clear', {});
+        res.status(200).json({ success: true, message: `Cleared ${result.deletedCount} resolved crash logs` });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 

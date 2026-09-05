@@ -141,14 +141,15 @@ export const generateChatResponse = async (history, currentMessage, systemInstru
  */
 export const generateFollowUpPrompts = async (prompt, type = 'image') => {
     try {
-        const systemInstruction = `You are a smart suggestion engine for an AI assistant.
-Your job is to generate exactly 3 highly relevant, context-aware, and ACTION-ORIENTED follow-up suggestions for ${type} mode.
+        const systemInstruction = `You are a smart suggestion engine for a legal AI assistant.
+Your job is to generate exactly 3 highly relevant, context-aware, and ACTION-ORIENTED follow-up legal questions or next steps.
 
 STRICT RULES:
-1. NO GENERIC SUGGESTIONS: Never return "Explain more", "Give examples", or "Summarize".
-2. ACTION-ORIENTED: Suggestions must feel like a next step.
-3. LENGTH: 5–10 words max.
-4. FORMAT: Return ONLY a JSON array: ["S1", "S2", "S3"]`;
+1. NO GREETINGS OR USER NAMES: Never include "Yes, Aditi", "Sure", "Hello", "Dear", or any person's name in suggestions!
+2. NO CONVERSATIONAL FILLER: Never start with "To ensure...", "I can help...", or "Sure, I will...". Suggestions must be direct user questions or legal actions.
+3. ACTION-ORIENTED LEGAL QUESTIONS: e.g. ["Draft a Bail Application", "Identify Section 300 IPC grounds", "Request evidence checklist"]
+4. LENGTH: 4–8 words max.
+5. FORMAT: Return ONLY a JSON array: ["S1", "S2", "S3"]`;
 
         // Use skipSession:true so the backend does NOT create a ghost chat session for this internal call
         const token = getUserData()?.token;
@@ -169,14 +170,27 @@ STRICT RULES:
         const replyText = response?.reply || (typeof response === 'string' ? response : null);
 
         if (replyText && !replyText.includes('Log In') && !replyText.includes('System Message')) {
+            const cleanSuggestion = (str) => {
+                return String(str || '')
+                    .replace(/^\s*[-*•\d+.]\s*/, '')
+                    .replace(/\*\*/g, '')
+                    .replace(/\*/g, '')
+                    .replace(/["'\[\]]/g, '')
+                    .replace(/^Hello\s+[^,]+,?\s*/i, '')
+                    .replace(/^Hi\s+[^,]+,?\s*/i, '')
+                    .trim();
+            };
+
             // Attempt to parse as JSON first
             try {
-                // Remove markdown code blocks if present
                 const jsonMatch = replyText.match(/\[\s*".*?"\s*\]/s) || replyText.match(/\[.*\]/s);
                 if (jsonMatch) {
                     const parsed = JSON.parse(jsonMatch[0]);
                     if (Array.isArray(parsed)) {
-                        return parsed.map(s => s.trim()).filter(s => s.length > 2).slice(0, 3);
+                        return parsed
+                            .map(cleanSuggestion)
+                            .filter(s => s.length > 2 && !s.toLowerCase().startsWith('hello') && !s.toLowerCase().startsWith('hi '))
+                            .slice(0, 3);
                     }
                 }
             } catch (e) {
@@ -186,8 +200,8 @@ STRICT RULES:
             // Fallback: Split by newline or standard bullet patterns (1., -, *, •)
             return replyText
                 .split(/\n|(?=\b\d+\.)|(?=\b[-*•]\s)/)
-                .map(line => line.replace(/^\s*[-*•\d+.]\s*/, '').replace(/["'\[\]]/g, '').trim())
-                .filter(line => line.length > 2 && line.length < 100)
+                .map(cleanSuggestion)
+                .filter(line => line.length > 3 && line.length < 100 && !line.toLowerCase().startsWith('hello') && !line.toLowerCase().startsWith('hi '))
                 .slice(0, 3);
         }
         return [];

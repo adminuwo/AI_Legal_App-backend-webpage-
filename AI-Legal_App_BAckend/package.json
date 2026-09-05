@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node tests/securityAudit.test.js && node tests/apiSecurityEndpoints.test.js && node tests/fullEndpointSecurityTest.js",
     "start": "node server.js",
     "dev": "npx nodemon server.js"
   },

@@ -5,27 +5,42 @@ import Precedent from '../../../models/Precedent.js';
 import logger from '../../../utils/logger.js';
 import { generatePrecedentPDF } from '../services/pdf.service.js';
 
+import { verifyToken } from '../../../middleware/authorization.js';
+import { verifyFeatureAccess } from '../../../middleware/subscriptionCheck.middleware.js';
+
 const router = express.Router();
 
 /**
  * @route POST /api/precedents/search
  * @desc Find legal precedents based on query or case context
  */
-router.post('/search', async (req, res) => {
+router.post('/search', verifyToken, verifyFeatureAccess('legal_precedent'), async (req, res) => {
     const startTime = Date.now();
     try {
         const { query, projectId, language } = req.body;
         
         let caseContext = null;
         if (projectId) {
-            caseContext = await Project.findById(projectId);
+            caseContext = await Project.findOne({
+                _id: projectId,
+                $or: [
+                    { userId: req.user.id },
+                    { owner: req.user.id },
+                    { assignedUserIds: req.user.id },
+                    { 'members.user': req.user.id }
+                ]
+            });
+            if (!caseContext) {
+                return res.status(403).json({ error: 'Access denied: Project not found or unauthorized' });
+            }
         }
 
         const results = await findPrecedents(query, caseContext, language);
+        if (req.commitUsage) await req.commitUsage();
         res.json(results);
     } catch (error) {
         logger.error(`[PrecedentsRoute] Search failed: ${error.message}`);
-        res.status(500).json({ error: 'Failed to retrieve precedents.', details: error.message });
+        res.status(500).json({ error: 'Failed to retrieve precedents.' });
     }
 });
 
@@ -33,13 +48,24 @@ router.post('/search', async (req, res) => {
  * @route POST /api/precedents/analyze
  * @desc Perform AI analysis on a specific precedent
  */
-router.post('/analyze', async (req, res) => {
+router.post('/analyze', verifyToken, verifyFeatureAccess('legal_precedent'), async (req, res) => {
     try {
         const { actionType, precedentData, projectId, language } = req.body;
         
         let activeCaseData = null;
         if (projectId) {
-            activeCaseData = await Project.findById(projectId);
+            activeCaseData = await Project.findOne({
+                _id: projectId,
+                $or: [
+                    { userId: req.user.id },
+                    { owner: req.user.id },
+                    { assignedUserIds: req.user.id },
+                    { 'members.user': req.user.id }
+                ]
+            });
+            if (!activeCaseData) {
+                return res.status(403).json({ error: 'Access denied: Project not found or unauthorized' });
+            }
         }
 
         // Fetch full precedent from DB if only lightweight info/ID is provided
@@ -62,6 +88,7 @@ router.post('/analyze', async (req, res) => {
         const { analyzePrecedent } = await import('../services/precedents.service.js');
         const analysis = await analyzePrecedent(actionType, fullPrecedentData, activeCaseData, language);
         
+        if (req.commitUsage) await req.commitUsage();
         res.json({ analysis });
     } catch (error) {
         logger.error(`[PrecedentsRoute] Analysis failed: ${error.message}`);
@@ -73,18 +100,23 @@ router.post('/analyze', async (req, res) => {
  * @route POST /api/precedents/reanalyze
  * @desc Re-analyze a specific precedent against a new case context
  */
-router.post('/reanalyze', async (req, res) => {
+router.post('/reanalyze', verifyToken, verifyFeatureAccess('legal_precedent'), async (req, res) => {
     try {
         const { precedentData, projectId, language } = req.body;
         
         let activeCaseData = null;
         if (projectId) {
+            const { authorizeCaseAccess } = await import('../../../middleware/authorization.js');
             activeCaseData = await Project.findById(projectId);
+            if (activeCaseData && req.user && !authorizeCaseAccess(req.user, activeCaseData)) {
+                return res.status(403).json({ error: 'Access denied: You do not have permission for this case' });
+            }
         }
 
         const { processPrecedentWithAI } = await import('../services/precedents.service.js');
         const reanalyzedData = await processPrecedentWithAI(precedentData, activeCaseData, language);
         
+        if (req.commitUsage) await req.commitUsage();
         res.json(reanalyzedData);
     } catch (error) {
         logger.error(`[PrecedentsRoute] Re-analysis failed: ${error.message}`);

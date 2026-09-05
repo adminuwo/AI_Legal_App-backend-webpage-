@@ -57,8 +57,8 @@ export const createComplaint = async (req, res) => {
 
         const complaintId = generateComplaintId();
         const userId = req.user ? (req.user.id || req.user._id) : null;
-        const resolvedName = userName || (req.user ? (req.user.name || req.user.fullName) : 'Anonymous User');
-        const resolvedEmail = userEmail || (req.user ? req.user.email : 'Not provided');
+        const resolvedName = (req.user?.name || req.user?.fullName) || userName || 'Anonymous User';
+        const resolvedEmail = req.user?.email || userEmail || 'Not provided';
 
         const complaint = new Complaint({
             complaintId,
@@ -84,7 +84,7 @@ export const createComplaint = async (req, res) => {
 
         await complaint.save();
 
-        // Asynchronously send email notification to admin@uwo24.com
+        // Asynchronously send email notification
         sendComplaintEmail(complaint).catch(err => {
             console.error('❌ [ComplaintController] Email trigger failed:', err.message);
         });
@@ -99,8 +99,7 @@ export const createComplaint = async (req, res) => {
         console.error('❌ [ComplaintController] Error creating complaint:', error);
         return res.status(500).json({
             success: false,
-            error: 'Failed to record complaint',
-            details: error.message
+            error: 'Failed to record complaint'
         });
     }
 };

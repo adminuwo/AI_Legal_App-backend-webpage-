@@ -4,14 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     X, Camera, Plus, Trash2, ShieldCheck, Mail, Phone, MapPin, 
     Calendar, Briefcase, Award, Info, Sparkles, Scale, Languages,
-    Activity, GraduationCap, Building2, User
+    Activity, GraduationCap, Building2, User, Users, FileText
 } from 'lucide-react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { API, apis } from '../../types';
 import { usePersonalization } from '../../context/PersonalizationContext';
-import { getUserData, setUserData, userData } from '../../userStore/userData';
+import { getUserData, setUserData, userData, selectedRoleState } from '../../userStore/userData';
 import Cropper from 'react-easy-crop';
 import { getCroppedImgBlob } from '../../utils/canvasUtils';
 
@@ -21,15 +21,26 @@ const PRACTICE_AREAS = [
     'Arbitration', 'IPR'
 ];
 
+const STUDENT_FOCUS_AREAS = [
+    'Constitutional Law', 'Criminal Law', 'Corporate Law', 'Moot Court',
+    'IPR', 'Human Rights', 'Cyber Law', 'International Law', 'Taxation'
+];
+
+const FIRM_PRACTICE_DOMAINS = [
+    'Corporate M&A', 'Commercial Litigation', 'Banking & Finance', 'IPR',
+    'Arbitration & ADR', 'Tax & Regulatory', 'Real Estate', 'Employment Law'
+];
+
 const ProfileSettingsDropdown = ({ onClose }) => {
     const fileInputRef = useRef(null);
     const [currentUserData, setUserRecoil] = useRecoilState(userData);
+    const selectedRole = useRecoilValue(selectedRoleState) || 'advocate';
     const user = currentUserData.user || getUserData() || {};
     const { personalizations, updatePersonalization } = usePersonalization();
 
     const [isEditing, setIsEditing] = useState(false);
     
-    // Advocate Profile Form State
+    // Role-specific Profile Form State
     const [profileForm, setProfileForm] = useState({
         fullName: '',
         phoneNumber: '',
@@ -39,6 +50,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
         city: '',
         state: '',
         country: '',
+        // Advocate Fields
         barNumber: '',
         stateBarCouncil: '',
         enrollmentYear: '',
@@ -51,7 +63,24 @@ const ProfileSettingsDropdown = ({ onClose }) => {
         officeAddress: '',
         bio: '',
         specialization: '',
-        achievements: ''
+        achievements: '',
+        // Student Fields
+        collegeName: '',
+        courseName: '',
+        currentYear: '',
+        studentId: '',
+        expectedGraduation: '',
+        careerInterest: '',
+        academicInterests: [],
+        // Law Firm Fields
+        firmName: '',
+        registrationNumber: '',
+        establishedYear: '',
+        managingPartner: '',
+        teamSize: '',
+        firmAddress: '',
+        firmPhone: '',
+        firmDomains: []
     });
 
     // Cropping States
@@ -247,12 +276,12 @@ const ProfileSettingsDropdown = ({ onClose }) => {
     const renderField = (label, value, icon) => {
         return (
             <div className="space-y-1">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                     {icon}
                     <span>{label}</span>
                 </span>
-                <span className="text-xs font-bold text-slate-800 block break-words">
-                    {value || <span className="text-slate-300 font-medium italic">Not provided</span>}
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-100 block break-words">
+                    {value || <span className="text-slate-300 dark:text-slate-600 font-medium italic">Not provided</span>}
                 </span>
             </div>
         );
@@ -276,7 +305,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                     animate={window.innerWidth < 640 ? { y: 0 } : { opacity: 1, scale: 1, y: 0 }}
                     exit={window.innerWidth < 640 ? { y: '100%' } : { opacity: 0, scale: 0.95, y: 20 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                    className="absolute sm:relative bottom-0 sm:top-0 left-0 h-[90vh] sm:h-[85vh] w-full sm:max-w-5xl bg-white flex flex-col shadow-[0_12px_40px_rgba(0,0,0,0.08)] sm:rounded-2xl border border-slate-100 pointer-events-auto overflow-hidden font-sans"
+                    className="absolute sm:relative bottom-0 sm:top-0 left-0 h-[90vh] sm:h-[85vh] w-full sm:max-w-5xl bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white flex flex-col shadow-[0_12px_40px_rgba(0,0,0,0.2)] sm:rounded-2xl border border-slate-100 dark:border-slate-800 pointer-events-auto overflow-hidden font-sans"
                     onClick={e => e.stopPropagation()}
                 >
                     <input 
@@ -288,21 +317,30 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                     />
 
                     {/* Modal Sticky Header */}
-                    <div className="sticky top-0 z-20 px-6 sm:px-8 py-4 sm:py-5 flex justify-between items-center bg-white border-b border-slate-100 shrink-0">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-2xl bg-[#6D5DFC]/10 flex items-center justify-center text-[#6D5DFC]">
-                                <Scale className="w-5 h-5" />
+                    <div className="sticky top-0 z-20 px-3.5 sm:px-8 py-3 sm:py-5 flex items-center justify-between gap-2.5 bg-white dark:bg-[#1E293B] border-b border-slate-100 dark:border-slate-800 shrink-0">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#111111] dark:bg-[#0F172A] flex items-center justify-center text-[#C8A34D] border border-[#C8A34D]/30 shrink-0">
+                                {selectedRole === 'student' ? (
+                                    <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
+                                ) : selectedRole === 'law_firm' ? (
+                                    <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+                                ) : (
+                                    <Scale className="w-4 h-4 sm:w-5 sm:h-5 text-[#C8A34D]" />
+                                )}
                             </div>
-                            <div>
-                                <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">Advocate Profile</h2>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Litigation & Practice Credentials</p>
+                            <div className="min-w-0 flex-1">
+                                <h2 className="text-sm sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate">
+                                    {selectedRole === 'student' ? 'Law Student Profile' : selectedRole === 'law_firm' ? 'Law Firm Profile' : 'Advocate Profile'}
+                                </h2>
+                                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider truncate mt-0.5">
+                                    {selectedRole === 'student' ? 'Academic Credentials' : selectedRole === 'law_firm' ? 'Corporate & Office Credentials' : 'State Bar Credentials'}
+                                </p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
                             <button 
                                 onClick={() => {
                                     if (isEditing) {
-                                        // Reset to saved state
                                         if (personalizations?.advocateProfile) {
                                             setProfileForm(personalizations.advocateProfile);
                                         }
@@ -311,33 +349,33 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                         setIsEditing(true);
                                     }
                                 }} 
-                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                                className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all border cursor-pointer whitespace-nowrap shrink-0 ${
                                     isEditing 
-                                        ? 'bg-slate-100 hover:bg-slate-200/80 text-slate-700 border-slate-200' 
-                                        : 'hover:bg-slate-50 text-[#6D5DFC] border-[#6D5DFC]/20 hover:border-[#6D5DFC]/40'
+                                        ? 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700' 
+                                        : 'bg-[#111111] dark:bg-[#C8A34D] text-[#C8A34D] dark:text-[#111111] border-[#C8A34D]/40 dark:border-transparent hover:bg-[#222222] dark:hover:bg-[#b08d3b]'
                                 }`}
                             >
                                 {isEditing ? 'Cancel' : 'Edit Profile'}
                             </button>
-                            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-xl transition-all">
-                                <X size={20} className="text-slate-400" />
+                            <button onClick={onClose} className="p-1 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all cursor-pointer shrink-0">
+                                <X size={18} className="text-slate-400 dark:text-slate-400" />
                             </button>
                         </div>
                     </div>
 
                     {/* Scrollable Dossier / Form Body */}
-                    <div className="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-8 bg-white">
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-8 bg-[#F8FAFC] dark:bg-[#0F172A]">
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                             
                             {/* Left Column: Dossier Cards */}
                             <div className="lg:col-span-2 space-y-8">
                                 
                                 {/* 1. Profile Header Identity Card */}
-                                <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)]">
-                                    <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+                                <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none">
+                                    <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
                                         {/* Avatar Box */}
                                         <div className="relative group shrink-0">
-                                            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-[#6D5DFC]/10 flex items-center justify-center text-[#6D5DFC] border border-[#6D5DFC]/15 shadow-sm overflow-hidden relative z-10">
+                                            <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-[#111111] dark:bg-[#0F172A] flex items-center justify-center text-[#C8A34D] border border-[#C8A34D]/30 shadow-sm overflow-hidden relative z-10">
                                                 {user.avatar ? (
                                                     <img 
                                                         src={user.avatar} 
@@ -346,7 +384,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         onError={(e) => { e.currentTarget.src = '/account.png'; }} 
                                                     />
                                                 ) : (
-                                                    <span className="text-4xl font-black">
+                                                    <span className="text-2xl sm:text-4xl font-black">
                                                         {(profileForm.fullName || user.name || 'U').charAt(0).toUpperCase()}
                                                     </span>
                                                 )}
@@ -356,7 +394,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         onClick={() => fileInputRef.current?.click()}
                                                         className="absolute inset-0 bg-black/45 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-20"
                                                     >
-                                                        <Camera className="w-6 h-6 text-white" />
+                                                        <Camera className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                                                     </div>
                                                 )}
                                             </div>
@@ -364,11 +402,11 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                             {/* Photo Management Plus Icon (Edit mode only) */}
                                             {isEditing && (
                                                 <button
-                                                    className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#6D5DFC] hover:bg-[#5b4edb] text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white z-20 hover:scale-105 transition-transform"
+                                                    className="absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-800 z-20 hover:scale-105 transition-transform cursor-pointer"
                                                     onClick={() => fileInputRef.current?.click()}
                                                     title="Upload Photo"
                                                 >
-                                                    <Plus className="w-5 h-5" />
+                                                    <Plus className="w-4 h-4 sm:w-5 sm:h-5 font-black" />
                                                 </button>
                                             )}
                                         </div>
@@ -376,35 +414,34 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                         {/* Name & Basic Details */}
                                         <div className="flex-1 space-y-2">
                                             <div>
-                                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-                                                    <h3 className="text-2xl font-extrabold text-slate-800 tracking-tight capitalize">
-                                                        {profileForm.fullName || user.name || 'Anonymous Advocate'}
+                                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-2.5">
+                                                    <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight capitalize">
+                                                        {profileForm.fullName || user.name || (selectedRole === 'law_firm' ? 'Law Firm Entity' : 'Anonymous User')}
                                                     </h3>
-                                                    {profileForm.barNumber && (
-                                                        <div className="flex items-center gap-1 px-2.5 py-0.5 bg-[#4F8CFF]/10 border border-[#4F8CFF]/20 rounded-md text-[9px] font-black text-[#4F8CFF] uppercase tracking-widest">
-                                                            <ShieldCheck size={11} /> Verified
-                                                        </div>
-                                                    )}
+                                                    <div className="flex items-center gap-1 px-2.5 py-0.5 bg-[#C8A34D]/15 border border-[#C8A34D]/30 rounded-md text-[9px] font-black text-[#C8A34D] uppercase tracking-widest">
+                                                        <ShieldCheck size={11} /> 
+                                                        {selectedRole === 'student' ? 'Verified Law Student' : selectedRole === 'law_firm' ? 'Verified Law Firm' : (profileForm.barNumber ? 'Verified Advocate' : 'Practicing Advocate')}
+                                                    </div>
                                                 </div>
-                                                <p className="text-xs text-slate-500 font-bold mt-1 flex items-center justify-center sm:justify-start gap-1.5">
-                                                    <Mail size={12} className="text-slate-400" />
-                                                    {user.email}
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mt-1 flex items-center justify-center sm:justify-start gap-1.5 truncate">
+                                                    <Mail size={12} className="text-slate-400 dark:text-slate-500 shrink-0" />
+                                                    <span className="truncate">{user.email}</span>
                                                 </p>
                                             </div>
 
                                             {/* Photo Action Buttons */}
                                             {isEditing && (
-                                                <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
+                                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
                                                     <button
                                                         onClick={() => fileInputRef.current?.click()}
-                                                        className="inline-flex items-center gap-1 px-3 py-1 bg-[#6D5DFC]/10 hover:bg-[#6D5DFC]/15 text-[#6D5DFC] rounded-lg border border-[#6D5DFC]/20 text-[10px] font-black uppercase tracking-widest transition-colors"
+                                                        className="inline-flex items-center gap-1 px-3 py-1 bg-[#111111] dark:bg-[#C8A34D] hover:bg-[#222222] dark:hover:bg-[#b08d3b] text-[#C8A34D] dark:text-[#111111] rounded-lg border border-[#C8A34D]/30 dark:border-transparent text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer"
                                                     >
                                                         Change Photo
                                                     </button>
                                                     {user.avatar && (
                                                         <button
                                                             onClick={handleRemoveAvatar}
-                                                            className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg border border-rose-100 text-[10px] font-black uppercase tracking-widest transition-colors"
+                                                            className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 rounded-lg border border-rose-100 dark:border-rose-900/50 text-[10px] font-black uppercase tracking-widest transition-colors"
                                                         >
                                                             Remove Photo
                                                         </button>
@@ -416,55 +453,55 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                 </div>
 
                                 {/* 2. Personal Information Card */}
-                                <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)] space-y-6">
-                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#6D5DFC] border-b border-slate-100 pb-3">Personal Information</h3>
+                                <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none space-y-5 sm:space-y-6">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#C8A34D] border-b border-slate-100 dark:border-slate-800 pb-3">Personal Information</h3>
                                     
                                     {isEditing ? (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Full Name</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Full Name</label>
                                                 <input 
                                                     type="text" 
                                                     value={profileForm.fullName} 
                                                     onChange={e => setProfileForm({ ...profileForm, fullName: e.target.value })} 
                                                     placeholder="Advocate Full Name" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Email Address (Account Linked)</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Email Address (Account Linked)</label>
                                                 <input 
                                                     type="text" 
                                                     disabled 
                                                     value={user.email} 
-                                                    className="w-full bg-slate-50 border border-slate-200 text-slate-500 rounded-xl px-4 py-2.5 text-xs font-bold outline-none cursor-not-allowed"
+                                                    className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-xl px-4 py-2.5 text-xs font-bold outline-none cursor-not-allowed"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Phone Number</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Phone Number</label>
                                                 <input 
                                                     type="text" 
                                                     value={profileForm.phoneNumber} 
                                                     onChange={e => setProfileForm({ ...profileForm, phoneNumber: e.target.value })} 
                                                     placeholder="+91 XXXXX XXXXX" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Date of Birth (Optional)</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Date of Birth (Optional)</label>
                                                 <input 
                                                     type="date" 
                                                     value={profileForm.dob} 
                                                     onChange={e => setProfileForm({ ...profileForm, dob: e.target.value })} 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all cursor-pointer"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all cursor-pointer"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Gender (Optional)</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Gender (Optional)</label>
                                                 <select 
                                                     value={profileForm.gender} 
                                                     onChange={e => setProfileForm({ ...profileForm, gender: e.target.value })} 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all cursor-pointer"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all cursor-pointer"
                                                 >
                                                     <option value="">Select Gender</option>
                                                     <option value="Male">Male</option>
@@ -474,43 +511,43 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                 </select>
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">City</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">City</label>
                                                 <input 
                                                     type="text" 
                                                     value={profileForm.city} 
                                                     onChange={e => setProfileForm({ ...profileForm, city: e.target.value })} 
                                                     placeholder="e.g. New Delhi" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">State</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">State</label>
                                                 <input 
                                                     type="text" 
                                                     value={profileForm.state} 
                                                     onChange={e => setProfileForm({ ...profileForm, state: e.target.value })} 
                                                     placeholder="e.g. Delhi" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Country</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Country</label>
                                                 <input 
                                                     type="text" 
                                                     value={profileForm.country} 
                                                     onChange={e => setProfileForm({ ...profileForm, country: e.target.value })} 
                                                     placeholder="e.g. India" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
                                                 />
                                             </div>
                                             <div className="md:col-span-2">
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Residential Address</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Residential Address</label>
                                                 <input 
                                                     type="text" 
                                                     value={profileForm.address} 
                                                     onChange={e => setProfileForm({ ...profileForm, address: e.target.value })} 
                                                     placeholder="Complete residential address" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
                                                 />
                                             </div>
                                         </div>
@@ -531,255 +568,445 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                     )}
                                 </div>
 
-                                {/* 3. Professional Information Card */}
-                                <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)] space-y-8">
-                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#6D5DFC] border-b border-slate-100 pb-3">Professional Information</h3>
+                                {/* 3. Professional / Academic / Law Firm Credentials Card */}
+                                <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none space-y-6 sm:space-y-8">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#C8A34D] border-b border-slate-100 dark:border-slate-800 pb-3">
+                                        {selectedRole === 'student' ? 'Academic & Education Details' : selectedRole === 'law_firm' ? 'Firm Registration & Operations' : 'Professional & Practice Details'}
+                                    </h3>
                                     
-                                    {/* Bar Council Sub-Card */}
-                                    <div className="bg-[#6D5DFC]/5 border border-[#6D5DFC]/10 rounded-2xl p-6">
-                                        <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-[#6D5DFC] flex items-center gap-1.5"><Award size={14} /> State Bar Council Credentials</span>
-                                            <div className={`flex items-center gap-1.5 px-3 py-1 border rounded-lg text-[10px] font-black uppercase tracking-widest ${
-                                                profileForm.barNumber 
-                                                    ? 'bg-[#4F8CFF]/10 border-[#4F8CFF]/20 text-[#4F8CFF]'
-                                                    : 'bg-amber-50 border-amber-100 text-amber-600'
-                                            }`}>
-                                                <ShieldCheck size={12} />
-                                                {profileForm.barNumber ? 'Verified Advocate' : 'Pending Verification'}
+                                    {/* Role Sub-Card 1: Credentials */}
+                                    {selectedRole === 'student' ? (
+                                        <div className="bg-[#C8A34D]/8 dark:bg-[#C8A34D]/10 border border-[#C8A34D]/25 dark:border-[#C8A34D]/30 rounded-2xl p-3.5 sm:p-6">
+                                            <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#B48A35] dark:text-[#C8A34D] flex items-center gap-1.5"><GraduationCap size={14} /> Law College Credentials</span>
+                                                <div className="flex items-center gap-1.5 px-3 py-1 bg-[#C8A34D]/15 border border-[#C8A34D]/30 rounded-lg text-[10px] font-black text-[#B48A35] dark:text-[#C8A34D] uppercase tracking-widest">
+                                                    <ShieldCheck size={12} /> Student ID Active
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        {isEditing ? (
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                            {isEditing ? (
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                                    <div>
+                                                        <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Law College / University</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={profileForm.collegeName || ''} 
+                                                            onChange={e => setProfileForm({ ...profileForm, collegeName: e.target.value })} 
+                                                            placeholder="e.g. NLU Delhi / Faculty of Law, DU" 
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Course Enrolled</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={profileForm.courseEnrolled || ''} 
+                                                            onChange={e => setProfileForm({ ...profileForm, courseEnrolled: e.target.value })} 
+                                                            placeholder="e.g. BA LL.B (Hons)" 
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Student Roll / ID Number</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={profileForm.studentRollNo || ''} 
+                                                            onChange={e => setProfileForm({ ...profileForm, studentRollNo: e.target.value })} 
+                                                            placeholder="e.g. 2021/LLB/104" 
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all font-mono"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                    {renderField('Law College / University', profileForm.collegeName, <GraduationCap size={13} className="text-slate-400" />)}
+                                                    {renderField('Course Enrolled', profileForm.courseEnrolled, <FileText size={13} className="text-slate-400" />)}
+                                                    {renderField('Student Roll / ID', profileForm.studentRollNo, <ShieldCheck size={13} className="text-slate-400" />)}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : selectedRole === 'law_firm' ? (
+                                        <div className="bg-[#C8A34D]/8 dark:bg-[#C8A34D]/10 border border-[#C8A34D]/25 dark:border-[#C8A34D]/30 rounded-2xl p-3.5 sm:p-6">
+                                            <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#B48A35] dark:text-[#C8A34D] flex items-center gap-1.5"><Building2 size={14} /> Corporate Law Firm Registration</span>
+                                                <div className="flex items-center gap-1.5 px-3 py-1 bg-[#C8A34D]/15 border border-[#C8A34D]/30 rounded-lg text-[10px] font-black text-[#B48A35] dark:text-[#C8A34D] uppercase tracking-widest">
+                                                    <ShieldCheck size={12} /> Firm Entity Verified
+                                                </div>
+                                            </div>
+
+                                            {isEditing ? (
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                                    <div>
+                                                        <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Law Firm Legal Name</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={profileForm.firmName || ''} 
+                                                            onChange={e => setProfileForm({ ...profileForm, firmName: e.target.value })} 
+                                                            placeholder="e.g. Apex Legal Associates LLP" 
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">LLP / Registration Number</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={profileForm.firmRegistrationNo || ''} 
+                                                            onChange={e => setProfileForm({ ...profileForm, firmRegistrationNo: e.target.value })} 
+                                                            placeholder="e.g. AAA-1234 / REG-2020-ND" 
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all font-mono"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Establishment Year</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={profileForm.establishmentYear || ''} 
+                                                            onChange={e => setProfileForm({ ...profileForm, establishmentYear: e.target.value })} 
+                                                            placeholder="e.g. 2012" 
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                    {renderField('Law Firm Legal Name', profileForm.firmName, <Building2 size={13} className="text-slate-400" />)}
+                                                    {renderField('Registration / LLP No.', profileForm.firmRegistrationNo, <ShieldCheck size={13} className="text-slate-400" />)}
+                                                    {renderField('Establishment Year', profileForm.establishmentYear, <Calendar size={13} className="text-slate-400" />)}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="bg-[#C8A34D]/8 dark:bg-[#C8A34D]/10 border border-[#C8A34D]/20 dark:border-[#C8A34D]/30 rounded-2xl p-3.5 sm:p-6">
+                                            <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#B48A35] dark:text-[#C8A34D] flex items-center gap-1.5"><Award size={14} /> State Bar Council Credentials</span>
+                                                <div className={`flex items-center gap-1.5 px-3 py-1 border rounded-lg text-[10px] font-black uppercase tracking-widest ${
+                                                    profileForm.barNumber 
+                                                        ? 'bg-[#C8A34D]/15 border-[#C8A34D]/30 text-[#B48A35] dark:text-[#C8A34D]'
+                                                        : 'bg-amber-50 dark:bg-amber-950/40 border-amber-100 dark:border-amber-900/50 text-amber-600 dark:text-amber-400'
+                                                }`}>
+                                                    <ShieldCheck size={12} />
+                                                    {profileForm.barNumber ? 'Verified Advocate' : 'Pending Verification'}
+                                                </div>
+                                            </div>
+
+                                            {isEditing ? (
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                                    <div>
+                                                        <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">State Bar Council</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={profileForm.stateBarCouncil || ''} 
+                                                            onChange={e => setProfileForm({ ...profileForm, stateBarCouncil: e.target.value })} 
+                                                            placeholder="e.g. Bar Council of Delhi" 
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Bar Enrollment Number</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={profileForm.barNumber || ''} 
+                                                            onChange={e => setProfileForm({ ...profileForm, barNumber: e.target.value })} 
+                                                            placeholder="e.g. D/1234/2018" 
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all font-mono"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Designation Type</label>
+                                                        <select 
+                                                            value={profileForm.advocateType || 'Practicing Advocate'} 
+                                                            onChange={e => setProfileForm({ ...profileForm, advocateType: e.target.value })} 
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all cursor-pointer"
+                                                        >
+                                                            <option value="Practicing Advocate">Practicing Advocate</option>
+                                                            <option value="Senior Counsel">Senior Counsel</option>
+                                                            <option value="Advocate on Record (AOR)">Advocate on Record (AOR)</option>
+                                                            <option value="Legal Consultant">Legal Consultant</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                    {renderField('State Bar Council', profileForm.stateBarCouncil, <Building2 size={13} className="text-slate-400" />)}
+                                                    {renderField('Bar Enrollment Number', profileForm.barNumber, <Award size={13} className="text-slate-400" />)}
+                                                    {renderField('Designation', profileForm.advocateType || 'Practicing Advocate', <Briefcase size={13} className="text-slate-400" />)}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Role Sub-Card 2: Role Details */}
+                                    {selectedRole === 'student' ? (
+                                        isEditing ? (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                                 <div>
-                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">State Bar Council</label>
+                                                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Current Year / Semester</label>
                                                     <input 
                                                         type="text" 
-                                                        value={profileForm.stateBarCouncil} 
-                                                        onChange={e => setProfileForm({ ...profileForm, stateBarCouncil: e.target.value })} 
-                                                        placeholder="e.g. Bar Council of Delhi" 
-                                                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
+                                                        value={profileForm.currentYear || ''} 
+                                                        onChange={e => setProfileForm({ ...profileForm, currentYear: e.target.value })} 
+                                                        placeholder="e.g. 4th Year / 7th Semester" 
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Bar Council Number</label>
+                                                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Expected Graduation Year</label>
                                                     <input 
                                                         type="text" 
-                                                        value={profileForm.barNumber} 
-                                                        onChange={e => setProfileForm({ ...profileForm, barNumber: e.target.value })} 
-                                                        placeholder="e.g. D/1042/2018" 
-                                                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all font-mono"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Enrollment Date</label>
-                                                    <input 
-                                                        type="date" 
-                                                        value={profileForm.enrollmentDate} 
-                                                        onChange={e => setProfileForm({ ...profileForm, enrollmentDate: e.target.value })} 
-                                                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all cursor-pointer"
+                                                        value={profileForm.expectedGraduationYear || ''} 
+                                                        onChange={e => setProfileForm({ ...profileForm, expectedGraduationYear: e.target.value })} 
+                                                        placeholder="e.g. 2025" 
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
                                                     />
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                {renderField('State Bar Council', profileForm.stateBarCouncil, <Award size={13} className="text-slate-400" />)}
-                                                {renderField('Bar Council Number', profileForm.barNumber, <Award size={13} className="text-slate-400" />)}
-                                                {renderField('Enrollment Date', formatDate(profileForm.enrollmentDate), <Calendar size={13} className="text-slate-400" />)}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {renderField('Current Year / Sem', profileForm.currentYear, <Calendar size={13} className="text-slate-400" />)}
+                                                {renderField('Expected Graduation Year', profileForm.expectedGraduationYear, <Award size={13} className="text-slate-400" />)}
                                             </div>
-                                        )}
-                                    </div>
+                                        )
+                                    ) : selectedRole === 'law_firm' ? (
+                                        isEditing ? (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                <div>
+                                                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Managing Partner Name</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={profileForm.managingPartnerName || ''} 
+                                                        onChange={e => setProfileForm({ ...profileForm, managingPartnerName: e.target.value })} 
+                                                        placeholder="e.g. Senior Adv. Rajesh Sharma" 
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Total Active Advocates / Team Size</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={profileForm.totalAdvocatesCount || ''} 
+                                                        onChange={e => setProfileForm({ ...profileForm, totalAdvocatesCount: e.target.value })} 
+                                                        placeholder="e.g. 24 Advocates" 
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-2">
+                                                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Headquarters Office Address</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={profileForm.hqAddress || ''} 
+                                                        onChange={e => setProfileForm({ ...profileForm, hqAddress: e.target.value })} 
+                                                        placeholder="Complete corporate office address" 
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                    />
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {renderField('Managing Partner Name', profileForm.managingPartnerName, <User size={13} className="text-slate-400" />)}
+                                                {renderField('Active Advocates & Team Size', profileForm.totalAdvocatesCount, <Users size={13} className="text-slate-400" />)}
+                                                <div className="md:col-span-2">
+                                                    {renderField('Headquarters Address', profileForm.hqAddress, <MapPin size={13} className="text-slate-400" />)}
+                                                </div>
+                                            </div>
+                                        )
+                                    ) : (
+                                        isEditing ? (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                <div>
+                                                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Enrollment Year</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={profileForm.enrollmentYear || ''} 
+                                                        onChange={e => setProfileForm({ ...profileForm, enrollmentYear: e.target.value })} 
+                                                        placeholder="e.g. 2018" 
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Practice Experience (Years)</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={profileForm.practiceExperience || ''} 
+                                                        onChange={e => setProfileForm({ ...profileForm, practiceExperience: e.target.value })} 
+                                                        placeholder="e.g. 6 Years" 
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Primary Court of Practice</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={profileForm.primaryCourt || ''} 
+                                                        onChange={e => setProfileForm({ ...profileForm, primaryCourt: e.target.value })} 
+                                                        placeholder="e.g. Delhi High Court / District Courts" 
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Languages Known</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={profileForm.languagesKnown || ''} 
+                                                        onChange={e => setProfileForm({ ...profileForm, languagesKnown: e.target.value })} 
+                                                        placeholder="e.g. English, Hindi, Punjabi" 
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                    />
+                                                </div>
 
-                                    {/* General Professional Fields */}
-                                    {isEditing ? (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Enrollment Year</label>
-                                                <input 
-                                                    type="text" 
-                                                    value={profileForm.enrollmentYear} 
-                                                    onChange={e => setProfileForm({ ...profileForm, enrollmentYear: e.target.value })} 
-                                                    placeholder="e.g. 2018" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Practice Experience (Years)</label>
-                                                <input 
-                                                    type="text" 
-                                                    value={profileForm.practiceExperience} 
-                                                    onChange={e => setProfileForm({ ...profileForm, practiceExperience: e.target.value })} 
-                                                    placeholder="e.g. 8" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Primary Court of Practice</label>
-                                                <input 
-                                                    type="text" 
-                                                    value={profileForm.primaryCourt} 
-                                                    onChange={e => setProfileForm({ ...profileForm, primaryCourt: e.target.value })} 
-                                                    placeholder="e.g. High Court of Delhi" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Languages Known</label>
-                                                <input 
-                                                    type="text" 
-                                                    value={profileForm.languagesKnown} 
-                                                    onChange={e => setProfileForm({ ...profileForm, languagesKnown: e.target.value })} 
-                                                    placeholder="e.g. English, Hindi" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
-                                                />
-                                            </div>
-                                            
-                                            {/* Office Details */}
-                                            <div className="md:col-span-2 border-t border-slate-100 pt-6 mt-2">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#6D5DFC] block mb-4">Office Details</span>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Office Name</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={profileForm.officeName} 
-                                                            onChange={e => setProfileForm({ ...profileForm, officeName: e.target.value })} 
-                                                            placeholder="e.g. Apex Legal Chambers" 
-                                                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Office Address</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={profileForm.officeAddress} 
-                                                            onChange={e => setProfileForm({ ...profileForm, officeAddress: e.target.value })} 
-                                                            placeholder="Complete office chambers address" 
-                                                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
-                                                        />
+                                                <div className="md:col-span-2 border-t border-slate-100 dark:border-slate-800 pt-6 mt-2 space-y-4">
+                                                    <div className="text-[10px] font-black uppercase tracking-widest text-[#6D5DFC] dark:text-[#C8A34D]">Office Details</div>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                        <div>
+                                                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Office Name</label>
+                                                            <input 
+                                                                type="text" 
+                                                                value={profileForm.officeName || ''} 
+                                                                onChange={e => setProfileForm({ ...profileForm, officeName: e.target.value })} 
+                                                                placeholder="e.g. Apex Legal Chambers" 
+                                                                className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Office Address</label>
+                                                            <input 
+                                                                type="text" 
+                                                                value={profileForm.officeAddress || ''} 
+                                                                onChange={e => setProfileForm({ ...profileForm, officeAddress: e.target.value })} 
+                                                                placeholder="Complete office chambers address" 
+                                                                className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                            />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            {renderField('Enrollment Year', profileForm.enrollmentYear, <Calendar size={13} className="text-slate-400" />)}
-                                            {renderField('Practice Experience (Years)', profileForm.practiceExperience, <Briefcase size={13} className="text-slate-400" />)}
-                                            {renderField('Primary Court of Practice', profileForm.primaryCourt, <Scale size={13} className="text-slate-400" />)}
-                                            {renderField('Languages Known', profileForm.languagesKnown, <Languages size={13} className="text-slate-400" />)}
-                                            
-                                            <div className="md:col-span-2 border-t border-slate-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div className="md:col-span-2 text-[10px] font-black uppercase tracking-widest text-[#6D5DFC]">Office Details</div>
-                                                {renderField('Office Name', profileForm.officeName, <Building2 size={13} className="text-slate-400" />)}
-                                                {renderField('Office Address', profileForm.officeAddress, <MapPin size={13} className="text-slate-400" />)}
+                                        ) : (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {renderField('Enrollment Year', profileForm.enrollmentYear, <Calendar size={13} className="text-slate-400" />)}
+                                                {renderField('Practice Experience (Years)', profileForm.practiceExperience, <Briefcase size={13} className="text-slate-400" />)}
+                                                {renderField('Primary Court of Practice', profileForm.primaryCourt, <Scale size={13} className="text-slate-400" />)}
+                                                {renderField('Languages Known', profileForm.languagesKnown, <Languages size={13} className="text-slate-400" />)}
+                                                
+                                                <div className="md:col-span-2 border-t border-slate-100 dark:border-slate-800 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div className="md:col-span-2 text-[10px] font-black uppercase tracking-widest text-[#6D5DFC] dark:text-[#C8A34D]">Office Details</div>
+                                                    {renderField('Office Name', profileForm.officeName, <Building2 size={13} className="text-slate-400" />)}
+                                                    {renderField('Office Address', profileForm.officeAddress, <MapPin size={13} className="text-slate-400" />)}
+                                                </div>
                                             </div>
-                                        </div>
+                                        )
                                     )}
 
-                                    {/* Practice Areas Chips */}
-                                    <div className="border-t border-slate-100 pt-6">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">Practice Areas</label>
+                                    {/* Practice / Focus Areas Chips */}
+                                    <div className="border-t border-slate-100 dark:border-slate-800 pt-6">
+                                        <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-3">
+                                            {selectedRole === 'student' ? 'Academic Focus & Interests' : selectedRole === 'law_firm' ? 'Firm Practice Domains' : 'Practice Areas'}
+                                        </label>
                                         <div className="flex flex-wrap gap-2">
-                                            {isEditing ? (
-                                                PRACTICE_AREAS.map(area => {
-                                                    const isSelected = profileForm.practiceAreas?.includes(area);
-                                                    return (
-                                                        <button
-                                                            key={area}
-                                                            type="button"
-                                                            onClick={() => {
-                                                                const list = profileForm.practiceAreas || [];
-                                                                const newList = list.includes(area)
-                                                                    ? list.filter(a => a !== area)
-                                                                    : [...list, area];
-                                                                setProfileForm({ ...profileForm, practiceAreas: newList });
-                                                            }}
-                                                            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
-                                                                isSelected 
-                                                                    ? 'bg-[#6D5DFC] border-[#6D5DFC] text-white shadow-sm'
-                                                                    : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
-                                                            }`}
-                                                        >
-                                                            {area}
-                                                        </button>
-                                                    );
-                                                })
-                                            ) : (
-                                                profileForm.practiceAreas?.length > 0 ? (
-                                                    profileForm.practiceAreas.map(area => (
-                                                        <span
-                                                            key={area}
-                                                            className="px-3 py-1.5 rounded-full text-xs font-bold bg-[#6D5DFC]/10 border border-[#6D5DFC]/20 text-[#6D5DFC]"
-                                                        >
-                                                            {area}
-                                                        </span>
-                                                    ))
+                                            {(() => {
+                                                const chipList = selectedRole === 'student' ? STUDENT_FOCUS_AREAS : selectedRole === 'law_firm' ? FIRM_PRACTICE_DOMAINS : PRACTICE_AREAS;
+                                                const activeArray = profileForm.practiceAreas || [];
+
+                                                return isEditing ? (
+                                                    chipList.map(area => {
+                                                        const isSelected = activeArray.includes(area);
+                                                        return (
+                                                            <button
+                                                                key={area}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const newList = activeArray.includes(area)
+                                                                        ? activeArray.filter(a => a !== area)
+                                                                        : [...activeArray, area];
+                                                                    setProfileForm({ ...profileForm, practiceAreas: newList });
+                                                                }}
+                                                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
+                                                                    isSelected 
+                                                                        ? 'bg-[#C8A34D] border-[#C8A34D] text-[#111111] font-black shadow-xs'
+                                                                        : 'bg-white dark:bg-[#0F172A] border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-[#C8A34D]/50'
+                                                                }`}
+                                                            >
+                                                                {area}
+                                                            </button>
+                                                        );
+                                                    })
                                                 ) : (
-                                                    <span className="text-xs font-medium text-slate-400 italic">No practice areas selected</span>
-                                                )
-                                            )}
+                                                    activeArray.length > 0 ? (
+                                                        activeArray.map(area => (
+                                                            <span
+                                                                key={area}
+                                                                className="px-3 py-1.5 rounded-full text-xs font-bold bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-[#B48A35] dark:text-[#C8A34D]"
+                                                            >
+                                                                {area}
+                                                            </span>
+                                                        ))
+                                                    ) : (
+                                                        <span className="text-xs font-medium text-slate-400 dark:text-slate-500 italic">No focus areas selected</span>
+                                                    )
+                                                );
+                                            })()}
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* 4. About Advocate Card */}
-                                <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)] space-y-6">
-                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#6D5DFC] border-b border-slate-100 pb-3">About Advocate</h3>
+                                {/* 4. About Card (Role-Specific) */}
+                                <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none space-y-5 sm:space-y-6">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#C8A34D] border-b border-slate-100 dark:border-slate-800 pb-3">
+                                        {selectedRole === 'student' ? 'About Law Student' : selectedRole === 'law_firm' ? 'About Law Firm' : 'About Advocate'}
+                                    </h3>
                                     
                                     {isEditing ? (
                                         <div className="space-y-5">
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Core Specialization</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Core Specialization / Focus</label>
                                                 <input 
                                                     type="text" 
-                                                    value={profileForm.specialization} 
+                                                    value={profileForm.specialization || ''} 
                                                     onChange={e => setProfileForm({ ...profileForm, specialization: e.target.value })} 
-                                                    placeholder="e.g. Criminal Trial Defense, Corporate M&A" 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] transition-all"
+                                                    placeholder={selectedRole === 'student' ? "e.g. Constitutional Law, Moot Court Specialization" : selectedRole === 'law_firm' ? "e.g. Cross-Border M&A, Commercial Arbitration" : "e.g. Criminal Trial Defense, Corporate Law"} 
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Short Professional Bio</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Short Profile Bio</label>
                                                 <textarea 
-                                                    value={profileForm.bio} 
+                                                    value={profileForm.bio || ''} 
                                                     onChange={e => setProfileForm({ ...profileForm, bio: e.target.value })} 
                                                     rows={4}
-                                                    placeholder="Advocate bio, court background, practice highlights..." 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-medium focus:outline-none focus:border-[#6D5DFC] transition-all resize-none"
+                                                    placeholder="Profile bio, legal background, highlights..." 
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-xs font-medium focus:outline-none focus:border-[#C8A34D] transition-all resize-none"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Achievements / Landmark Citations (Optional)</label>
+                                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Achievements / Citations / Honors</label>
                                                 <textarea 
-                                                    value={profileForm.achievements} 
+                                                    value={profileForm.achievements || ''} 
                                                     onChange={e => setProfileForm({ ...profileForm, achievements: e.target.value })} 
                                                     rows={3}
-                                                    placeholder="Publications, landmark judgments argued, panel appointments..." 
-                                                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-medium focus:outline-none focus:border-[#6D5DFC] transition-all resize-none"
+                                                    placeholder="Moots won, landmark judgments, publications..." 
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-xs font-medium focus:outline-none focus:border-[#C8A34D] transition-all resize-none"
                                                 />
                                             </div>
                                         </div>
                                     ) : (
                                         <div className="space-y-6">
-                                            {renderField('Core Specialization', profileForm.specialization, <Sparkles size={13} className="text-slate-400" />)}
+                                            {renderField('Core Specialization / Focus', profileForm.specialization, <Sparkles size={13} className="text-slate-400" />)}
                                             
                                             <div className="space-y-1">
-                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                                <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                                                     <Info size={13} className="text-slate-400" />
-                                                    <span>Short Professional Bio</span>
+                                                    <span>Short Profile Bio</span>
                                                 </span>
-                                                <p className="text-xs font-medium text-slate-700 whitespace-pre-wrap leading-relaxed">
-                                                    {profileForm.bio || <span className="text-slate-300 font-medium italic">No bio provided</span>}
+                                                <p className="text-xs font-medium text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                                                    {profileForm.bio || <span className="text-slate-300 dark:text-slate-600 font-medium italic">No bio provided</span>}
                                                 </p>
                                             </div>
 
                                             <div className="space-y-1">
-                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                                <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                                                     <Award size={13} className="text-slate-400" />
-                                                    <span>Achievements / Landmark Citations</span>
+                                                    <span>Achievements / Citations / Honors</span>
                                                 </span>
-                                                <p className="text-xs font-medium text-slate-700 whitespace-pre-wrap leading-relaxed">
-                                                    {profileForm.achievements || <span className="text-slate-300 font-medium italic">No achievements listed</span>}
+                                                <p className="text-xs font-medium text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                                                    {profileForm.achievements || <span className="text-slate-300 dark:text-slate-600 font-medium italic">No achievements listed</span>}
                                                 </p>
                                             </div>
                                         </div>
@@ -791,30 +1018,30 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                             <div className="space-y-6">
                                 
                                 {/* A. Profile Completion Card */}
-                                <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)] text-center">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-4">Profile Completion</span>
+                                <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none text-center">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 block mb-4">Profile Completion</span>
                                     
                                     {/* Circle Progress bar visual */}
                                     <div className="relative w-24 h-24 mx-auto flex items-center justify-center mb-4">
                                         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                                            <path className="text-slate-100" strokeWidth="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                            <path className="text-[#6D5DFC]" strokeDasharray={`${profileCompletion}, 100`} strokeWidth="3" strokeLinecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                            <path className="text-slate-100 dark:text-slate-800" strokeWidth="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                            <path className="text-[#C8A34D]" strokeDasharray={`${profileCompletion}, 100`} strokeWidth="3" strokeLinecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                                         </svg>
-                                        <div className="absolute text-xl font-extrabold text-slate-800">{profileCompletion}%</div>
+                                        <div className="absolute text-xl font-extrabold text-slate-800 dark:text-white">{profileCompletion}%</div>
                                     </div>
                                     
-                                    <p className="text-xs text-slate-500 font-bold leading-relaxed px-2">
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 font-bold leading-relaxed px-2">
                                         Complete your profile to unlock a better AI Legal experience.
                                     </p>
                                 </div>
 
                                 {/* B. AI Integration Card */}
-                                <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)]">
-                                    <div className="flex items-center gap-2 text-[#6D5DFC] mb-4">
-                                        <Sparkles size={14} className="fill-[#6D5DFC]" />
+                                <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none">
+                                    <div className="flex items-center gap-2 text-[#C8A34D] mb-4">
+                                        <Sparkles size={14} className="fill-[#C8A34D]" />
                                         <span className="text-xs font-black uppercase tracking-widest">AI Customization</span>
                                     </div>
-                                    <p className="text-xs text-slate-600 font-bold leading-relaxed mb-4">
+                                    <p className="text-xs text-slate-600 dark:text-slate-300 font-bold leading-relaxed mb-4">
                                         AI LEGAL uses your professional profile details to personalize:
                                     </p>
                                     <ul className="space-y-3">
@@ -825,13 +1052,13 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                             'Relevant Court Jurisdiction Suggestions',
                                             'Strategic Case Recommendations'
                                         ].map(item => (
-                                            <li key={item} className="flex items-start gap-2.5 text-[11px] text-slate-500 font-semibold leading-normal">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-[#6D5DFC] mt-1.5 shrink-0" />
+                                            <li key={item} className="flex items-start gap-2.5 text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-normal">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-[#C8A34D] mt-1.5 shrink-0" />
                                                 <span>{item}</span>
                                             </li>
                                         ))}
                                     </ul>
-                                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">
+                                    <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest leading-none">
                                         <Info size={12} className="shrink-0" />
                                         <span>Informational Only</span>
                                     </div>
@@ -842,7 +1069,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
 
                     {/* Modal Sticky Footer (Only shown when editing) */}
                     {isEditing && (
-                        <div className="sticky bottom-0 z-20 px-8 py-4 bg-white border-t border-slate-100 flex items-center justify-end gap-3 shrink-0">
+                        <div className="sticky bottom-0 z-20 px-4 sm:px-8 py-3 sm:py-4 bg-white dark:bg-[#1E293B] border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 shrink-0">
                             <button
                                 onClick={() => {
                                     if (personalizations?.advocateProfile) {
@@ -850,13 +1077,13 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                     }
                                     setIsEditing(false);
                                 }}
-                                className="px-5 py-3 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs font-black uppercase tracking-wider transition-colors active:scale-95 animate-fade-in"
+                                className="px-4 sm:px-5 py-2.5 sm:py-3 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-black uppercase tracking-wider transition-colors active:scale-95 animate-fade-in cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleSaveProfile}
-                                className="px-7 py-3 bg-[#6D5DFC] hover:bg-[#5b4edb] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors shadow-lg shadow-[#6D5DFC]/10 active:scale-[0.98] animate-fade-in"
+                                className="px-5 sm:px-7 py-2.5 sm:py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-colors shadow-md active:scale-[0.98] animate-fade-in cursor-pointer"
                             >
                                 Save Changes
                             </button>
@@ -871,21 +1098,21 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.95 }} 
                         animate={{ opacity: 1, scale: 1 }} 
-                        className="bg-white rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col" 
+                        className="bg-white dark:bg-[#1E293B] border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col" 
                         onClick={e => e.stopPropagation()}
                     >
-                        <div className="p-6 flex items-center justify-between border-b border-slate-100">
+                        <div className="p-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
                             <div>
-                                <h3 className="text-lg font-black text-slate-800 tracking-tight">Adjust Profile Photo</h3>
-                                <p className="text-xs text-slate-400 font-semibold mt-1">Crop, rotate, and resize your photo</p>
+                                <h3 className="text-lg font-black text-slate-800 dark:text-white tracking-tight">Adjust Profile Photo</h3>
+                                <p className="text-xs text-slate-400 dark:text-slate-400 font-semibold mt-1">Crop, rotate, and resize your photo</p>
                             </div>
-                            <button onClick={() => setShowCropper(false)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
-                                <X size={20} className="text-slate-400" />
+                            <button onClick={() => setShowCropper(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                                <X size={20} className="text-slate-400 dark:text-slate-400" />
                             </button>
                         </div>
 
                         {/* Crop Area */}
-                        <div className="relative h-[280px] bg-slate-100">
+                        <div className="relative h-[280px] bg-slate-100 dark:bg-slate-900">
                             <Cropper
                                 image={imageToCrop}
                                 crop={crop}
@@ -902,13 +1129,13 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                         </div>
 
                         {/* Controls Panel */}
-                        <div className="p-6 space-y-6">
+                        <div className="p-6 space-y-6 bg-white dark:bg-[#1E293B]">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 {/* Zoom */}
                                 <div className="space-y-2">
-                                    <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                    <div className="flex justify-between items-center text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">
                                         <span>Zoom</span>
-                                        <span className="text-[#6D5DFC]">{Math.round(zoom * 100)}%</span>
+                                        <span className="text-[#6D5DFC] dark:text-[#C8A34D]">{Math.round(zoom * 100)}%</span>
                                     </div>
                                     <input
                                         type="range"
@@ -918,15 +1145,15 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                         step={0.1}
                                         aria-labelledby="Zoom Slider"
                                         onChange={(e) => setZoom(parseFloat(e.target.value))}
-                                        className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-[#6D5DFC]"
+                                        className="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#6D5DFC] dark:accent-[#C8A34D]"
                                     />
                                 </div>
 
                                 {/* Rotation */}
                                 <div className="space-y-2">
-                                    <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                    <div className="flex justify-between items-center text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">
                                         <span>Rotation</span>
-                                        <span className="text-[#6D5DFC]">{rotation}°</span>
+                                        <span className="text-[#6D5DFC] dark:text-[#C8A34D]">{rotation}°</span>
                                     </div>
                                     <input
                                         type="range"
@@ -936,14 +1163,14 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                         step={1}
                                         aria-labelledby="Rotation Slider"
                                         onChange={(e) => setRotation(parseInt(e.target.value))}
-                                        className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-[#6D5DFC]"
+                                        className="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#6D5DFC] dark:accent-[#C8A34D]"
                                     />
                                 </div>
                             </div>
 
-                            <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-100">
+                            <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
                                 <div className="flex items-center gap-1.5">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mr-2">Aspect:</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 mr-2">Aspect:</span>
                                     {[
                                         { label: 'Square', value: 1 / 1 },
                                         { label: 'Circle', value: 1 / 1 }
@@ -953,8 +1180,8 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                             onClick={() => setAspect(opt.value)}
                                             className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border ${
                                                 aspect === opt.value 
-                                                    ? 'bg-[#6D5DFC] border-[#6D5DFC] text-white shadow-sm'
-                                                    : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
+                                                    ? 'bg-[#6D5DFC] dark:bg-[#C8A34D] border-[#6D5DFC] dark:border-[#C8A34D] text-white dark:text-[#111111] shadow-sm'
+                                                    : 'bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white'
                                             }`}
                                         >
                                             {opt.label}
@@ -965,14 +1192,14 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                 <div className="flex items-center gap-3 w-full sm:w-auto">
                                     <button
                                         onClick={() => setShowCropper(false)}
-                                        className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-slate-500 hover:bg-slate-50 transition-colors"
+                                        className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         onClick={handleSaveCrop}
                                         disabled={uploadingCroppedImage}
-                                        className="flex-1 sm:flex-none px-6 py-2.5 bg-[#6D5DFC] hover:bg-[#5b4edb] text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-[#6D5DFC]/10 transition-colors disabled:opacity-50"
+                                        className="flex-1 sm:flex-none px-6 py-2.5 bg-[#6D5DFC] dark:bg-[#C8A34D] hover:bg-[#5b4edb] dark:hover:bg-[#b08d3b] text-white dark:text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider shadow-lg transition-colors disabled:opacity-50"
                                     >
                                         {uploadingCroppedImage ? 'Uploading...' : 'Save & Update'}
                                     </button>

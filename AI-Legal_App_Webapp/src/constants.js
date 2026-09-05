@@ -1,4 +1,5 @@
-export const logo = "/logo/Logo.svg";
+export const logo = "/logo/logo_transparent.png";
+export const splashLogo = "/logo/ai_legal_logo_with_text.png";
 export const name = "AI LEGAL™";
 
 export const faqs = [

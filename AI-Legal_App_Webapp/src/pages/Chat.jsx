@@ -3,7 +3,6 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Send, SendHorizontal, Bot, User, Sparkles, Plus, Monitor, ChevronDown, History, Paperclip, X, AlertCircle, FileText, Image as ImageIcon, Cloud, HardDrive, Edit2, Download, Mic, Wand2, Eye, FileSpreadsheet, Presentation, File as FileIcon, MoreVertical, Trash2, Check, Camera, Video, Copy, ThumbsUp, ThumbsDown, Share, Search, Undo2, Menu as MenuIcon, Volume2, Pause, Headphones, MessageCircle, ExternalLink, ZoomIn, ZoomOut, RotateCcw, Minus, Code, Globe, Sliders, PlayCircle, Brain, ImagePlus, PlaySquare, RefreshCcw, TrendingUp, Zap, Gavel, Navigation, Rocket, Megaphone, Scale, ArrowLeft, ChevronRight, Briefcase, Calendar, Users, FolderOpen, Save, Sun, Moon, LayoutDashboard, ArrowDown } from 'lucide-react';
 import LegalLogo from '../Tools/AI_Legal/components/LegalLogo';
-import CaseIntelligencePanel from '../Tools/AI_Legal/components/CaseIntelligencePanel';
 import { logo } from '../constants';
 import { renderAsync } from 'docx-preview';
 import * as XLSX from 'xlsx';
@@ -1014,17 +1013,21 @@ const Chat = () => {
       window.history.replaceState({}, '', location.pathname);
     }
 
-    // Auto-activate legal tools from URL if they exist
-    if (toolParam?.startsWith('legal_') && selectedLegalTool?.id !== toolParam) {
-      if (manualToolSelectionRef.current === toolParam) {
-        // Just cleared - reset ref and skip to avoid double toast
-        manualToolSelectionRef.current = null;
-        return;
-      }
-      lastHandledSearchRef.current = location.search;
-      console.log(`[RouteActivation] Activating legal tool from URL: ${toolParam}`);
-      const legalTool = PREMIUM_TOOLS.find(t => t.id === toolParam);
-      activateToolWithTypingEffect(toolParam, legalTool?.name, true);
+    // Redirect non-case AI tool URL parameters to dedicated non-chat tool routes
+    const TOOL_ROUTE_MAP = {
+      legal_draft_maker: '/dashboard/tools/draft-maker',
+      legal_contract_analyzer: '/dashboard/tools/contract-analyzer',
+      legal_evidence_checker: '/dashboard/tools/evidence-analyst',
+      legal_case_predictor: '/dashboard/tools/case-predictor',
+      legal_strategy_engine: '/dashboard/tools/strategy-engine',
+      legal_argument_builder: '/dashboard/tools/argument-builder',
+      legal_precedents: '/dashboard/tools/legal-precedents',
+      legal_research: '/dashboard/tools/knowledge-hub',
+    };
+
+    if (toolParam && TOOL_ROUTE_MAP[toolParam]) {
+      navigate(TOOL_ROUTE_MAP[toolParam], { replace: true });
+      return;
     }
 
     // Reset to normal chat if on new session with no specific tool/case/state
@@ -1069,7 +1072,7 @@ const Chat = () => {
     const params = new URLSearchParams(location.search);
     const caseIdInUrl = params.get('caseId') || caseId;
 
-    if (caseIdInUrl && /^[a-f\d]{24}$/i.test(caseIdInUrl)) {
+    if (caseIdInUrl && caseIdInUrl !== 'null' && caseIdInUrl !== 'undefined' && caseIdInUrl !== 'new' && caseIdInUrl !== 'all' && caseIdInUrl !== 'default') {
       // 1. Sync Project ID
       if (currentProjectId !== caseIdInUrl) {
         console.log(`[DeepLink] Case ID detected: ${caseIdInUrl}`);
@@ -1498,7 +1501,7 @@ const Chat = () => {
       setIsSearchingStocks(true);
       try {
         const user = getUserData();
-        const baseURL = window._env_?.VITE_AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || "http://localhost:8080/api";
+        const baseURL = window._env_?.VITE_AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? "http://localhost:8080/api" : (typeof window !== 'undefined' ? `${window.location.origin}/api` : "http://localhost:8080/api"));
         const response = await axios.get(`${baseURL}/cashflow/search`, {
           params: { keywords: inputValue },
           headers: { Authorization: `Bearer ${user.token}` }
@@ -2765,7 +2768,7 @@ const Chat = () => {
       }
 
       try {
-        const baseURL = window._env_?.VITE_AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || "http://localhost:8080/api";
+        const baseURL = window._env_?.VITE_AISA_BACKEND_API || import.meta.env.VITE_AISA_BACKEND_API || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? "http://localhost:8080/api" : (typeof window !== 'undefined' ? `${window.location.origin}/api` : "http://localhost:8080/api"));
         const response = await axios.post(`${baseURL}/cashflow/analyze`, {
           symbol: stock.symbol,
           name: stock.name
@@ -2989,6 +2992,7 @@ const Chat = () => {
 
   // Internal function to execute speech
   const executeSpeak = async (text, language, msgId, attachments = []) => {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       // Store resolve to allow external cancellation
       currentSpeechResolverRef.current = resolve;
@@ -3576,7 +3580,7 @@ const Chat = () => {
           const sessionMeta = Array.isArray(sessionData) ? {} : sessionData;
 
           // If this session belongs to a case, sync with workspace store
-          if (sessionMeta.projectId && /^[a-f\d]{24}$/i.test(sessionMeta.projectId)) {
+          if (sessionMeta.projectId && sessionMeta.projectId !== 'null' && sessionMeta.projectId !== 'undefined' && sessionMeta.projectId !== 'new' && sessionMeta.projectId !== 'all' && sessionMeta.projectId !== 'default') {
             updateWorkspace(sessionMeta.projectId, { messages: historyMessages });
           }
 
@@ -7329,6 +7333,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                   </div>
                                 </div>
                               ) : (
+                                <>
                                 (msg.content || (msg.id === typingMessageId) || msg.error) && (
                                   <div id={`msg-text-${msg.id}`} className={`chat-bubble-text break-words overflow-wrap-anywhere ${msg.role === 'model' ? 'prose prose-sm max-w-none' : ''}`}>
                                       {msg.error ? (
@@ -7599,7 +7604,8 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                       )}
 
                                     </div>
-                                    {/* Sources List (ONLY for Web Search, HIDE for RAG as requested) */}
+                                  )
+                                  {/* Sources List (ONLY for Web Search, HIDE for RAG as requested) */}
                                     {msg.role === 'model' && msg.isRealTime && msg.sources && msg.sources.length > 0 && (
                                       <div className="mt-4 pt-4">
                                         <p className="text-[10px] font-bold uppercase text-subtext mb-3 flex items-center gap-2">
@@ -7898,16 +7904,14 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                                     minute: '2-digit',
                                                   })}
                                                 </span>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )
-                                    )}
-                                  </div>
-                                )
-                              )}
-
+                                               </div>
+                                             </div>
+                                           </div>
+                                         </div>
+                                       )
+                                     )}
+                                   </>
+                                 )}
                               {/* File Conversion Download Button */}
                               {msg.conversion && msg.conversion.file && (
                                 <div className="mt-4 pt-3 border-t border-border/40 space-y-3" style={{ maxWidth: '260px' }}>
@@ -9716,7 +9720,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                             if (item) {
                               const baseLang = item.label.split(' (')[0].split(' —')[0];
                               setTimeout(() => {
-                                setLanguage(baseLang);
+                                updatePersonalization('general', { language: baseLang });
                               }, 0);
                             }
                           }}>
@@ -10099,18 +10103,6 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
         shareId={currentShareId}
         sessionTitle={messages[0]?.content || "Shared Chat"}
         sessionId={activeSessionId}
-      />
-      {/* My Case Intelligence Dashboard Panel */}
-      <CaseIntelligencePanel
-        isOpen={isCasePanelOpen}
-        onClose={() => setIsCasePanelOpen(false)}
-        currentCase={currentCase}
-        onUseInArgument={handleUseInArgument}
-        onUpdate={(updated) => {
-          setCurrentCase(updated);
-          // Sync with the legalCases list if needed
-          setAllProjects(prev => prev.map(c => c._id === updated._id ? updated : c));
-        }}
       />
     </div>
 

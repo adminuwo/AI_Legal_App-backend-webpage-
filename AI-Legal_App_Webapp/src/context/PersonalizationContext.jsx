@@ -460,9 +460,9 @@ export const PersonalizationProvider = ({ children }) => {
             }
         };
 
-        const checkInterval = setInterval(checkReminders, 10000); // Check every 10 seconds
+        const checkInterval = setInterval(checkReminders, 30000); // Check every 30 seconds
         return () => clearInterval(checkInterval);
-    }, [reminders, user?.token, personalizations]);
+    }, [user?.token]);
 
 
     const stopReminderVoice = () => {
@@ -602,6 +602,7 @@ export const PersonalizationProvider = ({ children }) => {
             addNotification,
             deleteNotification,
             clearAllNotifications,
+            fetchNotifications,
             chatSessions,
             refreshChatSessions: fetchChatSessions,
             getSystemPromptExtensions,

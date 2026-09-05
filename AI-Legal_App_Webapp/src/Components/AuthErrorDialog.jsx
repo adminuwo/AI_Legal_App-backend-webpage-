@@ -105,7 +105,7 @@ export default function AuthErrorDialog({ visible, details, onClose }) {
                 onClose();
                 details.primaryAction();
               }}
-              className="flex-1 order-1 sm:order-2 py-3 px-4 bg-[#6D5DFC] hover:bg-[#5b4be8] text-white rounded-xl font-semibold transition-all shadow-sm active:scale-[0.98]"
+              className="flex-1 order-1 sm:order-2 py-3 px-4 bg-gradient-to-r from-[#C5A059] via-[#D4AF37] to-[#B8860B] hover:opacity-95 text-[#111827] rounded-xl font-bold transition-all shadow-md active:scale-[0.98] uppercase text-xs tracking-wider cursor-pointer"
             >
               {details.primaryLabel || 'OK'}
             </button>

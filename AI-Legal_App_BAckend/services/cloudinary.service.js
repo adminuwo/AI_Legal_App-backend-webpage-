@@ -19,12 +19,30 @@ cloudinary.config({
     api_secret: apiSecret
 });
 
-// Configure Multer Storage (Memory Storage for processing buffer)
+const ALLOWED_EXTENSIONS = new Set([
+    'pdf', 'docx', 'doc', 'txt', 'rtf', 'csv', 'xlsx', 'xls',
+    'png', 'jpg', 'jpeg', 'webp', 'mp3', 'wav', 'm4a', 'mp4'
+]);
+
+const DISALLOWED_EXTENSIONS = new Set([
+    'exe', 'sh', 'php', 'js', 'bat', 'cmd', 'vbs', 'jar', 'apk', 'html', 'svg', 'cgi', 'pl'
+]);
+
 const storage = multer.memoryStorage();
 
 export const upload = multer({
     storage: storage,
-    limits: { fileSize: 50 * 1024 * 1024 } // 50 MB limit
+    limits: { fileSize: 25 * 1024 * 1024 }, // 25 MB limit
+    fileFilter: (req, file, cb) => {
+        const ext = (file.originalname || '').split('.').pop().toLowerCase();
+        if (DISALLOWED_EXTENSIONS.has(ext)) {
+            return cb(new Error(`Security Restriction: Executable file type .${ext} is prohibited.`));
+        }
+        if (!ALLOWED_EXTENSIONS.has(ext)) {
+            return cb(new Error(`Unsupported File Type: .${ext} is not a supported legal document format.`));
+        }
+        cb(null, true);
+    }
 });
 
 export const uploadToCloudinary = (fileBuffer, options = {}) => {

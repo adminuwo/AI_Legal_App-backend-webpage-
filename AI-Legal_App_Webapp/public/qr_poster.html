@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI LEGAL™ App - Official Google Play QR Poster</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#121212] flex flex-col items-center justify-center p-4 sm:p-8">
+
+  <!-- Printable Container -->
+  <div id="poster-card" class="w-full max-w-md bg-[#121212] flex flex-col items-center text-center relative py-6">
+    
+    <!-- Outer Card Wrapper with Top Floating Circle Logo -->
+    <div class="relative w-full pt-8">
+      
+      <!-- Top Floating Gold Scales Icon -->
+      <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full bg-[#FAF5EB] border-4 border-[#121212] flex items-center justify-center shadow-lg z-10">
+        <svg class="w-8 h-8 text-[#C8A34D]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l9-4 9 4M3 6v14a1 1 0 001 1h16a1 1 0 001-1V6M3 6l9 4 9-4m-9 4v10"></path>
+        </svg>
+      </div>
+
+      <!-- Main White Card -->
+      <div class="bg-white text-slate-900 rounded-[32px] pt-12 pb-8 px-6 sm:px-8 shadow-2xl flex flex-col items-center w-full border border-slate-100">
+        
+        <!-- App Title Header -->
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#111827] flex items-center gap-1.5 justify-center">
+          AI LEGAL™ <span class="text-[#C8A34D]">App</span>
+        </h1>
+        
+        <p class="text-xs sm:text-sm font-medium text-slate-500 mt-1 mb-6">
+          Available on Android
+        </p>
+
+        <!-- Clean High-Resolution QR Code (No center badge overlay for 100% scan accuracy) -->
+        <div class="p-3 bg-white rounded-2xl border border-slate-100 shadow-xs flex items-center justify-center">
+          <img 
+            src="ai_legal_playstore_qr_clean.png" 
+            alt="AI LEGAL Google Play Store QR Code" 
+            class="w-64 h-64 sm:w-72 sm:h-72 object-contain"
+          />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Guidance Text -->
+    <div class="mt-8 px-4 space-y-4 max-w-xs text-center">
+      <p class="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
+        Scan this QR code using your mobile camera to download <span class="text-[#C8A34D] font-bold">AI LEGAL™ App</span> from Google Play Store
+      </p>
+
+      <!-- Google Play Badge -->
+      <a 
+        href="https://play.google.com/store/apps/details?id=com.uwo.ailegal" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class="inline-block transition-transform hover:scale-105 active:scale-95 mt-2"
+      >
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" 
+          alt="Get it on Google Play" 
+          class="h-12 w-auto object-contain mx-auto"
+        />
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Action Controls (Hidden when printing) -->
+  <div class="mt-8 flex items-center gap-4 no-print">
+    <button 
+      onclick="window.print()" 
+      class="px-5 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3c] text-white text-xs font-bold shadow-md cursor-pointer transition-all flex items-center gap-2"
+    >
+      🖨️ Print / Save as PDF
+    </button>
+    <a 
+      href="ai_legal_playstore_qr_clean.png" 
+      download="AI_Legal_PlayStore_QR.png"
+      class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-700 shadow-md cursor-pointer transition-all flex items-center gap-2"
+    >
+      📥 Download Clean QR Image (1000x1000)
+    </a>
+  </div>
+
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background-color: #121212 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+
+</body>
+</html>

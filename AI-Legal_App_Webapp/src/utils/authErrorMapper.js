@@ -46,12 +46,25 @@ export function parseAuthError(err, context, navigate, onAction) {
 
   logDevError();
 
-  // 1. No Internet
-  if (isNetwork || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+  // 1. True Device Offline
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     return {
       title: "No Internet Connection",
       description: "Please check your internet connection and try again.",
       icon: "wifi-off",
+      primaryLabel: "Try Again",
+      primaryAction: () => {
+        if (onAction) onAction();
+      }
+    };
+  }
+
+  // 1b. Server Unreachable / CORS Network Error
+  if (isNetwork) {
+    return {
+      title: "Unable to Connect to Server",
+      description: "Could not reach the backend server. Please verify your connection or try again shortly.",
+      icon: "server-off",
       primaryLabel: "Try Again",
       primaryAction: () => {
         if (onAction) onAction();
@@ -191,6 +204,23 @@ export function parseAuthError(err, context, navigate, onAction) {
       primaryLabel: "OK",
       primaryAction: () => {
         if (onAction) onAction();
+      }
+    };
+  }
+
+  // 9b. Terms & Conditions Required
+  if (
+    lowerMsg.includes("accept the terms") || 
+    lowerMsg.includes("terms & conditions") || 
+    lowerMsg.includes("terms of service")
+  ) {
+    return {
+      title: "Terms & Conditions Required",
+      description: "You must accept the Terms of Service, Privacy Policy, and Cookie Policy to create an account.",
+      icon: "file-warning",
+      primaryLabel: "I Accept",
+      primaryAction: () => {
+        if (onAction) onAction("focusTerms");
       }
     };
   }

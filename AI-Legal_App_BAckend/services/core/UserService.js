@@ -46,11 +46,20 @@ export class UserService extends BaseService {
       user = await userModel.findOne({ email: reqUser.email });
     }
 
-    // Self-healing Super Admin role for aditi@uwo24.com
-    if (user && user.email && user.email.toLowerCase().trim() === 'aditi@uwo24.com' && user.role !== 'SUPER_ADMIN') {
-      user.role = 'SUPER_ADMIN';
-      await user.save();
-      LoggerService.info(`[UserService] Upgraded ${user.email} to SUPER_ADMIN on profile fetch`);
+    // Self-healing Super Admin role strictly for aditi@uwo24.com
+    if (user && user.email) {
+      const emailLower = user.email.toLowerCase().trim();
+      if (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
+        if (user.role !== 'SUPER_ADMIN') {
+          user.role = 'SUPER_ADMIN';
+          await user.save();
+          LoggerService.info(`[UserService] Upgraded ${user.email} to SUPER_ADMIN on profile fetch`);
+        }
+      } else if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
+        user.role = 'user';
+        await user.save();
+        LoggerService.info(`[UserService] Reset non-aditi account ${user.email} to user role`);
+      }
     }
 
     if (!user) {
@@ -88,9 +97,9 @@ export class UserService extends BaseService {
   /**
    * Fetch User Subscription Status
    */
-  async getSubscriptionStatus(reqUser) {
+  async getSubscriptionStatus(reqUser, targetWorkspace) {
     const userId = reqUser.id || reqUser._id;
-    const status = await FeatureAccessManager.getUsageStatus(userId);
+    const status = await FeatureAccessManager.getUsageStatus(userId, targetWorkspace);
     LoggerService.info(`[UserService] Subscription fetch for ${reqUser.email}, Plan: ${status.plan}`);
     return { statusCode: 200, data: status };
   }

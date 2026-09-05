@@ -7,82 +7,78 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    /* Main Background Pure White */
-    --foreground: 0 0% 0%;
-    /* Black */
+    --background: 0 0% 96%;
+    /* #F5F5F5 Light Gray */
+    --foreground: 0 0% 7%;
+    /* #111111 Matte Black */
 
     --card: 0 0% 100%;
-    /* White Cards */
-    --card-foreground: 0 0% 0%;
+    /* #FFFFFF Pure White */
+    --card-foreground: 0 0% 7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 0 0% 7%;
 
-    --primary: 240 100% 67%;
-    --primary-light: 240 100% 82%;
-    --primary-dark: 240 100% 52%;
-    --primary-bg: 240 30% 96%;
-    --primary-border: 240 100% 67% / 0.15;
+    --primary: 42 53% 54%;
+    /* #C8A34D Soft Gold */
+    --primary-light: 42 60% 70%;
+    --primary-dark: 42 50% 40%;
+    --primary-bg: 42 40% 96%;
+    --primary-border: 42 53% 54% / 0.2;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 100%;
-    /* #ffffff Sidebar/Surfaces */
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary-foreground: 0 0% 13%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 84 10% 60%;
-    /* #9ca38f */
+    --muted: 0 0% 92%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 42 53% 54%;
+    --accent-foreground: 0 0% 7%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 210 29% 95%;
-    /* #eef2f6 */
-    --input: 210 29% 95%;
-    --ring: 240 100% 67%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 42 53% 54%;
 
     --radius: 1rem;
-    --primary-rgb: 99, 102, 241;
-    --color-primary-rgb: 99, 102, 241;
+    --primary-rgb: 200, 163, 77;
+    --color-primary-rgb: 200, 163, 77;
   }
 
   :root.dark,
   .dark {
-    --background: 0 0% 0%;
-    /* Pure Black #000000 */
-    --foreground: 210 20% 90%;
-    /* Soft Off-White for Headings */
-    --card: 0 0% 4%;
-    /* Very Dark Gray #0a0a0a - Matte Dark Card */
-    --card-foreground: 210 15% 80%;
-    --popover: 0 0% 0%;
-    --popover-foreground: 210 15% 80%;
-    --primary: 225 60% 55%;
-    --primary-light: 225 60% 70%;
-    --primary-dark: 225 60% 40%;
-    --primary-bg: 225 30% 12%;
-    --primary-border: 225 60% 55% / 0.15;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 0 0% 6%;
-    /* Subtle darker surface #0f0f0f */
-    --secondary-foreground: 210 20% 90%;
-    --muted: 0 0% 8%;
-    --muted-foreground: 215 15% 65%;
-    /* Muted Gray for body text */
-    --accent: 0 0% 6%;
-    --accent-foreground: 210 20% 90%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 0 0% 10%;
-    /* Subtle border, blending in */
-    --input: 0 0% 8%;
-    --ring: 225 60% 55%;
-    --primary-rgb: 129, 140, 248;
-    --color-primary-rgb: 129, 140, 248;
+    --background: 0 0% 7%;
+    /* #111111 Matte Black */
+    --foreground: 0 0% 100%;
+    /* #FFFFFF Pure White */
+    --card: 0 0% 13%;
+    /* #222222 Dark Charcoal */
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 13%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 42 53% 54%;
+    /* #C8A34D Soft Gold */
+    --primary-light: 42 60% 70%;
+    --primary-dark: 42 50% 40%;
+    --primary-bg: 42 30% 14%;
+    --primary-border: 42 53% 54% / 0.25;
+    --primary-foreground: 0 0% 7%;
+    --secondary: 0 0% 13%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 42 53% 54%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 20%;
+    --input: 0 0% 18%;
+    --ring: 42 53% 54%;
+    --primary-rgb: 200, 163, 77;
+    --color-primary-rgb: 200, 163, 77;
   }
 }
 
@@ -1117,21 +1113,21 @@ html.lenis body {
 }
 
 .user-row .chat-bubble-text {
-  background-color: hsl(var(--primary-bg)) !important;
-  border: 1px solid rgba(var(--primary-rgb), 0.12) !important;
+  background-color: #FBF8F1 !important; /* Soft warm Rolex gold cream background */
+  border: 1px solid rgba(200, 163, 77, 0.3) !important; /* Warm Rolex gold border */
   padding: 14px 18px !important;
   border-radius: 16px !important; /* Clean, modern uniform border radius */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
-  color: #1f2937 !important; /* Clean dark text for contrast in light mode */
+  box-shadow: 0 2px 8px rgba(200, 163, 77, 0.06) !important;
+  color: #111827 !important; /* Clean dark text for contrast in light mode */
   text-align: left !important; /* Keep text left-aligned inside the bubble */
   margin-left: auto !important;
 }
 
 .dark .user-row .chat-bubble-text {
-  background-color: hsl(var(--primary-bg)) !important;
-  border: 1px solid rgba(var(--primary-rgb), 0.25) !important;
+  background-color: rgba(200, 163, 77, 0.12) !important;
+  border: 1px solid rgba(200, 163, 77, 0.35) !important;
   color: #f3f4f6 !important; /* Soft light text in dark mode */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
 }
 
 .ai-row .chat-bubble-text {
@@ -2126,14 +2122,23 @@ body.modal-open-hide-navbar {
   }
 }
 
-/* ── 6. Main flex area — overflow clipped, flex column ──
-   Scoped to #aisa-app-root to avoid breaking public page main containers */
+/* ── 6. Main flex area — allow touch scrolling on mobile ──
+   Scoped to #aisa-app-root to ensure proper touch scrolling on mobile pages */
 @media (max-width: 1023px) {
   #aisa-app-root main {
-    overflow: hidden !important;
     display: flex !important;
     flex-direction: column !important;
     min-height: 0 !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  #aisa-app-root main.overflow-y-auto {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  #aisa-app-root main.overflow-hidden {
+    overflow: hidden !important;
   }
 
   .flex-1 {
@@ -2306,4 +2311,53 @@ body.modal-open-hide-navbar {
     -webkit-overflow-scrolling: touch !important;
   }
 }
+
+/* 18. HTML Native Select & Option Dark Theme Styling */
+select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.dark select option,
+html.dark select option,
+[data-theme="dark"] select option {
+  background-color: #1E293B !important;
+  color: #ffffff !important;
+}
+
+/* 19. Custom Scrollbar Styling (Horizontal & Vertical) */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #C8A34D #E2E8F0;
+}
+
+.dark .custom-scrollbar {
+  scrollbar-color: #C8A34D #1E293B;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  display: block !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(226, 232, 240, 0.8);
+  border-radius: 9999px;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(200, 163, 77, 0.7);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 163, 77, 1);
+}
+
+
 

@@ -78,12 +78,15 @@ const chatSessionSchema = new mongoose.Schema({
   workspaceId: { type: String, default: 'personal_practice', index: true },
   workspaceType: { type: String, default: 'personal', index: true },
   assistantType: { type: String, default: 'assistant', index: true },
+  conversationType: { type: String, enum: ['global', 'case', 'tool', 'student_tutor'], default: 'global', index: true },
   preferredLanguage: { type: String, default: null },
   isShared: { type: Boolean, default: false },
   shareId: { type: String, unique: true, sparse: true, index: true }
 }, { timestamps: true });
 
 chatSessionSchema.index({ userId: 1, lastModified: -1 });
+chatSessionSchema.index({ userId: 1, conversationType: 1, lastModified: -1 });
+chatSessionSchema.index({ userId: 1, conversationType: 1, projectId: 1, lastModified: -1 });
 chatSessionSchema.index({ userId: 1, workspaceId: 1, lastModified: -1 });
 chatSessionSchema.index({ guestId: 1, lastModified: -1 });
 chatSessionSchema.index({ projectId: 1, lastModified: -1 });
