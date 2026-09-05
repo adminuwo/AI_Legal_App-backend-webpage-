@@ -6,6 +6,28 @@ import { GlobalBottomSheetModal, ErrorBoundary } from '@/components/ui';
 
 enableScreens(true);
 enableFreeze(true);
+
+// Global Unhandled Exception & Promise Rejection Crash Shields
+// @ts-ignore
+if (typeof ErrorUtils !== 'undefined') {
+  // @ts-ignore
+  const defaultHandler = ErrorUtils.getGlobalHandler && ErrorUtils.getGlobalHandler();
+  // @ts-ignore
+  ErrorUtils.setGlobalHandler((error: any, isFatal?: boolean) => {
+    console.error('[GLOBAL MOBILE EXCEPTION SHIELD]', error, isFatal);
+    if (!isFatal && defaultHandler) {
+      defaultHandler(error, isFatal);
+    }
+  });
+}
+
+// @ts-ignore
+if (typeof global !== 'undefined' && !global.onunhandledrejection) {
+  // @ts-ignore
+  global.onunhandledrejection = (event: any) => {
+    console.warn('[GLOBAL UNHANDLED REJECTION SHIELD]', event?.reason || event);
+  };
+}
 import { useAuthStore } from '@/store/auth';
 import { useSubscriptionStore } from '@/store/subscription';
 import { UpgradeModal } from '@/components/ui/UpgradeModal';
