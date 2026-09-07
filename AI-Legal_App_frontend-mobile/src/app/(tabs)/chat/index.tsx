@@ -1307,23 +1307,6 @@ export default function MainChatScreen() {
       composer={
         <View style={{ width: '100%' }}>
           <ChatUsageAwarenessBanner onLimitReachedStateChange={setIsLimitReached} />
-          {messagesList.length === 0 && (
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(200, 163, 77, 0.05)',
-              paddingHorizontal: 12,
-              paddingVertical: 5,
-              marginBottom: 4,
-              gap: 5
-            }}>
-              <Ionicons name="lock-closed" size={11} color="#C8A34D" />
-              <Text style={{ fontSize: 10, fontWeight: '600', color: theme.textSecondary || '#9CA3AF' }}>
-                Enterprise AI Privacy • Encrypted & Never trained on public models
-              </Text>
-            </View>
-          )}
           <ChatComposer
             ref={inputRef}
             value={inputVal}

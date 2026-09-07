@@ -116,16 +116,14 @@ export default function LoginScreen() {
     WebBrowser.maybeCompleteAuthSession();
     if (GoogleSignin) {
       try {
-        const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+        const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || '743928421487-34c5lpviupilrg1nn62eoccr5m3cek8c.apps.googleusercontent.com';
         const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || '743928421487-8nuhql6qpu3c3vd4tum9g5a4c0qkcgdj.apps.googleusercontent.com';
-        if (webClientId) {
-          GoogleSignin.configure({
-            webClientId,
-            iosClientId,
-            offlineAccess: false,
-            scopes: ['profile', 'email'],
-          });
-        }
+        GoogleSignin.configure({
+          webClientId,
+          iosClientId,
+          offlineAccess: false,
+          scopes: ['profile', 'email'],
+        });
       } catch (err) {
         console.warn('[LOGIN] Failed to configure Google Sign-In:', err);
       }
@@ -263,16 +261,14 @@ export default function LoginScreen() {
         const isNativeGoogleAvailable = GoogleSignin && !isExpoGo;
         if (isNativeGoogleAvailable) {
           console.log('[GOOGLE LOGIN] Attempting native Google Play Services sign-in...');
-          const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+          const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || '743928421487-34c5lpviupilrg1nn62eoccr5m3cek8c.apps.googleusercontent.com';
           const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || '743928421487-8nuhql6qpu3c3vd4tum9g5a4c0qkcgdj.apps.googleusercontent.com';
-          if (webClientId) {
-            GoogleSignin.configure({
-              webClientId,
-              iosClientId,
-              offlineAccess: false,
-              scopes: ['profile', 'email'],
-            });
-          }
+          GoogleSignin.configure({
+            webClientId,
+            iosClientId,
+            offlineAccess: false,
+            scopes: ['profile', 'email'],
+          });
           await GoogleSignin.hasPlayServices();
           try { await GoogleSignin.signOut(); } catch (signOutErr) {}
           const userInfo = await GoogleSignin.signIn();
@@ -558,6 +554,45 @@ export default function LoginScreen() {
               >
                 <Text style={[styles.footerLink, { color: '#C8A34D' }]}>Create Account</Text>
               </Pressable>
+            </View>
+
+            {/* Legal Notice, Terms of Use, Privacy Policy & Apple EULA Footer */}
+            <View style={{ marginTop: 14, marginBottom: 20, paddingHorizontal: 20, alignItems: 'center' }}>
+              <Text style={{ fontSize: 11.5, textAlign: 'center', color: '#64748B', lineHeight: 17 }}>
+                By signing in, you agree to our{' '}
+                <Text
+                  style={{ color: '#C8A34D', fontWeight: '700', textDecorationLine: 'underline' }}
+                  onPress={() => router.push('/terms' as any)}
+                >
+                  Terms of Use
+                </Text>
+                {' '}and{' '}
+                <Text
+                  style={{ color: '#C8A34D', fontWeight: '700', textDecorationLine: 'underline' }}
+                  onPress={() => router.push('/privacy' as any)}
+                >
+                  Privacy Policy
+                </Text>
+                {Platform.OS === 'ios' && (
+                  <>
+                    {' '}(including{' '}
+                    <Text
+                      style={{ color: '#C8A34D', fontWeight: '700', textDecorationLine: 'underline' }}
+                      onPress={async () => {
+                        try {
+                          await WebBrowser.openBrowserAsync('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/');
+                        } catch {
+                          Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/');
+                        }
+                      }}
+                    >
+                      Apple EULA
+                    </Text>
+                    {')'}
+                  </>
+                )}
+                .
+              </Text>
             </View>
             {/* Sandbox Simulation Auth Modal */}
             <Modal

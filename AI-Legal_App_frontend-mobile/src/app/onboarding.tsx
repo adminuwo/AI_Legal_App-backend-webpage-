@@ -22,8 +22,11 @@ import {
   Dimensions,
   Easing,
   StatusBar,
+  Platform,
+  DeviceEventEmitter,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 // @ts-ignore
 import { Ionicons } from '@expo/vector-icons';
@@ -31,6 +34,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { PermissionService } from '@/services/permission.service';
 import { VoiceNarrationService } from '@/services/voice-narration.service';
 import { useTranslation } from '@/localization';
+import { AI_CONSENT_STORAGE_KEY } from '@/components/ui/AiConsentModal';
 
 const { width, height } = Dimensions.get('window');
 
@@ -467,10 +471,34 @@ export default function OnboardingScreen() {
     };
   }, [currentSlide]);
 
-  // Start typing on mount
+  // Start typing on mount (gated by iOS AI Consent Modal if not yet accepted)
   useEffect(() => {
-    startTyping(0);
+    let consentSub: any = null;
+
+    const initOnboardingVoice = async () => {
+      if (Platform.OS === 'ios') {
+        try {
+          const storedConsent = await AsyncStorage.getItem(AI_CONSENT_STORAGE_KEY);
+          if (storedConsent !== 'true') {
+            VoiceNarrationService.stop();
+            consentSub = DeviceEventEmitter.addListener('AI_CONSENT_ACCEPTED', () => {
+              startTyping(0);
+            });
+            return;
+          }
+        } catch (e) {
+          // ignore error
+        }
+      }
+      startTyping(0);
+    };
+
+    initOnboardingVoice();
+
     return () => {
+      if (consentSub) {
+        consentSub.remove();
+      }
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       if (nextSlideTimeoutRef.current) clearTimeout(nextSlideTimeoutRef.current);
       if (speakEndTimeoutRef.current) clearTimeout(speakEndTimeoutRef.current);
@@ -713,7 +741,7 @@ export default function OnboardingScreen() {
       </View>
 
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-        
+
         {/* Header navigation bar speaker toggle & skip btn */}
         <View style={styles.header}>
           <Pressable
@@ -742,7 +770,7 @@ export default function OnboardingScreen() {
 
         {/* Half-body Senior Counsel Workspace (Top 42% screen portion) */}
         <View style={styles.workspace}>
-          
+
           {/* Animated Female Chibi Advisor (Waist-up, exactly like first reference image) */}
           <Animated.View
             style={[
@@ -844,7 +872,7 @@ export default function OnboardingScreen() {
 
               {/* Face Panel (Light skin tone, soft rounded cheek boundaries) */}
               <View style={styles.facePanel}>
-                
+
                 {/* Subtle curve nose bridge */}
                 <View style={styles.facialNose} />
 
@@ -855,17 +883,17 @@ export default function OnboardingScreen() {
                 {/* Expressive dark eyes (Proper scaleY blinking + eyelashes curves + white light highlights) */}
                 <View style={styles.eyesRow}>
                   <View style={styles.eyeContainer}>
-                    <Animated.View 
+                    <Animated.View
                       style={[
-                        styles.eyeGlobe, 
-                        { 
+                        styles.eyeGlobe,
+                        {
                           transform: [
                             { scaleY: blinking },
                             { translateX: eyeOffsetX },
                             { translateY: eyeOffsetY }
-                          ] 
+                          ]
                         }
-                      ]} 
+                      ]}
                     >
                       <View style={styles.eyePupilDark}>
                         <View style={styles.eyeReflectionDot} />
@@ -876,17 +904,17 @@ export default function OnboardingScreen() {
                   </View>
 
                   <View style={styles.eyeContainer}>
-                    <Animated.View 
+                    <Animated.View
                       style={[
-                        styles.eyeGlobe, 
-                        { 
+                        styles.eyeGlobe,
+                        {
                           transform: [
                             { scaleY: blinking },
                             { translateX: eyeOffsetX },
                             { translateY: eyeOffsetY }
-                          ] 
+                          ]
                         }
-                      ]} 
+                      ]}
                     >
                       <View style={styles.eyePupilDark}>
                         <View style={styles.eyeReflectionDot} />
@@ -911,9 +939,9 @@ export default function OnboardingScreen() {
                 </View>
 
               </View>
-              
+
               {/* Premium hair front bangs (Soft sweeping forehead locks - exactly like first reference) */}
-              <Animated.View 
+              <Animated.View
                 style={[
                   styles.professionalHair,
                   {
@@ -930,7 +958,7 @@ export default function OnboardingScreen() {
               >
                 {/* Hair cap layer */}
                 <View style={styles.hairCapDome} />
-                
+
                 {/* Sweeping forehead bang strands slanting from upper right down to left forehead */}
                 <View style={styles.sweepingBangStrand1} />
                 <View style={styles.sweepingBangStrand2} />
@@ -946,7 +974,7 @@ export default function OnboardingScreen() {
 
           {/* Interactive Feature Animations floating next to guide character (Shifted closer to character) */}
           <View style={styles.overlayIllustration} pointerEvents="none">
-            
+
             {/* Slide 2 (index 1): Contract page scanner */}
             {currentSlide === 1 && (
               <Animated.View style={[styles.miniAppCard, { transform: [{ translateY: floatTranslateY }], right: '47%', top: '26%' }]}>
@@ -1112,7 +1140,7 @@ export default function OnboardingScreen() {
 
           {/* Action Row & Pagination slide indices */}
           <View style={styles.controlsRow}>
-            
+
             {/* Pagination dots indicators */}
             <View style={styles.dotsIndicator}>
               {slides.map((_, sIdx) => (
@@ -1137,8 +1165,8 @@ export default function OnboardingScreen() {
               </Pressable>
             ) : (
               <View style={styles.finalButtonsRow}>
-                <Pressable 
-                  style={({ pressed }) => [styles.outlineBtn, { backgroundColor: pressed ? '#F5F5F5' : '#FFFFFF' }, { flex: 1.2 }]} 
+                <Pressable
+                  style={({ pressed }) => [styles.outlineBtn, { backgroundColor: pressed ? '#F5F5F5' : '#FFFFFF' }, { flex: 1.2 }]}
                   onPress={() => router.push('/auth/signup')}
                 >
                   <Text style={styles.outlineBtnText}>Register</Text>
@@ -1654,7 +1682,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
   },
-  
+
   // ─── High Fidelity Hair Sweeping Bangs & Frame (Exactly like first reference) ───
   professionalHair: {
     position: 'absolute',

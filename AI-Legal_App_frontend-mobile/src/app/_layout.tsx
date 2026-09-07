@@ -32,6 +32,7 @@ import { useAuthStore } from '@/store/auth';
 import { useSubscriptionStore } from '@/store/subscription';
 import { UpgradeModal } from '@/components/ui/UpgradeModal';
 import { AppUpdateModal } from '@/components/ui/AppUpdateModal';
+import { AiConsentModal } from '@/components/ui';
 import { useEffect, useState } from 'react';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Platform, AppState, AppStateStatus, StyleSheet, View, Text, Pressable } from 'react-native';
@@ -415,6 +416,7 @@ function RootLayoutContent() {
       <GlobalBottomSheetModal />
       <UpgradeModal />
       <AppUpdateModal />
+      <AiConsentModal />
     </>
   );
 }

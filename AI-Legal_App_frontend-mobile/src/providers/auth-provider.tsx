@@ -66,8 +66,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             GoogleSigninInstance = require('@react-native-google-signin/google-signin').GoogleSignin;
           } catch (e) {}
           if (GoogleSigninInstance) {
-            await GoogleSigninInstance.signOut();
-            await GoogleSigninInstance.revokeAccess();
+            try {
+              const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || '743928421487-34c5lpviupilrg1nn62eoccr5m3cek8c.apps.googleusercontent.com';
+              GoogleSigninInstance.configure({ webClientId });
+              await GoogleSigninInstance.signOut();
+              await GoogleSigninInstance.revokeAccess();
+            } catch (soErr) {}
           }
         }
       } catch (googleErr) {

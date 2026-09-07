@@ -81,6 +81,7 @@ export default function AdminDashboard() {
   });
 
   const [usersList, setUsersList] = useState([]);
+  const [usersCounts, setUsersCounts] = useState({ total: 0, android: 0, ios: 0, web: 0 });
   const [paymentsList, setPaymentsList] = useState([]);
   const [plansList, setPlansList] = useState([]);
   const [couponsList, setCouponsList] = useState([]);
@@ -170,6 +171,8 @@ export default function AdminDashboard() {
   // Filter States
   const [userSearch, setUserSearch] = useState('');
   const [userFilter, setUserFilter] = useState('all');
+  const [platformFilter, setPlatformFilter] = useState('all'); // 'all' | 'android' | 'ios'
+  const [emailDomainFilter, setEmailDomainFilter] = useState('all'); // 'all' | 'gmail' | 'icloud' | 'other'
   const [billingFilter, setBillingFilter] = useState('all');
   const [billingSearch, setBillingSearch] = useState('');
   const [featureFilter, setFeatureFilter] = useState('all');
@@ -278,7 +281,7 @@ export default function AdminDashboard() {
 
       const [statsRes, usersRes, billingRes, plansRes, couponsRes, featuresRes, bugsRes, settingsRes, complaintsRes, crashesRes] = await Promise.all([
         axios.get(`${API}/admin/stats?_t=${tStamp}`, noCacheAuthHeader).catch((err) => ({ data: { success: false, code: err.response?.data?.code } })),
-        axios.get(`${API}/admin/users?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
+        axios.get(`${API}/admin/users?limit=10000`, authHeader).catch(() => ({ data: { list: [] } })),
         axios.get(`${API}/admin/billing?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
         axios.get(`${API}/admin/plans`, authHeader).catch(() => ({ data: { plans: [] } })),
         axios.get(`${API}/admin/coupons`, authHeader).catch(() => ({ data: { coupons: [], stats: null } })),
@@ -304,6 +307,7 @@ export default function AdminDashboard() {
         setStats(prev => ({ ...prev, revenueMonth: 0, revenueToday: 0, revenueLifetime: 0 }));
       }
       if (Array.isArray(usersRes.data?.list)) setUsersList(usersRes.data.list);
+      if (usersRes.data?.counts) setUsersCounts(usersRes.data.counts);
       if (Array.isArray(billingRes.data?.list)) setPaymentsList(billingRes.data.list);
       if (Array.isArray(plansRes.data?.plans)) setPlansList(plansRes.data.plans);
       if (Array.isArray(couponsRes.data?.coupons)) setCouponsList(couponsRes.data.coupons);
@@ -348,9 +352,67 @@ export default function AdminDashboard() {
       if (userFilter === 'premium') filterMatch = plan !== 'FREE' && !plan.includes('BASIC');
       if (userFilter === 'suspended') filterMatch = isBlocked;
 
-      return searchMatch && filterMatch;
+      const uPlatform = String(u.deviceOS || 'android').toLowerCase();
+      let platformMatch = true;
+      if (platformFilter === 'android') platformMatch = uPlatform === 'android';
+      if (platformFilter === 'ios') platformMatch = uPlatform === 'ios';
+
+      const emailStr = String(u.email || '').toLowerCase().trim();
+      let domainMatch = true;
+      if (emailDomainFilter === 'gmail') {
+        domainMatch = emailStr.includes('gmail.com');
+      } else if (emailDomainFilter === 'icloud') {
+        domainMatch = emailStr.includes('icloud.com') || emailStr.includes('me.com') || emailStr.includes('mac.com') || emailStr.includes('appleid');
+      } else if (emailDomainFilter === 'other') {
+        const isG = emailStr.includes('gmail.com');
+        const isI = emailStr.includes('icloud.com') || emailStr.includes('me.com') || emailStr.includes('mac.com') || emailStr.includes('appleid');
+        domainMatch = !isG && !isI;
+      }
+
+      return searchMatch && filterMatch && platformMatch && domainMatch;
     });
-  }, [usersList, userSearch, userFilter]);
+  }, [usersList, userSearch, userFilter, platformFilter, emailDomainFilter]);
+
+  const emailDomainCounts = useMemo(() => {
+    let gmail = 0;
+    let icloud = 0;
+    let other = 0;
+
+    usersList.forEach(u => {
+      const uPlatform = String(u.deviceOS || 'android').toLowerCase();
+      if (platformFilter === 'android' && uPlatform !== 'android') return;
+      if (platformFilter === 'ios' && uPlatform !== 'ios') return;
+
+      const emailStr = String(u.email || '').toLowerCase().trim();
+      if (emailStr.includes('gmail.com')) gmail++;
+      else if (emailStr.includes('icloud.com') || emailStr.includes('me.com') || emailStr.includes('mac.com') || emailStr.includes('appleid')) icloud++;
+      else other++;
+    });
+
+    return { all: gmail + icloud + other, gmail, icloud, other };
+  }, [usersList, platformFilter]);
+
+  const platformCounts = useMemo(() => {
+    if (usersCounts && typeof usersCounts.total === 'number' && usersCounts.total > 0) {
+      return {
+        all: usersCounts.total,
+        android: usersCounts.android,
+        ios: usersCounts.ios
+      };
+    }
+    let android = 0;
+    let ios = 0;
+    usersList.forEach(u => {
+      const p = String(u.deviceOS || 'android').toLowerCase();
+      if (p === 'ios') ios++;
+      else android++;
+    });
+    return {
+      all: usersList.length,
+      android,
+      ios
+    };
+  }, [usersList, usersCounts]);
 
   // --- Live Billing KPIs & Filtered Payments List ---
   const liveBillingStats = useMemo(() => {
@@ -1490,6 +1552,52 @@ export default function AdminDashboard() {
         ) : activeTab === 'users' ? (
           /* TAB 2: USERS DIRECTORY — EXACT MOBILE APP PARITY */
           <div className="space-y-6">
+            {/* Top Platform OS Toggle & Counter Banner */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Target Device Platform:</span>
+                <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20">
+                  {platformFilter === 'all' && `${platformCounts.all} Total Users`}
+                  {platformFilter === 'android' && `🤖 ${platformCounts.android} Android Users`}
+                  {platformFilter === 'ios' && `🍎 ${platformCounts.ios} iOS Users`}
+                </span>
+              </div>
+
+              {/* Android vs iOS Toggle Buttons */}
+              <div className="flex items-center bg-slate-100 dark:bg-zinc-900 p-1 rounded-xl border border-slate-200 dark:border-zinc-800">
+                <button
+                  onClick={() => setPlatformFilter('all')}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                    platformFilter === 'all'
+                      ? 'bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white shadow-xs border border-slate-200/80 dark:border-zinc-700'
+                      : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <span>ALL ({platformCounts.all})</span>
+                </button>
+                <button
+                  onClick={() => setPlatformFilter('android')}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                    platformFilter === 'android'
+                      ? 'bg-emerald-500 text-white shadow-xs border border-emerald-600'
+                      : 'text-slate-500 dark:text-zinc-400 hover:text-emerald-500'
+                  }`}
+                >
+                  <span>🤖 ANDROID ({platformCounts.android})</span>
+                </button>
+                <button
+                  onClick={() => setPlatformFilter('ios')}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                    platformFilter === 'ios'
+                      ? 'bg-blue-600 text-white shadow-xs border border-blue-700'
+                      : 'text-slate-500 dark:text-zinc-400 hover:text-blue-500'
+                  }`}
+                >
+                  <span>🍎 iOS ({platformCounts.ios})</span>
+                </button>
+              </div>
+            </div>
+
             {/* Search & Filter Toolbar */}
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col md:flex-row gap-4 justify-between items-center">
               <div className="relative flex-1 w-full">
@@ -1503,26 +1611,42 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              {/* Status Filter Pills */}
-              <div className="flex items-center gap-1.5 w-full md:w-auto overflow-x-auto custom-scrollbar">
-                {[
-                  { id: 'all', label: 'ALL' },
-                  { id: 'free', label: 'FREE' },
-                  { id: 'premium', label: 'PREMIUM' },
-                  { id: 'suspended', label: 'SUSPENDED' },
-                ].map((f) => (
-                  <button
-                    key={f.id}
-                    onClick={() => setUserFilter(f.id)}
-                    className={`px-3.5 py-1.5 rounded-xl text-[11px] font-black transition-all cursor-pointer border ${
-                      userFilter === f.id
-                        ? 'bg-[#C8A34D]/10 text-[#C8A34D] border-[#C8A34D]/40 shadow-2xs'
-                        : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-800'
-                    }`}
-                  >
-                    {f.label}
-                  </button>
-                ))}
+              {/* Status & Email Domain Filter Toolbar */}
+              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto overflow-x-auto custom-scrollbar">
+                {/* Email Domain Filter Dropdown */}
+                <select
+                  value={emailDomainFilter}
+                  onChange={e => setEmailDomainFilter(e.target.value)}
+                  className="px-3 py-1.5 rounded-xl text-xs font-black bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 focus:outline-none focus:border-[#C8A34D] cursor-pointer"
+                >
+                  <option value="all">ALL EMAIL DOMAINS ({emailDomainCounts.all})</option>
+                  <option value="gmail">📧 Gmail ({emailDomainCounts.gmail})</option>
+                  <option value="icloud">☁️ iCloud / Apple ({emailDomainCounts.icloud})</option>
+                  <option value="other">✉️ Other Domains ({emailDomainCounts.other})</option>
+                </select>
+
+                <div className="h-4 w-px bg-slate-200 dark:bg-zinc-800 hidden sm:block" />
+
+                <div className="flex items-center gap-1.5">
+                  {[
+                    { id: 'all', label: 'ALL' },
+                    { id: 'free', label: 'FREE' },
+                    { id: 'premium', label: 'PREMIUM' },
+                    { id: 'suspended', label: 'SUSPENDED' },
+                  ].map((f) => (
+                    <button
+                      key={f.id}
+                      onClick={() => setUserFilter(f.id)}
+                      className={`px-3.5 py-1.5 rounded-xl text-[11px] font-black transition-all cursor-pointer border ${
+                        userFilter === f.id
+                          ? 'bg-[#C8A34D]/10 text-[#C8A34D] border-[#C8A34D]/40 shadow-2xs'
+                          : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                      }`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -1534,7 +1658,7 @@ export default function AdminDashboard() {
                   <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Manage user profiles, roles, AI credits, subscriptions and access controls</p>
                 </div>
                 <span className="text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20">
-                  {filteredUsers.length} Users Found
+                  {filteredUsers.length} {platformFilter === 'android' ? 'Android' : platformFilter === 'ios' ? 'iOS' : ''} Users Found
                 </span>
               </div>
 
@@ -1542,18 +1666,19 @@ export default function AdminDashboard() {
                 <div className="py-16 text-center space-y-3">
                   <Users className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
                   <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No User Accounts Match Criteria</p>
-                  <p className="text-[11px] text-slate-400">Try adjusting your search query or status filter.</p>
+                  <p className="text-[11px] text-slate-400">Try adjusting your search query, status or platform filter.</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse min-w-[850px]">
                     <thead>
-                      <tr className="bg-slate-50/80 dark:bg-zinc-900/60 border-b border-slate-200/80 dark:border-zinc-800 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                        <th className="px-6 py-3.5">USER</th>
-                        <th className="px-6 py-3.5">ROLE</th>
-                        <th className="px-6 py-3.5">SUBSCRIPTION PLAN</th>
-                        <th className="px-6 py-3.5">STATUS</th>
-                        <th className="px-6 py-3.5 text-right">ACTIONS</th>
+                      <tr className="bg-slate-50/80 dark:bg-zinc-900/60 border-b border-slate-200/80 dark:border-zinc-800 text-[10px] font-black uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                        <th className="px-6 py-3.5 whitespace-nowrap">USER</th>
+                        <th className="px-6 py-3.5 whitespace-nowrap">ROLE</th>
+                        <th className="px-6 py-3.5 whitespace-nowrap">DEVICE OS</th>
+                        <th className="px-6 py-3.5 whitespace-nowrap">SUBSCRIPTION PLAN</th>
+                        <th className="px-6 py-3.5 whitespace-nowrap">STATUS</th>
+                        <th className="px-6 py-3.5 text-right whitespace-nowrap">ACTIONS</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60">
@@ -1561,10 +1686,11 @@ export default function AdminDashboard() {
                         const isBlocked = u.isBlocked === true || u.status === 'Suspended';
                         const userRole = u.role || u.userRole || 'Advocate';
                         const userPlan = u.subscription?.plan || u.currentPlan || 'FREE';
+                        const isIos = String(u.deviceOS).toLowerCase() === 'ios';
 
                         return (
                           <tr key={u._id} className="hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors group">
-                            <td className="px-6 py-4">
+                            <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-3">
                                 <div className="w-9 h-9 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] font-black text-xs flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
                                   {(u.name || u.displayName || u.email || 'U').charAt(0).toUpperCase()}
@@ -1572,31 +1698,42 @@ export default function AdminDashboard() {
                                 <div>
                                   <button
                                     onClick={() => setSelectedDossierUser(u)}
-                                    className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#C8A34D] transition-colors text-left cursor-pointer"
+                                    className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#C8A34D] transition-colors text-left cursor-pointer whitespace-nowrap"
                                   >
                                     {u.name || u.displayName || 'Advocate Client'}
                                   </button>
-                                  <p className="text-[11px] text-slate-400 font-medium">{u.email}</p>
-                                  {u.phone && <p className="text-[10px] text-slate-400">{u.phone}</p>}
+                                  <p className="text-[11px] text-slate-400 font-medium whitespace-nowrap">{u.email}</p>
+                                  {u.phone && <p className="text-[10px] text-slate-400 whitespace-nowrap">{u.phone}</p>}
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-4">
-                              <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 uppercase tracking-wider">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 uppercase tracking-wider whitespace-nowrap">
                                 {userRole}
                               </span>
                             </td>
-                            <td className="px-6 py-4">
-                              <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 py-1 rounded-lg border border-[#C8A34D]/20">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {isIos ? (
+                                <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
+                                  <span>🍎</span> iOS
+                                </span>
+                              ) : (
+                                <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
+                                  <span>🤖</span> Android
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 py-1 rounded-lg border border-[#C8A34D]/20 whitespace-nowrap shrink-0">
                                 {userPlan}
                               </span>
                             </td>
-                            <td className="px-6 py-4">
-                              <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center gap-1.5 text-xs font-bold whitespace-nowrap shrink-0 ${
                                 isBlocked ? 'text-red-500' : 'text-emerald-500'
                               }`}>
-                                {isBlocked ? <XCircle className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                                <span>{isBlocked ? 'Suspended' : 'Active'}</span>
+                                {isBlocked ? <XCircle className="w-3.5 h-3.5 shrink-0" /> : <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+                                <span className="whitespace-nowrap shrink-0">{isBlocked ? 'Suspended' : 'Active'}</span>
                               </span>
                             </td>
                             <td className="px-6 py-4 text-right">

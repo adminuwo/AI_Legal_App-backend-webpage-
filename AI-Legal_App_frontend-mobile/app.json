@@ -2,7 +2,7 @@
   "expo": {
     "name": "AI LEGAL™",
     "slug": "ai-legal",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/icons/adaptive-icon.png",
     "scheme": [
@@ -14,7 +14,7 @@
     "ios": {
       "icon": "./assets/icons/adaptive-icon.png",
       "bundleIdentifier": "com.uwo.ailegal",
-      "buildNumber": "21",
+      "buildNumber": "30",
       "supportsTablet": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
@@ -30,7 +30,7 @@
       "package": "com.uwo.ailegal",
       "largeHeap": true,
       "googleServicesFile": "./google-services.json",
-      "versionCode": 514,
+      "versionCode": 517,
       "permissions": [],
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
@@ -120,9 +120,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "da420927-c698-45b3-8916-e3cfd231b37b"
+        "projectId": "92b9f9f3-cd3a-4e6f-9e10-17e63e1473b1"
       }
     },
-    "owner": "abha0518"
+    "owner": "uwo"
   }
 }

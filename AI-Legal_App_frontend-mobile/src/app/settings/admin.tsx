@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -86,6 +86,7 @@ export default function AdminPortalScreen() {
   });
 
   const [usersList, setUsersList] = useState<any[]>([]);
+  const [usersCounts, setUsersCounts] = useState<any>({ total: 0, android: 0, ios: 0, web: 0 });
   const [paymentsList, setPaymentsList] = useState<any[]>([]);
   const [plansList, setPlansList] = useState<any[]>([]);
   const [couponsList, setCouponsList] = useState<any[]>([]);
@@ -119,6 +120,8 @@ export default function AdminPortalScreen() {
 
   // Filtering states
   const [userFilter, setUserFilter] = useState<'all' | 'free' | 'premium' | 'suspended'>('all');
+  const [platformFilter, setPlatformFilter] = useState<'all' | 'android' | 'ios'>('all');
+  const [emailDomainFilter, setEmailDomainFilter] = useState<'all' | 'gmail' | 'icloud' | 'other'>('all');
   const [billingFilter, setBillingFilter] = useState<'all' | 'success' | 'failed' | 'refunded'>('all');
   const [featureFilterState, setFeatureFilterState] = useState<'all' | 'Pending' | 'Under Review' | 'Planned' | 'In Progress' | 'Completed' | 'Rejected'>('all');
   const [bugSeverityFilter, setBugSeverityFilter] = useState<'all' | 'Minor' | 'Major' | 'Critical'>('all');
@@ -129,6 +132,14 @@ export default function AdminPortalScreen() {
   const [crashStatusFilter, setCrashStatusFilter] = useState<'all' | 'UNRESOLVED' | 'INVESTIGATING' | 'RESOLVED'>('all');
   const [crashFeatureFilter, setCrashFeatureFilter] = useState<string>('all');
   const [selectedCrash, setSelectedCrash] = useState<any>(null);
+
+  // List display limit states (for instant smooth 60fps tab switching)
+  const [visibleUsersLimit, setVisibleUsersLimit] = useState(30);
+  const [visibleBillingLimit, setVisibleBillingLimit] = useState(30);
+  const [visibleFeaturesLimit, setVisibleFeaturesLimit] = useState(30);
+  const [visibleBugsLimit, setVisibleBugsLimit] = useState(30);
+  const [visibleCrashesLimit, setVisibleCrashesLimit] = useState(30);
+  const [visibleComplaintsLimit, setVisibleComplaintsLimit] = useState(30);
 
   // Modals & Forms State
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -304,6 +315,15 @@ export default function AdminPortalScreen() {
     }
   };
 
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   // Android back button fallback
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -365,15 +385,16 @@ export default function AdminPortalScreen() {
     if (!isAuthorized) return;
     loadData();
 
-    // Fallback background polling (15s) while Socket.io delivers instant real-time events
+    // Fallback background polling (30s) while Socket.io delivers instant real-time events
     const interval = setInterval(() => {
       loadData(true);
-    }, 15000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [isAuthorized]);
 
   const loadData = async (isSilent = false) => {
+    if (!isMountedRef.current) return;
     if (!isSilent) setLoading(true);
     try {
       const [statsRes, usersRes, billingRes, plansRes, couponsRes, featuresRes, bugsRes, settingsRes, complaintsRes, crashesRes, releasesRes] = await Promise.all([
@@ -390,6 +411,8 @@ export default function AdminPortalScreen() {
         apiClient.get('/app-update/admin/releases').catch(() => ({ data: { releases: [], summary: null, releasedVersions: null } })),
       ]);
 
+      if (!isMountedRef.current) return;
+
       if (releasesRes.data?.releases) {
         setReleasesList(releasesRes.data.releases);
       }
@@ -405,7 +428,7 @@ export default function AdminPortalScreen() {
         const uList = Array.isArray(usersRes.data?.list) ? usersRes.data.list : [];
         
         // Derive live accurate counts from backend DB response
-        const totalU = s.totalUsers !== undefined ? s.totalUsers : (uList.length || 0);
+        const totalU = s.totalUsers !== undefined ? s.totalUsers : (usersRes.data?.counts?.total || uList.length || 0);
         const premU = s.premiumUsers !== undefined ? s.premiumUsers : uList.filter((u: any) => u.subscription?.plan && u.subscription.plan !== 'FREE').length;
         const freeU = s.freeUsers !== undefined ? s.freeUsers : Math.max(0, totalU - premU);
 
@@ -430,6 +453,9 @@ export default function AdminPortalScreen() {
       }
       if (Array.isArray(usersRes.data?.list)) {
         setUsersList(usersRes.data.list);
+      }
+      if (usersRes.data?.counts) {
+        setUsersCounts(usersRes.data.counts);
       }
       if (Array.isArray(billingRes.data?.list)) {
         setPaymentsList(billingRes.data.list);
@@ -1128,6 +1154,47 @@ export default function AdminPortalScreen() {
   };
 
   // --- FILTERED LISTS ---
+  const platformCounts = useMemo(() => {
+    if (usersCounts && typeof usersCounts.total === 'number' && usersCounts.total > 0) {
+      return {
+        all: usersCounts.total,
+        android: usersCounts.android,
+        ios: usersCounts.ios
+      };
+    }
+    let android = 0;
+    let ios = 0;
+    usersList.forEach(u => {
+      const p = String(u.deviceOS || 'android').toLowerCase();
+      if (p === 'ios') ios++;
+      else android++;
+    });
+    return {
+      all: usersList.length,
+      android,
+      ios
+    };
+  }, [usersList, usersCounts]);
+
+  const emailDomainCounts = useMemo(() => {
+    let gmail = 0;
+    let icloud = 0;
+    let other = 0;
+
+    usersList.forEach(u => {
+      const uPlatform = String(u.deviceOS || 'android').toLowerCase();
+      if (platformFilter === 'android' && uPlatform !== 'android') return;
+      if (platformFilter === 'ios' && uPlatform !== 'ios') return;
+
+      const emailStr = String(u.email || '').toLowerCase().trim();
+      if (emailStr.includes('gmail.com')) gmail++;
+      else if (emailStr.includes('icloud.com') || emailStr.includes('me.com') || emailStr.includes('mac.com') || emailStr.includes('appleid')) icloud++;
+      else other++;
+    });
+
+    return { all: gmail + icloud + other, gmail, icloud, other };
+  }, [usersList, platformFilter]);
+
   const filteredUsers = useMemo(() => {
     return usersList.filter(u => {
       const uName = String(u.name || u.displayName || 'Advocate User').toLowerCase();
@@ -1135,12 +1202,26 @@ export default function AdminPortalScreen() {
       const sQuery = globalSearch.toLowerCase().trim();
       const matchSearch = !sQuery || uName.includes(sQuery) || uEmail.includes(sQuery);
       if (!matchSearch) return false;
-      if (userFilter === 'free') return String(u.currentPlan || '').toLowerCase() === 'free' || String(u.currentPlan || '').toLowerCase().includes('basic');
-      if (userFilter === 'premium') return String(u.currentPlan || '').toLowerCase() !== 'free';
-      if (userFilter === 'suspended') return u.isBlocked === true;
+      if (userFilter === 'free' && !(String(u.currentPlan || '').toLowerCase() === 'free' || String(u.currentPlan || '').toLowerCase().includes('basic'))) return false;
+      if (userFilter === 'premium' && String(u.currentPlan || '').toLowerCase() === 'free') return false;
+      if (userFilter === 'suspended' && u.isBlocked !== true) return false;
+
+      const uPlatform = String(u.deviceOS || 'android').toLowerCase();
+      if (platformFilter === 'android' && uPlatform !== 'android') return false;
+      if (platformFilter === 'ios' && uPlatform !== 'ios') return false;
+
+      const emailStr = String(u.email || '').toLowerCase().trim();
+      if (emailDomainFilter === 'gmail' && !emailStr.includes('gmail.com')) return false;
+      if (emailDomainFilter === 'icloud' && !(emailStr.includes('icloud.com') || emailStr.includes('me.com') || emailStr.includes('mac.com') || emailStr.includes('appleid'))) return false;
+      if (emailDomainFilter === 'other') {
+        const isG = emailStr.includes('gmail.com');
+        const isI = emailStr.includes('icloud.com') || emailStr.includes('me.com') || emailStr.includes('mac.com') || emailStr.includes('appleid');
+        if (isG || isI) return false;
+      }
+
       return true;
     });
-  }, [usersList, globalSearch, userFilter]);
+  }, [usersList, globalSearch, userFilter, platformFilter, emailDomainFilter]);
 
   const uniquePaymentsList = useMemo(() => {
     const seen = new Set();
@@ -1394,28 +1475,45 @@ export default function AdminPortalScreen() {
       </View>
 
       {/* Navigation Tabs Bar */}
-      <View style={[styles.tabsBar, { borderBottomColor: dynamicBorder, backgroundColor: dynamicHeaderBg }]}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsScroll}>
+      <View style={[styles.tabsBar, { borderBottomColor: dynamicBorder, backgroundColor: dynamicHeaderBg, elevation: 4 }]}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyboardShouldPersistTaps="always"
+          nestedScrollEnabled={true}
+          contentContainerStyle={styles.tabsScroll}
+        >
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
-              <Pressable
+              <TouchableOpacity
                 key={tab.id}
+                activeOpacity={0.6}
+                hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
                 style={[
                   styles.tabBtn,
                   { backgroundColor: dynamicCardBg, borderColor: dynamicBorder },
                   isActive && [styles.tabBtnActive, { borderColor: theme.primary, backgroundColor: isDark ? 'rgba(200, 163, 77, 0.18)' : theme.primaryLight }],
                 ]}
                 onPress={() => {
+                  console.log('[ADMIN TAB CLICKED] ->', tab.id);
                   setActiveTab(tab.id);
                   setGlobalSearch('');
+                  setVisibleUsersLimit(30);
+                  setVisibleBillingLimit(30);
+                  setVisibleFeaturesLimit(30);
+                  setVisibleBugsLimit(30);
+                  setVisibleCrashesLimit(30);
+                  setVisibleComplaintsLimit(30);
                 }}
               >
-                <Ionicons name={tab.icon as any} size={15} color={isActive ? theme.primary : dynamicTextSecondary} />
-                <Text style={[styles.tabText, { color: dynamicTextSecondary }, isActive && { color: theme.primary, fontWeight: '800' }]}>
-                  {tab.label}
-                </Text>
-              </Pressable>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }} pointerEvents="none">
+                  <Ionicons name={tab.icon as any} size={15} color={isActive ? theme.primary : dynamicTextSecondary} />
+                  <Text style={[styles.tabText, { color: dynamicTextSecondary }, isActive && { color: theme.primary, fontWeight: '800' }]}>
+                    {tab.label}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             );
           })}
         </ScrollView>
@@ -1427,7 +1525,7 @@ export default function AdminPortalScreen() {
           <Text style={{ marginTop: 10, fontSize: 13, color: dynamicTextSecondary }}>Fetching live database logs...</Text>
         </View>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
+        <ScrollView key={activeTab} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
           
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
@@ -1539,6 +1637,51 @@ export default function AdminPortalScreen() {
           {/* TAB 2: USERS DIRECTORY */}
           {activeTab === 'users' && (
             <View style={{ gap: 14 }}>
+              {/* Platform Filter Toggle & Total Count Banner */}
+              <View style={[{ padding: 12, borderRadius: 16, borderBottomWidth: 1, borderTopWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, gap: 10 }, { backgroundColor: dynamicCardBg, borderColor: dynamicBorder }]}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={{ fontSize: 11, fontWeight: '800', color: dynamicTextSecondary, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    Device Platform
+                  </Text>
+                  <View style={{ backgroundColor: isDark ? 'rgba(200, 163, 77, 0.15)' : '#FEF3C7', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(200, 163, 77, 0.3)' }}>
+                    <Text style={{ fontSize: 11, fontWeight: '900', color: theme.primary }}>
+                      {platformFilter === 'all' && `${platformCounts.all} Total Users`}
+                      {platformFilter === 'android' && `🤖 ${platformCounts.android} Android Users`}
+                      {platformFilter === 'ios' && `🍎 ${platformCounts.ios} iOS Users`}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={{ flexDirection: 'row', gap: 6 }}>
+                  <TouchableOpacity
+                    style={[{ flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: dynamicBorder, backgroundColor: dynamicSubCardBg }, platformFilter === 'all' && { backgroundColor: theme.primary, borderColor: theme.primary }]}
+                    onPress={() => setPlatformFilter('all')}
+                  >
+                    <Text style={[{ fontSize: 11, fontWeight: '800', color: dynamicTextSecondary }, platformFilter === 'all' && { color: '#FFF' }]}>
+                      ALL ({platformCounts.all})
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[{ flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: dynamicBorder, backgroundColor: dynamicSubCardBg }, platformFilter === 'android' && { backgroundColor: '#10B981', borderColor: '#10B981' }]}
+                    onPress={() => setPlatformFilter('android')}
+                  >
+                    <Text style={[{ fontSize: 11, fontWeight: '800', color: dynamicTextSecondary }, platformFilter === 'android' && { color: '#FFF' }]}>
+                      🤖 ANDROID ({platformCounts.android})
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[{ flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: dynamicBorder, backgroundColor: dynamicSubCardBg }, platformFilter === 'ios' && { backgroundColor: '#2563EB', borderColor: '#2563EB' }]}
+                    onPress={() => setPlatformFilter('ios')}
+                  >
+                    <Text style={[{ fontSize: 11, fontWeight: '800', color: dynamicTextSecondary }, platformFilter === 'ios' && { color: '#FFF' }]}>
+                      🍎 iOS ({platformCounts.ios})
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
               {/* Search & Filters */}
               <View style={[styles.searchBarContainer, { backgroundColor: dynamicSubCardBg, borderColor: dynamicBorder }]}>
                 <Ionicons name="search" size={18} color={dynamicTextSecondary} style={{ marginRight: 8 }} />
@@ -1550,6 +1693,26 @@ export default function AdminPortalScreen() {
                   placeholderTextColor={dynamicTextSecondary}
                 />
               </View>
+
+              {/* Email Provider Filter Pills */}
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                {[
+                  { id: 'all', label: `ALL DOMAINS (${emailDomainCounts.all})` },
+                  { id: 'gmail', label: `📧 GMAIL (${emailDomainCounts.gmail})` },
+                  { id: 'icloud', label: `☁️ iCLOUD (${emailDomainCounts.icloud})` },
+                  { id: 'other', label: `✉️ OTHER (${emailDomainCounts.other})` }
+                ].map((d) => (
+                  <TouchableOpacity
+                    key={d.id}
+                    style={[styles.filterPill, { backgroundColor: dynamicCardBg, borderColor: dynamicBorder }, emailDomainFilter === d.id && { backgroundColor: isDark ? 'rgba(200, 163, 77, 0.25)' : '#FEF3C7', borderColor: theme.primary }]}
+                    onPress={() => setEmailDomainFilter(d.id as any)}
+                  >
+                    <Text style={[styles.filterPillText, { color: dynamicTextSecondary }, emailDomainFilter === d.id && { color: theme.primary, fontWeight: '800' }]}>
+                      {d.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
 
               <View style={styles.filtersRow}>
                 {['all', 'free', 'premium', 'suspended'].map((f) => (
@@ -1572,7 +1735,9 @@ export default function AdminPortalScreen() {
                 </View>
               ) : (
                 <View style={{ gap: 10 }}>
-                  {filteredUsers.map((u) => (
+                  {filteredUsers.slice(0, visibleUsersLimit).map((u) => {
+                    const isIos = String(u.deviceOS).toLowerCase() === 'ios';
+                    return (
                     <View key={u._id} style={[styles.userListItemCard, { backgroundColor: dynamicCardBg, borderColor: dynamicBorder }]}>
                       <View style={styles.userListItemHeader}>
                         <View style={[styles.avatarCircle, { backgroundColor: dynamicBtnBg }]}>
@@ -1582,8 +1747,15 @@ export default function AdminPortalScreen() {
                           <Text style={[styles.userListNameText, { color: dynamicTextPrimary }]}>{u.name || 'Advocate Client'}</Text>
                           <Text style={{ fontSize: 10.5, color: dynamicTextSecondary, marginTop: 1 }}>{u.email}</Text>
                         </View>
-                        <View style={[styles.userListPlanBadge, { backgroundColor: u.isBlocked ? (isDark ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2') : (isDark ? 'rgba(34, 197, 94, 0.2)' : '#DCFCE7') }]}>
-                          <Text style={[styles.userListPlanText, { color: u.isBlocked ? '#EF4444' : '#10B981' }]}>{u.isBlocked ? 'Suspended' : 'Active'}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                          <View style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8, backgroundColor: isIos ? (isDark ? 'rgba(37, 99, 235, 0.2)' : '#DBEAFE') : (isDark ? 'rgba(16, 185, 129, 0.2)' : '#D1FAE5') }}>
+                            <Text style={{ fontSize: 9.5, fontWeight: '800', color: isIos ? '#2563EB' : '#10B981' }}>
+                              {isIos ? '🍎 iOS' : '🤖 Android'}
+                            </Text>
+                          </View>
+                          <View style={[styles.userListPlanBadge, { backgroundColor: u.isBlocked ? (isDark ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2') : (isDark ? 'rgba(34, 197, 94, 0.2)' : '#DCFCE7') }]}>
+                            <Text style={[styles.userListPlanText, { color: u.isBlocked ? '#EF4444' : '#10B981' }]}>{u.isBlocked ? 'Suspended' : 'Active'}</Text>
+                          </View>
                         </View>
                       </View>
 
@@ -1599,7 +1771,19 @@ export default function AdminPortalScreen() {
                         </TouchableOpacity>
                       </View>
                     </View>
-                  ))}
+                  )})}
+
+                  {filteredUsers.length > visibleUsersLimit && (
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      style={[styles.userListItemCard, { backgroundColor: dynamicCardBg, borderColor: theme.primary, alignItems: 'center', paddingVertical: 12, marginTop: 4 }]}
+                      onPress={() => setVisibleUsersLimit(prev => prev + 40)}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: '800', color: theme.primary }}>
+                        Show More Users ({filteredUsers.length - visibleUsersLimit} remaining)
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
             </View>
@@ -1692,7 +1876,7 @@ export default function AdminPortalScreen() {
                   </View>
                 ) : (
                   <View style={{ gap: 10 }}>
-                    {filteredPayments.map((p) => {
+                    {filteredPayments.slice(0, visibleBillingLimit).map((p) => {
                       const isSuccess = p.status === 'success' || p.status === 'paid';
                       const isRefunded = p.status === 'refunded';
                       const isPending = p.status === 'pending';
@@ -1758,6 +1942,18 @@ export default function AdminPortalScreen() {
                         </View>
                       );
                     })}
+
+                    {filteredPayments.length > visibleBillingLimit && (
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        style={[styles.userListItemCard, { backgroundColor: dynamicCardBg, borderColor: theme.primary, alignItems: 'center', paddingVertical: 12, marginTop: 4 }]}
+                        onPress={() => setVisibleBillingLimit(prev => prev + 40)}
+                      >
+                        <Text style={{ fontSize: 12, fontWeight: '800', color: theme.primary }}>
+                          Show More Transactions ({filteredPayments.length - visibleBillingLimit} remaining)
+                        </Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 )}
               </View>
@@ -2167,7 +2363,7 @@ export default function AdminPortalScreen() {
                 </View>
               ) : (
                 <View style={{ gap: 12 }}>
-                  {filteredFeatures.map((fr) => (
+                  {filteredFeatures.slice(0, visibleFeaturesLimit).map((fr) => (
                     <View key={fr._id} style={[styles.bugReportCard, { backgroundColor: dynamicCardBg, borderColor: dynamicBorder }]}>
                       <View style={styles.bugCardHeaderRow}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -2206,6 +2402,18 @@ export default function AdminPortalScreen() {
                       </View>
                     </View>
                   ))}
+
+                  {filteredFeatures.length > visibleFeaturesLimit && (
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      style={[styles.bugReportCard, { backgroundColor: dynamicCardBg, borderColor: theme.primary, alignItems: 'center', paddingVertical: 12, marginTop: 4 }]}
+                      onPress={() => setVisibleFeaturesLimit(prev => prev + 40)}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: '800', color: theme.primary }}>
+                        Show More Feature Requests ({filteredFeatures.length - visibleFeaturesLimit} remaining)
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
             </View>
@@ -2247,7 +2455,7 @@ export default function AdminPortalScreen() {
                 </View>
               ) : (
                 <View style={{ gap: 12 }}>
-                  {filteredBugs.map((bug) => (
+                  {filteredBugs.slice(0, visibleBugsLimit).map((bug) => (
                     <View key={bug._id} style={[styles.bugReportCard, { backgroundColor: dynamicCardBg, borderColor: dynamicBorder }]}>
                       <View style={styles.bugCardHeaderRow}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -2289,6 +2497,18 @@ export default function AdminPortalScreen() {
                       </View>
                     </View>
                   ))}
+
+                  {filteredBugs.length > visibleBugsLimit && (
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      style={[styles.bugReportCard, { backgroundColor: dynamicCardBg, borderColor: theme.primary, alignItems: 'center', paddingVertical: 12, marginTop: 4 }]}
+                      onPress={() => setVisibleBugsLimit(prev => prev + 40)}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: '800', color: theme.primary }}>
+                        Show More Bug Reports ({filteredBugs.length - visibleBugsLimit} remaining)
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
             </View>
@@ -2426,7 +2646,7 @@ export default function AdminPortalScreen() {
                 </View>
               ) : (
                 <View style={{ gap: 12 }}>
-                  {filteredCrashes.map((crash) => {
+                  {filteredCrashes.slice(0, visibleCrashesLimit).map((crash) => {
                     const featureTag = getFriendlyFeatureName(crash);
                     const sourceTag = crash.source === 'frontend' ? `📱 App (${crash.platform || 'Mobile'})` : '⚙️ Backend Server';
                     const statusTag = crash.status === 'RESOLVED' ? '🟢 Fixed' : crash.status === 'INVESTIGATING' ? '🟡 Under Check' : '🔴 New Error';
@@ -2478,6 +2698,18 @@ export default function AdminPortalScreen() {
                     </View>
                   );
                 })}
+
+                  {filteredCrashes.length > visibleCrashesLimit && (
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      style={[styles.bugReportCard, { backgroundColor: dynamicCardBg, borderColor: theme.primary, alignItems: 'center', paddingVertical: 12, marginTop: 4 }]}
+                      onPress={() => setVisibleCrashesLimit(prev => prev + 40)}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: '800', color: theme.primary }}>
+                        Show More Crash Reports ({filteredCrashes.length - visibleCrashesLimit} remaining)
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
             </View>
@@ -2522,13 +2754,15 @@ export default function AdminPortalScreen() {
                 </View>
               ) : (
                 <View style={{ gap: 12 }}>
-                  {filteredComplaints.map((c) => (
+                  {filteredComplaints.slice(0, visibleComplaintsLimit).map((c) => (
                     <View key={c._id || c.complaintId} style={[styles.bugReportCard, { backgroundColor: dynamicCardBg, borderColor: dynamicBorder }]}>
                       <View style={styles.bugCardHeaderRow}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                          <Text style={[styles.bugRefText, { color: '#D4AF37', fontWeight: '800' }]}>{c.complaintId || 'CMP-REPT'}</Text>
-                          <View style={[styles.severityBadge, { backgroundColor: isDark ? 'rgba(212, 175, 55, 0.2)' : '#FEF3C7' }]}>
-                            <Text style={[styles.severityBadgeText, { color: '#92400e', fontWeight: '700' }]}>{c.category}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                          <View style={[styles.severityBadge, { backgroundColor: isDark ? 'rgba(200, 163, 77, 0.25)' : '#FEF3C7', borderWidth: 1, borderColor: '#C8A34D' }]}>
+                            <Text style={[styles.severityBadgeText, { color: '#C8A34D', fontWeight: '900' }]}>{c.category || 'AI Feedback'}</Text>
+                          </View>
+                          <View style={[styles.severityBadge, { backgroundColor: isDark ? 'rgba(59, 130, 246, 0.2)' : '#DBEAFE' }]}>
+                            <Text style={[styles.severityBadgeText, { color: '#3B82F6' }]}>{c.complaintId || 'REF'}</Text>
                           </View>
                         </View>
 
@@ -2616,6 +2850,18 @@ export default function AdminPortalScreen() {
                       </View>
                     </View>
                   ))}
+
+                  {filteredComplaints.length > visibleComplaintsLimit && (
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      style={[styles.bugReportCard, { backgroundColor: dynamicCardBg, borderColor: theme.primary, alignItems: 'center', paddingVertical: 12, marginTop: 4 }]}
+                      onPress={() => setVisibleComplaintsLimit(prev => prev + 40)}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: '800', color: theme.primary }}>
+                        Show More Complaints ({filteredComplaints.length - visibleComplaintsLimit} remaining)
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
             </View>

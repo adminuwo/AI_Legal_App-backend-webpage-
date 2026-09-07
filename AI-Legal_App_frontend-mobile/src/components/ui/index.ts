@@ -30,3 +30,5 @@ export * from './StatePickerInput';
 export * from './error-boundary';
 export { Collapsible } from './collapsible';
 export { OutputLanguageSelector } from './OutputLanguageSelector';
+export { AiConsentModal } from './AiConsentModal';
+

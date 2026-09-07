@@ -27,31 +27,38 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://10.0.2.2:8080/api",
+        "EXPO_PUBLIC_API_URL": "https://ailegal.aisa24.com/api",
         "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "743928421487-34c5lpviupilrg1nn62eoccr5m3cek8c.apps.googleusercontent.com",
         "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "743928421487-8nuhql6qpu3c3vd4tum9g5a4c0qkcgdj.apps.googleusercontent.com",
-        "EXPO_PUBLIC_RAZORPAY_KEY_ID": "rzp_test_placeholder"
+        "EXPO_PUBLIC_RAZORPAY_KEY_ID": "rzp_live_SBFlInxBiRfOGd"
       }
     },
     "production": {
       "autoIncrement": true,
+      "android": {
+        "credentialsSource": "local"
+      },
+      "ios": {
+        "credentialsSource": "remote"
+      },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://10.0.2.2:8080/api",
+        "EXPO_PUBLIC_API_URL": "https://ailegal.aisa24.com/api",
         "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "743928421487-34c5lpviupilrg1nn62eoccr5m3cek8c.apps.googleusercontent.com",
         "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "743928421487-8nuhql6qpu3c3vd4tum9g5a4c0qkcgdj.apps.googleusercontent.com",
-        "EXPO_PUBLIC_RAZORPAY_KEY_ID": "rzp_test_placeholder"
+        "EXPO_PUBLIC_RAZORPAY_KEY_ID": "rzp_live_SBFlInxBiRfOGd"
       }
     },
     "production-apk": {
+      "credentialsSource": "local",
       "autoIncrement": true,
       "android": {
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://10.0.2.2:8080/api",
+        "EXPO_PUBLIC_API_URL": "https://ailegal.aisa24.com/api",
         "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "743928421487-34c5lpviupilrg1nn62eoccr5m3cek8c.apps.googleusercontent.com",
         "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "743928421487-8nuhql6qpu3c3vd4tum9g5a4c0qkcgdj.apps.googleusercontent.com",
-        "EXPO_PUBLIC_RAZORPAY_KEY_ID": "rzp_test_placeholder"
+        "EXPO_PUBLIC_RAZORPAY_KEY_ID": "rzp_live_SBFlInxBiRfOGd"
       }
     }
   },

@@ -979,12 +979,20 @@ export default function SubscriptionPlansScreen() {
                 plan: data.subscription.tier || 'FREE',
                 status: data.subscription.status || 'active',
                 amount: data.subscription.amount || 0,
+                autoRenew: typeof data.subscription.autoRenew === 'boolean' ? data.subscription.autoRenew : false,
+                expiryDate: data.subscription.expiryDate || (profile.subscription as any)?.expiryDate,
               }
             });
           }
         }
         if (data.user && setProfile) {
-          setProfile(data.user);
+          setProfile({
+            ...data.user,
+            subscription: {
+              ...(data.user.subscription || profile?.subscription || {}),
+              autoRenew: data.subscription?.autoRenew ?? data.user.subscription?.autoRenew ?? false,
+            }
+          });
         }
         useSubscriptionStore.getState().fetchSubscriptionStatus();
         return data;
@@ -1395,14 +1403,24 @@ export default function SubscriptionPlansScreen() {
   };
 
   const handleCancelSubscription = () => {
-    setShowCancelModal(true);
+    Alert.alert(
+      'Cancel Auto-Renewal',
+      'Are you sure you want to cancel subscription auto-renewal? You will keep full access to your plan until the end of your current billing cycle.',
+      [
+        { text: 'Keep Auto-Renewal', style: 'cancel' },
+        {
+          text: 'Confirm Cancellation',
+          style: 'destructive',
+          onPress: () => executeCancelSubscription(),
+        },
+      ]
+    );
   };
 
   const executeCancelSubscription = async () => {
-    setShowCancelModal(false);
     setLoading(true);
     try {
-      await BillingService.cancelSubscription();
+      const res = await BillingService.cancelSubscription();
       if (profile && setProfile) {
         setProfile({
           ...profile,
@@ -1414,8 +1432,7 @@ export default function SubscriptionPlansScreen() {
             : undefined,
         });
       }
-      showToast('success', 'Auto-Renewal Cancelled', 'Auto-renewal has been cancelled successfully.');
-      setCancelSuccessVisible(true);
+      showToast('success', 'Auto-Renewal Cancelled', res?.message || 'Auto-renewal has been cancelled successfully.');
       await syncLiveSubscription();
     } catch (err: any) {
       if (profile && setProfile) {
@@ -1429,8 +1446,8 @@ export default function SubscriptionPlansScreen() {
             : undefined,
         });
       }
-      setCancelSuccessVisible(true);
-      showToast('success', 'Auto-Renewal Cancelled', 'Auto-renewal has been cancelled.');
+      showToast('success', 'Auto-Renewal Cancelled', 'Auto-renewal status updated.');
+      await syncLiveSubscription();
     } finally {
       setLoading(false);
     }
@@ -1618,61 +1635,74 @@ export default function SubscriptionPlansScreen() {
 
             <View style={[styles.cardDivider, { backgroundColor: dividerColor }]} />
 
-            <View style={styles.detailsGrid}>
-              <View style={styles.gridItem}>
-                <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Workspace</Text>
-                <Text style={[styles.gridItemValue, { color: goldAccent }]}>{getActiveWorkspaceName()}</Text>
-              </View>
-              <View style={styles.gridItem}>
-                <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Billing Amount</Text>
-                <Text style={[styles.gridItemValue, { color: gridValueColor }]}>{getPlanAmount()}/month</Text>
-              </View>
-            </View>
+            {(() => {
+              const isFreePlan = !rawPlan || rawPlan.toUpperCase() === 'FREE';
+              const isAutoRenewActive = typeof liveSubscription?.autoRenew === 'boolean'
+                ? liveSubscription.autoRenew
+                : profile?.subscription?.autoRenew === true;
 
-            <View style={[styles.detailsGrid, { marginTop: 12 }]}>
-              <View style={styles.gridItem}>
-                <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Renewal Status</Text>
-                <Text style={[styles.gridItemValue, { color: profile?.subscription?.autoRenew === true ? '#10B981' : '#F59E0B' }]}>
-                  {profile?.subscription?.autoRenew === true ? 'Auto Renew Active' : 'Manual Renewal'}
-                </Text>
-              </View>
-              <View style={styles.gridItem}>
-                <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Expiry Date</Text>
-                <Text style={[styles.gridItemValue, { color: gridValueColor }]}>
-                  {profile?.subscription?.expiryDate
-                    ? new Date(profile.subscription.expiryDate).toLocaleDateString('en-GB', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })
-                    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                </Text>
-              </View>
-            </View>
+              return (
+                <>
+                  <View style={styles.detailsGrid}>
+                    <View style={styles.gridItem}>
+                      <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Workspace</Text>
+                      <Text style={[styles.gridItemValue, { color: goldAccent }]}>{getActiveWorkspaceName()}</Text>
+                    </View>
+                    <View style={styles.gridItem}>
+                      <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Billing Amount</Text>
+                      <Text style={[styles.gridItemValue, { color: gridValueColor }]}>{getPlanAmount()}/month</Text>
+                    </View>
+                  </View>
 
-            <View style={[styles.detailsGrid, { marginTop: 12 }]}>
-              <View style={styles.gridItem}>
-                <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Payment Gateway</Text>
-                <Text style={[styles.gridItemValue, { color: gridValueColor }]}>{profile?.subscription?.gateway || 'Razorpay'}</Text>
-              </View>
-              <View style={[styles.gridItem, { flex: 1.2 }]}>
-                <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Invoice Number</Text>
-                <Text style={[styles.gridItemValue, { color: gridValueColor }]} numberOfLines={1}>
-                  {profile?.subscription?.invoice || 'INV-OFFICIAL-FREE'}
-                </Text>
-              </View>
-            </View>
+                  <View style={[styles.detailsGrid, { marginTop: 12 }]}>
+                    <View style={styles.gridItem}>
+                      <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Renewal Status</Text>
+                      <Text style={[styles.gridItemValue, { color: isAutoRenewActive ? '#10B981' : '#F59E0B' }]}>
+                        {isAutoRenewActive ? 'Auto Renew Active' : 'Manual Renewal / OFF'}
+                      </Text>
+                    </View>
+                    <View style={styles.gridItem}>
+                      <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Expiry Date</Text>
+                      <Text style={[styles.gridItemValue, { color: gridValueColor }]}>
+                        {profile?.subscription?.expiryDate
+                          ? new Date(profile.subscription.expiryDate).toLocaleDateString('en-GB', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            })
+                          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            })}
+                      </Text>
+                    </View>
+                  </View>
 
-            <View style={[styles.cardDivider, { backgroundColor: dividerColor }]} />
+                  <View style={[styles.detailsGrid, { marginTop: 12 }]}>
+                    <View style={styles.gridItem}>
+                      <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Payment Gateway</Text>
+                      <Text style={[styles.gridItemValue, { color: gridValueColor }]}>{profile?.subscription?.gateway || 'Razorpay'}</Text>
+                    </View>
+                    <View style={[styles.gridItem, { flex: 1.2 }]}>
+                      <Text style={[styles.gridItemLabel, { color: gridLabelColor }]}>Invoice Number</Text>
+                      <Text style={[styles.gridItemValue, { color: gridValueColor }]} numberOfLines={1}>
+                        {profile?.subscription?.invoice || 'INV-OFFICIAL-FREE'}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={[styles.cardDivider, { backgroundColor: dividerColor }]} />
+                </>
+              );
+            })()}
 
             {/* SUBSCRIPTION ACTION BUTTONS */}
             {(() => {
               const isFreePlan = !rawPlan || rawPlan.toUpperCase() === 'FREE';
-              const isAutoRenewActive = profile?.subscription?.autoRenew === true;
+              const isAutoRenewActive = typeof liveSubscription?.autoRenew === 'boolean'
+                ? liveSubscription.autoRenew
+                : profile?.subscription?.autoRenew === true;
 
               const handleAutoPayPress = () => {
                 if (isFreePlan) {
@@ -1681,9 +1711,30 @@ export default function SubscriptionPlansScreen() {
                     { text: 'OK', style: 'cancel' }
                   ]);
                 } else if (isAutoRenewActive) {
-                  showToast('info', 'Auto-Pay Active 🟢', 'Your subscription is set to auto-renew on expiry date.');
+                  Alert.alert(
+                    'Auto-Pay Active 🟢',
+                    'Auto-Pay is currently ON for your subscription. Would you like to turn off auto-renewal?',
+                    [
+                      { text: 'Keep Auto-Pay ON', style: 'cancel' },
+                      {
+                        text: 'Turn OFF Auto-Pay',
+                        style: 'destructive',
+                        onPress: () => executeCancelSubscription(),
+                      },
+                    ]
+                  );
                 } else {
-                  handleEnableAutoRenew();
+                  Alert.alert(
+                    'Enable Auto-Pay 💳',
+                    'Would you like to turn ON auto-renewal for your subscription?',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Enable Auto-Pay',
+                        onPress: () => handleEnableAutoRenew(),
+                      },
+                    ]
+                  );
                 }
               };
 
@@ -1691,58 +1742,109 @@ export default function SubscriptionPlansScreen() {
                 if (isFreePlan) {
                   Alert.alert('Free Tier', 'You are currently on the Free Tier. There is no active paid subscription to cancel.');
                 } else if (!isAutoRenewActive) {
-                  Alert.alert('Already Cancelled', 'Auto-renewal is already turned off for your account.');
+                  Alert.alert(
+                    'Auto-Renewal OFF 🟡',
+                    'Auto-renewal is already turned OFF for your account. You will maintain access until your expiry date.',
+                    [
+                      { text: 'Re-Enable Auto-Pay', onPress: handleEnableAutoRenew },
+                      { text: 'OK', style: 'cancel' }
+                    ]
+                  );
                 } else {
                   handleCancelSubscription();
                 }
               };
 
-              return (
-                <View style={styles.actionRowContainer}>
-                  {/* 1. AUTO PAY BUTTON */}
-                  <Pressable
-                    style={[
-                      styles.actionPillButton,
-                      {
-                        backgroundColor: isAutoRenewActive
-                          ? (isDark ? 'rgba(16, 185, 129, 0.15)' : '#D1FAE5')
-                          : actionPillBg,
-                        borderColor: isAutoRenewActive ? '#10B981' : goldAccent,
-                      },
-                    ]}
-                    onPress={handleAutoPayPress}
-                  >
-                    <Ionicons
-                      name={isAutoRenewActive ? "checkmark-circle-outline" : "card-outline"}
-                      size={16}
-                      color={isAutoRenewActive ? "#10B981" : goldAccent}
-                      style={{ marginRight: 6 }}
-                    />
-                    <Text
-                      style={[
-                        styles.actionPillText,
-                        { color: isAutoRenewActive ? "#10B981" : actionPillTextColor, fontWeight: '700' },
-                      ]}
-                    >
-                      {isAutoRenewActive ? "Auto Pay: ON" : "Auto Pay"}
-                    </Text>
-                  </Pressable>
+              const openStoreSubscriptions = () => {
+                if (Platform.OS === 'ios') {
+                  Linking.openURL('https://apps.apple.com/account/subscriptions').catch(() => {
+                    showToast('info', 'App Store Settings', 'Open Settings > Apple ID > Subscriptions to manage your subscription.');
+                  });
+                } else {
+                  Linking.openURL('https://play.google.com/store/account/subscriptions').catch(() => {
+                    showToast('info', 'Google Play Store', 'Open Play Store > Profile > Payments & Subscriptions to manage.');
+                  });
+                }
+              };
 
-                  {/* 2. CANCEL BUTTON */}
-                  <Pressable
-                    style={[
-                      styles.actionPillButton,
-                      {
-                        backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : '#FEE2E2',
-                        borderColor: '#EF4444',
-                        opacity: (!isAutoRenewActive && !isFreePlan) ? 0.6 : 1
-                      },
-                    ]}
-                    onPress={handleCancelPress}
-                  >
-                    <Ionicons name="close-circle-outline" size={16} color="#EF4444" style={{ marginRight: 6 }} />
-                    <Text style={[styles.actionPillText, { color: '#EF4444', fontWeight: '700' }]}>Cancel</Text>
-                  </Pressable>
+              return (
+                <View style={{ gap: 10 }}>
+                  <View style={styles.actionRowContainer}>
+                    {/* 1. AUTO PAY BUTTON */}
+                    <Pressable
+                      style={[
+                        styles.actionPillButton,
+                        {
+                          backgroundColor: isAutoRenewActive
+                            ? (isDark ? 'rgba(16, 185, 129, 0.15)' : '#D1FAE5')
+                            : actionPillBg,
+                          borderColor: isAutoRenewActive ? '#10B981' : goldAccent,
+                        },
+                      ]}
+                      onPress={handleAutoPayPress}
+                    >
+                      <Ionicons
+                        name={isAutoRenewActive ? "checkmark-circle-outline" : "card-outline"}
+                        size={16}
+                        color={isAutoRenewActive ? "#10B981" : goldAccent}
+                        style={{ marginRight: 6 }}
+                      />
+                      <Text
+                        style={[
+                          styles.actionPillText,
+                          { color: isAutoRenewActive ? "#10B981" : actionPillTextColor, fontWeight: '700' },
+                        ]}
+                      >
+                        {isAutoRenewActive ? "Auto Pay: ON" : "Turn ON Auto Pay"}
+                      </Text>
+                    </Pressable>
+
+                    {/* 2. CANCEL BUTTON */}
+                    <Pressable
+                      style={[
+                        styles.actionPillButton,
+                        {
+                          backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : '#FEE2E2',
+                          borderColor: '#EF4444',
+                          opacity: (!isAutoRenewActive && !isFreePlan) ? 0.6 : 1
+                        },
+                      ]}
+                      onPress={handleCancelPress}
+                    >
+                      <Ionicons name="close-circle-outline" size={16} color="#EF4444" style={{ marginRight: 6 }} />
+                      <Text style={[styles.actionPillText, { color: '#EF4444', fontWeight: '700' }]}>
+                        {isAutoRenewActive ? "Cancel Auto-Pay" : "Cancelled"}
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  {/* 3. STORE SUBSCRIPTION MANAGEMENT LINK */}
+                  {!isFreePlan && (
+                    <Pressable
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingVertical: 9,
+                        paddingHorizontal: 12,
+                        borderRadius: 12,
+                        backgroundColor: isDark ? 'rgba(200, 163, 77, 0.08)' : 'rgba(200, 163, 77, 0.1)',
+                        borderWidth: 1,
+                        borderColor: 'rgba(200, 163, 77, 0.3)',
+                      }}
+                      onPress={openStoreSubscriptions}
+                    >
+                      <Ionicons
+                        name={Platform.OS === 'ios' ? 'logo-apple' : 'logo-google-playstore'}
+                        size={15}
+                        color={goldAccent}
+                        style={{ marginRight: 6 }}
+                      />
+                      <Text style={{ fontSize: 12, fontWeight: '700', color: goldAccent }}>
+                        Manage Subscriptions in {Platform.OS === 'ios' ? 'App Store' : 'Google Play'}
+                      </Text>
+                    </Pressable>
+                  )}
                 </View>
               );
             })()}
@@ -1991,6 +2093,38 @@ export default function SubscriptionPlansScreen() {
             </View>
           ) : null}
         </View>
+
+        {/* ==================== 6. TERMS OF USE & PRIVACY POLICY FOOTER (iOS ONLY) ==================== */}
+        {Platform.OS === 'ios' && (
+          <View style={styles.legalNoticeFooter}>
+            <Text style={[styles.legalNoticeText, { color: planSubtitleColor }]}>
+              By subscribing, you agree to our{' '}
+              <Text
+                style={[styles.legalNoticeLink, { color: goldAccent }]}
+                onPress={async () => {
+                  try {
+                    await WebBrowser.openBrowserAsync('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/');
+                  } catch {
+                    Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/');
+                  }
+                }}
+              >
+                Terms of Use (EULA)
+              </Text>
+              {' '}and{' '}
+              <Text
+                style={[styles.legalNoticeLink, { color: goldAccent }]}
+                onPress={() => router.push('/privacy')}
+              >
+                Privacy Policy
+              </Text>
+              .
+            </Text>
+            <Text style={[styles.legalNoticeSubText, { color: isDark ? '#6B7280' : '#94A3B8' }]}>
+              Subscriptions automatically renew unless auto-renew is turned off at least 24 hours before the end of the current billing cycle. You can manage or cancel your subscription anytime in your App Store Account Settings.
+            </Text>
+          </View>
+        )}
       </ScrollView>
 
       {/* ==================== REDIRECTING TO WEB CHECKOUT OVERLAY ==================== */}
@@ -2496,6 +2630,29 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     paddingBottom: 40,
+  },
+
+  // ==================== LEGAL NOTICE FOOTER ====================
+  legalNoticeFooter: {
+    marginTop: 28,
+    marginBottom: 20,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  legalNoticeText: {
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+  legalNoticeLink: {
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+  },
+  legalNoticeSubText: {
+    fontSize: 11,
+    textAlign: 'center',
+    lineHeight: 16,
+    marginTop: 8,
   },
 
   // ==================== CURRENT PLAN CARD ====================

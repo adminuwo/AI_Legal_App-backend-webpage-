@@ -21,6 +21,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useThemeContext, useToastContext } from '@/providers';
 import { useSpeechRecognition, SpeechLanguage } from '@/hooks/use-speech-recognition';
 import { useTranslation } from '@/localization';
+import { useRouter } from 'expo-router';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -122,6 +123,7 @@ const ChatComposerComponent: React.FC<ChatComposerProps> = ({
 }) => {
   const { theme, isDark } = useThemeContext();
   const { showToast } = useToastContext();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const localInputRef = useRef<TextInput>(null);
   const inputRef = (ref as React.RefObject<TextInput>) || localInputRef;
@@ -309,6 +311,20 @@ const ChatComposerComponent: React.FC<ChatComposerProps> = ({
 
   return (
     <View style={[styles.outerContainer, { paddingBottom: getBottomPadding(), backgroundColor: isDark ? '#0B0B0E' : (theme.background || '#FFFFFF'), borderTopColor: isDark ? 'rgba(255,255,255,0.08)' : theme.border }]}>
+      {Platform.OS === 'ios' && (
+        <View style={styles.iosPrivacyDisclaimerRow}>
+          <Ionicons name="lock-closed" size={10} color="#C8A34D" />
+          <Text style={[styles.iosPrivacyDisclaimerText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+            AI queries processed securely via Google Gemini.{' '}
+            <Text
+              style={styles.iosPrivacyLink}
+              onPress={() => router.push('/privacy' as any)}
+            >
+              Privacy Policy
+            </Text>
+          </Text>
+        </View>
+      )}
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', width: '100%' }}>
         {isVoiceActive ? (
           <View style={[styles.recordingComposerWrapper, { backgroundColor: isDark ? '#1C1C1E' : (theme.surfaceVariant || '#F9FAFB'), borderColor: isDark ? 'rgba(200,163,77,0.3)' : theme.border }]}>
@@ -769,6 +785,24 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  iosPrivacyDisclaimerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    marginBottom: 6,
+    paddingHorizontal: 8,
+  },
+  iosPrivacyDisclaimerText: {
+    fontSize: 10,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  iosPrivacyLink: {
+    color: '#C8A34D',
+    fontWeight: '700',
+    textDecorationLine: 'underline',
   },
 });
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Platform } from 'react-native';
+import { Platform, AppState } from 'react-native';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system/legacy';
 import { apiClient } from '@/api/client';
@@ -295,24 +295,38 @@ export function useSpeechRecognition(onTranscriptionComplete: (text: string) => 
         web: {},
       };
 
+      if (Platform.OS === 'ios' && AppState.currentState !== 'active') {
+        console.warn('[useSpeechRecognition] App is in background. Postponing audio session activation.');
+        return;
+      }
+
       let recordingObject: Audio.Recording | null = null;
       try {
         const { recording } = await Audio.Recording.createAsync(recordingOptions as any);
         recordingObject = recording;
       } catch (createErr: any) {
-        console.warn('[useSpeechRecognition] Initial Audio.Recording.createAsync failed, resetting audio session...', createErr);
+        console.warn('[useSpeechRecognition] Initial Audio.Recording.createAsync failed, resetting audio session...', createErr?.message || createErr);
         try {
           await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
-          await new Promise((resolve) => setTimeout(resolve, 150));
-          await Audio.setAudioModeAsync({
-            allowsRecordingIOS: true,
-            playsInSilentModeIOS: true,
-            playThroughEarpieceAndroid: false,
-          });
-        } catch (e) {}
+          await new Promise((resolve) => setTimeout(resolve, 200));
+          if (AppState.currentState === 'active') {
+            await Audio.setAudioModeAsync({
+              allowsRecordingIOS: true,
+              playsInSilentModeIOS: true,
+              playThroughEarpieceAndroid: false,
+            });
+            const { recording } = await Audio.Recording.createAsync(recordingOptions as any);
+            recordingObject = recording;
+          }
+        } catch (retryErr: any) {
+          console.warn('[useSpeechRecognition] Audio session retry unavailable:', retryErr?.message || retryErr);
+        }
+      }
 
-        const { recording } = await Audio.Recording.createAsync(recordingOptions as any);
-        recordingObject = recording;
+      if (!recordingObject) {
+        setIsRecording(false);
+        showToast('info', 'Microphone Ready', 'Tap microphone when app is active to start voice recording.');
+        return;
       }
 
       recordingInstanceRef.current = recordingObject;
@@ -320,8 +334,7 @@ export function useSpeechRecognition(onTranscriptionComplete: (text: string) => 
       startDurationTimer();
       showToast('info', 'Listening', 'Speak clearly into the microphone.');
     } catch (err: any) {
-      console.error('[useSpeechRecognition] Failed to start native recording:', err);
-      showToast('error', 'Record Failed', 'Could not open recording hardware.');
+      console.error('[useSpeechRecognition] Failed to start native recording:', err?.message || err);
     } finally {
       isStartingRef.current = false;
     }

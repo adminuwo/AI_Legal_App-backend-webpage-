@@ -4,7 +4,8 @@
  */
 
 export const APP_STORE_URL =
-  import.meta.env.VITE_APP_STORE_URL || "";
+  import.meta.env.VITE_APP_STORE_URL ||
+  "https://apps.apple.com/in/app/ai-legal/id6797449251";
 
 export const GOOGLE_PLAY_URL =
   import.meta.env.VITE_GOOGLE_PLAY_URL ||
