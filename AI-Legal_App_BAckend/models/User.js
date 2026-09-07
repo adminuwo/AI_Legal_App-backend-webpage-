@@ -205,6 +205,7 @@ const userSchema = new mongoose.Schema({
     failedAttempts: { type: Number, default: 0 },
     lockoutUntil: { type: Date },
     deviceTokens: [{ type: String }],
+    deviceOS: { type: String, enum: ['android', 'ios', 'web', 'unknown'], default: 'unknown' },
     deactivatedAt: { type: Date },
     deletedAt: { type: Date },
 

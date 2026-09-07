@@ -523,13 +523,19 @@ export const getCurrentSubscription = async (req, res) => {
 
     const entitlements = await EntitlementService.getEntitlements(userId, targetWsNorm);
 
+    const isAutoRenewOn = typeof user?.subscription?.autoRenew === 'boolean'
+      ? user.subscription.autoRenew
+      : typeof activeSub?.autoRenew === 'boolean'
+      ? activeSub.autoRenew
+      : effectiveTier !== 'FREE';
+
     const subObj = {
       tier: effectiveTier,
       workspace: targetWsNorm,
       amount: effectiveTier !== 'FREE' ? (user?.subscription?.amount || 499) : 0,
-      status: effectiveTier !== 'FREE' ? 'active' : 'inactive',
-      autoRenew: effectiveTier !== 'FREE',
-      expiryDate: effectiveTier !== 'FREE' ? (user?.subscription?.expiryDate || null) : null,
+      status: effectiveTier !== 'FREE' ? (isAutoRenewOn ? 'active' : 'cancelling') : 'inactive',
+      autoRenew: effectiveTier !== 'FREE' ? isAutoRenewOn : false,
+      expiryDate: effectiveTier !== 'FREE' ? (user?.subscription?.expiryDate || activeSub?.expiryDate || null) : null,
     };
 
     res.status(200).json({
@@ -1009,7 +1015,7 @@ export const cancelSubscriptionApi = async (req, res) => {
   try {
     const userId = req.user?.id || req.user?._id;
     await Subscription.updateMany(
-      { accountId: userId },
+      { $or: [{ accountId: userId }, { userId: userId }] },
       { $set: { autoRenew: false } }
     );
     await User.findByIdAndUpdate(userId, {
@@ -1019,6 +1025,7 @@ export const cancelSubscriptionApi = async (req, res) => {
     }).catch(() => {});
     res.status(200).json({
       success: true,
+      autoRenew: false,
       message: 'Subscription auto-renewal cancelled successfully. Your plan will remain active until the current period ends.'
     });
   } catch (err) {
@@ -1033,7 +1040,7 @@ export const enableSubscriptionAutoRenewApi = async (req, res) => {
   try {
     const userId = req.user?.id || req.user?._id;
     await Subscription.updateMany(
-      { accountId: userId },
+      { $or: [{ accountId: userId }, { userId: userId }] },
       { $set: { autoRenew: true } }
     );
     await User.findByIdAndUpdate(userId, {

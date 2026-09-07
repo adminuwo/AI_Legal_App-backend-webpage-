@@ -74,7 +74,7 @@ const DEFAULT_SETTINGS = {
     updatePolicy: 'optional',
     title: 'AI LEGAL™ Update Available',
     message: 'A new version of AI LEGAL™ is available with improvements and bug fixes.',
-    storeUrl: 'https://apps.apple.com/app/ai-legal/id123456789',
+    storeUrl: 'https://apps.apple.com/in/app/ai-legal/id6797449251',
     enabled: true,
   },
 };
