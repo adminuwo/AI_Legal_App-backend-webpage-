@@ -296,6 +296,25 @@ ${message}
         );
 
 
+        if (responseData && responseData.reply && isDraftingTool) {
+            responseData.reply = responseData.reply
+                .replace(/^(?:I understand you (?:want|need|are asking for).*?\n+)/gi, '')
+                .replace(/^(?:Certainly[!,.]?|Sure[!,.]?|Here is (?:your|the) (?:legal|court|draft).*?\n+)/gi, '')
+                .replace(/^(?:Okay[!,.]?|Hello[!,.]?|Dear User[!,.]?.*?\n+)/gi, '')
+                .replace(/^(?:Below is the (?:requested|generated) draft.*?\n+)/gi, '')
+                .replace(/\n+(?:Let me know if you (?:need|would like).*?$)/gi, '')
+                .replace(/\n+(?:I hope this (?:helps|draft|document).*?$)/gi, '')
+                .replace(/\[\s*(?:Insert|Fill|Specify|Enter|Select)?\s*[^\]]+\]/gi, (match) => {
+                    if (/date/i.test(match)) return new Date().toLocaleDateString('en-IN');
+                    if (/court/i.test(match)) return 'Hon\'ble Court';
+                    if (/place|city|location/i.test(match)) return 'New Delhi';
+                    if (/amount|rs|fee|sum/i.test(match)) return '₹50,000/-';
+                    return '';
+                })
+                .replace(/\[\s*__+\s*\]/g, '_____________')
+                .trim();
+        }
+
         if (!responseData || !responseData.reply) {
             throw new Error('Empty response from AI');
         }

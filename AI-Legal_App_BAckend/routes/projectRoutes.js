@@ -4363,7 +4363,23 @@ router.post('/contracts/review', verifyToken, async (req, res) => {
             { clauseTitle: "Arbitration", importance: "Critical", reason: "Required to delegate disputes to arbitration instead of civil courts." }
         ];
 
-        if (targetLang.includes('hindi') || targetLang.includes('hinglish') || targetLang === 'hi') {
+        if (targetLang.includes('nepali') || targetLang.includes('नेपाली') || targetLang === 'ne') {
+            contractType = "ऋण सम्झौता (Loan Agreement)";
+            overallAssessment = "अस्पष्ट डिफल्ट ब्याज गणना र मध्यस्थता दफाहरूको अभावका कारण यस सम्झौतालाई उच्च जोखिमको रूपमा वर्गीकरण गरिएको छ।";
+            executiveSummary = "यस ऋण सम्झौताले राजेश शर्मा र अमित वर्मा बीचको मुख्य ऋण दायित्व, पुनर्भुक्तानी तालिका र धितो मापदण्डहरूको विवरण दिन्छ।";
+            keyClausesFound = [
+                { clauseTitle: "दफा ४ - पुनर्भुक्तानी (Repayment)", riskRating: "Medium", summary: "ब्याज भुक्तानी निर्दिष्ट गर्दछ तर हर्जाना शर्तहरू अस्पष्ट छन्।" },
+                { clauseTitle: "दफा ५ - डिफल्ट ब्याज (Default Interest)", riskRating: "High", summary: "ऋणदातालाई एकतर्फी रूपमा डिफल्ट दर निर्धारण गर्ने अधिकार दिन्छ।" },
+                { clauseTitle: "दफा १२ - क्षतिपूर्ति (Indemnity)", riskRating: "High", summary: "ऋणदातालाई मात्र सञ्चालन दावीहरूबाट क्षतिपूर्ति दिन्छ।" }
+            ];
+            recommendations = [
+                { priority: "High", action: "डिफल्ट ब्याजलाई वार्षिक १२% मा सीमित साधारण ब्याजको रूपमा निर्दिष्ट गर्नुहोस्।", reason: "दफा ५ ले व्यावसायिक दिशानिर्देशहरूको उल्लङ्घन गर्दछ।" },
+                { priority: "Medium", action: "एक मानक मध्यस्थता दफा थप्नुहोस्", reason: "दीवानी अदालतहरूमा लामो मुद्दाहरूबाट बचाउँछ।" }
+            ];
+            missingClauses = [
+                { clauseTitle: "मध्यस्थता (Arbitration)", importance: "Critical", reason: "दीवानी अदालतहरूको साटो मध्यस्थतामा विवाद पठाउन आवश्यक।" }
+            ];
+        } else if (targetLang.includes('hindi') || targetLang.includes('hinglish') || targetLang === 'hi') {
             contractType = "ऋण समझौता (Loan Agreement)";
             overallAssessment = "अस्पष्ट डिफ़ॉल्ट ब्याज गणना और मध्यस्थता खंडों की कमी के कारण इस अनुबंध को उच्च जोखिम के रूप में चिह्नित किया गया है।";
             executiveSummary = "यह ऋण समझौता राजेश शर्मा और अमित वर्मा के बीच मुख्य ऋण दायित्वों, पुनर्भुगतान कार्यक्रम और संपार्श्विक मापदंडों का विवरण देता है।";

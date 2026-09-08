@@ -2655,7 +2655,7 @@ export default function AdminDashboard() {
                         Mark Resolved
                       </button>
                     </div>
-                    <pre className="p-3 bg-black/80 text-emerald-400 rounded-xl text-[10px] font-mono overflow-x-auto">
+                    <pre className="p-3 bg-amber-50/90 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800/60 rounded-xl text-[11px] font-mono font-semibold overflow-x-auto shadow-sm">
                       {c.stackTrace || 'Error: Processing failed at line 42'}
                     </pre>
                   </div>
