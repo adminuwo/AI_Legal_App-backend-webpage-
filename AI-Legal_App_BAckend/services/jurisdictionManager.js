@@ -14,7 +14,13 @@ class JurisdictionManager {
    * Reads a user's selected country/jurisdiction from the database.
    * Falls back to "India" if not set or if database lookup fails.
    */
-  async getActiveJurisdiction(userId) {
+  async getActiveJurisdiction(userId, reqOrOptions = null) {
+    if (reqOrOptions && typeof reqOrOptions === 'object') {
+      const headerJurisdiction = reqOrOptions.jurisdiction || reqOrOptions.country || reqOrOptions.headers?.['x-legal-jurisdiction'] || reqOrOptions.headers?.['X-Legal-Jurisdiction'] || reqOrOptions.body?.jurisdiction || reqOrOptions.body?.country;
+      if (headerJurisdiction && typeof headerJurisdiction === 'string') {
+        return headerJurisdiction;
+      }
+    }
     if (!userId) {
       return "India";
     }
@@ -25,7 +31,7 @@ class JurisdictionManager {
     }
     try {
       const user = await UserModel.findById(userId);
-      return user?.jurisdiction || user?.country || "India";
+      return user?.jurisdiction || user?.country || user?.personalizations?.general?.jurisdiction || user?.personalizations?.general?.country || "India";
     } catch (err) {
       console.error(`[JurisdictionManager] Error reading user ${userId} jurisdiction:`, err.message);
       return "India";
@@ -53,23 +59,23 @@ class JurisdictionManager {
 Active Legal Jurisdiction:
 ${activeCountry}
 
-You are an expert legal AI specializing in the laws, legal procedures, terminology, court system, legal drafting standards, and legal framework of ${activeCountry}.
+You are an expert legal AI specializing in the laws, legal procedures, terminology, court system, legal drafting standards, penal statutes, procedural codes, section references, and legal framework of ${activeCountry}.
 
-Use ONLY the selected country's legal system.
+Use ONLY the selected country's (${activeCountry}) legal system and laws.
 
-Do not use laws from another jurisdiction unless the user explicitly requests a comparison.
+Do NOT cite or default to Indian laws, Indian Penal Code (IPC), Bharatiya Nyaya Sanhita (BNS), or Indian precedents unless the selected country is India or unless the user explicitly requests an international comparative analysis.
 
-If regional laws differ (such as US States, Canadian Provinces, Australian States, UAE Emirates, etc.), politely ask the user for the relevant region before giving a final legal answer.
+If regional laws differ (such as US States, Canadian Provinces, Australian States, UAE Emirates, etc.), politely ask the user for the relevant state/region before giving a final legal answer.
 
-Always maintain this jurisdiction across the conversation until the user changes it.
+Always maintain this jurisdiction (${activeCountry}) strictly across all generated text and outputs until the user changes it.
 `;
   }
 
   /**
    * Injects the active jurisdiction prompt block into systemInstruction.
    */
-  async injectJurisdictionPrompt(systemInstruction, userId) {
-    const country = await this.getActiveJurisdiction(userId);
+  async injectJurisdictionPrompt(systemInstruction, userId, reqOrOptions = null) {
+    const country = await this.getActiveJurisdiction(userId, reqOrOptions);
     const promptBlock = this.getJurisdictionPrompt(country);
 
     if (!systemInstruction) {

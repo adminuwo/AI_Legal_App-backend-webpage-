@@ -186,9 +186,13 @@ export class AuthService extends BaseService {
     }
 
     // Find user
-    const user = await UserModel.findOne({ email: new RegExp('^' + normalizedEmail + '$', 'i') });
+    const user = await UserModel.findOne({ email: new RegExp('^' + normalizedEmail + '$', 'i') }).select("+password");
     if (!user) {
       return { statusCode: 401, data: { error: "Account not found with this email" } };
+    }
+
+    if (!user.password) {
+      return { statusCode: 400, data: { error: "This account was created using social sign-in. Please log in using Google or Apple." } };
     }
 
     // LOGIN RESTRICTION: Unverified accounts MUST NEVER be able to log in

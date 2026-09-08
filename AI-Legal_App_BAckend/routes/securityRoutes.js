@@ -93,7 +93,7 @@ router.post('/logout-session', async (req, res) => {
                 return res.status(401).json({ error: 'Authentication required or email must be provided to revoke a device.' });
             }
             const normalizedEmail = (email || '').toLowerCase().trim();
-            const user = await userModel.findOne({ email: new RegExp('^' + normalizedEmail + '$', 'i') });
+            const user = await userModel.findOne({ email: new RegExp('^' + normalizedEmail + '$', 'i') }).select("+password");
             
             if (!user && mongoose.connection.readyState !== 1) {
                 userId = '6a30fac276e1c8026477a8cd';
@@ -184,9 +184,13 @@ router.post('/reactivate', async (req, res) => {
             return res.status(400).json({ error: 'Email and password are required.' });
         }
 
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email }).select("+password");
         if (!user) {
             return res.status(404).json({ error: 'Account not found.' });
+        }
+
+        if (!user.password) {
+            return res.status(400).json({ error: 'This account does not have a password set.' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -264,9 +268,13 @@ router.delete('/account', verifyToken, async (req, res) => {
             return res.status(400).json({ error: 'Password confirmation and word "DELETE" are required.' });
         }
 
-        const user = await userModel.findById(userId);
+        const user = await userModel.findById(userId).select("+password");
         if (!user) {
             return res.status(404).json({ error: 'User profile not found.' });
+        }
+
+        if (!user.password) {
+            return res.status(400).json({ error: 'Password verification is not applicable for social accounts.' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);

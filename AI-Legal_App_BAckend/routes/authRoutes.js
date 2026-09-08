@@ -120,9 +120,13 @@ router.post("/login", async (req, res) => {
     const normalizedEmail = (email || '').toLowerCase().trim();
 
     // Find user (case-insensitive regex match)
-    const user = await UserModel.findOne({ email: new RegExp('^' + normalizedEmail + '$', 'i') });
+    const user = await UserModel.findOne({ email: new RegExp('^' + normalizedEmail + '$', 'i') }).select("+password");
     if (!user) {
       return res.status(401).json({ error: "Account not found with this email" });
+    }
+
+    if (!user.password) {
+      return res.status(400).json({ error: "This account was created using social sign-in. Please log in using Google or Apple." });
     }
 
     // Check if account is temporarily deactivated
@@ -1382,9 +1386,13 @@ router.post("/reset-password-email", async (req, res) => {
     }
 
     // Find user
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email }).select("+password");
     if (!user) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!user.password) {
+      return res.status(400).json({ error: "This account does not have a password set." });
     }
 
     // Verify current password

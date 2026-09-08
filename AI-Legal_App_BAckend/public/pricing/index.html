@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Unified Analytics Platform Auto-Tracker -->
+  <script defer src="https://admin.uwo24.com/api/web-stats/tracker.js" data-site="ailegal" data-endpoint="https://admin.uwo24.com/api/web-stats/collect"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>AI Legal™ — Subscription Plans</title>
@@ -838,15 +840,20 @@
 
 <!-- HEADER -->
 <header class="header">
-  <div class="logo" style="cursor:pointer" onclick="window.location.href='/'">
-    <div class="logo-icon">⚖️</div>
+  <div class="logo" style="cursor:pointer" onclick="window.location.href='/dashboard/home'">
+    <div class="logo-icon" style="background: transparent; box-shadow: none; padding: 0;">
+      <img src="/logo/logo_transparent.png" style="width: 36px; height: 36px; object-fit: contain;" alt="AI Legal Logo" />
+    </div>
     <div class="logo-text">AI Legal<span>™</span></div>
   </div>
-  <div id="userChip" class="user-chip" style="display:none; cursor:pointer;" onclick="handleAdminClick()" title="Click to open Admin Console">
-    <div class="user-avatar" id="userInitial">U</div>
-    <span id="userName">User</span>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <button onclick="if(window.history.length > 1) { window.history.back(); } else { window.location.href='/dashboard/home'; }" 
+            style="display: inline-flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1.5px solid #E5E9F2; color: #1E293B; font-size: 13px; font-weight: 700; padding: 8px 18px; border-radius: 24px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.04);"
+            onmouseover="this.style.borderColor='#C8A34D'; this.style.color='#B38628';"
+            onmouseout="this.style.borderColor='#E5E9F2'; this.style.color='#1E293B';">
+      <span style="font-size: 15px; font-weight: 800;">←</span> Back to Home
+    </button>
   </div>
-  <div class="header-badge" id="headerBadge">🔒 SECURE PORTAL</div>
 </header>
 
 <!-- AUTH NOTICE -->
@@ -878,6 +885,7 @@
     <button class="ws-tab" id="ws-student" onclick="setWorkspace('student')">🎓 Student</button>
     <button class="ws-tab" id="ws-lawfirm" onclick="setWorkspace('lawfirm')">🏛️ Law Firm <span class="ws-badge">TEAM</span></button>
     <button class="ws-tab" id="ws-combo" onclick="setWorkspace('combo')">✨ Combo <span class="ws-badge">SAVE MORE</span></button>
+    <button class="ws-tab" id="ws-enterprise" onclick="setWorkspace('enterprise')" style="display:none;">🏢 Enterprise <span class="ws-badge">CUSTOM</span></button>
   </div>
 </div>
 
@@ -914,7 +922,7 @@
 
   let API_BASE = isLocalHost
     ? (window.location.port === '8080' ? window.location.origin : `http://${window.location.hostname}:8080`)
-    : (window.location.origin.includes('backend') ? window.location.origin : PROD_API);
+    : window.location.origin;
 
   async function apiFetch(endpoint, options = {}) {
     try {
@@ -933,7 +941,7 @@
     advocate: [
       {
         id: 'advocate_basic',
-        name: 'AI Legal™ Basic',
+        name: 'Advocate BASIC Plan',
         tier: 'BASIC',
         badge: 'badge-basic',
         badgeLabel: '🔹 BASIC',
@@ -941,72 +949,69 @@
         monthly: 499,
         yearly: 4990,
         popular: false,
-        desc: 'Perfect for solo advocates starting with AI-powered legal automation.',
-        storage: '5 GB Secure Storage',
-        runningCases: '50 Running Cases',
-        completedCases: 'Unlimited Completed Cases',
+        desc: 'Designed for independent advocates & legal consultants.',
+        storage: '5 GB Cloud Storage',
+        runningCases: 'Up to 50 Active Cases',
+        completedCases: 'Unlimited Archive',
         features: [
-          { category: 'Storage & Capacity', items: [
-            { icon: '📁', label: 'Secure Storage', value: '5 GB' },
-            { icon: '📦', label: 'Running Cases', value: '50 Cases' },
-            { icon: '💾', label: 'Completed Cases', value: 'Unlimited Archive' },
+          { category: 'Quota & Capacity', items: [
+            { icon: '📁', label: 'Active Cases Limit', value: 'Up to 50 Active Cases' },
+            { icon: '💾', label: 'Cloud Storage', value: '5 GB' },
           ]},
-          { category: 'AI Legal™ Tools', items: [
-            { icon: '📝', label: 'Draft Maker', value: '5 Uses' },
-            { icon: '🏛️', label: 'Court Prep Workspace', value: '5 Uses' },
-            { icon: '🔍', label: 'Legal Precedent Research', value: '5 Uses' },
-            { icon: '🔬', label: 'Evidence Analysis', value: '5 Uses' },
-            { icon: '📜', label: 'Contract Analyzer', value: '5 Uses' },
-            { icon: '📊', label: 'Case Predictor', value: '5 Uses' },
-            { icon: '🎯', label: 'Strategy Engine', value: '5 Uses' },
+          { category: 'AI Legal™ Tools Included', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: '300 chats/month' },
+            { icon: '📝', label: 'Draft Maker', value: '5 drafts/month' },
+            { icon: '⚖️', label: 'Legal Precedents', value: '5 searches/month' },
+            { icon: '📜', label: 'Contract Analyzer', value: '5 reviews/month' },
+            { icon: '🔬', label: 'Evidence Analyst', value: '5 analyses/month' },
+            { icon: '🎯', label: 'Strategy Engine', value: '5 strategies/month' },
+            { icon: '📊', label: 'Case Predictor', value: '5 predictions/month' },
           ]},
           { category: 'Courtroom & Client Suite', items: [
-            { icon: '⚔️', label: 'AI Mock Courtroom', value: '2 Sessions / Month' },
-            { icon: '🤝', label: 'AI Client Connect', value: '2 Uses / Month' },
+            { icon: '⚔️', label: 'AI Mock Courtroom', value: '2 sessions/month' },
+            { icon: '🤝', label: 'AI Client Connect', value: '2 listings' },
           ]},
         ]
       },
       {
         id: 'advocate_pro',
-        name: 'AI Legal™ Professional',
+        name: 'Advocate PRO Plan',
         tier: 'PROFESSIONAL',
         badge: 'badge-pro',
-        badgeLabel: '⭐ PROFESSIONAL',
+        badgeLabel: '⭐ PRO',
         tag: 'MOST POPULAR',
-        buttonText: 'Upgrade to Professional',
+        buttonText: 'Upgrade to Pro',
         monthly: 999,
         yearly: 9990,
         popular: true,
-        desc: 'Designed for active advocates and professionals handling multiple cases.',
-        storage: '20 GB Secure Storage',
-        runningCases: '100 Running Cases',
-        completedCases: 'Unlimited Completed Cases',
+        desc: 'Designed for active advocates and trial lawyers.',
+        storage: '20 GB Cloud Storage',
+        runningCases: 'Up to 100 Active Cases',
+        completedCases: 'Unlimited Archive',
         features: [
-          { category: 'Storage & Capacity', items: [
-            { icon: '📁', label: 'Secure Storage', value: '20 GB' },
-            { icon: '📦', label: 'Running Cases', value: '100 Cases' },
-            { icon: '💾', label: 'Completed Cases', value: 'Unlimited Archive' },
+          { category: 'Quota & Capacity', items: [
+            { icon: '📁', label: 'Active Cases Limit', value: 'Up to 100 Active Cases' },
+            { icon: '💾', label: 'Cloud Storage', value: '20 GB' },
           ]},
-          { category: 'AI Legal™ Tools (Everything in Basic)', items: [
-            { icon: '📝', label: 'Draft Maker', value: '15 Uses' },
-            { icon: '🏛️', label: 'Court Prep Workspace', value: '15 Uses' },
-            { icon: '🔍', label: 'Legal Precedent Research', value: '15 Uses' },
-            { icon: '🔬', label: 'Evidence Analysis', value: '15 Uses' },
-            { icon: '📜', label: 'Contract Analyzer', value: '15 Uses' },
-            { icon: '📊', label: 'Case Predictor', value: '15 Uses' },
-            { icon: '🎯', label: 'Strategy Engine', value: '15 Uses' },
+          { category: 'AI Legal™ Tools Included', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: '1,000 chats/month' },
+            { icon: '📝', label: 'Draft Maker', value: '15 drafts/month' },
+            { icon: '⚖️', label: 'Legal Precedents & Research', value: '15 searches/month' },
+            { icon: '📜', label: 'Contract Analyzer', value: '15 reviews/month' },
+            { icon: '🔬', label: 'Evidence Analyst', value: '15 analyses/month' },
+            { icon: '🎯', label: 'Strategy Engine', value: '15 strategies/month' },
+            { icon: '📊', label: 'Case Predictor', value: '15 predictions/month' },
           ]},
-          { category: 'Courtroom, Support & Speed', items: [
-            { icon: '⚔️', label: 'AI Mock Courtroom', value: '5 Sessions / Month' },
-            { icon: '🤝', label: 'AI Client Connect', value: '5 Uses / Month' },
-            { icon: '⚡', label: 'Processing Speed', value: 'Faster AI Processing' },
-            { icon: '🎧', label: 'Support Level', value: 'Priority Support' },
+          { category: 'Courtroom & Client Suite', items: [
+            { icon: '⚔️', label: 'AI Mock Courtroom', value: '5 sessions/month' },
+            { icon: '🤝', label: 'AI Client Connect', value: '5 listings' },
+            { icon: '⚡', label: 'Processing Speed', value: 'Priority AI Processing' },
           ]},
         ]
       },
       {
         id: 'advocate_premium',
-        name: 'AI Legal™ Premium',
+        name: 'Advocate PREMIUM Plan',
         tier: 'PREMIUM',
         badge: 'badge-premium',
         badgeLabel: '👑 PREMIUM',
@@ -1015,31 +1020,28 @@
         monthly: 2399,
         yearly: 23990,
         popular: false,
-        desc: 'Complete AI Legal™ ecosystem for power users and legal professionals.',
-        storage: '100 GB Secure Storage',
-        runningCases: '250 Running Cases',
-        completedCases: 'Unlimited Completed Cases',
+        desc: 'Complete AI Legal™ ecosystem for power users and senior advocates.',
+        storage: '100 GB Cloud Storage',
+        runningCases: 'Up to 250 Active Cases',
+        completedCases: 'Unlimited Archive',
         features: [
-          { category: 'Storage & Capacity', items: [
-            { icon: '📁', label: 'Secure Storage', value: '100 GB' },
-            { icon: '📦', label: 'Running Cases', value: '250 Cases' },
-            { icon: '💾', label: 'Completed Cases', value: 'Unlimited Archive' },
+          { category: 'Quota & Capacity', items: [
+            { icon: '📁', label: 'Active Cases Limit', value: 'Up to 250 Active Cases' },
+            { icon: '💾', label: 'Cloud Storage', value: '100 GB' },
           ]},
-          { category: 'AI Legal™ Tools (Fair Usage Policy)', items: [
-            { icon: '📝', label: 'Draft Maker', value: 'Unlimited (Fair Usage Policy)' },
-            { icon: '🏛️', label: 'Court Prep Workspace', value: 'Unlimited (Fair Usage Policy)' },
-            { icon: '🔍', label: 'Legal Precedent Research', value: 'Unlimited (Fair Usage Policy)' },
-            { icon: '🔬', label: 'Evidence Analysis', value: 'Unlimited (Fair Usage Policy)' },
-            { icon: '📜', label: 'Contract Analyzer', value: 'Unlimited (Fair Usage Policy)' },
-            { icon: '📊', label: 'Case Predictor', value: 'Unlimited (Fair Usage Policy)' },
-            { icon: '🎯', label: 'Strategy Engine', value: 'Unlimited (Fair Usage Policy)' },
+          { category: 'AI Legal™ Tools (Unlimited Access)', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: 'Unlimited Chats' },
+            { icon: '📝', label: 'Draft Maker', value: 'Unlimited (500 FUP)' },
+            { icon: '⚖️', label: 'Legal Precedents & Research', value: 'Unlimited' },
+            { icon: '📜', label: 'Contract Analyzer', value: 'Unlimited' },
+            { icon: '🔬', label: 'Evidence Analyst', value: 'Unlimited' },
+            { icon: '🎯', label: 'Strategy Engine', value: 'Unlimited' },
+            { icon: '📊', label: 'Case Predictor', value: 'Unlimited' },
           ]},
-          { category: 'Courtroom & Executive Features', items: [
-            { icon: '⚔️', label: 'AI Mock Courtroom', value: '15 Sessions / Month' },
-            { icon: '🤝', label: 'AI Client Connect', value: '20 Uses / Month' },
-            { icon: '🚀', label: 'Priority AI Queue', value: 'Instant Response' },
-            { icon: '👑', label: 'Support Level', value: 'Priority VIP Support' },
-            { icon: '✨', label: 'Features Access', value: 'Premium AI Features Included' },
+          { category: 'Courtroom & VIP Features', items: [
+            { icon: '⚔️', label: 'AI Mock Courtroom', value: '15 sessions/month' },
+            { icon: '🤝', label: 'AI Client Connect', value: '20 listings' },
+            { icon: '👑', label: 'Support Level', value: '24/7 VIP Support' },
           ]},
         ]
       },
@@ -1048,7 +1050,7 @@
     student: [
       {
         id: 'student_basic',
-        name: 'AI Legal™ Student Basic',
+        name: 'Student BASIC Plan',
         tier: 'BASIC',
         badge: 'badge-basic',
         badgeLabel: '🎓 STUDENT BASIC',
@@ -1056,28 +1058,32 @@
         monthly: 499,
         yearly: 4990,
         popular: false,
-        desc: 'Essential AI legal learning companion for law students & interns.',
-        storage: '5 GB Learning Storage',
-        runningCases: '25 Study Cases',
-        completedCases: 'Unlimited Completed Cases',
+        desc: 'Essential AI legal companion for law students & bar exam prep.',
+        storage: '5 GB Cloud Storage',
+        runningCases: 'Up to 25 Practice Cases',
+        completedCases: 'Unlimited Archive',
         features: [
-          { category: 'Learning & Storage', items: [
-            { icon: '💾', label: 'Secure Storage', value: '5 GB' },
-            { icon: '📁', label: 'Study & Moot Cases', value: '25 Running Cases' },
-            { icon: '📦', label: 'Completed Notes Archive', value: 'Unlimited Archive' },
+          { category: 'Quota & Capacity', items: [
+            { icon: '📁', label: 'Practice Cases Limit', value: 'Up to 25 Practice Cases' },
+            { icon: '💾', label: 'Cloud Storage', value: '5 GB' },
           ]},
-          { category: 'Academic AI Features', items: [
-            { icon: '🎓', label: 'Legal Tutor AI', value: '5 Uses / Month' },
-            { icon: '📝', label: 'Notes Maker Workspace', value: '5 Uses / Month' },
-            { icon: '🧠', label: 'Legal Quiz & Practice', value: 'Full Access' },
-            { icon: '🔍', label: 'Legal Research & Precedents', value: '5 Searches / Month' },
-            { icon: '⚔️', label: 'AI Mock Courtroom (Moot)', value: '2 Sessions / Month' },
+          { category: 'Academic AI Tools Included', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: '300 chats/month' },
+            { icon: '🧠', label: 'Quiz & Practice', value: 'Unlimited Quizzes' },
+            { icon: '📝', label: 'Draft Maker', value: '5 drafts/month' },
+            { icon: '⚖️', label: 'Legal Precedents', value: '5 searches/month' },
+            { icon: '📜', label: 'Contract Analyzer', value: '5 reviews/month' },
+            { icon: '🔬', label: 'Evidence Analyst', value: '5 analyses/month' },
+            { icon: '🎯', label: 'Strategy Engine', value: '5 strategies/month' },
+            { icon: '📊', label: 'Case Predictor', value: '5 predictions/month' },
+            { icon: '⚔️', label: 'Mock Courtroom', value: '2 sessions/month' },
+            { icon: '📝', label: 'Notes Maker', value: '5 notes/month' },
           ]},
         ]
       },
       {
         id: 'student_pro',
-        name: 'AI Legal™ Student Pro',
+        name: 'Student PRO Plan',
         tier: 'PROFESSIONAL',
         badge: 'badge-pro',
         badgeLabel: '⭐ STUDENT PRO',
@@ -1086,29 +1092,32 @@
         monthly: 999,
         yearly: 9990,
         popular: true,
-        desc: 'Accelerate your legal education and internship research.',
-        storage: '20 GB Learning Storage',
-        runningCases: '50 Study Cases',
-        completedCases: 'Unlimited Completed Cases',
+        desc: 'Accelerate legal studies, research and moot court preparation.',
+        storage: '20 GB Cloud Storage',
+        runningCases: 'Up to 50 Practice Cases',
+        completedCases: 'Unlimited Archive',
         features: [
-          { category: 'Learning & Storage', items: [
-            { icon: '💾', label: 'Secure Storage', value: '20 GB' },
-            { icon: '📁', label: 'Study & Moot Cases', value: '50 Running Cases' },
-            { icon: '📦', label: 'Completed Notes Archive', value: 'Unlimited Archive' },
+          { category: 'Quota & Capacity', items: [
+            { icon: '📁', label: 'Practice Cases Limit', value: 'Up to 50 Practice Cases' },
+            { icon: '💾', label: 'Cloud Storage', value: '20 GB' },
           ]},
-          { category: 'Academic AI Features', items: [
-            { icon: '🎓', label: 'Legal Tutor AI', value: '15 Uses / Month' },
-            { icon: '📝', label: 'Notes Maker Workspace', value: '15 Uses / Month' },
-            { icon: '🧠', label: 'Legal Quiz & Practice', value: 'Unlimited' },
-            { icon: '🔍', label: 'Legal Research & Precedents', value: '15 Searches / Month' },
-            { icon: '⚔️', label: 'AI Mock Courtroom (Moot)', value: '5 Sessions / Month' },
-            { icon: '⚡', label: 'Priority Study Mode', value: 'Faster Processing' },
+          { category: 'Academic AI Tools Included', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: '1,000 chats/month' },
+            { icon: '🧠', label: 'Quiz & Practice', value: 'Unlimited Quizzes' },
+            { icon: '📝', label: 'Draft Maker', value: '15 drafts/month' },
+            { icon: '⚖️', label: 'Legal Precedents & Research', value: '15 searches/month' },
+            { icon: '📜', label: 'Contract Analyzer', value: '15 reviews/month' },
+            { icon: '🔬', label: 'Evidence Analyst', value: '15 analyses/month' },
+            { icon: '🎯', label: 'Strategy Engine', value: '15 strategies/month' },
+            { icon: '📊', label: 'Case Predictor', value: '15 predictions/month' },
+            { icon: '⚔️', label: 'Mock Courtroom', value: '5 sessions/month' },
+            { icon: '📝', label: 'Notes Maker', value: '15 notes/month' },
           ]},
         ]
       },
       {
         id: 'student_premium',
-        name: 'AI Legal™ Student Premium',
+        name: 'Student PREMIUM Plan',
         tier: 'PREMIUM',
         badge: 'badge-premium',
         badgeLabel: '🎓 STUDENT PREMIUM',
@@ -1117,22 +1126,25 @@
         yearly: 23990,
         popular: false,
         desc: 'Comprehensive AI suite for law scholars, LLM candidates & top interns.',
-        storage: '50 GB Learning Storage',
-        runningCases: '100 Study Cases',
-        completedCases: 'Unlimited Completed Cases',
+        storage: '50 GB Cloud Storage',
+        runningCases: 'Up to 100 Practice Cases',
+        completedCases: 'Unlimited Archive',
         features: [
-          { category: 'Learning & Storage', items: [
-            { icon: '💾', label: 'Secure Storage', value: '50 GB' },
-            { icon: '📁', label: 'Study & Moot Cases', value: '100 Running Cases' },
-            { icon: '📦', label: 'Completed Notes Archive', value: 'Unlimited Archive' },
+          { category: 'Quota & Capacity', items: [
+            { icon: '📁', label: 'Practice Cases Limit', value: 'Up to 100 Practice Cases' },
+            { icon: '💾', label: 'Cloud Storage', value: '50 GB' },
           ]},
-          { category: 'Academic AI Features', items: [
-            { icon: '🎓', label: 'Legal Tutor AI', value: 'Unlimited (Fair Usage Policy)' },
-            { icon: '📝', label: 'Notes Maker Workspace', value: 'Unlimited (Fair Usage Policy)' },
-            { icon: '⚖️', label: 'Bar Exam & Competitive Prep', value: 'Included' },
-            { icon: '🔍', label: 'Legal Research & Precedents', value: 'Unlimited (Fair Usage Policy)' },
-            { icon: '⚔️', label: 'AI Mock Courtroom (Moot)', value: '15 Sessions / Month' },
-            { icon: '🎧', label: 'Priority Academic Support', value: '24/7 Priority' },
+          { category: 'Academic AI Tools Included', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: 'Unlimited Chats' },
+            { icon: '🧠', label: 'Quiz & Practice', value: 'Unlimited Quizzes' },
+            { icon: '📝', label: 'Draft Maker', value: 'Unlimited' },
+            { icon: '⚖️', label: 'Legal Precedents & Research', value: 'Unlimited' },
+            { icon: '📜', label: 'Contract Analyzer', value: 'Unlimited' },
+            { icon: '🔬', label: 'Evidence Analyst', value: 'Unlimited' },
+            { icon: '🎯', label: 'Strategy Engine', value: 'Unlimited' },
+            { icon: '📊', label: 'Case Predictor', value: 'Unlimited' },
+            { icon: '⚔️', label: 'Mock Courtroom', value: '15 sessions/month' },
+            { icon: '📝', label: 'Notes Maker', value: 'Unlimited' },
           ]},
         ]
       },
@@ -1141,7 +1153,7 @@
     lawfirm: [
       {
         id: 'firm_basic',
-        name: 'AI Legal™ Firm Basic',
+        name: 'Law Firm BASIC Plan',
         tier: 'BASIC',
         badge: 'badge-firm',
         badgeLabel: '🏛️ FIRM BASIC',
@@ -1149,37 +1161,35 @@
         monthly: 1499,
         yearly: 14990,
         popular: false,
-        desc: 'Collaborative AI workspace for small law firms & associate teams.',
-        storage: '25 GB Shared Firm Storage',
+        desc: 'Designed for law firms, corporate legal teams, and associate practices.',
+        storage: '25 GB Shared Storage',
         runningCases: 'Up to 100 Active Cases',
-        completedCases: 'Unlimited Completed Firm Cases',
+        completedCases: 'Unlimited Archive',
         isSharedQuota: true,
         features: [
-          { category: 'Workspace & Team Capacity', items: [
-            { icon: '⚡', label: 'Monthly AI Credits', value: '8,800 Credits' },
-            { icon: '👥', label: 'Team Members Allowed', value: 'Up to 10 Team Members / Advocates' },
-            { icon: '📁', label: 'Active Firm Cases', value: 'Up to 100 Active Cases' },
-            { icon: '📦', label: 'Completed Case Archive', value: 'Unlimited Archive' },
-            { icon: '💾', label: 'Shared Cloud Storage', value: '25 GB Shared' },
+          { category: 'Team & Quota Capacity', items: [
+            { icon: '👥', label: 'Team Members Limit', value: 'Up to 10 Team Members / Advocates' },
+            { icon: '📁', label: 'Firm Active Cases Limit', value: 'Up to 100 Active Cases' },
+            { icon: '💾', label: 'Shared Firm Storage', value: '25 GB Shared' },
           ]},
-          { category: 'Included AI Tools & Feature Limits', items: [
-            { icon: '💬', label: 'AI Legal Chat', value: 'Included' },
+          { category: 'Included AI Tools & Workflows', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: '1,500 team chats/month' },
             { icon: '🏛️', label: 'Multi-user Team Workspace', value: 'Member Management' },
-            { icon: '📝', label: 'Draft Maker', value: '30 Drafts / month' },
-            { icon: '⚖️', label: 'Legal Precedent Search', value: '30 Searches / month' },
-            { icon: '📄', label: 'Contract Review', value: '30 Reviews / month' },
-            { icon: '🔍', label: 'Evidence Analysis', value: '30 Scans / month' },
-            { icon: '📈', label: 'Strategy Engine', value: '30 Strategies / month' },
-            { icon: '🔮', label: 'Case Predictor', value: '30 Predictions / month' },
-            { icon: '👨‍⚖️', label: 'AI Mock Courtroom', value: '10 Sessions / month' },
-            { icon: '📇', label: 'Client Connect', value: '10 Listings' },
-            { icon: '📋', label: 'Case Assignment Workflow', value: 'Member Task Assignment' },
+            { icon: '📝', label: 'Draft Maker', value: '30 drafts/month' },
+            { icon: '⚖️', label: 'Legal Precedents', value: '30 searches/month' },
+            { icon: '📜', label: 'Contract Analyzer', value: '30 reviews/month' },
+            { icon: '🔬', label: 'Evidence Analyst', value: '30 analyses/month' },
+            { icon: '🎯', label: 'Strategy Engine', value: '30 strategies/month' },
+            { icon: '📊', label: 'Case Predictor', value: '30 predictions/month' },
+            { icon: '⚔️', label: 'Mock Courtroom', value: '10 sessions/month' },
+            { icon: '🤝', label: 'Client Connect', value: '10 listings' },
+            { icon: '📋', label: 'Case Assignment Workflow', value: 'Included' },
           ]},
         ]
       },
       {
         id: 'firm_pro',
-        name: 'AI Legal™ Firm Pro',
+        name: 'Law Firm PRO Plan',
         tier: 'PROFESSIONAL',
         badge: 'badge-pro',
         badgeLabel: '⭐ FIRM PRO',
@@ -1188,37 +1198,35 @@
         monthly: 2999,
         yearly: 29990,
         popular: true,
-        desc: 'High-volume litigation & contract processing for growing practices.',
-        storage: '100 GB Shared Firm Storage',
+        desc: 'High-capacity legal automation for expanding law firms.',
+        storage: '100 GB Shared Storage',
         runningCases: 'Up to 250 Active Cases',
-        completedCases: 'Unlimited Completed Firm Cases',
+        completedCases: 'Unlimited Archive',
         isSharedQuota: true,
         features: [
-          { category: 'Workspace & Team Capacity', items: [
-            { icon: '⚡', label: 'Monthly AI Credits', value: '17,600 Credits' },
-            { icon: '👥', label: 'Team Members Allowed', value: 'Up to 25 Team Members / Advocates' },
-            { icon: '📁', label: 'Active Firm Cases', value: 'Up to 250 Active Cases' },
-            { icon: '📦', label: 'Completed Case Archive', value: 'Unlimited Archive' },
-            { icon: '💾', label: 'Shared Cloud Storage', value: '100 GB Shared' },
+          { category: 'Team & Quota Capacity', items: [
+            { icon: '👥', label: 'Team Members Limit', value: 'Up to 25 Team Members / Advocates' },
+            { icon: '📁', label: 'Firm Active Cases Limit', value: 'Up to 250 Active Cases' },
+            { icon: '💾', label: 'Shared Firm Storage', value: '100 GB Shared' },
           ]},
-          { category: 'Included AI Tools & Feature Limits', items: [
-            { icon: '💬', label: 'AI Legal Chat & Web Search', value: 'Included' },
+          { category: 'Included AI Tools & Workflows', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: '3,500 team chats/month' },
             { icon: '🏛️', label: 'Multi-user Team Workspace', value: 'Member Management' },
-            { icon: '📝', label: 'Draft Maker', value: '100 Drafts / month' },
-            { icon: '⚖️', label: 'Legal Precedents & Research', value: '100 Searches / month' },
-            { icon: '📄', label: 'Contract Review', value: '100 Reviews / month' },
-            { icon: '🔍', label: 'Evidence Analysis', value: '100 Scans / month' },
-            { icon: '📈', label: 'Strategy Engine', value: '100 Strategies / month' },
-            { icon: '🔮', label: 'Case Predictor', value: '100 Predictions / month' },
-            { icon: '👨‍⚖️', label: 'AI Mock Courtroom', value: '25 Sessions / month' },
-            { icon: '📇', label: 'Client Connect', value: '25 Listings' },
-            { icon: '📋', label: 'Case Assignment Workflow', value: 'Member Task Assignment' },
+            { icon: '📝', label: 'Draft Maker', value: '100 drafts/month' },
+            { icon: '⚖️', label: 'Legal Precedents & Research', value: '100 searches/month' },
+            { icon: '📜', label: 'Contract Analyzer', value: '100 reviews/month' },
+            { icon: '🔬', label: 'Evidence Analyst', value: '100 analyses/month' },
+            { icon: '🎯', label: 'Strategy Engine', value: '100 strategies/month' },
+            { icon: '📊', label: 'Case Predictor', value: '100 predictions/month' },
+            { icon: '⚔️', label: 'Mock Courtroom', value: '25 sessions/month' },
+            { icon: '🤝', label: 'Client Connect', value: '25 listings' },
+            { icon: '📋', label: 'Case Assignment Workflow', value: 'Included' },
           ]},
         ]
       },
       {
         id: 'firm_premium',
-        name: 'AI Legal™ Firm Premium',
+        name: 'Law Firm PREMIUM Plan',
         tier: 'PREMIUM',
         badge: 'badge-premium',
         badgeLabel: '🏛️ FIRM PREMIUM',
@@ -1227,31 +1235,29 @@
         monthly: 4999,
         yearly: 49990,
         popular: false,
-        desc: 'Enterprise-grade legal intelligence for full-scale law firms.',
-        storage: '500 GB Shared Firm Storage',
+        desc: 'Enterprise-grade legal intelligence for full-scale law organizations.',
+        storage: '500 GB Shared Storage',
         runningCases: 'Up to 500 Active Cases',
-        completedCases: 'Unlimited Completed Firm Cases',
+        completedCases: 'Unlimited Archive',
         isSharedQuota: true,
         features: [
-          { category: 'Workspace & Team Capacity', items: [
-            { icon: '⚡', label: 'Monthly AI Credits', value: '30,000 Credits' },
-            { icon: '👥', label: 'Team Members Allowed', value: 'Up to 50 Team Members / Advocates' },
-            { icon: '📁', label: 'Active Firm Cases', value: 'Up to 500 Active Cases' },
-            { icon: '📦', label: 'Completed Case Archive', value: 'Unlimited Archive' },
-            { icon: '💾', label: 'Shared Cloud Storage', value: '500 GB Shared' },
+          { category: 'Team & Quota Capacity', items: [
+            { icon: '👥', label: 'Team Members Limit', value: 'Up to 50 Team Members / Advocates' },
+            { icon: '📁', label: 'Firm Active Cases Limit', value: 'Up to 500 Active Cases' },
+            { icon: '💾', label: 'Shared Firm Storage', value: '500 GB Shared' },
           ]},
-          { category: 'Included AI Tools & Feature Limits', items: [
-            { icon: '💬', label: 'AI Legal Chat & Web Search', value: 'Included' },
+          { category: 'Included AI Tools & Workflows', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: 'Unlimited Team Chats' },
             { icon: '🏛️', label: 'Multi-user Team Workspace', value: 'Member Management' },
             { icon: '📝', label: 'Draft Maker', value: 'Unlimited' },
             { icon: '⚖️', label: 'Legal Precedents & Research', value: 'Unlimited' },
-            { icon: '📄', label: 'Contract Review', value: 'Unlimited' },
-            { icon: '🔍', label: 'Evidence Analysis', value: 'Unlimited' },
-            { icon: '📈', label: 'Strategy Engine', value: 'Unlimited' },
-            { icon: '🔮', label: 'Case Predictor', value: 'Unlimited' },
-            { icon: '👨‍⚖️', label: 'AI Mock Courtroom', value: '50 Sessions / month' },
-            { icon: '📇', label: 'Client Connect', value: '50 Listings' },
-            { icon: '📋', label: 'Case Assignment Workflow', value: 'Member Task Assignment' },
+            { icon: '📜', label: 'Contract Analyzer', value: 'Unlimited' },
+            { icon: '🔬', label: 'Evidence Analyst', value: 'Unlimited' },
+            { icon: '🎯', label: 'Strategy Engine', value: 'Unlimited' },
+            { icon: '📊', label: 'Case Predictor', value: 'Unlimited' },
+            { icon: '⚔️', label: 'Mock Courtroom', value: '50 sessions/month' },
+            { icon: '🤝', label: 'Client Connect', value: '50 listings' },
+            { icon: '📋', label: 'Case Assignment Workflow', value: 'Included' },
           ]},
         ]
       },
@@ -1278,16 +1284,16 @@
         features: [
           { category: 'Included Workspaces & Capacity', items: [
             { icon: '🔓', label: 'Workspaces Unlocked', value: 'Dual Access (Student + Advocate)' },
-            { icon: '⚡', label: 'Monthly AI Credits', value: '7,050 Credits' },
             { icon: '📁', label: 'Active Cases Capacity', value: 'Up to 50 Cases' },
             { icon: '💾', label: 'Shared Storage', value: '25 GB' },
           ]},
           { category: 'Included AI Tools & Feature Limits', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: '500 chats/month' },
             { icon: '🎓', label: 'Quiz & Practice', value: 'Unlimited Quizzes' },
-            { icon: '📝', label: 'Draft Maker & Contract Review', value: '20 / month' },
-            { icon: '⚖️', label: 'Legal Precedent Search', value: '20 / month' },
-            { icon: '👨‍⚖️', label: 'AI Mock Courtroom', value: '5 Sessions / month' },
-            { icon: '📇', label: 'Client Connect', value: '5 Listings' },
+            { icon: '📝', label: 'Draft Maker & Contract Analyzer', value: '20/month' },
+            { icon: '⚖️', label: 'Legal Precedents', value: '20/month' },
+            { icon: '⚔️', label: 'Mock Courtroom', value: '5 sessions/month' },
+            { icon: '🤝', label: 'Client Connect', value: '5 listings' },
           ]},
         ]
       },
@@ -1312,16 +1318,16 @@
         features: [
           { category: 'Included Workspaces & Capacity', items: [
             { icon: '🔓', label: 'Workspaces Unlocked', value: 'Dual Access (Advocate + Law Firm)' },
-            { icon: '⚡', label: 'Monthly AI Credits', value: '8,800 Credits' },
             { icon: '👥', label: 'Team Members Allowed', value: 'Up to 10 Team Members' },
             { icon: '📁', label: 'Active Cases Capacity', value: 'Up to 100 Cases' },
             { icon: '💾', label: 'Shared Storage', value: '50 GB Shared' },
           ]},
           { category: 'Included AI Tools & Feature Limits', items: [
-            { icon: '📝', label: 'Draft Maker & Contract Review', value: '30 / month' },
-            { icon: '⚖️', label: 'Legal Precedent Search', value: '30 / month' },
-            { icon: '👨‍⚖️', label: 'AI Mock Courtroom', value: '10 Sessions / month' },
-            { icon: '📇', label: 'Client Connect', value: '10 Listings' },
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: '1,500 team chats/month' },
+            { icon: '📝', label: 'Draft Maker & Contract Analyzer', value: '30/month' },
+            { icon: '⚖️', label: 'Legal Precedents', value: '30/month' },
+            { icon: '⚔️', label: 'Mock Courtroom', value: '10 sessions/month' },
+            { icon: '🤝', label: 'Client Connect', value: '10 listings' },
             { icon: '📋', label: 'Case Assignment Workflow', value: 'Included' },
           ]},
         ]
@@ -1346,23 +1352,57 @@
         completedCases: 'Unlimited Archive',
         features: [
           { category: 'Included Workspaces & Capacity', items: [
-            { icon: '🔓', label: 'Workspaces Unlocked', value: 'Full Access to ALL 3 Workspaces' },
-            { icon: '⚡', label: 'Monthly AI Credits', value: '14,700 Credits' },
+            { icon: '🔓', label: 'Workspaces Unlocked', value: 'Full Access (Student + Advocate + Law Firm)' },
             { icon: '👥', label: 'Team Members Allowed', value: 'Up to 20 Team Members' },
             { icon: '📁', label: 'Active Cases Capacity', value: 'Up to 250 Cases' },
             { icon: '💾', label: 'Shared Storage', value: '100 GB Shared' },
           ]},
           { category: 'Included AI Tools & Feature Limits', items: [
+            { icon: '💬', label: 'AI Legal Chat & Assistants', value: 'Unlimited Chats' },
             { icon: '🎓', label: 'Quiz & Practice', value: 'Unlimited Quizzes' },
-            { icon: '📝', label: 'Draft Maker & Contract Review', value: 'Unlimited' },
+            { icon: '📝', label: 'Draft Maker & Contract Analyzer', value: 'Unlimited' },
             { icon: '⚖️', label: 'Legal Precedents & Research', value: 'Unlimited' },
-            { icon: '👨‍⚖️', label: 'AI Mock Courtroom', value: '15 Sessions / month' },
-            { icon: '📇', label: 'Client Connect', value: '20 Listings' },
+            { icon: '⚔️', label: 'Mock Courtroom', value: '15 sessions/month' },
+            { icon: '🤝', label: 'Client Connect', value: '20 listings' },
             { icon: '📋', label: 'Case Assignment Workflow', value: 'Included' },
           ]},
         ]
       },
     ],
+
+    enterprise: [
+      {
+        id: 'enterprise_free_upgrade',
+        name: 'Enterprise Plan',
+        tier: 'ENTERPRISE',
+        badge: 'badge-enterprise',
+        badgeLabel: '🏢 ENTERPRISE CUSTOM',
+        tag: 'BLANKET ENTERPRISE SUITE',
+        buttonText: 'Upgrade to Enterprise',
+        savingsBadge: 'FREE UPGRADE',
+        monthly: 0,
+        yearly: 0,
+        popular: true,
+        isEnterprise: true,
+        desc: 'Blanket enterprise access tailored for corporate legal departments, multi-office law firms, and institutions.',
+        storage: '1 TB Storage Vault',
+        runningCases: 'Unlimited Active Dockets',
+        completedCases: 'Unlimited Secure Archive',
+        features: [
+          { category: 'Enterprise Capacity & Infrastructure', items: [
+            { icon: '🏢', label: 'Enterprise Access', value: 'Full Multi-Tenant Suite' },
+            { icon: '👥', label: 'Seats & Roster', value: 'Unlimited Advocates & Members' },
+            { icon: '📁', label: 'Active Cases Capacity', value: 'Unlimited Cases' },
+            { icon: '💾', label: 'Encrypted Vault', value: '1 TB Cloud Storage' },
+          ]},
+          { category: 'Enterprise AI & Support', items: [
+            { icon: '⚡', label: 'AI Queue', value: 'Ultra-Fast Priority Queue' },
+            { icon: '🛡️', label: 'Data Security', value: '256-bit AES + Isolated Cloud' },
+            { icon: '🤝', label: 'Account Manager', value: '24/7 Dedicated Legal Specialist' },
+          ]},
+        ]
+      }
+    ]
   };
 
   // ═══════════════════════════════════════════════
@@ -1441,7 +1481,7 @@
   }
 
   function updateWorkspaceUI() {
-    ['advocate', 'student', 'lawfirm', 'combo'].forEach(w => {
+    ['advocate', 'student', 'lawfirm', 'combo', 'enterprise'].forEach(w => {
       const el = document.getElementById('ws-' + w);
       if (el) el.classList.toggle('active', w === currentWorkspace);
     });
@@ -1525,7 +1565,7 @@
               ${isSubscribed ? 'disabled' : `onclick="handleSelectPlan('${plan.id}', '${plan.name}', ${price})"`}
               id="btn-${plan.id}"
             >
-              ${ctaBtnContent}
+              ${plan.isEnterprise ? '🚀 Upgrade to Enterprise' : ctaBtnContent}
             </button>
           </div>
         </div>
@@ -1545,6 +1585,12 @@
   async function handleSelectPlan(planId, planName, amount) {
     if (isProcessing) return;
     isProcessing = true;
+
+    if (planId.includes('enterprise') || amount === 0 || currentWorkspace === 'enterprise') {
+      window.open('/enterprise', '_blank');
+      isProcessing = false;
+      return;
+    }
 
     showLoading('Creating secure payment order...');
 

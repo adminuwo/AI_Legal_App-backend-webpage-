@@ -78,7 +78,7 @@ const AdminSettingsSchema = new mongoose.Schema({
             updatePolicy: { type: String, enum: ['optional', 'mandatory'], default: 'optional' },
             title: { type: String, default: 'AI LEGAL™ Update Available' },
             message: { type: String, default: 'A new version of AI LEGAL™ is available with improvements and bug fixes.' },
-            storeUrl: { type: String, default: 'https://apps.apple.com/app/ai-legal/id123456789' },
+            storeUrl: { type: String, default: 'https://apps.apple.com/in/app/ai-legal/id6797449251' },
             enabled: { type: Boolean, default: true }
         }
     }

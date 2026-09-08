@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Unified Analytics Platform Auto-Tracker -->
+  <script defer src="https://admin.uwo24.com/api/web-stats/tracker.js" data-site="ailegal" data-endpoint="https://admin.uwo24.com/api/web-stats/collect"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>AI Legal™ — Subscription Plans</title>
@@ -883,6 +885,7 @@
     <button class="ws-tab" id="ws-student" onclick="setWorkspace('student')">🎓 Student</button>
     <button class="ws-tab" id="ws-lawfirm" onclick="setWorkspace('lawfirm')">🏛️ Law Firm <span class="ws-badge">TEAM</span></button>
     <button class="ws-tab" id="ws-combo" onclick="setWorkspace('combo')">✨ Combo <span class="ws-badge">SAVE MORE</span></button>
+    <button class="ws-tab" id="ws-enterprise" onclick="setWorkspace('enterprise')" style="display:none;">🏢 Enterprise <span class="ws-badge">CUSTOM</span></button>
   </div>
 </div>
 
@@ -919,7 +922,7 @@
 
   let API_BASE = isLocalHost
     ? (window.location.port === '8080' ? window.location.origin : `http://${window.location.hostname}:8080`)
-    : (window.location.origin.includes('backend') ? window.location.origin : PROD_API);
+    : window.location.origin;
 
   async function apiFetch(endpoint, options = {}) {
     try {
@@ -1365,6 +1368,40 @@
           ]},
         ]
       },
+    ],
+
+    enterprise: [
+      {
+        id: 'enterprise_free_upgrade',
+        name: 'Enterprise Plan',
+        tier: 'ENTERPRISE',
+        badge: 'badge-enterprise',
+        badgeLabel: '🏢 ENTERPRISE CUSTOM',
+        tag: 'BLANKET ENTERPRISE SUITE',
+        buttonText: 'Upgrade to Enterprise',
+        savingsBadge: 'FREE UPGRADE',
+        monthly: 0,
+        yearly: 0,
+        popular: true,
+        isEnterprise: true,
+        desc: 'Blanket enterprise access tailored for corporate legal departments, multi-office law firms, and institutions.',
+        storage: '1 TB Storage Vault',
+        runningCases: 'Unlimited Active Dockets',
+        completedCases: 'Unlimited Secure Archive',
+        features: [
+          { category: 'Enterprise Capacity & Infrastructure', items: [
+            { icon: '🏢', label: 'Enterprise Access', value: 'Full Multi-Tenant Suite' },
+            { icon: '👥', label: 'Seats & Roster', value: 'Unlimited Advocates & Members' },
+            { icon: '📁', label: 'Active Cases Capacity', value: 'Unlimited Cases' },
+            { icon: '💾', label: 'Encrypted Vault', value: '1 TB Cloud Storage' },
+          ]},
+          { category: 'Enterprise AI & Support', items: [
+            { icon: '⚡', label: 'AI Queue', value: 'Ultra-Fast Priority Queue' },
+            { icon: '🛡️', label: 'Data Security', value: '256-bit AES + Isolated Cloud' },
+            { icon: '🤝', label: 'Account Manager', value: '24/7 Dedicated Legal Specialist' },
+          ]},
+        ]
+      }
     ]
   };
 
@@ -1444,7 +1481,7 @@
   }
 
   function updateWorkspaceUI() {
-    ['advocate', 'student', 'lawfirm', 'combo'].forEach(w => {
+    ['advocate', 'student', 'lawfirm', 'combo', 'enterprise'].forEach(w => {
       const el = document.getElementById('ws-' + w);
       if (el) el.classList.toggle('active', w === currentWorkspace);
     });
@@ -1528,7 +1565,7 @@
               ${isSubscribed ? 'disabled' : `onclick="handleSelectPlan('${plan.id}', '${plan.name}', ${price})"`}
               id="btn-${plan.id}"
             >
-              ${ctaBtnContent}
+              ${plan.isEnterprise ? '🚀 Upgrade to Enterprise' : ctaBtnContent}
             </button>
           </div>
         </div>
@@ -1548,6 +1585,12 @@
   async function handleSelectPlan(planId, planName, amount) {
     if (isProcessing) return;
     isProcessing = true;
+
+    if (planId.includes('enterprise') || amount === 0 || currentWorkspace === 'enterprise') {
+      window.open('/enterprise', '_blank');
+      isProcessing = false;
+      return;
+    }
 
     showLoading('Creating secure payment order...');
 

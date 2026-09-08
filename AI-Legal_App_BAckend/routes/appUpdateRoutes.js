@@ -101,6 +101,14 @@ router.get('/config', async (req, res) => {
     const androidSettings = { ...DEFAULT_SETTINGS.android, ...(appUpdateConfig.android || {}) };
     const iosSettings = { ...DEFAULT_SETTINGS.ios, ...(appUpdateConfig.ios || {}) };
 
+    const iosStoreUrl = (iosSettings.storeUrl && !iosSettings.storeUrl.includes('id123456789') && !iosSettings.storeUrl.includes('123456789'))
+      ? iosSettings.storeUrl
+      : DEFAULT_SETTINGS.ios.storeUrl;
+
+    const androidStoreUrl = (androidSettings.storeUrl && !androidSettings.storeUrl.includes('placeholder'))
+      ? androidSettings.storeUrl
+      : DEFAULT_SETTINGS.android.storeUrl;
+
     return res.status(200).json({
       success: true,
       config: {
@@ -112,7 +120,7 @@ router.get('/config', async (req, res) => {
           updatePolicy: androidSettings.updatePolicy || 'optional',
           title: androidSettings.title || 'AI LEGAL™ Update Available',
           message: androidSettings.message || 'A new version of AI LEGAL™ is available with improvements and bug fixes.',
-          storeUrl: androidSettings.storeUrl,
+          storeUrl: androidStoreUrl,
           enabled: androidSettings.enabled !== false,
         },
         ios: {
@@ -123,7 +131,7 @@ router.get('/config', async (req, res) => {
           updatePolicy: iosSettings.updatePolicy || 'optional',
           title: iosSettings.title || 'AI LEGAL™ Update Available',
           message: iosSettings.message || 'A new version of AI LEGAL™ is available with improvements and bug fixes.',
-          storeUrl: iosSettings.storeUrl,
+          storeUrl: iosStoreUrl,
           enabled: iosSettings.enabled !== false,
         },
       },

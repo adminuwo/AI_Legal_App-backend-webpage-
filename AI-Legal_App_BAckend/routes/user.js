@@ -104,11 +104,22 @@ route.put("/", verifyToken, async (req, res) => {
         if (updates.name) user.name = updates.name;
         if (updates.phone) user.phone = updates.phone;
         if (updates.avatar) user.avatar = updates.avatar;
+        if (updates.country) user.country = updates.country;
+        if (updates.countryCode) user.countryCode = updates.countryCode;
+        if (updates.jurisdiction) user.jurisdiction = updates.jurisdiction;
+        else if (updates.country) user.jurisdiction = updates.country;
 
         if (updates.personalizations) {
             user.personalizations = {
                 ...(user.personalizations || {}),
                 ...updates.personalizations,
+                general: {
+                    ...((user.personalizations && user.personalizations.general) || {}),
+                    ...((updates.personalizations && updates.personalizations.general) || {}),
+                    country: updates.country || user.country,
+                    countryCode: updates.countryCode || user.countryCode,
+                    jurisdiction: updates.jurisdiction || updates.country || user.jurisdiction || user.country
+                },
                 advocateProfile: {
                     ...((user.personalizations && user.personalizations.advocateProfile) || {}),
                     ...((updates.personalizations && updates.personalizations.advocateProfile) || {})
