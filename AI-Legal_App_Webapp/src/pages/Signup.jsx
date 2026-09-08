@@ -10,7 +10,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useGoogleLogin } from '@react-oauth/google';
 import { logo } from '../constants';
 import { COUNTRIES } from '../constants/countries';
-import { INDIAN_STATES_LIST } from '../constants/states';
+import { INDIAN_STATES_LIST, STATES_BY_COUNTRY } from '../constants/states';
 import { chatStorageService } from '../services/chatStorageService';
 import AuthErrorDialog from '../Components/AuthErrorDialog';
 import { parseAuthError } from '../utils/authErrorMapper';
@@ -41,7 +41,7 @@ const Signup = () => {
   const [selectedCountry, setSelectedCountry] = useState(
     COUNTRIES.find(c => c.code === 'IN') || { name: 'India', code: 'IN', flag: '🇮🇳', dialCode: '+91' }
   );
-  const [selectedState, setSelectedState] = useState('Gujarat');
+  const [selectedState, setSelectedState] = useState(STATES_BY_COUNTRY['IN']?.[0]?.name || 'Gujarat');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
@@ -128,6 +128,12 @@ const Signup = () => {
     setIsLoading(true);
 
     try {
+      const stateList = STATES_BY_COUNTRY[selectedCountry.code];
+      const hasStates = stateList && stateList.length > 0;
+      const resolvedLanguage = hasStates 
+        ? (stateList.find(s => s.name === selectedState)?.language || 'English') 
+        : (selectedCountry.code === 'NP' ? 'Nepali' : 'English');
+
       const payLoad = {
         name,
         fullName: name,
@@ -137,8 +143,16 @@ const Signup = () => {
         country: selectedCountry.name,
         countryCode: selectedCountry.code,
         dialCode: selectedCountry.dialCode,
-        state: selectedCountry.code === 'IN' ? selectedState : undefined,
-        jurisdiction: selectedCountry.code === 'IN' ? `${selectedState}, India` : selectedCountry.name
+        state: hasStates ? selectedState : undefined,
+        jurisdiction: hasStates ? `${selectedState}, ${selectedCountry.name}` : selectedCountry.name,
+        language: resolvedLanguage,
+        personalizations: {
+          general: {
+            language: resolvedLanguage,
+            state: hasStates ? selectedState : selectedCountry.name,
+            jurisdiction: hasStates ? `${selectedState}, ${selectedCountry.name}` : selectedCountry.name,
+          }
+        }
       };
 
       const res = await axios.post(apis.signUp, payLoad);
@@ -274,9 +288,16 @@ const Signup = () => {
               <select
                 value={selectedCountry.code}
                 onChange={(e) => {
-                  const countryObj = COUNTRIES.find(c => c.code === e.target.value) || COUNTRIES.find(c => c.code === 'IN');
+                  const countryCode = e.target.value;
+                  const countryObj = COUNTRIES.find(c => c.code === countryCode) || COUNTRIES.find(c => c.code === 'IN');
                   setSelectedCountry(countryObj);
                   setLocalPhone('');
+                  const stateList = STATES_BY_COUNTRY[countryCode];
+                  if (stateList && stateList.length > 0) {
+                    setSelectedState(stateList[0].name);
+                  } else {
+                    setSelectedState('');
+                  }
                 }}
                 className="w-full bg-[#FFFFFF] dark:bg-[#121321] border border-[#E5E7EB] dark:border-zinc-800 rounded-xl py-3 pl-12 pr-10 text-[#111827] dark:text-zinc-100 appearance-none focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all cursor-pointer text-sm"
               >
@@ -290,10 +311,10 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* State Picker (When Country is India) */}
-          {selectedCountry.code === 'IN' && (
+          {/* State Picker */}
+          {STATES_BY_COUNTRY[selectedCountry.code] && STATES_BY_COUNTRY[selectedCountry.code].length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-[#111827] dark:text-zinc-200 mb-1.5">Select State (App Language Auto-Set)</label>
+              <label className="block text-sm font-medium text-[#111827] dark:text-zinc-200 mb-1.5">Select State / Province (App Language Auto-Set)</label>
               <div className="relative">
                 <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B7280] dark:text-zinc-400 pointer-events-none" />
                 <select
@@ -301,7 +322,7 @@ const Signup = () => {
                   onChange={(e) => setSelectedState(e.target.value)}
                   className="w-full bg-[#FFFFFF] dark:bg-[#121321] border border-[#E5E7EB] dark:border-zinc-800 rounded-xl py-3 pl-12 pr-10 text-[#111827] dark:text-zinc-100 appearance-none focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition-all cursor-pointer text-sm"
                 >
-                  {INDIAN_STATES_LIST.map((s) => (
+                  {STATES_BY_COUNTRY[selectedCountry.code].map((s) => (
                     <option key={s.name} value={s.name} className="dark:bg-[#121321]">
                       {s.flag} {s.name} ({s.language})
                     </option>

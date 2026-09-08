@@ -39,3 +39,18 @@ export const INDIAN_STATES_LIST = [
   { name: 'Lakshadweep', language: 'Malayalam', locale: 'ml-IN', flag: '🏝️' },
   { name: 'Puducherry', language: 'Tamil', locale: 'ta-IN', flag: '🏛️' },
 ];
+
+export const NEPAL_PROVINCES = [
+  { name: 'Koshi', language: 'Nepali', locale: 'ne-NP', flag: '🇳🇵' },
+  { name: 'Madhesh', language: 'Nepali', locale: 'ne-NP', flag: '🇳🇵' },
+  { name: 'Bagmati', language: 'Nepali', locale: 'ne-NP', flag: '🇳🇵' },
+  { name: 'Gandaki', language: 'Nepali', locale: 'ne-NP', flag: '🇳🇵' },
+  { name: 'Lumbini', language: 'Nepali', locale: 'ne-NP', flag: '🇳🇵' },
+  { name: 'Karnali', language: 'Nepali', locale: 'ne-NP', flag: '🇳🇵' },
+  { name: 'Sudurpashchim', language: 'Nepali', locale: 'ne-NP', flag: '🇳🇵' }
+];
+
+export const STATES_BY_COUNTRY = {
+  'IN': INDIAN_STATES_LIST,
+  'NP': NEPAL_PROVINCES
+};
