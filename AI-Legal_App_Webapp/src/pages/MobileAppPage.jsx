@@ -97,9 +97,11 @@ export default function MobileAppPage() {
         const response = await axios.get(apis.appUpdateConfig || `${apis.baseUrl}/app-update/config`);
         if (isMounted && response.data?.success && response.data?.config) {
           const cfg = response.data.config;
+          const iosUrl = isRealStoreUrl(cfg.ios?.storeUrl) ? cfg.ios.storeUrl : APP_STORE_URL;
+          const androidUrl = isRealStoreUrl(cfg.android?.storeUrl) ? cfg.android.storeUrl : GOOGLE_PLAY_URL;
           setStoreConfig({
-            appStoreUrl: cfg.ios?.storeUrl || APP_STORE_URL,
-            googlePlayUrl: cfg.android?.storeUrl || GOOGLE_PLAY_URL,
+            appStoreUrl: iosUrl,
+            googlePlayUrl: androidUrl,
             version: cfg.android?.latestVersion || cfg.ios?.latestVersion || MOBILE_APP_VERSION,
             loading: false,
           });

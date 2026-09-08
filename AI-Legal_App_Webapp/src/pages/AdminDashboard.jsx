@@ -423,12 +423,10 @@ export default function AdminDashboard() {
     let failedCount = 0;
 
     paymentsList.forEach(p => {
-      const gw = String(p.gateway || '').toLowerCase();
-      const isRazorpay = gw.includes('razorpay');
       const st = String(p.status || 'success').toLowerCase();
       const amt = Number(p.amount || 0);
 
-      if (isRazorpay && (st === 'success' || st === 'paid')) {
+      if (st === 'success' || st === 'paid' || st === 'completed') {
         totalRevenue += amt;
         successCount += 1;
       } else if (st === 'pending') {
@@ -507,41 +505,104 @@ export default function AdminDashboard() {
     });
   }, [featuresList, featureSearch, featureFilterState]);
 
-  // --- Billing CSV Export & Financial Handlers ---
-  const handleExportCSV = () => {
-    if (!paymentsList || paymentsList.length === 0) {
+  // --- Billing Excel / CSV Export & Financial Handlers ---
+  const handleExportCSV = async () => {
+    const listToExport = filteredPayments && filteredPayments.length > 0 ? filteredPayments : paymentsList;
+    if (!listToExport || listToExport.length === 0) {
       toast.error('No payment transactions to export.');
       return;
     }
 
-    const headers = ['Transaction ID', 'Invoice Number', 'User Name', 'Email', 'Amount (INR)', 'GST (18%)', 'Gateway', 'Plan', 'Status', 'Date'];
-    const rows = filteredPayments.map(p => {
-      const amt = Number(p.amount || 0);
-      const gst = p.gst ? Number(p.gst).toFixed(2) : (amt * 0.18).toFixed(2);
-      const planName = typeof p.planId === 'object' ? (p.planId?.planName || p.planId?._id) : (p.planId || 'advocate_basic');
-      return [
-        `"${p.transactionId || p._id || ''}"`,
-        `"${p.invoiceNumber || p._id || ''}"`,
-        `"${p.userName || p.userId?.name || 'Advocate Customer'}"`,
-        `"${p.userEmail || p.userId?.email || ''}"`,
-        amt,
-        gst,
-        `"${p.gateway || 'Razorpay'}"`,
-        `"${planName}"`,
-        `"${(p.status || 'SUCCESS').toUpperCase()}"`,
-        `"${p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ''}"`
-      ].join(',');
-    });
+    try {
+      const XLSX = await import('xlsx');
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'ai-legal-billing-transactions.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success('Billing transactions exported to CSV.');
+      const data = listToExport.map(p => {
+        const amt = Number(p.amount || 0);
+        const gst = p.gst ? Number(p.gst) : Number((amt * 0.18).toFixed(2));
+        const planName = typeof p.planId === 'object' ? (p.planId?.planName || p.planId?._id) : (p.planId || 'ADVOCATE_PRO');
+        const name = p.userName || p.userId?.name || 'Advocate Customer';
+        const email = p.userEmail || p.userId?.email || 'N/A';
+        const txnId = p.transactionId || p._id || 'N/A';
+        const invNo = p.invoiceNumber || p._id || 'N/A';
+        const gateway = p.gateway || 'AppleStoreKit';
+        const status = (p.status || 'SUCCESS').toUpperCase();
+        const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-IN') : 'N/A';
+
+        return {
+          'Transaction ID': txnId,
+          'Invoice Number': invNo,
+          'User Name': name,
+          'User Email': email,
+          'Amount (INR)': amt,
+          'GST 18% (INR)': gst,
+          'Gateway': gateway,
+          'Plan': planName,
+          'Status': status,
+          'Date': date
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Billing Transactions');
+
+      worksheet['!cols'] = [
+        { wch: 28 }, // Txn ID
+        { wch: 25 }, // Inv No
+        { wch: 22 }, // Name
+        { wch: 28 }, // Email
+        { wch: 14 }, // Amt
+        { wch: 14 }, // GST
+        { wch: 18 }, // Gateway
+        { wch: 18 }, // Plan
+        { wch: 12 }, // Status
+        { wch: 14 }  // Date
+      ];
+
+      XLSX.writeFile(workbook, `ai_legal_billing_transactions_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      toast.success('Billing transactions exported to Excel (.xlsx) successfully! 📊');
+    } catch (err) {
+      console.error('Excel Export Error, falling back to CSV:', err);
+
+      const headers = ['Transaction ID', 'Invoice Number', 'User Name', 'Email', 'Amount (INR)', 'GST (18%)', 'Gateway', 'Plan', 'Status', 'Date'];
+      const rows = listToExport.map(p => {
+        const amt = Number(p.amount || 0);
+        const gst = p.gst ? Number(p.gst).toFixed(2) : (amt * 0.18).toFixed(2);
+        const planName = typeof p.planId === 'object' ? (p.planId?.planName || p.planId?._id) : (p.planId || 'ADVOCATE_PRO');
+        const name = (p.userName || p.userId?.name || 'Advocate Customer').replace(/"/g, '""');
+        const email = (p.userEmail || p.userId?.email || '').replace(/"/g, '""');
+        const txnId = (p.transactionId || p._id || '').replace(/"/g, '""');
+        const invNo = (p.invoiceNumber || p._id || '').replace(/"/g, '""');
+        const gateway = (p.gateway || 'AppleStoreKit').replace(/"/g, '""');
+        const status = (p.status || 'SUCCESS').toUpperCase().replace(/"/g, '""');
+        const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-IN') : '';
+
+        return [
+          `"${txnId}"`,
+          `"${invNo}"`,
+          `"${name}"`,
+          `"${email}"`,
+          amt,
+          gst,
+          `"${gateway}"`,
+          `"${planName}"`,
+          `"${status}"`,
+          `"${date}"`
+        ].join(',');
+      });
+
+      const csvString = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `ai_legal_billing_export_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success('Billing transactions exported to CSV successfully!');
+    }
   };
 
   const handleRefundPayment = async (paymentId) => {
@@ -1690,45 +1751,44 @@ export default function AdminDashboard() {
 
                         return (
                           <tr key={u._id} className="hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors group">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] font-black text-xs flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
+                            <td className="px-5 py-2.5 whitespace-nowrap">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-8 h-8 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] font-black text-xs flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
                                   {(u.name || u.displayName || u.email || 'U').charAt(0).toUpperCase()}
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                   <button
                                     onClick={() => setSelectedDossierUser(u)}
-                                    className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#C8A34D] transition-colors text-left cursor-pointer whitespace-nowrap"
+                                    className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#C8A34D] transition-colors text-left cursor-pointer whitespace-nowrap truncate block"
                                   >
                                     {u.name || u.displayName || 'Advocate Client'}
                                   </button>
-                                  <p className="text-[11px] text-slate-400 font-medium whitespace-nowrap">{u.email}</p>
-                                  {u.phone && <p className="text-[10px] text-slate-400 whitespace-nowrap">{u.phone}</p>}
+                                  <p className="text-[11px] text-slate-400 font-medium whitespace-nowrap truncate">{u.email}{u.phone ? ` • ${u.phone}` : ''}</p>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 uppercase tracking-wider whitespace-nowrap">
+                            <td className="px-5 py-2.5 whitespace-nowrap">
+                              <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 uppercase tracking-wider whitespace-nowrap inline-block">
                                 {userRole}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-5 py-2.5 whitespace-nowrap">
                               {isIos ? (
-                                <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
+                                <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
                                   <span>🍎</span> iOS
                                 </span>
                               ) : (
-                                <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
+                                <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
                                   <span>🤖</span> Android
                                 </span>
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 py-1 rounded-lg border border-[#C8A34D]/20 whitespace-nowrap shrink-0">
+                            <td className="px-5 py-2.5 whitespace-nowrap">
+                              <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 py-0.5 rounded-lg border border-[#C8A34D]/20 whitespace-nowrap shrink-0 inline-block">
                                 {userPlan}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-5 py-2.5 whitespace-nowrap">
                               <span className={`inline-flex items-center gap-1.5 text-xs font-bold whitespace-nowrap shrink-0 ${
                                 isBlocked ? 'text-red-500' : 'text-emerald-500'
                               }`}>
@@ -1736,13 +1796,13 @@ export default function AdminDashboard() {
                                 <span className="whitespace-nowrap shrink-0">{isBlocked ? 'Suspended' : 'Active'}</span>
                               </span>
                             </td>
-                            <td className="px-6 py-4 text-right">
+                            <td className="px-5 py-2.5 text-right whitespace-nowrap">
                               <button
                                 onClick={() => setSelectedDossierUser(u)}
-                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs whitespace-nowrap shrink-0"
                               >
-                                <Eye className="w-3.5 h-3.5" />
-                                <span>View Profile</span>
+                                <Eye className="w-3.5 h-3.5 shrink-0" />
+                                <span className="whitespace-nowrap shrink-0">View Profile</span>
                               </button>
                             </td>
                           </tr>
@@ -1805,7 +1865,7 @@ export default function AdminDashboard() {
                 className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#C8A34D]/15 hover:bg-[#C8A34D]/25 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs"
               >
                 <Download className="w-4 h-4" />
-                <span>CSV Export</span>
+                <span>Excel Export (.xlsx)</span>
               </button>
             </div>
 
