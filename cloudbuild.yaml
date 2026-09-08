@@ -49,7 +49,7 @@ steps:
       - '900'
 
 substitutions:
-  _SERVICE_NAME: 'ai-legal-app-backend'
+  _SERVICE_NAME: 'ai-legal'
   _REGION: 'asia-south1'
 
 images:

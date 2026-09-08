@@ -2820,7 +2820,7 @@ export default function AdminDashboard() {
                   />
                   <button
                     type="submit"
-                    className="sm:col-span-2 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black rounded-xl text-xs cursor-pointer"
+                    className="sm:col-span-2 py-3 bg-[#C8A34D] hover:bg-[#b5923f] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer"
                   >
                     Update Admin Password
                   </button>
