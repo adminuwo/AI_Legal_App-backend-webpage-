@@ -3856,17 +3856,17 @@ router.delete('/:id', verifyToken, async (req, res) => {
 // @access  Public
 router.post('/mock-courtroom/respond', verifyToken, verifyFeatureAccess('mockCourtroom'), async (req, res) => {
     try {
-        const { caseContext, conversationHistory, lastUserSpeech, currentRole, stage, courtroomLanguage } = req.body;
+        const { caseContext, conversationHistory, lastUserSpeech, currentRole, stage, courtroomLanguage, outputLanguage: bodyLang } = req.body;
         
-        // Determine active language
-        let activeLang = 'English';
-        if (courtroomLanguage === 'Hindi') {
-            activeLang = 'Hindi';
-        } else if (courtroomLanguage === 'Auto Detect') {
+        // Determine active language dynamically from request
+        let activeLang = courtroomLanguage || bodyLang || 'English';
+        if (activeLang === 'Auto Detect') {
             const detected = detectLanguage(lastUserSpeech || '');
             const historyHasHindi = (conversationHistory || []).some(m => /[\u0900-\u097F]/.test(m.text || ''));
             if (detected === 'Hindi' || detected === 'Hinglish' || historyHasHindi) {
                 activeLang = 'Hindi';
+            } else {
+                activeLang = 'English';
             }
         }
 
@@ -3952,6 +3952,28 @@ Return a raw JSON block with the following attributes:
   "responseText": "The exact dialogue text of the next speaker in Hindi language only. Never use English words for general speech.",
   "speakerRole": "judge" or "opponent" or "witness",
   "speakerName": "⚖️ न्यायाधीश श्रीवास्तव" or "👔 विपक्षी अधिवक्ता" or "👤 गवाह रॉय",
+  "nextStage": "The next stage of the trial (choose from: Opening, Evidence, Witness, Cross, Arguments, Verdict)",
+  "objection": { "raised": true/false, "type": "Hearsay" or "Relevance" etc., "decision": "Sustained" or "Overruled" }
+}
+
+Ensure the JSON is valid.`;
+        } else if (activeLang && activeLang !== 'English') {
+            systemInstruction += `\n\nCURRENT LANGUAGE CONTEXT:
+Current Language: ${activeLang}
+Respond ONLY in ${activeLang} (native script and language).
+Never switch to English unless the user explicitly requests it.
+Use professional, natural Indian courtroom ${activeLang}.
+Translate participant names and titles naturally into ${activeLang} (e.g. Judge, Opposing Counsel, Witness).
+Maintain absolute legal accuracy, keeping key statutory acts, section numbers, citations, or evidence names recognizable.`;
+
+            prompt = `Generate the next courtroom participant's response in ${activeLang}.
+Your generation MUST logically progress the trial naturally. Do NOT output markdown formatting like asterisks.
+
+Return a raw JSON block with the following attributes:
+{
+  "responseText": "The exact dialogue text of the next speaker strictly in ${activeLang} language. Do NOT use English for general speech.",
+  "speakerRole": "judge" or "opponent" or "witness",
+  "speakerName": "The role title and speaker name naturally in ${activeLang}",
   "nextStage": "The next stage of the trial (choose from: Opening, Evidence, Witness, Cross, Arguments, Verdict)",
   "objection": { "raised": true/false, "type": "Hearsay" or "Relevance" etc., "decision": "Sustained" or "Overruled" }
 }
@@ -4053,51 +4075,69 @@ Return ONLY the translated text. Do not include quotes, markdown wrapping, or ex
 // @access  Public
 router.post('/mock-courtroom/report', verifyToken, verifyFeatureAccess('mockCourtroom'), async (req, res) => {
     try {
-        const { conversationHistory, caseContext } = req.body;
+        const { conversationHistory, caseContext, language, outputLanguage, courtroomLanguage } = req.body;
+        const targetLang = language || outputLanguage || courtroomLanguage || 'English';
+
+        const advocateMsgs = (conversationHistory || []).filter(m => 
+            m.sender === 'advocate' || 
+            (m.senderName && (m.senderName.includes('You') || m.senderName.includes('Advocate') || m.senderName.includes('Counsel')))
+        );
+        const advocateTurnsCount = advocateMsgs.length;
+        const advocateSpokenText = advocateMsgs.map(m => m.text || '').filter(Boolean).join('\n');
+        const advocateWordCount = advocateMsgs.reduce((sum, m) => sum + (m.text || '').trim().split(/\s+/).filter(Boolean).length, 0);
         
         let transcript = (conversationHistory || [])
             .map(msg => `${msg.senderName || msg.sender}: ${msg.text}`)
             .join('\n');
 
-        const prompt = `Analyze the following courtroom simulation transcript and evaluate the Advocate's performance.
+        const prompt = `You are a Senior Judge and Judicial Bench evaluating an Advocate's actual courtroom performance.
 Case Facts: ${JSON.stringify(caseContext || {})}
-Transcript:
+
+Full Hearing Transcript:
 ${transcript}
 
-Calculate performance scores out of 100 for:
-1. Legal Accuracy
-2. Argument Strength
-3. Courtroom Etiquette
-4. Communication Skills
-5. Confidence
+Advocate Submissions Summary:
+- Total Turns Taken: ${advocateTurnsCount}
+- Total Spoken Words: ${advocateWordCount}
+- Advocate's Actual Submissions:
+"${advocateSpokenText || 'No substantive oral submissions made by the advocate.'}"
 
-IMPORTANT SCORING INSTRUCTIONS:
-- You MUST dynamically evaluate the advocate's actual speech length, relevance, legal citations, logic, and objection handling from the transcript.
-- DO NOT default to 88/100 or static scores.
-- Calculate realistic scores based on performance:
-  * Excellent arguments with section/act citations & clear logic: 85 - 98
-  * Average or brief arguments: 65 - 84
-  * Short, weak, off-topic, or poor arguments: 35 - 64
+EVALUATION & SCORING RUBRIC (STRICT PERFORMANCE-GROUNDED SCORING):
+- Do NOT output arbitrary or fixed bracket numbers. You MUST calculate scores strictly based on the Advocate's actual arguments, depth, legal citations, and responsiveness.
+- Evaluation Guidelines:
+  * Insufficient/Premature Hearing (< 25 words or only introductory greetings): Scores MUST be between 30 - 48 across categories because the advocate did not advance substantial arguments or evidence on the record. Observations must explicitly state that the hearing ended before legal submissions could be tested.
+  * Brief/Basic Submissions (25 - 75 words, limited legal citations): Scores between 50 - 68. Note the specific arguments made and what statutory backing was missing.
+  * Substantive Arguments (75+ words, relevant legal principles, procedural compliance, active rebuttal): Scores between 72 - 95 based on persuasiveness, statutory accuracy (e.g. NI Act 138/139, CPC/CrPC, or domestic law), and judicial composure.
 
-Output a valid JSON block containing:
+TARGET LANGUAGE REQUIREMENT: "${targetLang}"
+MANDATORY:
+1. All textual feedback in the JSON (verdictTitle, verdictReason, strongArgs, weakArgs, missedPoints, suggestions, judgeComment) MUST be written 100% in fluent, professional "${targetLang}" (e.g., if Nepali, write in correct Nepali; if Hindi, write in formal Hindi; if English, write in English).
+2. The JSON keys themselves must remain strictly in English as shown below.
+3. In "strongArgs" and "judgeComment", quote or directly refer to what the advocate actually said.
+
+Output a valid raw JSON block matching this exact structure:
 {
-  "overallScore": 82,
-  "legalAccuracy": 80,
-  "argumentStrength": 78,
-  "etiquette": 85,
-  "communication": 82,
-  "confidence": 80,
-  "strongArgs": ["list of strong arguments based on transcript"],
-  "weakArgs": ["list of weak arguments based on transcript"],
-  "missedPoints": ["missed points"],
-  "suggestions": ["suggestions"],
-  "judgeComment": "Hon'ble Judge's summary comment"
+  "overallScore": <integer 0-100 based on weighted performance>,
+  "legalAccuracy": <integer 0-100>,
+  "argumentStrength": <integer 0-100>,
+  "etiquette": <integer 0-100>,
+  "communication": <integer 0-100>,
+  "confidence": <integer 0-100>,
+  "verdictTitle": "<Judicial Verdict Title in ${targetLang}>",
+  "verdictReason": "<Detailed judicial reasoning in ${targetLang} explaining the ruling based on the advocate's performance and evidence>",
+  "outcomeType": "FAVORABLE", // "FAVORABLE" if overallScore >= 75, "PARTIAL" if overallScore >= 55, else "UNFAVORABLE"
+  "strongArgs": ["<Specific argument the advocate actually articulated, written in ${targetLang}>"],
+  "weakArgs": ["<Specific vulnerability or missing legal element from advocate's actual speech, in ${targetLang}>"],
+  "missedPoints": ["<Missed statutory citations or procedural grounds in ${targetLang}>"],
+  "suggestions": ["<Actionable recommendations tailored to this case in ${targetLang}>"],
+  "judgeComment": "<Hon'ble Judge's personalized observations referencing advocate's submissions in ${targetLang}>"
 }
 Only output the raw JSON block without markdown code blocks.`;
 
         let rawResponse = await askOpenAI(prompt, null, {
-            systemInstruction: "You are a professional legal educator. Always evaluate the advocate dynamically based on their actual arguments and output valid JSON blocks strictly matching the requested format.",
-            temperature: 0.7,
+            systemInstruction: `You are a distinguished Senior Judge. Always evaluate the advocate's performance genuinely and dynamically based on their actual statements in the transcript. Output strictly valid JSON with all text values written in ${targetLang}.`,
+            temperature: 0.6,
+            language: targetLang,
             userId: req.user.id
         });
 
@@ -4112,17 +4152,123 @@ Only output the raw JSON block without markdown code blocks.`;
     } catch (err) {
         console.error('[MOCK COURTROOM REPORT] Error:', err);
 
-        const advocateMsgs = (req.body.conversationHistory || []).filter(m => m.sender === 'advocate' || m.senderName?.includes('You'));
+        const { conversationHistory, language, outputLanguage, courtroomLanguage } = req.body;
+        const targetLang = (language || outputLanguage || courtroomLanguage || 'English').toLowerCase();
+        const isNepali = targetLang.includes('nepali') || targetLang === 'ne';
+        const isHindi = targetLang.includes('hindi') || targetLang === 'hi';
+
+        const advocateMsgs = (conversationHistory || []).filter(m => 
+            m.sender === 'advocate' || 
+            (m.senderName && (m.senderName.includes('You') || m.senderName.includes('Advocate') || m.senderName.includes('Counsel')))
+        );
         const totalWords = advocateMsgs.reduce((sum, m) => sum + (m.text || '').trim().split(/\s+/).filter(Boolean).length, 0);
         const textBlob = advocateMsgs.map(m => m.text || '').join(' ').toLowerCase();
-        const legalHits = (textBlob.match(/section|act|evidence|exhibit|presumption|notice|objection|law|court|lord|jurisdiction|statutory/gi) || []).length;
+        const legalHits = (textBlob.match(/section|act|evidence|exhibit|presumption|notice|objection|law|court|lord|jurisdiction|statutory|धारा|कानून|ऐन|अधिनियम|प्रमाण|सबूत|दफा|साक्ष्य|इजलास|अदालत|हुजूर|श्रीमान|आपत्ति|नोटीस|बयान|दावी|वकील|बहस/gi) || []).length;
         
-        const legalAccuracy = Math.min(96, Math.max(45, 55 + legalHits * 5));
-        const argumentStrength = Math.min(95, Math.max(40, 50 + Math.floor(totalWords / 8)));
-        const etiquette = Math.min(98, Math.max(60, 70 + advocateMsgs.length * 4));
-        const communication = Math.min(95, Math.max(50, 65 + Math.floor(totalWords / 12)));
-        const confidence = Math.min(95, Math.max(45, 60 + legalHits * 3 + advocateMsgs.length * 3));
+        let legalAccuracy = 40;
+        let argumentStrength = 38;
+        let etiquette = 60;
+        let communication = 45;
+        let confidence = 42;
+
+        if (totalWords < 15) {
+            legalAccuracy = 35;
+            argumentStrength = 32;
+            etiquette = 65;
+            communication = 40;
+            confidence = 38;
+        } else if (totalWords < 60) {
+            legalAccuracy = Math.min(75, 48 + legalHits * 6);
+            argumentStrength = Math.min(72, 45 + Math.floor(totalWords / 4));
+            etiquette = Math.min(85, 68 + advocateMsgs.length * 3);
+            communication = Math.min(75, 52 + Math.floor(totalWords / 5));
+            confidence = Math.min(75, 50 + legalHits * 4);
+        } else {
+            legalAccuracy = Math.min(96, 60 + legalHits * 6);
+            argumentStrength = Math.min(94, 62 + Math.floor(totalWords / 6));
+            etiquette = Math.min(98, 75 + advocateMsgs.length * 3);
+            communication = Math.min(94, 68 + Math.floor(totalWords / 8));
+            confidence = Math.min(95, 65 + legalHits * 4 + advocateMsgs.length * 2);
+        }
+
         const overallScore = Math.round((legalAccuracy + argumentStrength + etiquette + communication + confidence) / 5);
+        const outcomeType = overallScore >= 75 ? 'FAVORABLE' : overallScore >= 55 ? 'PARTIAL' : 'UNFAVORABLE';
+
+        let verdictTitle = '';
+        let verdictReason = '';
+        let judgeComment = '';
+        let strongArgs = [];
+        let weakArgs = [];
+        let missedPoints = [];
+        let suggestions = [];
+
+        if (isNepali) {
+            if (overallScore >= 75) {
+                verdictTitle = 'निवेदन स्वीकृत / माग दाबी ठहर';
+                verdictReason = `विद्वान वकिलले ${legalHits} कानुनी आधार तथा तथ्यगत प्रमाणहरू प्रस्तुत गरी आफ्नो दाबी पुष्टि गर्नुभयो। इजलासले वकालत सन्तोषजनक पाएको छ।`;
+            } else if (overallScore >= 55) {
+                verdictTitle = 'सशर्त अन्तरिम आदेश जारी';
+                verdictReason = `विद्वान वकिलले प्रारम्भिक बहस गर्नुभयो (${totalWords} शब्द), तर मुख्य कानुनी प्रमाण तथा अभिलेखको थप पुष्टि आवश्यक देखिएको छ।`;
+            } else {
+                verdictTitle = 'दाबी अपर्याप्त / निवेदन खारेज';
+                verdictReason = `विद्वान वकिलबाट आवश्यक वैधानिक प्रावधान र पर्याप्त प्रमाण प्रस्तुत हुन नसकेकाले दाबी पुष्टि हुन सकेन।`;
+            }
+            judgeComment = totalWords < 20 
+                ? `बहस धेरै छोटो रह्यो (${totalWords} शब्द)। पूर्ण मूल्यांकनका लागि थप विस्तृत कानुनी तर्क प्रस्तुत गर्नुपर्छ।`
+                : `इजलासले बहसको मूल्यांकन गरेको छ (${totalWords} शब्द, ${legalHits} कानुनी सन्दर्भ)। कानुनी प्रावधानहरूको अझ स्पष्ट प्रयोग आवश्यक छ।`;
+            strongArgs = totalWords > 15 
+                ? ['अदालत समक्ष आफ्नो पक्षको प्रारम्भिक अडान प्रस्तुत गरियो।'] 
+                : ['अदालतमा उपस्थित भई बहस सुरु गरियो।'];
+            weakArgs = legalHits === 0 
+                ? ['विशिष्ट कानुनी दफाहरू र नजिरहरूको स्पष्ट अभाव।'] 
+                : ['तथ्य र प्रमाणहरूको थप पुष्टि आवश्यक।'];
+            missedPoints = ['सम्बन्धित ऐनको वैधानिक अनुमान र प्रमाणको भार पुष्टि गर्ने कागजात।'];
+            suggestions = ['बहसको सुरुवातमै मुख्य कानुनी दफा र तथ्यहरू स्पष्ट रूपमा राख्नुहोस्।', 'विरोधी पक्षका तर्कहरूको बुँदागत खण्डन गर्नुहोस्।'];
+        } else if (isHindi) {
+            if (overallScore >= 75) {
+                verdictTitle = 'याचिका स्वीकार / अनुतोष प्रदान';
+                verdictReason = `विद्वान अधिवक्ता ने ${legalHits} वैधानिक संदर्भों और ठोस दलीलों के साथ पक्ष प्रस्तुत किया। न्यायालय ने दलीलों को स्वीकार्य पाया।`;
+            } else if (overallScore >= 55) {
+                verdictTitle = 'सशर्त अंतरिम राहत स्वीकृत';
+                verdictReason = `अधिवक्ता ने प्रारंभिक दलीलें दीं (${totalWords} शब्द), लेकिन आवश्यक अभिलेखीय साक्ष्य की और पुष्टि अपेक्षित है।`;
+            } else {
+                verdictTitle = 'दलीलें अपर्याप्त / याचिका खारिज';
+                verdictReason = `अधिवक्ता वैधानिक प्रावधानों के अंतर्गत आवश्यक साक्ष्य प्रस्तुत करने में असमर्थ रहे।`;
+            }
+            judgeComment = totalWords < 20
+                ? `सुनवाई बहुत संक्षिप्त रही (${totalWords} शब्द)। कानूनी मूल्यांकन हेतु विस्तृत बहस आवश्यक है।`
+                : `न्यायालय ने अधिवक्ता के प्रस्तुतीकरण का संज्ञान लिया (${totalWords} शब्द, ${legalHits} कानूनी संदर्भ)। नियमित अभ्यास से तर्क शक्ति और मजबूत होगी।`;
+            strongArgs = totalWords > 15
+                ? ['न्यायालय के समक्ष स्पष्टता से पक्ष रखा।']
+                : ['अदालत में बहस प्रारंभ की गई।'];
+            weakArgs = legalHits === 0
+                ? ['विशिष्ट कानूनी धाराओं और न्यायिक दृष्टांतों का उल्लेख नहीं किया गया।']
+                : ['साक्ष्यों के समर्थन को और सुदृढ़ करने की आवश्यकता है।'];
+            missedPoints = ['वैधानिक प्रावधानों एवं उपधारणा से संबंधित मुख्य बिंदु।'];
+            suggestions = ['शुरुआती वक्तव्य में ही लागू कानूनी धाराओं का संदर्भ दें।', 'विपक्षी तर्कों का स्पष्ट खंडन करें।'];
+        } else {
+            if (overallScore >= 75) {
+                verdictTitle = 'Complaint Allowed / Relief Granted';
+                verdictReason = `Counsel demonstrated persuasive advocacy with ${legalHits} statutory citations. The Court finds sufficient legal grounds to accept the submissions.`;
+            } else if (overallScore >= 55) {
+                verdictTitle = 'Conditional Interim Relief Allowed';
+                verdictReason = `Counsel made initial submissions (${totalWords} words spoken), but crucial corroborative evidence remains pending on record.`;
+            } else {
+                verdictTitle = 'Notice Discharged / Arguments Insufficient';
+                verdictReason = `Counsel failed to establish essential legal ingredients under statutory provisions. Submissions were insufficient to shift the burden of proof.`;
+            }
+            judgeComment = totalWords < 20
+                ? `The hearing was concluded prematurely with minimal submissions (${totalWords} words). Comprehensive advocacy requires advancing detailed legal points.`
+                : `Counsel completed the hearing session (${totalWords} words, ${legalHits} legal citations). Continued structured practice will enhance courtroom effectiveness.`;
+            strongArgs = totalWords > 15 
+                ? ['Presented initial arguments clearly to the Court.']
+                : ['Initiated courtroom submissions.'];
+            weakArgs = legalHits === 0 
+                ? ['Omitted specific statutory sections and binding precedent citations.']
+                : ['Could elaborate further on corroborative evidentiary backing.'];
+            missedPoints = ['Statutory presumption and burden of proof references.'];
+            suggestions = ['Incorporate statutory provisions early in your opening statement.', 'Directly address opposing factual objections.'];
+        }
 
         res.json({
             success: true,
@@ -4133,15 +4279,14 @@ Only output the raw JSON block without markdown code blocks.`;
                 etiquette,
                 communication,
                 confidence,
-                strongArgs: totalWords > 15 
-                  ? ["Presented arguments clearly and interacted with the Court."]
-                  : ["Initiated courtroom submissions."],
-                weakArgs: legalHits === 0 
-                  ? ["Could cite specific statutory sections and case precedents."]
-                  : ["Could elaborate further on evidentiary backing."],
-                missedPoints: ["Statutory delivery log citation & presumption reference under Section 139."],
-                suggestions: ["Incorporate statutory provisions early in your opening statement."],
-                judgeComment: `Counsel completed the hearing session. Total spoken words: ${totalWords}. Continued structured practice will enhance legal reasoning.`
+                verdictTitle,
+                verdictReason,
+                outcomeType,
+                strongArgs,
+                weakArgs,
+                missedPoints,
+                suggestions,
+                judgeComment
             }
         });
     }
@@ -4152,7 +4297,8 @@ Only output the raw JSON block without markdown code blocks.`;
 // @access  Public
 router.post('/mock-courtroom/practice-report', verifyToken, verifyFeatureAccess('mockCourtroom'), async (req, res) => {
     try {
-        const { transcript, caseContext, speakingTimeSeconds } = req.body;
+        const { transcript, caseContext, speakingTimeSeconds, language, outputLanguage } = req.body;
+        const targetLang = language || outputLanguage || 'English';
         
         const wordsCount = (transcript || '').trim().split(/\s+/).filter(Boolean).length;
         const minutes = speakingTimeSeconds ? (speakingTimeSeconds / 60) : 0;
@@ -4168,9 +4314,11 @@ CRITICAL ROLE CONSTRAINTS:
 4. If the user spoke off-topic or presented weak/irrelevant arguments, call it out constructively and explain why it weakens their position.
 5. Highlight strengths and weaknesses with legal precision.
 6. Provide an "improvedVersion" showing how to rewrite the transcript into a premium, professional courtroom-ready statement.
-7. Return a valid, raw JSON block matching the requested schema. Do not wrap in markup tags.`;
+7. Return a valid, raw JSON block matching the requested schema. Do not wrap in markup tags.
+8. ALL textual coaching feedback (strengths, weaknesses, suggestions, improvedVersion) MUST be written 100% in "${targetLang}".`;
 
         const prompt = `Analyze the following recorded courtroom oral submissions.
+Target Language for Feedback: "${targetLang}"
 Case Details:
 ${JSON.stringify(caseContext || {})}
 
@@ -4193,15 +4341,15 @@ Output a valid JSON block containing:
     "courtroomEtiquette": 9 // Integer out of 10
   },
   "strengths": [
-    "List of 3-5 specific strengths based on their actual words and argument structure"
+    "List of 3-5 specific strengths in ${targetLang} based on their actual words and argument structure"
   ],
   "weaknesses": [
-    "List of 3-5 specific weaknesses based on their actual words and argument structure"
+    "List of 3-5 specific weaknesses in ${targetLang} based on their actual words and argument structure"
   ],
   "suggestions": [
-    "List of 3-5 specific actionable recommendations for improvement"
+    "List of 3-5 specific actionable recommendations for improvement in ${targetLang}"
   ],
-  "improvedVersion": "A beautifully drafted, highly professional, courtroom-ready rewrite of their argument based on the case facts and their transcript",
+  "improvedVersion": "A beautifully drafted, highly professional, courtroom-ready rewrite of their argument in ${targetLang}",
   "summary": {
     "speakingTime": "${Math.floor((speakingTimeSeconds || 0) / 60)} min ${(speakingTimeSeconds || 0) % 60} sec",
     "words": ${wordsCount},
@@ -4217,6 +4365,7 @@ Ensure the JSON is valid and strictly match the schema.`;
         let rawResponse = await askOpenAI(prompt, transcript, {
             systemInstruction,
             temperature: 0.7,
+            language: targetLang,
             userId: req.user.id
         });
 

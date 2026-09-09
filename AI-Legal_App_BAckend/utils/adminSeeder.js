@@ -2,9 +2,46 @@ import Plan from '../models/Plan.js';
 import AdminSettings from '../models/AdminSettings.js';
 import Payment from '../models/Payment.js';
 import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
 
 export const seedAdminData = async () => {
     try {
+        // 0. Seed or self-heal dedicated Web Admin user (admin@uwo24.com / Admin@24)
+        const adminEmail = 'admin@uwo24.com';
+        const hashedPassword = await bcrypt.hash('Admin@24', 10);
+        let adminUser = await User.findOne({ email: adminEmail }).select('+password');
+
+        if (!adminUser) {
+            console.log('[Seeder] Creating dedicated Web Admin user: admin@uwo24.com...');
+            await User.create({
+                name: 'AI Legal Admin',
+                fullName: 'AI Legal Administrator',
+                email: adminEmail,
+                password: hashedPassword,
+                role: 'admin',
+                subscription: { plan: 'ENTERPRISE', status: 'active', autoRenew: true },
+                credits: 99999,
+                isVerified: true
+            });
+            console.log('[Seeder] admin@uwo24.com created successfully with role admin.');
+        } else {
+            const isMatch = adminUser.password ? await bcrypt.compare('Admin@24', adminUser.password) : false;
+            if (!isMatch || adminUser.role !== 'admin' || !adminUser.isVerified || adminUser.subscription?.plan !== 'ENTERPRISE') {
+                adminUser.password = hashedPassword;
+                adminUser.role = 'admin';
+                adminUser.subscription = adminUser.subscription || {};
+                adminUser.subscription.plan = 'ENTERPRISE';
+                adminUser.subscription.status = 'active';
+                adminUser.credits = 99999;
+                adminUser.isVerified = true;
+                adminUser.failedAttempts = 0;
+                adminUser.failedLoginAttempts = 0;
+                adminUser.lockoutUntil = null;
+                await adminUser.save();
+                console.log('[Seeder] admin@uwo24.com synced with password Admin@24 and role admin.');
+            }
+        }
+
         // 1. Seed plans if empty
         const planCount = await Plan.countDocuments();
         if (planCount === 0) {

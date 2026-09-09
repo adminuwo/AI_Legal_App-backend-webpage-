@@ -46,7 +46,7 @@ export class UserService extends BaseService {
       user = await userModel.findOne({ email: reqUser.email });
     }
 
-    // Self-healing Super Admin role strictly for aditi@uwo24.com
+    // Self-healing Super Admin & Admin role strictly for aditi@uwo24.com and admin@uwo24.com
     if (user && user.email) {
       const emailLower = user.email.toLowerCase().trim();
       if (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
@@ -55,10 +55,16 @@ export class UserService extends BaseService {
           await user.save();
           LoggerService.info(`[UserService] Upgraded ${user.email} to SUPER_ADMIN on profile fetch`);
         }
+      } else if (emailLower === 'admin@uwo24.com') {
+        if (user.role !== 'admin') {
+          user.role = 'admin';
+          await user.save();
+          LoggerService.info(`[UserService] Ensured ${user.email} has admin role on profile fetch`);
+        }
       } else if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
         user.role = 'user';
         await user.save();
-        LoggerService.info(`[UserService] Reset non-aditi account ${user.email} to user role`);
+        LoggerService.info(`[UserService] Reset non-admin account ${user.email} to user role`);
       }
     }
 

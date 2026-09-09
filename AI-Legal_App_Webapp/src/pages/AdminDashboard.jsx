@@ -1259,38 +1259,39 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F19] text-slate-800 dark:text-zinc-100 flex flex-col font-sans">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#1E293B]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-zinc-800 shadow-xs px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-zinc-800 shadow-xs px-3 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-2.5">
+        <div className="flex items-center gap-2.5 sm:gap-4 flex-1 min-w-0">
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer py-1.5 px-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800/80 hover:bg-slate-200 shrink-0"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Dashboard</span>
+            <ArrowLeft className="w-4 h-4 text-[#C8A34D]" />
+            <span className="hidden xs:inline sm:inline">Dashboard</span>
           </button>
 
-          <div className="h-5 w-[1px] bg-slate-200 dark:bg-zinc-700" />
+          <div className="h-5 w-[1px] bg-slate-200 dark:bg-zinc-700 hidden xs:block" />
 
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#C8A34D]/10 flex items-center justify-center border border-[#C8A34D]/30">
-              <Shield className="w-5 h-5 text-[#C8A34D]" />
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#C8A34D]/10 flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-[#C8A34D]" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-black tracking-tight text-slate-900 dark:text-white">Admin Portal</h1>
-                <span className="px-2 py-0.5 rounded bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[10px] font-black uppercase tracking-wider">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white truncate">Admin Portal</h1>
+                <span className="px-1.5 sm:px-2 py-0.5 rounded bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0">
                   SUPER ADMIN
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">System Telemetry, User Controls & Platform Management</p>
+              <p className="text-[10px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium truncate hidden sm:block">System Telemetry, User Controls & Platform Management</p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => loadData(true)}
-            className="p-2.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-xl border border-slate-200/80 dark:border-zinc-700 transition-all cursor-pointer flex items-center gap-2 text-xs font-bold"
+            className="p-2 sm:px-3 sm:py-2 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-xl border border-slate-200/80 dark:border-zinc-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold"
+            title="Refresh Live Data"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-[#C8A34D] ${refreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Refresh Data</span>
@@ -1298,8 +1299,8 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* 11 Mobile Tabs Bar */}
-      <nav className="bg-white dark:bg-[#1E293B] border-b border-slate-200/80 dark:border-zinc-800 px-6 py-2 overflow-x-auto custom-scrollbar flex items-center gap-1">
+      {/* 12 Mobile & Desktop Tabs Bar */}
+      <nav className="bg-white dark:bg-[#1E293B] border-b border-slate-200/80 dark:border-zinc-800 px-2 sm:px-6 py-2 overflow-x-auto custom-scrollbar flex items-center gap-1 sm:gap-1.5 no-scrollbar scroll-smooth">
         {TABS.map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1307,21 +1308,21 @@ export default function AdminDashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 sm:gap-2 shrink-0 select-none active:scale-95 ${
                 isActive
-                  ? 'bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 shadow-2xs'
+                  ? 'bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/40 shadow-xs ring-1 ring-[#C8A34D]/20'
                   : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/60'
               }`}
             >
-              <Icon className="w-4 h-4" />
-              <span>{tab.label}</span>
+              <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="whitespace-nowrap">{tab.label}</span>
             </button>
           );
         })}
       </nav>
 
       {/* Main Tab Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
         {loading ? (
           <div className="py-24 text-center space-y-3">
             <RefreshCw className="w-8 h-8 text-[#C8A34D] animate-spin mx-auto" />
@@ -1329,28 +1330,28 @@ export default function AdminDashboard() {
           </div>
         ) : activeTab === 'overview' ? (
           /* TAB 1: OVERVIEW — EXACT MOBILE APP DESIGN & ARCHITECTURE PARITY */
-          <div className="space-y-6">
-            {/* ROW 1: TOP 4 TELEMETRY CARDS IN A SINGLE 4-COLUMN ROW */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="space-y-4 sm:space-y-6">
+            {/* ROW 1: TOP 4 TELEMETRY CARDS IN A RESPONSIVE GRID */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* CARD 1: TOTAL REGISTERED USERS */}
               <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">TOTAL REGISTERED USERS</span>
-                  <div className="p-2 rounded-lg bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20">
+                  <div className="p-2 rounded-lg bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20 shrink-0">
                     <Users className="w-4 h-4" />
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                     {(stats.totalUsers || 0).toLocaleString()}
                   </h3>
-                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 text-[11px] font-semibold">
+                  <div className="flex flex-wrap items-center gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 text-[11px] font-semibold">
                     <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                       <span>{stats.onlineUsers || 0} Online</span>
                     </span>
                     <span className="text-slate-300 dark:text-zinc-700">•</span>
-                    <span className="text-slate-500 dark:text-zinc-400">
+                    <span className="text-slate-500 dark:text-zinc-400 truncate">
                       {stats.activeUsers || 0} Active (30d)
                     </span>
                   </div>
@@ -1361,17 +1362,17 @@ export default function AdminDashboard() {
               <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">PLAN COMPOSITION</span>
-                  <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500 border border-purple-500/20">
+                  <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500 border border-purple-500/20 shrink-0">
                     <Package className="w-4 h-4" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="p-2 bg-slate-50 dark:bg-zinc-900/80 rounded-xl border border-slate-100 dark:border-zinc-800 text-center">
-                    <h4 className="text-lg font-black text-slate-900 dark:text-white">{(stats.premiumUsers || 0).toLocaleString()}</h4>
+                    <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{(stats.premiumUsers || 0).toLocaleString()}</h4>
                     <p className="text-[9px] font-bold text-[#C8A34D]">Paid Users</p>
                   </div>
                   <div className="p-2 bg-slate-50 dark:bg-zinc-900/80 rounded-xl border border-slate-100 dark:border-zinc-800 text-center">
-                    <h4 className="text-lg font-black text-slate-900 dark:text-white">{(stats.freeUsers || 0).toLocaleString()}</h4>
+                    <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{(stats.freeUsers || 0).toLocaleString()}</h4>
                     <p className="text-[9px] font-bold text-slate-500 dark:text-zinc-400">Free Advocates</p>
                   </div>
                 </div>
@@ -1381,15 +1382,15 @@ export default function AdminDashboard() {
               <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">MONTHLY REVENUE</span>
-                  <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                  <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0">
                     <DollarSign className="w-4 h-4" />
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
+                  <h3 className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
                     ₹{(stats.revenueMonth || liveBillingStats.totalRevenue || 0).toLocaleString('en-IN')}
                   </h3>
-                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 text-[11px] font-semibold text-slate-500 dark:text-zinc-400 truncate">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-zinc-400 truncate">
                     <span>Today: <strong className="text-slate-900 dark:text-white font-black">₹{(stats.revenueToday || 0).toLocaleString('en-IN')}</strong></span>
                     <span className="text-slate-300 dark:text-zinc-700">•</span>
                     <span>Life: <strong className="text-slate-900 dark:text-white font-black">₹{(stats.revenueLifetime || liveBillingStats.totalRevenue || 0).toLocaleString('en-IN')}</strong></span>
@@ -1401,15 +1402,15 @@ export default function AdminDashboard() {
               <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">AI RESOURCE SPENT</span>
-                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 border border-blue-500/20">
+                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 border border-blue-500/20 shrink-0">
                     <Zap className="w-4 h-4" />
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                     {(stats.totalCreditsUsed || 0).toLocaleString()}
                   </h3>
-                  <p className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 truncate">
+                  <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-zinc-400 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 truncate">
                     Total Credits Consumed
                   </p>
                 </div>
@@ -1417,19 +1418,19 @@ export default function AdminDashboard() {
             </div>
 
             {/* ROW 3: 7-DAY ACTIVITY GRAPH */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
-              <div className="flex justify-between items-center">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
+              <div className="flex flex-wrap justify-between items-center gap-2">
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">DAILY ACTIVITY</h3>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Last 7 Days aggregated logins & AI queries</p>
+                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">DAILY ACTIVITY</h3>
+                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Last 7 Days aggregated logins & AI queries</p>
                 </div>
-                <span className="text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20">
+                <span className="text-[11px] sm:text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 sm:px-3 py-1 rounded-full border border-[#C8A34D]/20 shrink-0">
                   7-Day Trend
                 </span>
               </div>
 
               {/* Interactive Bar Chart */}
-              <div className="pt-4 flex items-end justify-between gap-2 sm:gap-6 h-48 px-2 sm:px-6 bg-slate-50/60 dark:bg-zinc-900/50 rounded-2xl border border-slate-100 dark:border-zinc-800/80">
+              <div className="pt-4 flex items-end justify-between gap-1.5 sm:gap-6 h-40 sm:h-48 px-1.5 sm:px-6 bg-slate-50/60 dark:bg-zinc-900/50 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-zinc-800/80">
                 {(Array.isArray(stats.dailyActivity) && stats.dailyActivity.length > 0
                   ? stats.dailyActivity
                   : [
@@ -1445,17 +1446,17 @@ export default function AdminDashboard() {
                   const maxVal = Math.max(1, ...(stats.dailyActivity || []).map(d => d.val || 0));
                   const heightPercent = Math.max(12, Math.min(100, ((day.val || 0) / maxVal) * 100));
                   return (
-                    <div key={idx} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                      <span className="text-[10px] font-black text-slate-500 group-hover:text-[#C8A34D] transition-colors opacity-0 group-hover:opacity-100">
+                    <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
+                      <span className="text-[9px] sm:text-[10px] font-black text-slate-500 group-hover:text-[#C8A34D] transition-colors opacity-80 sm:opacity-0 group-hover:opacity-100">
                         {day.val}
                       </span>
-                      <div className="w-full max-w-[40px] bg-slate-200 dark:bg-zinc-800 rounded-t-xl overflow-hidden h-32 flex items-end">
+                      <div className="w-full max-w-[28px] sm:max-w-[40px] bg-slate-200 dark:bg-zinc-800 rounded-t-lg sm:rounded-t-xl overflow-hidden h-24 sm:h-32 flex items-end">
                         <div
                           style={{ height: `${heightPercent}%` }}
-                          className="w-full bg-[#C8A34D] group-hover:bg-[#b08d3b] transition-all rounded-t-xl"
+                          className="w-full bg-[#C8A34D] group-hover:bg-[#b08d3b] transition-all rounded-t-lg sm:rounded-t-xl"
                         />
                       </div>
-                      <span className="text-[11px] font-black text-slate-600 dark:text-zinc-400 group-hover:text-[#C8A34D]">
+                      <span className="text-[9px] sm:text-[11px] font-black text-slate-600 dark:text-zinc-400 group-hover:text-[#C8A34D] truncate">
                         {day.label}
                       </span>
                     </div>
@@ -1465,92 +1466,92 @@ export default function AdminDashboard() {
             </div>
 
             {/* ROW 4: AI LEGAL FEATURE USAGE ANALYTICS GRID */}
-            <div className="space-y-4">
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">AI LEGAL™ FEATURE USAGE</h3>
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">AI LEGAL™ FEATURE USAGE</h3>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
                   <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-blue-500 border border-blue-500/20">
-                    <Building2 className="w-5 h-5" />
+                    <Building2 className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CASES MANAGED</p>
-                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.totalCases || 0).toLocaleString()}</h4>
-                  <p className="text-[11px] font-medium text-slate-500">Total litigation folders</p>
+                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.totalCases || 0).toLocaleString()}</h4>
+                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Total litigation folders</p>
                 </div>
 
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
                   <div className="p-2.5 w-fit rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20">
-                    <FileText className="w-5 h-5" />
+                    <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CONTRACTS ANALYZED</p>
-                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.contractsAnalyzed || 0).toLocaleString()}</h4>
-                  <p className="text-[11px] font-medium text-slate-500">Total contracts audited</p>
+                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.contractsAnalyzed || 0).toLocaleString()}</h4>
+                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Total contracts audited</p>
                 </div>
 
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
                   <div className="p-2.5 w-fit rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20">
-                    <Lightbulb className="w-5 h-5" />
+                    <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">STRATEGY ENGINE REPORTS</p>
-                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.strategyReports || 0).toLocaleString()}</h4>
-                  <p className="text-[11px] font-medium text-slate-500">Strategy reports generated</p>
+                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.strategyReports || 0).toLocaleString()}</h4>
+                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Strategy reports generated</p>
                 </div>
 
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
                   <div className="p-2.5 w-fit rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                    <TrendingUp className="w-5 h-5" />
+                    <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CASE PREDICTOR MODELS</p>
-                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.casePredictorReports || 0).toLocaleString()}</h4>
-                  <p className="text-[11px] font-medium text-slate-500">Outcome predictions run</p>
+                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.casePredictorReports || 0).toLocaleString()}</h4>
+                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Outcome predictions run</p>
                 </div>
 
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
                   <div className="p-2.5 w-fit rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                    <Edit2 className="w-5 h-5" />
+                    <Edit2 className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">DRAFTS GENERATED</p>
-                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.draftsGenerated || 0).toLocaleString()}</h4>
-                  <p className="text-[11px] font-medium text-slate-500">Petitions & notices drafted</p>
+                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.draftsGenerated || 0).toLocaleString()}</h4>
+                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Petitions & notices drafted</p>
                 </div>
 
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
                   <div className="p-2.5 w-fit rounded-xl bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">
-                    <Search className="w-5 h-5" />
+                    <Search className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">EVIDENCE ANALYST AUDITS</p>
-                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.evidenceAnalyses || 0).toLocaleString()}</h4>
-                  <p className="text-[11px] font-medium text-slate-500">Evidence documents scanned</p>
+                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.evidenceAnalyses || 0).toLocaleString()}</h4>
+                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Evidence documents scanned</p>
                 </div>
 
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
                   <div className="p-2.5 w-fit rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
-                    <MessageSquare className="w-5 h-5" />
+                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">AI ASSISTANT CHATS</p>
-                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{(stats.chatUsage || 0).toLocaleString()}</h4>
-                  <p className="text-[11px] font-medium text-slate-500">Conversations created</p>
+                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.chatUsage || 0).toLocaleString()}</h4>
+                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Conversations created</p>
                 </div>
 
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
+                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
                   <div className="p-2.5 w-fit rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20">
-                    <HardDrive className="w-5 h-5" />
+                    <HardDrive className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">STORAGE CONSUMED</p>
-                  <h4 className="text-2xl font-black text-slate-900 dark:text-white">{stats.storageUsed || '512 MB'}</h4>
-                  <p className="text-[11px] font-medium text-slate-500">RAG & database storage</p>
+                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{stats.storageUsed || '512 MB'}</h4>
+                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">RAG & database storage</p>
                 </div>
               </div>
             </div>
 
             {/* ROW 5: PENDING TRIAGE ALERTS */}
-            <div className="space-y-4">
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">PENDING TRIAGE</h3>
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">PENDING TRIAGE</h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                 <button
                   onClick={() => setActiveTab('bugs')}
-                  className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs"
+                  className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs"
                 >
                   <div className="flex justify-between items-start">
                     <span className="text-[10px] font-black uppercase tracking-wider text-red-500 bg-red-500/10 px-2.5 py-0.5 rounded-full border border-red-500/20">
@@ -1559,8 +1560,8 @@ export default function AdminDashboard() {
                     <Bug className="w-5 h-5 text-red-500" />
                   </div>
                   <div>
-                    <h4 className="text-3xl font-black text-slate-900 dark:text-white">{bugsList.length}</h4>
-                    <p className="text-xs font-medium text-slate-500 mt-1">Critical issues requiring review</p>
+                    <h4 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{bugsList.length}</h4>
+                    <p className="text-[11px] sm:text-xs font-medium text-slate-500 mt-1">Critical issues requiring review</p>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs font-black text-red-500 group-hover:translate-x-1 transition-transform">
                     <span>View Bugs</span>
@@ -1570,7 +1571,7 @@ export default function AdminDashboard() {
 
                 <button
                   onClick={() => setActiveTab('features')}
-                  className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs"
+                  className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs"
                 >
                   <div className="flex justify-between items-start">
                     <span className="text-[10px] font-black uppercase tracking-wider text-blue-500 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">
@@ -1579,8 +1580,8 @@ export default function AdminDashboard() {
                     <Lightbulb className="w-5 h-5 text-blue-500" />
                   </div>
                   <div>
-                    <h4 className="text-3xl font-black text-slate-900 dark:text-white">{featuresList.length}</h4>
-                    <p className="text-xs font-medium text-slate-500 mt-1">User submitted ideas awaiting review</p>
+                    <h4 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{featuresList.length}</h4>
+                    <p className="text-[11px] sm:text-xs font-medium text-slate-500 mt-1">User submitted ideas awaiting review</p>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs font-black text-blue-500 group-hover:translate-x-1 transition-transform">
                     <span>View Requests</span>
@@ -1590,7 +1591,7 @@ export default function AdminDashboard() {
 
                 <button
                   onClick={() => setActiveTab('crashes')}
-                  className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs"
+                  className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs sm:col-span-2 md:col-span-1"
                 >
                   <div className="flex justify-between items-start">
                     <span className="text-[10px] font-black uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
@@ -1599,8 +1600,8 @@ export default function AdminDashboard() {
                     <AlertTriangle className="w-5 h-5 text-amber-500" />
                   </div>
                   <div>
-                    <h4 className="text-3xl font-black text-slate-900 dark:text-white">{crashStats.unresolved || crashesList.length}</h4>
-                    <p className="text-xs font-medium text-slate-500 mt-1">System exception telemetry</p>
+                    <h4 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{crashStats.unresolved || crashesList.length}</h4>
+                    <p className="text-[11px] sm:text-xs font-medium text-slate-500 mt-1">System exception telemetry</p>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs font-black text-amber-500 group-hover:translate-x-1 transition-transform">
                     <span>View Crash Reports</span>
@@ -1611,24 +1612,24 @@ export default function AdminDashboard() {
             </div>
           </div>
         ) : activeTab === 'users' ? (
-          /* TAB 2: USERS DIRECTORY — EXACT MOBILE APP PARITY */
-          <div className="space-y-6">
+          /* TAB 2: USERS DIRECTORY — EXACT MOBILE & DESKTOP PARITY */
+          <div className="space-y-4 sm:space-y-6">
             {/* Top Platform OS Toggle & Counter Banner */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Target Device Platform:</span>
-                <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Target Device Platform:</span>
+                <span className="text-[11px] sm:text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-[#C8A34D]/20">
                   {platformFilter === 'all' && `${platformCounts.all} Total Users`}
-                  {platformFilter === 'android' && `🤖 ${platformCounts.android} Android Users`}
-                  {platformFilter === 'ios' && `🍎 ${platformCounts.ios} iOS Users`}
+                  {platformFilter === 'android' && `🤖 ${platformCounts.android} Android`}
+                  {platformFilter === 'ios' && `🍎 ${platformCounts.ios} iOS`}
                 </span>
               </div>
 
               {/* Android vs iOS Toggle Buttons */}
-              <div className="flex items-center bg-slate-100 dark:bg-zinc-900 p-1 rounded-xl border border-slate-200 dark:border-zinc-800">
+              <div className="grid grid-cols-3 sm:flex items-center bg-slate-100 dark:bg-zinc-900 p-1 rounded-xl border border-slate-200 dark:border-zinc-800 gap-1 w-full sm:w-auto">
                 <button
                   onClick={() => setPlatformFilter('all')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-2.5 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 text-center ${
                     platformFilter === 'all'
                       ? 'bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white shadow-xs border border-slate-200/80 dark:border-zinc-700'
                       : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
@@ -1638,7 +1639,7 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   onClick={() => setPlatformFilter('android')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-2.5 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 text-center ${
                     platformFilter === 'android'
                       ? 'bg-emerald-500 text-white shadow-xs border border-emerald-600'
                       : 'text-slate-500 dark:text-zinc-400 hover:text-emerald-500'
@@ -1648,7 +1649,7 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   onClick={() => setPlatformFilter('ios')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-2.5 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 text-center ${
                     platformFilter === 'ios'
                       ? 'bg-blue-600 text-white shadow-xs border border-blue-700'
                       : 'text-slate-500 dark:text-zinc-400 hover:text-blue-500'
@@ -1660,27 +1661,35 @@ export default function AdminDashboard() {
             </div>
 
             {/* Search & Filter Toolbar */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col md:flex-row gap-4 justify-between items-center">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col md:flex-row gap-3 sm:gap-4 justify-between items-stretch md:items-center">
               <div className="relative flex-1 w-full">
                 <Search className="w-4 h-4 text-[#C8A34D] absolute left-3.5 top-3" />
                 <input
                   type="text"
-                  placeholder="Search users by name, email, phone, jurisdiction, ID..."
+                  placeholder="Search by name, email, phone, role, ID..."
                   value={userSearch}
                   onChange={e => setUserSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#C8A34D] bg-slate-50 dark:bg-zinc-900"
+                  className="w-full pl-10 pr-8 py-2 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#C8A34D] bg-slate-50 dark:bg-zinc-900"
                 />
+                {userSearch && (
+                  <button
+                    onClick={() => setUserSearch('')}
+                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
 
               {/* Status & Email Domain Filter Toolbar */}
-              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto overflow-x-auto custom-scrollbar">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full md:w-auto">
                 {/* Email Domain Filter Dropdown */}
                 <select
                   value={emailDomainFilter}
                   onChange={e => setEmailDomainFilter(e.target.value)}
-                  className="px-3 py-1.5 rounded-xl text-xs font-black bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 focus:outline-none focus:border-[#C8A34D] cursor-pointer"
+                  className="px-3 py-2 rounded-xl text-xs font-black bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 focus:outline-none focus:border-[#C8A34D] cursor-pointer flex-1 sm:flex-initial"
                 >
-                  <option value="all">ALL EMAIL DOMAINS ({emailDomainCounts.all})</option>
+                  <option value="all">ALL DOMAINS ({emailDomainCounts.all})</option>
                   <option value="gmail">📧 Gmail ({emailDomainCounts.gmail})</option>
                   <option value="icloud">☁️ iCloud / Apple ({emailDomainCounts.icloud})</option>
                   <option value="other">✉️ Other Domains ({emailDomainCounts.other})</option>
@@ -1688,7 +1697,7 @@ export default function AdminDashboard() {
 
                 <div className="h-4 w-px bg-slate-200 dark:bg-zinc-800 hidden sm:block" />
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar flex-1 sm:flex-initial">
                   {[
                     { id: 'all', label: 'ALL' },
                     { id: 'free', label: 'FREE' },
@@ -1698,9 +1707,9 @@ export default function AdminDashboard() {
                     <button
                       key={f.id}
                       onClick={() => setUserFilter(f.id)}
-                      className={`px-3.5 py-1.5 rounded-xl text-[11px] font-black transition-all cursor-pointer border ${
+                      className={`px-3 py-1.5 rounded-xl text-[11px] font-black transition-all cursor-pointer border shrink-0 ${
                         userFilter === f.id
-                          ? 'bg-[#C8A34D]/10 text-[#C8A34D] border-[#C8A34D]/40 shadow-2xs'
+                          ? 'bg-[#C8A34D]/15 text-[#C8A34D] border-[#C8A34D]/50 shadow-2xs'
                           : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-800'
                       }`}
                     >
@@ -1711,158 +1720,230 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Users Directory Table & Header */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden">
-              <div className="p-4 sm:p-6 border-b border-slate-200/80 dark:border-zinc-800 flex items-center justify-between">
+            {/* Users Directory Container */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden">
+              <div className="p-4 sm:p-6 border-b border-slate-200/80 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">User Accounts Directory</h3>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Manage user profiles, roles, AI credits, subscriptions and access controls</p>
+                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">User Accounts Directory</h3>
+                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Manage user profiles, roles, AI credits, subscriptions and access controls</p>
                 </div>
-                <span className="text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20">
-                  {filteredUsers.length} {platformFilter === 'android' ? 'Android' : platformFilter === 'ios' ? 'iOS' : ''} Users Found
+                <span className="text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20 self-start sm:self-auto shrink-0">
+                  {filteredUsers.length} Users Found
                 </span>
               </div>
 
               {filteredUsers.length === 0 ? (
-                <div className="py-16 text-center space-y-3">
+                <div className="py-16 text-center space-y-3 px-4">
                   <Users className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
                   <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No User Accounts Match Criteria</p>
                   <p className="text-[11px] text-slate-400">Try adjusting your search query, status or platform filter.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse min-w-[850px]">
-                    <thead>
-                      <tr className="bg-slate-50/80 dark:bg-zinc-900/60 border-b border-slate-200/80 dark:border-zinc-800 text-[10px] font-black uppercase tracking-wider text-slate-400 whitespace-nowrap">
-                        <th className="px-6 py-3.5 whitespace-nowrap">USER</th>
-                        <th className="px-6 py-3.5 whitespace-nowrap">ROLE</th>
-                        <th className="px-6 py-3.5 whitespace-nowrap">DEVICE OS</th>
-                        <th className="px-6 py-3.5 whitespace-nowrap">SUBSCRIPTION PLAN</th>
-                        <th className="px-6 py-3.5 whitespace-nowrap">STATUS</th>
-                        <th className="px-6 py-3.5 text-right whitespace-nowrap">ACTIONS</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60">
-                      {filteredUsers.map(u => {
-                        const isBlocked = u.isBlocked === true || u.status === 'Suspended';
-                        const userRole = u.role || u.userRole || 'Advocate';
-                        const userPlan = u.subscription?.plan || u.currentPlan || 'FREE';
-                        const isIos = String(u.deviceOS).toLowerCase() === 'ios';
+                <>
+                  {/* 1. Mobile Responsive Card List (visible on screens < md) */}
+                  <div className="block md:hidden divide-y divide-slate-100 dark:divide-zinc-800/80">
+                    {filteredUsers.map(u => {
+                      const isBlocked = u.isBlocked === true || u.status === 'Suspended';
+                      const userRole = u.role || u.userRole || 'Advocate';
+                      const userPlan = u.subscription?.plan || u.currentPlan || 'FREE';
+                      const isIos = String(u.deviceOS).toLowerCase() === 'ios';
 
-                        return (
-                          <tr key={u._id} className="hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors group">
-                            <td className="px-5 py-2.5 whitespace-nowrap">
-                              <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] font-black text-xs flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
-                                  {(u.name || u.displayName || u.email || 'U').charAt(0).toUpperCase()}
-                                </div>
-                                <div className="min-w-0">
-                                  <button
-                                    onClick={() => setSelectedDossierUser(u)}
-                                    className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#C8A34D] transition-colors text-left cursor-pointer whitespace-nowrap truncate block"
-                                  >
-                                    {u.name || u.displayName || 'Advocate Client'}
-                                  </button>
-                                  <p className="text-[11px] text-slate-400 font-medium whitespace-nowrap truncate">{u.email}{u.phone ? ` • ${u.phone}` : ''}</p>
-                                </div>
+                      return (
+                        <div key={u._id} className="p-4 space-y-3 hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-10 h-10 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] font-black text-sm flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
+                                {(u.name || u.displayName || u.email || 'U').charAt(0).toUpperCase()}
                               </div>
-                            </td>
-                            <td className="px-5 py-2.5 whitespace-nowrap">
-                              <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 uppercase tracking-wider whitespace-nowrap inline-block">
-                                {userRole}
+                              <div className="min-w-0">
+                                <button
+                                  onClick={() => setSelectedDossierUser(u)}
+                                  className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#C8A34D] text-left truncate block cursor-pointer"
+                                >
+                                  {u.name || u.displayName || 'Advocate Client'}
+                                </button>
+                                <p className="text-[11px] text-slate-400 truncate">{u.email}</p>
+                                {u.phone && <p className="text-[10px] text-slate-400 font-mono">{u.phone}</p>}
+                              </div>
+                            </div>
+                            <span className={`inline-flex items-center gap-1 text-[11px] font-bold shrink-0 ${
+                              isBlocked ? 'text-red-500' : 'text-emerald-500'
+                            }`}>
+                              {isBlocked ? <XCircle className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                              <span>{isBlocked ? 'Suspended' : 'Active'}</span>
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 uppercase">
+                              {userRole}
+                            </span>
+                            {isIos ? (
+                              <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20 inline-flex items-center gap-1">
+                                <span>🍎</span> iOS
                               </span>
-                            </td>
-                            <td className="px-5 py-2.5 whitespace-nowrap">
-                              {isIos ? (
-                                <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
-                                  <span>🍎</span> iOS
+                            ) : (
+                              <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 inline-flex items-center gap-1">
+                                <span>🤖</span> Android
+                              </span>
+                            )}
+                            <span className="text-[10px] font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2 py-0.5 rounded-md border border-[#C8A34D]/20 uppercase">
+                              {userPlan}
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
+                              {u.credits ?? 500} Credits
+                            </span>
+                          </div>
+
+                          <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-100 dark:border-zinc-800/60">
+                            <button
+                              onClick={() => setSelectedDossierUser(u)}
+                              className="w-full py-2 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>View Dossier & Controls</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* 2. Desktop Table View (visible on screens >= md) */}
+                  <div className="hidden md:block overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-left border-collapse min-w-[850px]">
+                      <thead>
+                        <tr className="bg-slate-50/80 dark:bg-zinc-900/60 border-b border-slate-200/80 dark:border-zinc-800 text-[10px] font-black uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                          <th className="px-6 py-3.5 whitespace-nowrap">USER</th>
+                          <th className="px-6 py-3.5 whitespace-nowrap">ROLE</th>
+                          <th className="px-6 py-3.5 whitespace-nowrap">DEVICE OS</th>
+                          <th className="px-6 py-3.5 whitespace-nowrap">SUBSCRIPTION PLAN</th>
+                          <th className="px-6 py-3.5 whitespace-nowrap">STATUS</th>
+                          <th className="px-6 py-3.5 text-right whitespace-nowrap">ACTIONS</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60">
+                        {filteredUsers.map(u => {
+                          const isBlocked = u.isBlocked === true || u.status === 'Suspended';
+                          const userRole = u.role || u.userRole || 'Advocate';
+                          const userPlan = u.subscription?.plan || u.currentPlan || 'FREE';
+                          const isIos = String(u.deviceOS).toLowerCase() === 'ios';
+
+                          return (
+                            <tr key={u._id} className="hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors group">
+                              <td className="px-5 py-2.5 whitespace-nowrap">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="w-8 h-8 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] font-black text-xs flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
+                                    {(u.name || u.displayName || u.email || 'U').charAt(0).toUpperCase()}
+                                  </div>
+                                  <div className="min-w-0">
+                                    <button
+                                      onClick={() => setSelectedDossierUser(u)}
+                                      className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#C8A34D] transition-colors text-left cursor-pointer whitespace-nowrap truncate block"
+                                    >
+                                      {u.name || u.displayName || 'Advocate Client'}
+                                    </button>
+                                    <p className="text-[11px] text-slate-400 font-medium whitespace-nowrap truncate">{u.email}{u.phone ? ` • ${u.phone}` : ''}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-5 py-2.5 whitespace-nowrap">
+                                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 uppercase tracking-wider whitespace-nowrap inline-block">
+                                  {userRole}
                                 </span>
-                              ) : (
-                                <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
-                                  <span>🤖</span> Android
+                              </td>
+                              <td className="px-5 py-2.5 whitespace-nowrap">
+                                {isIos ? (
+                                  <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
+                                    <span>🍎</span> iOS
+                                  </span>
+                                ) : (
+                                  <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
+                                    <span>🤖</span> Android
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-5 py-2.5 whitespace-nowrap">
+                                <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 py-0.5 rounded-lg border border-[#C8A34D]/20 whitespace-nowrap shrink-0 inline-block">
+                                  {userPlan}
                                 </span>
-                              )}
-                            </td>
-                            <td className="px-5 py-2.5 whitespace-nowrap">
-                              <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 py-0.5 rounded-lg border border-[#C8A34D]/20 whitespace-nowrap shrink-0 inline-block">
-                                {userPlan}
-                              </span>
-                            </td>
-                            <td className="px-5 py-2.5 whitespace-nowrap">
-                              <span className={`inline-flex items-center gap-1.5 text-xs font-bold whitespace-nowrap shrink-0 ${
-                                isBlocked ? 'text-red-500' : 'text-emerald-500'
-                              }`}>
-                                {isBlocked ? <XCircle className="w-3.5 h-3.5 shrink-0" /> : <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
-                                <span className="whitespace-nowrap shrink-0">{isBlocked ? 'Suspended' : 'Active'}</span>
-                              </span>
-                            </td>
-                            <td className="px-5 py-2.5 text-right whitespace-nowrap">
-                              <button
-                                onClick={() => setSelectedDossierUser(u)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs whitespace-nowrap shrink-0"
-                              >
-                                <Eye className="w-3.5 h-3.5 shrink-0" />
-                                <span className="whitespace-nowrap shrink-0">View Profile</span>
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                              </td>
+                              <td className="px-5 py-2.5 whitespace-nowrap">
+                                <span className={`inline-flex items-center gap-1.5 text-xs font-bold whitespace-nowrap shrink-0 ${
+                                  isBlocked ? 'text-red-500' : 'text-emerald-500'
+                                }`}>
+                                  {isBlocked ? <XCircle className="w-3.5 h-3.5 shrink-0" /> : <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+                                  <span className="whitespace-nowrap shrink-0">{isBlocked ? 'Suspended' : 'Active'}</span>
+                                </span>
+                              </td>
+                              <td className="px-5 py-2.5 text-right whitespace-nowrap">
+                                <button
+                                  onClick={() => setSelectedDossierUser(u)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs whitespace-nowrap shrink-0"
+                                >
+                                  <Eye className="w-3.5 h-3.5 shrink-0" />
+                                  <span className="whitespace-nowrap shrink-0">View Profile</span>
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
             </div>
           </div>
         ) : activeTab === 'billing' ? (
-          /* TAB 3: BILLING (MOBILE 1:1 PARITY) */
-          <div className="space-y-6">
+          /* TAB 3: BILLING (MOBILE & DESKTOP PARITY) */
+          <div className="space-y-4 sm:space-y-6">
             {/* 1. DYNAMIC LIVE KPI METRICS BAR (4 Compact Cards) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white dark:bg-[#1E293B] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
-                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Total Revenue</p>
-                <p className="text-xl font-black text-[#10B981] my-1">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="bg-white dark:bg-[#1E293B] p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-400">Total Revenue</p>
+                <p className="text-lg sm:text-xl font-black text-[#10B981] my-1">
                   ₹{liveBillingStats.totalRevenue.toLocaleString('en-IN')}
                 </p>
-                <p className="text-[10px] font-bold text-slate-400">Gross Collected</p>
+                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400">Gross Collected</p>
               </div>
 
-              <div className="bg-white dark:bg-[#1E293B] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
-                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Paid Invoices</p>
-                <p className="text-xl font-black text-[#C8A34D] my-1">
+              <div className="bg-white dark:bg-[#1E293B] p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-400">Paid Invoices</p>
+                <p className="text-lg sm:text-xl font-black text-[#C8A34D] my-1">
                   {liveBillingStats.successCount}
                 </p>
-                <p className="text-[10px] font-bold text-slate-400">Successful Transactions</p>
+                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400">Successful Txns</p>
               </div>
 
-              <div className="bg-white dark:bg-[#1E293B] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
-                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Pending</p>
-                <p className="text-xl font-black text-amber-500 my-1">
+              <div className="bg-white dark:bg-[#1E293B] p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-400">Pending</p>
+                <p className="text-lg sm:text-xl font-black text-amber-500 my-1">
                   {liveBillingStats.pendingCount}
                 </p>
-                <p className="text-[10px] font-bold text-slate-400">Awaiting Payment</p>
+                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400">Awaiting Payment</p>
               </div>
 
-              <div className="bg-white dark:bg-[#1E293B] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
-                <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Refunded</p>
-                <p className="text-xl font-black text-red-500 my-1">
+              <div className="bg-white dark:bg-[#1E293B] p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-400">Refunded</p>
+                <p className="text-lg sm:text-xl font-black text-red-500 my-1">
                   {liveBillingStats.refundedCount}
                 </p>
-                <p className="text-[10px] font-bold text-slate-400">Reversed Payments</p>
+                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400">Reversed Payments</p>
               </div>
             </div>
 
             {/* 2. REAL-TIME SOCKET INDICATOR + CSV EXPORT BAR */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#1E293B] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#1E293B] p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <p className="text-xs font-black text-slate-700 dark:text-zinc-200">
-                  Live Socket Stream • <span className="text-[#C8A34D]">{filteredPayments.length}</span> of {liveBillingStats.totalCount} Invoices Loaded
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                <p className="text-xs font-black text-slate-700 dark:text-zinc-200 truncate">
+                  Live Stream • <span className="text-[#C8A34D]">{filteredPayments.length}</span> of {liveBillingStats.totalCount} Invoices
                 </p>
               </div>
               <button
                 onClick={handleExportCSV}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#C8A34D]/15 hover:bg-[#C8A34D]/25 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#C8A34D]/15 hover:bg-[#C8A34D]/25 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs"
               >
                 <Download className="w-4 h-4" />
                 <span>Excel Export (.xlsx)</span>
@@ -1870,21 +1951,29 @@ export default function AdminDashboard() {
             </div>
 
             {/* 3. SEARCH & STATUS FILTER PILLS */}
-            <div className="space-y-3">
+            <div className="space-y-2.5 sm:space-y-3">
               {/* Search Field */}
               <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={billingSearch}
                   onChange={(e) => setBillingSearch(e.target.value)}
                   placeholder="Search invoice number, user name, email, or TXN ID..."
-                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-zinc-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:border-[#C8A34D] transition-all shadow-xs"
+                  className="w-full pl-10 pr-8 py-2.5 sm:py-3 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-zinc-800 rounded-xl sm:rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:border-[#C8A34D] transition-all shadow-xs"
                 />
+                {billingSearch && (
+                  <button
+                    onClick={() => setBillingSearch('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
 
               {/* Filter Pills */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 no-scrollbar">
                 {[
                   { id: 'all', label: 'ALL' },
                   { id: 'success', label: 'SUCCESS' },
@@ -1897,7 +1986,7 @@ export default function AdminDashboard() {
                     <button
                       key={tab.id}
                       onClick={() => setBillingFilter(tab.id)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-black tracking-wider transition-all cursor-pointer border ${
+                      className={`px-3.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-black tracking-wider transition-all cursor-pointer border shrink-0 ${
                         isActive
                           ? 'bg-[#C8A34D]/15 border-[#C8A34D] text-[#C8A34D] shadow-2xs'
                           : 'bg-white dark:bg-[#1E293B] border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-[#C8A34D]/50'
@@ -1911,19 +2000,19 @@ export default function AdminDashboard() {
             </div>
 
             {/* 4. TRANSACTIONS & INVOICES LEDGER CONTAINER */}
-            <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-6 space-y-4">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-4 sm:p-6 space-y-4">
               <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-zinc-800">
                 <div>
-                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Transactions & Invoices</h3>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Real-time financial payment ledger</p>
+                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">Transactions & Invoices</h3>
+                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Real-time financial payment ledger</p>
                 </div>
-                <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20">
+                <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20 shrink-0">
                   {filteredPayments.length} Records
                 </span>
               </div>
 
               {filteredPayments.length === 0 ? (
-                <div className="py-12 text-center space-y-3">
+                <div className="py-12 text-center space-y-3 px-4">
                   <CreditCard className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
                   <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Payment Transactions Found</p>
                   <p className="text-[11px] text-slate-400">No transactions match your search query or filter criteria.</p>
@@ -1950,42 +2039,42 @@ export default function AdminDashboard() {
                     return (
                       <div
                         key={p._id || idx}
-                        className="bg-slate-50/70 dark:bg-zinc-900/60 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3 hover:border-[#C8A34D]/40 transition-all"
+                        className="bg-slate-50/70 dark:bg-zinc-900/60 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3 hover:border-[#C8A34D]/40 transition-all"
                       >
                         {/* Header: User & Amount */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <div>
-                            <h4 className="text-xs font-black text-slate-900 dark:text-white">{userName}</h4>
-                            <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
+                          <div className="min-w-0">
+                            <h4 className="text-xs font-black text-slate-900 dark:text-white truncate">{userName}</h4>
+                            <p className="text-[11px] text-slate-400 font-medium mt-0.5 truncate">
                               {userEmail} • Invoice: <span className="font-bold text-slate-700 dark:text-zinc-300">{invoiceNo}</span>
                             </p>
                           </div>
-                          <span className={`text-base font-black ${amountColor}`}>
+                          <span className={`text-sm sm:text-base font-black ${amountColor} self-start sm:self-auto shrink-0`}>
                             ₹{amt.toLocaleString('en-IN')}
                           </span>
                         </div>
 
                         {/* Metadata Tags: Gateway, Plan, GST */}
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="px-2.5 py-0.5 rounded-md bg-slate-200/60 dark:bg-zinc-800 text-[10px] font-extrabold uppercase text-slate-600 dark:text-zinc-300">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                          <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-slate-200/60 dark:bg-zinc-800 text-[9.5px] sm:text-[10px] font-extrabold uppercase text-slate-600 dark:text-zinc-300">
                             Gateway: {p.gateway || 'Razorpay'}
                           </span>
-                          <span className="px-2.5 py-0.5 rounded-md bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[10px] font-black uppercase">
+                          <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[9.5px] sm:text-[10px] font-black uppercase">
                             Plan: {planName}
                           </span>
-                          <span className="px-2.5 py-0.5 rounded-md bg-slate-200/60 dark:bg-zinc-800 text-[10px] font-medium text-slate-500 dark:text-zinc-400">
+                          <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-slate-200/60 dark:bg-zinc-800 text-[9.5px] sm:text-[10px] font-medium text-slate-500 dark:text-zinc-400">
                             GST (18%): ₹{gstAmount}
                           </span>
                         </div>
 
                         {/* Divider Line */}
                         <div className="border-t border-slate-200/60 dark:border-zinc-800/60 pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <p className="text-[10px] font-mono text-slate-400">
+                          <p className="text-[10px] font-mono text-slate-400 truncate">
                             TXN: {txnId} • Date: {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : 'Today'}
                           </p>
 
                           {/* Footer Actions & Status */}
-                          <div className="flex items-center gap-2 shrink-0">
+                          <div className="flex flex-wrap items-center gap-2 shrink-0">
                             {isPending && (
                               <button
                                 onClick={() => setMarkPaidConfirmModal({ isOpen: true, payment: p })}
@@ -2005,7 +2094,7 @@ export default function AdminDashboard() {
                             )}
 
                             <span
-                              className={`px-3 py-0.5 rounded-full text-[10px] font-black tracking-wider border ${
+                              className={`px-2.5 sm:px-3 py-0.5 rounded-full text-[10px] font-black tracking-wider border ${
                                 isSuccess
                                   ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
                                   : isPending
@@ -2027,19 +2116,19 @@ export default function AdminDashboard() {
             </div>
           </div>
         ) : activeTab === 'plans' ? (
-          /* TAB 4: PLANS DASHBOARD (MOBILE 1:1 PARITY) */
-          <div className="space-y-6">
+          /* TAB 4: PLANS DASHBOARD (MOBILE & DESKTOP PARITY) */
+          <div className="space-y-4 sm:space-y-6">
             {/* Header & Primary CTA */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#1E293B] p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 bg-white dark:bg-[#1E293B] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
               <div>
-                <h2 className="text-lg font-black text-slate-900 dark:text-white">Subscription Plans & Pricing</h2>
-                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-1">
+                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">Subscription Plans & Pricing</h2>
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium mt-0.5 sm:mt-1">
                   Manage Student, Advocate, Law Firm & Combo plans, edit prices (₹), credits, and feature lists.
                 </p>
               </div>
               <button
                 onClick={handleOpenPlanCreator}
-                className="px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer shrink-0"
+                className="w-full sm:w-auto px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ Create Plan</span>
@@ -2048,13 +2137,13 @@ export default function AdminDashboard() {
 
             {/* Plans List Grid (3 Columns on Desktop, 2 on Tablet, 1 on Mobile) */}
             {plansList.length === 0 ? (
-              <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-12 text-center space-y-3">
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-8 sm:p-12 text-center space-y-3">
                 <Tag className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
                 <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Subscription Plans Configured</p>
                 <p className="text-[11px] text-slate-400">Click "+ Create Plan" to set up your first subscription tier.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {plansList.map((plan, idx) => {
                   const isPopular = plan.isPopular;
                   const isActive = plan.isActive !== false;
@@ -2066,7 +2155,7 @@ export default function AdminDashboard() {
                   return (
                     <div
                       key={plan._id || planSlug}
-                      className={`bg-white dark:bg-[#1E293B] rounded-3xl p-6 border shadow-sm space-y-4 relative flex flex-col justify-between transition-all hover:shadow-md ${
+                      className={`bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border shadow-sm space-y-4 relative flex flex-col justify-between transition-all hover:shadow-md ${
                         isPopular
                           ? 'border-[#C8A34D] border-2 ring-1 ring-[#C8A34D]/30'
                           : 'border-slate-200/80 dark:border-zinc-800'
@@ -2075,21 +2164,21 @@ export default function AdminDashboard() {
                       <div className="space-y-4">
                         {/* Top Header Row */}
                         <div className="flex justify-between items-start gap-2">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="text-base font-black text-slate-900 dark:text-white">{planTitle}</h3>
+                          <div className="space-y-1 min-w-0">
+                            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                              <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">{planTitle}</h3>
                               {badgeText && (
-                                <span className="bg-[#C8A34D] text-[#111111] text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                <span className="bg-[#C8A34D] text-[#111111] text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0">
                                   {badgeText}
                                 </span>
                               )}
                               {isPopular && (
-                                <span className="bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                <span className="bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0">
                                   POPULAR
                                 </span>
                               )}
                             </div>
-                            <p className="text-[10px] text-slate-400 font-mono">
+                            <p className="text-[10px] text-slate-400 font-mono truncate">
                               ID: {planSlug} • {isActive ? '🟢 Active' : '🔴 Disabled'}
                             </p>
                           </div>
@@ -2113,18 +2202,18 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Pricing & AI Credits Grid Bar */}
-                        <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-zinc-900/60 p-3 rounded-2xl border border-slate-200/80 dark:border-zinc-800/80 text-left">
+                        <div className="grid grid-cols-3 gap-1.5 sm:gap-2 bg-slate-50 dark:bg-zinc-900/60 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800/80 text-left">
                           <div>
-                            <p className="text-[9px] font-black uppercase text-slate-400">MONTHLY</p>
-                            <p className="text-sm font-black text-emerald-500 mt-0.5">₹{Number(plan.priceMonthly || 0).toLocaleString('en-IN')}</p>
+                            <p className="text-[8.5px] sm:text-[9px] font-black uppercase text-slate-400 truncate">MONTHLY</p>
+                            <p className="text-xs sm:text-sm font-black text-emerald-500 mt-0.5">₹{Number(plan.priceMonthly || 0).toLocaleString('en-IN')}</p>
                           </div>
                           <div>
-                            <p className="text-[9px] font-black uppercase text-slate-400">YEARLY</p>
-                            <p className="text-sm font-black text-blue-500 mt-0.5">₹{Number(plan.priceYearly || 0).toLocaleString('en-IN')}</p>
+                            <p className="text-[8.5px] sm:text-[9px] font-black uppercase text-slate-400 truncate">YEARLY</p>
+                            <p className="text-xs sm:text-sm font-black text-blue-500 mt-0.5">₹{Number(plan.priceYearly || 0).toLocaleString('en-IN')}</p>
                           </div>
                           <div>
-                            <p className="text-[9px] font-black uppercase text-slate-400">AI CREDITS</p>
-                            <p className="text-sm font-black text-[#C8A34D] mt-0.5">{Number(plan.credits || 0).toLocaleString('en-IN')}</p>
+                            <p className="text-[8.5px] sm:text-[9px] font-black uppercase text-slate-400 truncate">CREDITS</p>
+                            <p className="text-xs sm:text-sm font-black text-[#C8A34D] mt-0.5">{Number(plan.credits || 0).toLocaleString('en-IN')}</p>
                           </div>
                         </div>
 
@@ -2156,19 +2245,19 @@ export default function AdminDashboard() {
             )}
           </div>
         ) : activeTab === 'coupons' ? (
-          /* TAB 5: COUPONS & DISCOUNT ENGINE (MOBILE 1:1 PARITY) */
-          <div className="space-y-6">
+          /* TAB 5: COUPONS & DISCOUNT ENGINE (MOBILE & DESKTOP PARITY) */
+          <div className="space-y-4 sm:space-y-6">
             {/* GLOBAL COUPON FEATURE TOGGLE BANNER */}
-            <div className={`bg-white dark:bg-[#1E293B] p-5 rounded-3xl border border-l-4 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all ${
+            <div className={`bg-white dark:bg-[#1E293B] p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-l-4 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 transition-all ${
               couponFeatureEnabled
                 ? 'border-slate-200/80 dark:border-zinc-800 border-l-emerald-500'
                 : 'border-slate-200/80 dark:border-zinc-800 border-l-red-500'
             }`}>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Ticket className={`w-5 h-5 ${couponFeatureEnabled ? 'text-emerald-500' : 'text-red-500'}`} />
-                  <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">Coupon Feature Status:</h3>
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                  <Ticket className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 ${couponFeatureEnabled ? 'text-emerald-500' : 'text-red-500'}`} />
+                  <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">Coupon Feature Status:</h3>
+                  <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider ${
                     couponFeatureEnabled
                       ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
                       : 'bg-red-500/15 text-red-500 border border-red-500/30'
@@ -2176,7 +2265,7 @@ export default function AdminDashboard() {
                     {couponFeatureEnabled ? 'ACTIVE' : 'INACTIVE'}
                   </span>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">
                   {couponFeatureEnabled
                     ? 'Active: "Have a coupon code?" card is currently displayed on the payment screen.'
                     : 'Inactive: "Have a coupon code?" card is completely hidden on the payment screen (only Upgrade button is visible).'}
@@ -2186,7 +2275,7 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={handleToggleCouponFeature}
-                className={`px-4 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+                className={`w-full sm:w-auto px-4 py-2 rounded-xl sm:rounded-2xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0 ${
                   couponFeatureEnabled
                     ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-xs'
                     : 'bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-300'
@@ -2198,16 +2287,16 @@ export default function AdminDashboard() {
             </div>
 
             {/* Page Header & Create Button */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#1E293B] p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 bg-white dark:bg-[#1E293B] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
               <div>
-                <h2 className="text-lg font-black text-slate-900 dark:text-white">Coupons & Discount System</h2>
-                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-1">
+                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">Coupons & Discount System</h2>
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium mt-0.5 sm:mt-1">
                   Manage promotional codes, plan eligibility, usage limits, and redemption statistics.
                 </p>
               </div>
               <button
                 onClick={handleOpenCouponCreator}
-                className="px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer shrink-0"
+                className="w-full sm:w-auto px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ Create Coupon</span>
@@ -2215,32 +2304,32 @@ export default function AdminDashboard() {
             </div>
 
             {/* Top 5 KPI Summary Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
-                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">TOTAL COUPONS</p>
-                <p className="text-xl font-black text-slate-900 dark:text-white">{couponStats.totalCoupons || couponsList.length || 0}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
+              <div className="bg-white dark:bg-[#1E293B] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-wider">TOTAL COUPONS</p>
+                <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">{couponStats.totalCoupons || couponsList.length || 0}</p>
               </div>
-              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
-                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">ACTIVE COUPONS</p>
-                <p className="text-xl font-black text-emerald-500">{couponStats.activeCoupons || 0}</p>
+              <div className="bg-white dark:bg-[#1E293B] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-wider">ACTIVE COUPONS</p>
+                <p className="text-lg sm:text-xl font-black text-emerald-500">{couponStats.activeCoupons || 0}</p>
               </div>
-              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
-                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">EXPIRED COUPONS</p>
-                <p className="text-xl font-black text-amber-500">{couponStats.expiredCoupons || 0}</p>
+              <div className="bg-white dark:bg-[#1E293B] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-wider">EXPIRED COUPONS</p>
+                <p className="text-lg sm:text-xl font-black text-amber-500">{couponStats.expiredCoupons || 0}</p>
               </div>
-              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
-                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">TOTAL COUPON USES</p>
-                <p className="text-xl font-black text-blue-500">{couponStats.totalCouponUses || couponStats.totalUses || 0}</p>
+              <div className="bg-white dark:bg-[#1E293B] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-wider">TOTAL USES</p>
+                <p className="text-lg sm:text-xl font-black text-blue-500">{couponStats.totalCouponUses || couponStats.totalUses || 0}</p>
               </div>
-              <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
-                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">TOTAL DISCOUNT GIVEN</p>
-                <p className="text-xl font-black text-[#C8A34D]">₹{(couponStats.totalDiscountGiven || 0).toLocaleString('en-IN')}</p>
+              <div className="col-span-2 sm:col-span-1 bg-white dark:bg-[#1E293B] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-wider">TOTAL DISCOUNT</p>
+                <p className="text-lg sm:text-xl font-black text-[#C8A34D]">₹{(couponStats.totalDiscountGiven || 0).toLocaleString('en-IN')}</p>
               </div>
             </div>
 
             {/* Coupons Responsive Card Grid (3 Columns Desktop, 2 Tablet, 1 Mobile) */}
             {couponsList.length === 0 ? (
-              <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-12 text-center space-y-3">
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-8 sm:p-12 text-center space-y-3">
                 <Ticket className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
                 <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Coupons Created Yet</p>
                 <button
@@ -2251,7 +2340,7 @@ export default function AdminDashboard() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {couponsList.map((c) => {
                   const status = c.computedStatus || (c.status === 'inactive' ? 'INACTIVE' : 'ACTIVE');
                   const statusBadgeClass =
@@ -2271,20 +2360,20 @@ export default function AdminDashboard() {
                   return (
                     <div
                       key={c._id}
-                      className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition-all"
+                      className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition-all"
                     >
                       <div className="space-y-4">
                         {/* Header Row */}
                         <div className="flex justify-between items-start gap-2">
-                          <div className="space-y-2 flex-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <div className="bg-[#C8A34D]/15 border border-[#C8A34D] px-3 py-1 rounded-xl">
-                                <span className="text-sm font-black text-[#C8A34D] font-mono tracking-wider">{c.code}</span>
+                          <div className="space-y-2 flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                              <div className="bg-[#C8A34D]/15 border border-[#C8A34D] px-2.5 py-1 rounded-xl">
+                                <span className="text-xs sm:text-sm font-black text-[#C8A34D] font-mono tracking-wider">{c.code}</span>
                               </div>
                               <button
                                 type="button"
                                 onClick={() => handleCopyCouponCode(c.code)}
-                                className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold border transition-all cursor-pointer flex items-center gap-1 ${
+                                className={`px-2 py-1 rounded-lg text-[10px] font-extrabold border transition-all cursor-pointer flex items-center gap-1 ${
                                   copiedCouponCode === c.code
                                     ? 'bg-emerald-500 text-white border-emerald-500'
                                     : 'bg-[#C8A34D]/10 text-[#C8A34D] border-[#C8A34D]/30 hover:bg-[#C8A34D]/20'
@@ -2292,47 +2381,47 @@ export default function AdminDashboard() {
                               >
                                 <span>{copiedCouponCode === c.code ? 'Copied ✓' : 'Copy'}</span>
                               </button>
-                              <span className="bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 text-[10px] font-black px-2.5 py-1 rounded-lg">
+                              <span className="bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 text-[10px] font-black px-2 py-1 rounded-lg">
                                 {discountLabel}
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium">
+                            <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium truncate">
                               Applicable: <strong className="text-slate-800 dark:text-zinc-200">{applicableText}</strong>
                             </p>
                           </div>
 
-                          <span className={`px-2.5 py-0.5 rounded-md text-[9.5px] font-black uppercase border shrink-0 ${statusBadgeClass}`}>
+                          <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase border shrink-0 ${statusBadgeClass}`}>
                             {status}
                           </span>
                         </div>
 
                         {/* Details Sub-Grid */}
-                        <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-zinc-900/60 p-3 rounded-2xl border border-slate-200/80 dark:border-zinc-800/80 text-left text-xs">
+                        <div className="grid grid-cols-3 gap-1.5 sm:gap-2 bg-slate-50 dark:bg-zinc-900/60 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800/80 text-left text-xs">
                           <div>
-                            <p className="text-[9px] font-black uppercase text-slate-400">VALIDITY</p>
-                            <p className="text-[11px] font-bold text-slate-800 dark:text-zinc-200 mt-0.5 truncate">
-                              {c.startDate ? new Date(c.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : 'Now'} – {new Date(c.expiryDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            <p className="text-[8.5px] sm:text-[9px] font-black uppercase text-slate-400">VALIDITY</p>
+                            <p className="text-[10px] sm:text-[11px] font-bold text-slate-800 dark:text-zinc-200 mt-0.5 truncate">
+                              {c.startDate ? new Date(c.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : 'Now'} – {new Date(c.expiryDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
                             </p>
                           </div>
                           <div>
-                            <p className="text-[9px] font-black uppercase text-slate-400">USAGE</p>
-                            <p className="text-xs font-black text-[#C8A34D] mt-0.5">
+                            <p className="text-[8.5px] sm:text-[9px] font-black uppercase text-slate-400">USAGE</p>
+                            <p className="text-[11px] sm:text-xs font-black text-[#C8A34D] mt-0.5 truncate">
                               {c.usedCount || 0} / {c.usageLimit !== null && c.usageLimit !== undefined ? c.usageLimit : '∞'}
                             </p>
                           </div>
                           <div>
-                            <p className="text-[9px] font-black uppercase text-slate-400">PER USER</p>
-                            <p className="text-xs font-bold text-slate-800 dark:text-zinc-200 mt-0.5">{c.perUserLimit || 1} use</p>
+                            <p className="text-[8.5px] sm:text-[9px] font-black uppercase text-slate-400">PER USER</p>
+                            <p className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-zinc-200 mt-0.5 truncate">{c.perUserLimit || 1} use</p>
                           </div>
                         </div>
                       </div>
 
                       {/* Action Buttons Row */}
-                      <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-zinc-800">
+                      <div className="flex items-center justify-end gap-1.5 sm:gap-2 pt-3 border-t border-slate-100 dark:border-zinc-800 flex-wrap">
                         <button
                           type="button"
                           onClick={() => handleViewCouponDetails(c._id)}
-                          className="px-2.5 py-1.5 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1"
+                          className="px-2.5 py-1.5 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 font-extrabold rounded-lg sm:rounded-xl text-[11px] transition-all cursor-pointer flex items-center gap-1"
                         >
                           <BarChart3 className="w-3.5 h-3.5" />
                           <span>Stats</span>
@@ -2340,7 +2429,7 @@ export default function AdminDashboard() {
                         <button
                           type="button"
                           onClick={() => handleOpenCouponEdit(c)}
-                          className="px-2.5 py-1.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-slate-800 dark:text-zinc-200 font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1"
+                          className="px-2.5 py-1.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-slate-800 dark:text-zinc-200 font-extrabold rounded-lg sm:rounded-xl text-[11px] transition-all cursor-pointer flex items-center gap-1"
                         >
                           <Edit3 className="w-3.5 h-3.5 text-[#C8A34D]" />
                           <span>Edit</span>
@@ -2348,7 +2437,7 @@ export default function AdminDashboard() {
                         <button
                           type="button"
                           onClick={() => handleToggleCouponStatus(c._id)}
-                          className={`px-2.5 py-1.5 font-extrabold rounded-xl text-xs transition-all cursor-pointer border flex items-center gap-1 ${
+                          className={`px-2.5 py-1.5 font-extrabold rounded-lg sm:rounded-xl text-[11px] transition-all cursor-pointer border flex items-center gap-1 ${
                             c.status === 'active'
                               ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20'
                               : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20'
@@ -2359,9 +2448,9 @@ export default function AdminDashboard() {
                         <button
                           type="button"
                           onClick={() => setCouponDeleteConfirmModal({ isOpen: true, coupon: c })}
-                          className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/20 rounded-xl transition-all cursor-pointer"
+                          className="p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/20 rounded-lg sm:rounded-xl transition-all cursor-pointer"
                         >
-                  <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
@@ -2372,23 +2461,24 @@ export default function AdminDashboard() {
           </div>
         ) : activeTab === 'addons' ? (
           /* TAB: INSTITUTIONAL ADD-ON REQUESTS APPROVAL PANEL */
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-[#1E293B] p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
               <div>
-                <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <PlusCircle className="text-[#C8A34D]" size={22} /> Institutional Add-on Feature Requests
+                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <PlusCircle className="text-[#C8A34D] w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+                  <span>Institutional Add-on Feature Requests</span>
                 </h2>
-                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-1">
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium mt-0.5 sm:mt-1">
                   Review and allow add-on feature requests submitted by Law Universities for their students & faculty.
                 </p>
               </div>
-              <div className="px-3.5 py-1.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-xs font-black text-[#C8A34D]">
+              <div className="px-3.5 py-1.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-xs font-black text-[#C8A34D] shrink-0">
                 {addonRequestsList.filter(r => r.status === 'Pending').length} Pending Approvals
               </div>
             </div>
 
             {addonRequestsList.length === 0 ? (
-              <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-12 text-center space-y-2">
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-8 sm:p-12 text-center space-y-2">
                 <PlusCircle className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
                 <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Add-on Requests Submitted Yet</p>
               </div>
@@ -2397,10 +2487,10 @@ export default function AdminDashboard() {
                 {addonRequestsList.map((req) => (
                   <div
                     key={req._id}
-                    className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition-all"
+                    className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition-all"
                   >
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
                         <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] px-2.5 py-0.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/20">
                           🏛️ {req.institutionName || 'RDVV Law University'}
                         </span>
@@ -2417,11 +2507,11 @@ export default function AdminDashboard() {
 
                       <div>
                         <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">{req.category}</span>
-                        <h3 className="text-base font-black text-slate-900 dark:text-white mt-0.5">{req.addonName}</h3>
+                        <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-0.5">{req.addonName}</h3>
                       </div>
 
-                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/80 dark:border-zinc-800 text-xs space-y-1">
-                        <p className="text-slate-500 font-medium">
+                      <div className="p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/80 dark:border-zinc-800 text-xs space-y-1">
+                        <p className="text-slate-500 font-medium truncate">
                           Requested By: <strong className="text-slate-800 dark:text-zinc-200">{req.requestedBy || req.institutionEmail}</strong>
                         </p>
                         <p className="text-slate-600 dark:text-zinc-300 font-semibold italic">
@@ -2430,7 +2520,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-end gap-2 text-xs">
+                    <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-end gap-2 text-xs flex-wrap">
                       {req.status === 'Approved' ? (
                         <div className="w-full py-2 rounded-xl bg-emerald-500/15 text-emerald-500 font-black text-center border border-emerald-500/30 flex items-center justify-center gap-1.5">
                           <CheckCircle2 size={16} /> Approved & Live Unlocked for Students
@@ -2440,22 +2530,22 @@ export default function AdminDashboard() {
                           ❌ Request Rejected
                         </div>
                       ) : (
-                        <>
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
                           <button
                             type="button"
                             onClick={() => handleRejectAddonRequest(req)}
-                            className="px-3.5 py-2 rounded-xl border border-rose-500/30 text-rose-500 font-bold hover:bg-rose-500/10 cursor-pointer"
+                            className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl border border-rose-500/30 text-rose-500 font-bold hover:bg-rose-500/10 cursor-pointer text-center"
                           >
                             Reject
                           </button>
                           <button
                             type="button"
                             onClick={() => handleApproveAddonRequest(req)}
-                            className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black shadow-md hover:brightness-110 cursor-pointer flex items-center gap-1.5"
+                            className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black shadow-md hover:brightness-110 cursor-pointer flex items-center justify-center gap-1.5"
                           >
-                            <CheckCircle2 size={15} /> Allow & Approve Feature
+                            <CheckCircle2 size={15} /> Allow & Approve
                           </button>
-                        </>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -2464,19 +2554,19 @@ export default function AdminDashboard() {
             )}
           </div>
         ) : activeTab === 'features' ? (
-          /* TAB 6: REQUESTS / FEATURE REQUESTS TRIAGE (MOBILE 1:1 PARITY) */
-          <div className="space-y-6">
+          /* TAB 6: REQUESTS / FEATURE REQUESTS TRIAGE (MOBILE & DESKTOP PARITY) */
+          <div className="space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="bg-white dark:bg-[#1E293B] p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
-              <h2 className="text-lg font-black text-slate-900 dark:text-white">Feature Requests Triage</h2>
-              <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-1">
+            <div className="bg-white dark:bg-[#1E293B] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+              <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">Feature Requests Triage</h2>
+              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium mt-0.5 sm:mt-1">
                 Review, filter, manage status, assign developers, and reply to client requests.
               </p>
             </div>
 
             {/* Search Input Bar */}
-            <div className="relative bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs p-2 flex items-center">
-              <Search className="w-4 h-4 text-slate-400 ml-3 mr-2 shrink-0" />
+            <div className="relative bg-white dark:bg-[#1E293B] rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs p-2 flex items-center">
+              <Search className="w-4 h-4 text-slate-400 ml-2.5 mr-2 shrink-0" />
               <input
                 type="text"
                 placeholder="Search feature requests..."
@@ -2496,7 +2586,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Horizontal Status Filter Pills */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 no-scrollbar">
               {['all', 'Pending', 'Under Review', 'Planned', 'In Progress', 'Completed', 'Rejected'].map((f) => {
                 const isSelected = featureFilterState === f;
                 return (
@@ -2504,7 +2594,7 @@ export default function AdminDashboard() {
                     key={f}
                     type="button"
                     onClick={() => setFeatureFilterState(f)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 cursor-pointer border ${
+                    className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all shrink-0 cursor-pointer border ${
                       isSelected
                         ? 'bg-[#C8A34D]/20 text-[#C8A34D] border-[#C8A34D] shadow-2xs'
                         : 'bg-white dark:bg-[#1E293B] text-slate-500 border-slate-200/80 dark:border-zinc-800 hover:border-slate-300'
@@ -2518,13 +2608,13 @@ export default function AdminDashboard() {
 
             {/* Feature Requests Card List */}
             {filteredFeatures.length === 0 ? (
-              <div className="bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-12 text-center space-y-2">
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-8 sm:p-12 text-center space-y-2">
                 <Lightbulb className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
                 <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Feature Requests Found</p>
                 <p className="text-[11px] text-slate-400 font-medium">Try clearing filters or search keywords.</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {filteredFeatures.map((fr) => {
                   const priorityClass = fr.priority === 'Critical' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20';
                   const statusClass = 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30';
@@ -2533,26 +2623,26 @@ export default function AdminDashboard() {
                   return (
                     <div
                       key={fr._id}
-                      className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 hover:shadow-md transition-all"
+                      className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-3 sm:space-y-4 hover:shadow-md transition-all"
                     >
                       {/* Header Row: Category, Priority Badge, Status Badge */}
                       <div className="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-slate-100 dark:border-zinc-800/80">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs font-extrabold text-[#C8A34D] bg-[#C8A34D]/10 border border-[#C8A34D]/30 px-3 py-1 rounded-xl">
+                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                          <span className="text-[11px] sm:text-xs font-extrabold text-[#C8A34D] bg-[#C8A34D]/10 border border-[#C8A34D]/30 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-xl">
                             {fr.category || 'General Feature'}
                           </span>
-                          <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase border ${priorityClass}`}>
+                          <span className={`px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-black uppercase border ${priorityClass}`}>
                             {fr.priority || 'Medium'} Priority
                           </span>
                         </div>
-                        <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase border ${statusClass}`}>
+                        <span className={`px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-black uppercase border ${statusClass}`}>
                           {fr.status || 'Pending'}
                         </span>
                       </div>
 
                       {/* Request Title & Description */}
-                      <div className="space-y-1.5">
-                        <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-snug">
+                      <div className="space-y-1">
+                        <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-snug">
                           {fr.title}
                         </h3>
                         <p className="text-xs text-slate-600 dark:text-zinc-300 font-medium leading-relaxed">
@@ -2561,25 +2651,25 @@ export default function AdminDashboard() {
                       </div>
 
                       {/* User & Developer Metadata Row */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 dark:bg-zinc-900/60 p-3 rounded-2xl border border-slate-200/80 dark:border-zinc-800/80 text-xs">
-                        <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 dark:bg-zinc-900/60 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800/80 text-xs">
+                        <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
                           User: <strong className="text-slate-800 dark:text-zinc-200">{fr.email || fr.userEmail || 'Client Advocate'}</strong> ({fr.userPlan || 'ADVOCATE_PRO'})
                         </p>
-                        <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                        <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
                           Assigned Dev: <strong className="text-[#C8A34D] font-bold">{fr.developerAssigned || 'None'}</strong>
                         </p>
                       </div>
 
                       {/* Developer / Admin Reply Container */}
                       {devReply && (
-                        <div className="p-3.5 bg-[#C8A34D]/10 border border-[#C8A34D]/30 rounded-2xl space-y-1">
-                          <p className="text-[11px] font-black text-[#C8A34D] uppercase tracking-wider">Dev Reply:</p>
+                        <div className="p-3 sm:p-3.5 bg-[#C8A34D]/10 border border-[#C8A34D]/30 rounded-xl sm:rounded-2xl space-y-1">
+                          <p className="text-[10px] sm:text-[11px] font-black text-[#C8A34D] uppercase tracking-wider">Dev Reply:</p>
                           <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">{devReply}</p>
                         </div>
                       )}
 
                       {/* Action Buttons Row */}
-                      <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 dark:border-zinc-800">
+                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-zinc-800 flex-wrap">
                         <button
                           type="button"
                           onClick={() => setFeatureModal({
@@ -2589,7 +2679,7 @@ export default function AdminDashboard() {
                             developerAssigned: fr.developerAssigned || 'None',
                             adminNote: fr.reply || fr.adminNote || ''
                           })}
-                          className="px-4 py-2 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5"
+                          className="px-3.5 py-1.5 sm:px-4 sm:py-2 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 font-extrabold rounded-lg sm:rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5"
                         >
                           <Wrench className="w-3.5 h-3.5" />
                           <span>Manage Request</span>
@@ -2597,7 +2687,7 @@ export default function AdminDashboard() {
                         <button
                           type="button"
                           onClick={() => setFeatureDeleteModal({ isOpen: true, feature: fr })}
-                          className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/20 font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5"
+                          className="px-3 py-1.5 sm:py-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/20 font-extrabold rounded-lg sm:rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           <span>Delete</span>
@@ -2611,92 +2701,104 @@ export default function AdminDashboard() {
           </div>
         ) : activeTab === 'bugs' ? (
           /* TAB 7: BUGS */
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Bug Tracking & Resolution Console</h3>
-              <div className="space-y-3">
-                {bugsList.map((b, idx) => (
-                  <div key={b._id || idx} className="p-4 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-red-500/10 text-red-500 border border-red-500/20">{b.severity || 'Major'}</span>
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">{b.title}</h4>
+              {bugsList.length === 0 ? (
+                <div className="py-8 text-center text-xs text-slate-400 font-medium">No open bug reports registered.</div>
+              ) : (
+                <div className="space-y-3">
+                  {bugsList.map((b, idx) => (
+                    <div key={b._id || idx} className="p-3.5 sm:p-4 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-red-500/10 text-red-500 border border-red-500/20">{b.severity || 'Major'}</span>
+                          <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">{b.title}</h4>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-zinc-400">{b.description}</p>
                       </div>
-                      <p className="text-xs text-slate-500 mt-1">{b.description}</p>
+                      <button
+                        onClick={() => setBugModal({ isOpen: true, bug: b, status: b.status || 'Open', assignedTo: b.assignedTo || '' })}
+                        className="w-full sm:w-auto px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all cursor-pointer text-center shrink-0"
+                      >
+                        Update Bug
+                      </button>
                     </div>
-                    <button
-                      onClick={() => setBugModal({ isOpen: true, bug: b, status: b.status || 'Open', assignedTo: b.assignedTo || '' })}
-                      className="px-4 py-2 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs transition-all cursor-pointer"
-                    >
-                      Update Bug
-                    </button>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ) : activeTab === 'crashes' ? (
           /* TAB 8: CRASH REPORTS */
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Automated Exception & Telemetry Logs</h3>
-              <div className="space-y-3">
-                {crashesList.map((c, idx) => (
-                  <div key={c._id || idx} className="p-4 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 space-y-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="text-sm font-bold font-mono text-red-500">{c.errorName || 'UnhandledException'}</h4>
-                        <p className="text-xs text-slate-400 font-mono mt-0.5">{c.filePath || 'src/app/index.tsx'}:{c.lineNumber || 42}</p>
+              {crashesList.length === 0 ? (
+                <div className="py-8 text-center text-xs text-slate-400 font-medium">No crash telemetry events reported.</div>
+              ) : (
+                <div className="space-y-3">
+                  {crashesList.map((c, idx) => (
+                    <div key={c._id || idx} className="p-3.5 sm:p-4 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800 space-y-2.5">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div>
+                          <h4 className="text-xs sm:text-sm font-bold font-mono text-red-500">{c.errorName || 'UnhandledException'}</h4>
+                          <p className="text-[11px] sm:text-xs text-slate-400 font-mono mt-0.5">{c.filePath || 'src/app/index.tsx'}:{c.lineNumber || 42}</p>
+                        </div>
+                        <button
+                          onClick={() => handleResolveCrash(c._id, 'RESOLVED')}
+                          className="w-full sm:w-auto px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl cursor-pointer text-center"
+                        >
+                          Mark Resolved
+                        </button>
                       </div>
-                      <button
-                        onClick={() => handleResolveCrash(c._id, 'RESOLVED')}
-                        className="px-3 py-1.5 bg-emerald-500 text-white font-bold text-xs rounded-xl cursor-pointer"
-                      >
-                        Mark Resolved
-                      </button>
+                      <pre className="p-2.5 sm:p-3 bg-amber-50/90 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800/60 rounded-xl text-[10px] sm:text-[11px] font-mono font-semibold max-h-48 overflow-x-auto shadow-sm">
+                        {c.stackTrace || 'Error: Processing failed at line 42'}
+                      </pre>
                     </div>
-                    <pre className="p-3 bg-amber-50/90 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800/60 rounded-xl text-[11px] font-mono font-semibold overflow-x-auto shadow-sm">
-                      {c.stackTrace || 'Error: Processing failed at line 42'}
-                    </pre>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ) : activeTab === 'reports' ? (
           /* TAB 9: RESPONSE REPORTS */
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white">AI Output Flagging & Quality Audit</h3>
-              <div className="space-y-3">
-                {complaintsList.map((r, idx) => (
-                  <div key={r._id || idx} className="p-4 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 space-y-2">
-                    <div className="flex justify-between items-start">
-                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded">
-                        {r.flagReason || 'Inaccurate Citation'}
-                      </span>
-                      <span className="text-xs font-bold text-slate-400">{new Date(r.createdAt || Date.now()).toLocaleDateString()}</span>
+              {complaintsList.length === 0 ? (
+                <div className="py-8 text-center text-xs text-slate-400 font-medium">No response complaints flagged by advocates.</div>
+              ) : (
+                <div className="space-y-3">
+                  {complaintsList.map((r, idx) => (
+                    <div key={r._id || idx} className="p-3.5 sm:p-4 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800 space-y-2">
+                      <div className="flex justify-between items-start gap-2 flex-wrap">
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded">
+                          {r.flagReason || 'Inaccurate Citation'}
+                        </span>
+                        <span className="text-xs font-bold text-slate-400">{new Date(r.createdAt || Date.now()).toLocaleDateString()}</span>
+                      </div>
+                      <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">{r.feedback || 'User flagged response citations.'}</p>
                     </div>
-                    <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">{r.feedback || 'User flagged response citations.'}</p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ) : activeTab === 'jurisdiction' ? (
           /* TAB 10: JURISDICTION OVERRIDES & SANDBOX */
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-6">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 sm:space-y-6">
               <div>
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-[#C8A34D]" />
+                  <Globe className="w-5 h-5 text-[#C8A34D] shrink-0" />
                   <span>Global Jurisdiction Administration & Sandbox</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 font-medium">Test legal engine prompts under specific Indian State or Global Country statutory frameworks.</p>
               </div>
 
               <form onSubmit={handleRunJurisdictionTest} className="space-y-4 pt-2 border-t border-slate-100 dark:border-zinc-800">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Target Country</label>
                     <input
@@ -2719,7 +2821,7 @@ export default function AdminDashboard() {
 
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Test Legal Query</label>
-                  <div className="flex gap-3 mt-1">
+                  <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 mt-1">
                     <input
                       type="text"
                       value={jTestQuery}
@@ -2730,7 +2832,7 @@ export default function AdminDashboard() {
                     <button
                       type="submit"
                       disabled={jTestLoading || !jTestQuery.trim()}
-                      className="px-6 py-2.5 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer flex items-center gap-2"
+                      className="w-full sm:w-auto px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer flex items-center justify-center gap-2 shrink-0"
                     >
                       {jTestLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Terminal className="w-4 h-4" />}
                       <span>Run Test</span>
@@ -2739,9 +2841,9 @@ export default function AdminDashboard() {
                 </div>
 
                 {jTestResult && (
-                  <div className="p-4 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
+                  <div className="p-3.5 sm:p-4 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800">
                     <p className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D]">AI Jurisdiction Response</p>
-                    <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200 mt-1 whitespace-pre-wrap">{jTestResult}</p>
+                    <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200 mt-1 whitespace-pre-wrap leading-relaxed">{jTestResult}</p>
                   </div>
                 )}
               </form>
@@ -2749,20 +2851,20 @@ export default function AdminDashboard() {
           </div>
         ) : (
           /* TAB 11: SETTINGS & SECURITY */
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-6">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 sm:space-y-6">
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Global System Configuration</h3>
 
               <form onSubmit={handleSaveSettings} className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 sm:p-4 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800 gap-3">
                   <div>
-                    <p className="text-sm font-extrabold text-slate-900 dark:text-white">Emergency Maintenance Mode</p>
-                    <p className="text-xs text-slate-400">Lock non-admin platform logins across Web & Mobile</p>
+                    <p className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">Emergency Maintenance Mode</p>
+                    <p className="text-[11px] sm:text-xs text-slate-400">Lock non-admin platform logins across Web & Mobile</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setAdminSettings(prev => ({ ...prev, maintenanceMode: !prev.maintenanceMode }))}
-                    className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                    className={`w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer text-center ${
                       adminSettings.maintenanceMode ? 'bg-red-500 text-white' : 'bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
                     }`}
                   >
@@ -2770,7 +2872,7 @@ export default function AdminDashboard() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Default Signup Credits</label>
                     <input
@@ -2794,16 +2896,16 @@ export default function AdminDashboard() {
 
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer transition-all text-center"
                 >
                   Save Global System Settings
                 </button>
               </form>
 
               {/* Admin Password Change */}
-              <div className="pt-6 border-t border-slate-100 dark:border-zinc-800 space-y-4">
-                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">Admin Password Change</h4>
-                <form onSubmit={handleChangeAdminPassword} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="pt-4 sm:pt-6 border-t border-slate-100 dark:border-zinc-800 space-y-3 sm:space-y-4">
+                <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">Admin Password Change</h4>
+                <form onSubmit={handleChangeAdminPassword} className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <input
                     type="password"
                     placeholder="New Password"
@@ -2820,7 +2922,7 @@ export default function AdminDashboard() {
                   />
                   <button
                     type="submit"
-                    className="sm:col-span-2 py-3 bg-[#C8A34D] hover:bg-[#b5923f] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer"
+                    className="w-full sm:col-span-2 py-3 bg-[#C8A34D] hover:bg-[#b5923f] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
                   >
                     Update Admin Password
                   </button>
@@ -2833,9 +2935,9 @@ export default function AdminDashboard() {
 
       {/* Edit Role Modal */}
       {editUserModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4">
-            <h3 className="text-base font-black text-slate-900 dark:text-white">Edit User Role — {editUserModal.name}</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-sm w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Edit User Role — {editUserModal.name}</h3>
             <div className="space-y-2">
               {['advocate', 'law_firm', 'student', 'admin', 'SUPER_ADMIN'].map(role => (
                 <button
@@ -2847,7 +2949,7 @@ export default function AdminDashboard() {
                 </button>
               ))}
             </div>
-            <button onClick={() => setEditUserModal(null)} className="w-full py-2 bg-slate-200 text-xs font-bold rounded-xl cursor-pointer">
+            <button onClick={() => setEditUserModal(null)} className="w-full py-2.5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 text-xs font-bold rounded-xl cursor-pointer">
               Cancel
             </button>
           </div>
@@ -2856,15 +2958,15 @@ export default function AdminDashboard() {
 
       {/* Credit Adjustment Modal */}
       {creditModalUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <form onSubmit={handleAdjustCreditsSubmit} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4">
-            <h3 className="text-base font-black text-slate-900 dark:text-white">Adjust AI Credits — {creditModalUser.name}</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <form onSubmit={handleAdjustCreditsSubmit} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-sm w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Adjust AI Credits — {creditModalUser.name}</h3>
             <div>
               <label className="text-[10px] font-black uppercase text-slate-400">Action</label>
               <select
                 value={creditAdjustment.actionType}
                 onChange={e => setCreditAdjustment(prev => ({ ...prev, actionType: e.target.value }))}
-                className="w-full mt-1 p-2 bg-slate-50 dark:bg-zinc-900 border border-slate-200 rounded-xl text-xs font-bold"
+                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
               >
                 <option value="add">Add Credits</option>
                 <option value="deduct">Deduct Credits</option>
@@ -2876,39 +2978,36 @@ export default function AdminDashboard() {
                 type="number"
                 value={creditAdjustment.amount}
                 onChange={e => setCreditAdjustment(prev => ({ ...prev, amount: e.target.value }))}
-                className="w-full mt-1 p-2 bg-slate-50 dark:bg-zinc-900 border border-slate-200 rounded-xl text-xs font-bold"
+                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
               />
             </div>
-            <div className="flex gap-2">
-              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs cursor-pointer">Save</button>
-              <button type="button" onClick={() => setCreditModalUser(null)} className="py-2.5 px-4 bg-slate-200 text-xs font-bold rounded-xl cursor-pointer">Cancel</button>
+            <div className="flex gap-2 pt-1">
+              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer transition-all">Save</button>
+              <button type="button" onClick={() => setCreditModalUser(null)} className="py-2.5 px-4 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 text-xs font-bold rounded-xl cursor-pointer">Cancel</button>
             </div>
           </form>
         </div>
       )}
 
-      {/* Plan CRUD Modal */}
-
-
       {/* USER DOSSIER DETAIL MODAL — 100% MOBILE APP PARITY */}
       {selectedDossierUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/75 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/75 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
             {/* Header */}
-            <div className="p-6 border-b border-slate-200 dark:border-zinc-800 flex justify-between items-center bg-slate-50/50 dark:bg-zinc-900/50">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] font-black text-lg flex items-center justify-center border border-[#C8A34D]/40 shrink-0">
+            <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-zinc-800 flex justify-between items-center bg-slate-50/50 dark:bg-zinc-900/50">
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] font-black text-base sm:text-lg flex items-center justify-center border border-[#C8A34D]/40 shrink-0">
                   {(selectedDossierUser.name || selectedDossierUser.email || 'U').charAt(0).toUpperCase()}
                 </div>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                    <h3 className="text-sm sm:text-lg font-black text-slate-900 dark:text-white truncate">
                       {selectedDossierUser.name || 'Advocate Client Dossier'}
                     </h3>
-                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20 uppercase">
+                    <span className="text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20 uppercase">
                       {selectedDossierUser.role || 'Advocate'}
                     </span>
-                    <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full ${
+                    <span className={`text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full ${
                       selectedDossierUser.isBlocked || selectedDossierUser.status === 'Suspended'
                         ? 'bg-red-500/10 text-red-500 border border-red-500/20'
                         : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
@@ -2916,39 +3015,39 @@ export default function AdminDashboard() {
                       {selectedDossierUser.isBlocked || selectedDossierUser.status === 'Suspended' ? 'Suspended' : 'Active'}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 font-medium">{selectedDossierUser.email}</p>
+                  <p className="text-[11px] sm:text-xs text-slate-400 font-medium truncate">{selectedDossierUser.email}</p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedDossierUser(null)}
-                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors cursor-pointer"
+                className="p-1.5 sm:p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Content Body */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1 no-scrollbar">
               {/* CARD 1: USER PROFILE DETAILS */}
-              <div className="bg-slate-50 dark:bg-zinc-900/60 p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3">
-                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white pb-2 border-b border-slate-200/80 dark:border-zinc-800">
+              <div className="bg-slate-50 dark:bg-zinc-900/60 p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3">
+                <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white pb-2 border-b border-slate-200/80 dark:border-zinc-800">
                   User Profile Details
                 </h4>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-xs">
-                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
                     Full Name: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.name || 'N/A'}</span>
                   </p>
                   <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
                     Email: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.email}</span>
                   </p>
-                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
                     Phone Number: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.phone || 'N/A'}</span>
                   </p>
-                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
                     Legal Jurisdiction: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.jurisdiction || selectedDossierUser.country || 'India'}</span>
                   </p>
-                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
                     Plan: <span className="font-black text-[#C8A34D]">{selectedDossierUser.subscription?.plan || selectedDossierUser.currentPlan || 'Free'}</span>
                   </p>
                   <p className="text-slate-500 dark:text-zinc-400 font-medium">
@@ -2962,17 +3061,17 @@ export default function AdminDashboard() {
                   <p className="text-slate-500 dark:text-zinc-400 font-medium">
                     Cases Created: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.totalCases || 0}</span>
                   </p>
-                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
-                    Account Created Date: <span className="font-extrabold text-slate-900 dark:text-white">
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
+                    Account Created: <span className="font-extrabold text-slate-900 dark:text-white">
                       {selectedDossierUser.createdAt ? new Date(selectedDossierUser.createdAt).toLocaleDateString('en-GB') : '18/8/2026'}
                     </span>
                   </p>
-                  <p className="text-slate-500 dark:text-zinc-400 font-medium">
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
                     Last Login: <span className="font-extrabold text-slate-900 dark:text-white">
-                      {selectedDossierUser.lastLogin ? new Date(selectedDossierUser.lastLogin).toLocaleString('en-GB') : '18/8/2026, 4:50:44 pm'}
+                      {selectedDossierUser.lastLogin ? new Date(selectedDossierUser.lastLogin).toLocaleString('en-GB') : 'N/A'}
                     </span>
                   </p>
-                  <p className="text-slate-500 dark:text-zinc-400 font-medium col-span-1 sm:col-span-2 font-mono">
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium col-span-1 sm:col-span-2 font-mono truncate text-[11px]">
                     User ID: <span className="font-bold text-slate-700 dark:text-zinc-300">{selectedDossierUser._id}</span>
                   </p>
                 </div>
@@ -2981,33 +3080,33 @@ export default function AdminDashboard() {
                 <div className="pt-3 border-t border-slate-200/80 dark:border-zinc-800 space-y-2">
                   <p className="text-[11px] font-black text-[#C8A34D]">📊 ACTIVE USAGE STATS</p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                    <div className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">Cases Folders</p>
-                      <p className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.totalCases || 0} / Unlimited</p>
+                    <div className="p-2.5 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
+                      <p className="text-[9px] text-slate-400 font-bold uppercase truncate">Cases Folders</p>
+                      <p className="font-extrabold text-slate-900 dark:text-white mt-0.5">{selectedDossierUser.totalCases || 0} / ∞</p>
                     </div>
-                    <div className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">AI Credits</p>
-                      <p className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.credits ?? 500}</p>
+                    <div className="p-2.5 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
+                      <p className="text-[9px] text-slate-400 font-bold uppercase truncate">AI Credits</p>
+                      <p className="font-extrabold text-slate-900 dark:text-white mt-0.5">{selectedDossierUser.credits ?? 500}</p>
                     </div>
-                    <div className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">Contracts Audited</p>
-                      <p className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.usageStatus?.contractsAnalyzed || 0}</p>
+                    <div className="p-2.5 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
+                      <p className="text-[9px] text-slate-400 font-bold uppercase truncate">Contracts Audited</p>
+                      <p className="font-extrabold text-slate-900 dark:text-white mt-0.5">{selectedDossierUser.usageStatus?.contractsAnalyzed || 0}</p>
                     </div>
-                    <div className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">Drafts Generated</p>
-                      <p className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.usageStatus?.draftsGenerated || 0}</p>
+                    <div className="p-2.5 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
+                      <p className="text-[9px] text-slate-400 font-bold uppercase truncate">Drafts Made</p>
+                      <p className="font-extrabold text-slate-900 dark:text-white mt-0.5">{selectedDossierUser.usageStatus?.draftsGenerated || 0}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* CARD 2: 💳 SUBSCRIPTION MANAGEMENT — EXACT MOBILE APP DESIGN */}
-              <div className="bg-slate-50 dark:bg-zinc-900/60 p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-4">
+              <div className="bg-slate-50 dark:bg-zinc-900/60 p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-4">
                 <div>
-                  <h4 className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
                     <span>💳 Subscription Management</span>
                   </h4>
-                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1">
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
                     Assign or update subscription plan directly. Active plan is the single source of truth for features, limits, and storage.
                   </p>
                 </div>
@@ -3015,7 +3114,7 @@ export default function AdminDashboard() {
                 {/* Select Subscription Plan Horizontal Pill Scroll */}
                 <div className="space-y-2">
                   <label className="text-xs font-extrabold text-slate-900 dark:text-white">Select Subscription Plan</label>
-                  <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+                  <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
                     {[
                       { id: 'advocate_basic', name: 'Advocate Basic Plan', badge: 'BASIC' },
                       { id: 'advocate_pro', name: 'Advocate Pro Plan', badge: 'PRO' },
@@ -3036,7 +3135,7 @@ export default function AdminDashboard() {
                           key={plan.id}
                           type="button"
                           onClick={() => setSubForm(prev => ({ ...prev, planId: plan.id }))}
-                          className={`px-3.5 py-2.5 rounded-xl border text-left shrink-0 transition-all cursor-pointer ${
+                          className={`px-3 py-2 rounded-xl border text-left shrink-0 transition-all cursor-pointer ${
                             isSelected
                               ? 'bg-[#C8A34D]/20 border-[#C8A34D] text-[#C8A34D] shadow-2xs'
                               : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 hover:border-[#C8A34D]/50'
@@ -3053,7 +3152,7 @@ export default function AdminDashboard() {
                 {/* Plan Duration Toggle */}
                 <div className="space-y-2">
                   <label className="text-xs font-extrabold text-slate-900 dark:text-white">Plan Duration</label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     <button
                       type="button"
                       onClick={() => setSubForm(prev => ({ ...prev, billingCycle: 'monthly' }))}
@@ -3080,7 +3179,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Action Buttons: Assign Plan (Gold) & Expire Plan (Red) */}
-                <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pt-1">
                   <button
                     type="button"
                     onClick={handleSubscriptionSave}
@@ -3100,10 +3199,10 @@ export default function AdminDashboard() {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex justify-end">
+            <div className="p-3.5 sm:p-4 border-t border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex justify-end">
               <button
                 onClick={() => setSelectedDossierUser(null)}
-                className="px-6 py-2.5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
+                className="w-full sm:w-auto px-6 py-2.5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors text-center"
               >
                 Close Dossier
               </button>
@@ -3114,9 +3213,9 @@ export default function AdminDashboard() {
 
       {/* SUBSCRIPTION ASSIGNMENT / CHANGE MODAL */}
       {subModalUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <form onSubmit={handleSubscriptionSave} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="text-base font-black text-slate-900 dark:text-white">Subscription Management — {subModalUser.name || subModalUser.email}</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <form onSubmit={handleSubscriptionSave} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Subscription Management — {subModalUser.name || subModalUser.email}</h3>
             
             <div>
               <label className="text-[10px] font-black uppercase text-slate-400">Select Subscription Plan</label>
@@ -3158,19 +3257,19 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="flex gap-2 pt-2">
-              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs cursor-pointer">
-                Assign Plan
+            <div className="flex flex-col-reverse sm:flex-row gap-2 pt-2">
+              <button type="button" onClick={() => setSubModalUser(null)} className="py-2.5 px-4 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 text-xs font-bold rounded-xl cursor-pointer text-center">
+                Cancel
               </button>
               <button
                 type="button"
                 onClick={() => handleExpireUserSubscription(subModalUser._id)}
-                className="py-2.5 px-3 bg-red-500/10 text-red-500 border border-red-500/20 text-xs font-bold rounded-xl cursor-pointer"
+                className="py-2.5 px-3 bg-red-500/10 text-red-500 border border-red-500/20 text-xs font-bold rounded-xl cursor-pointer text-center"
               >
                 Expire Plan
               </button>
-              <button type="button" onClick={() => setSubModalUser(null)} className="py-2.5 px-4 bg-slate-200 dark:bg-zinc-800 text-xs font-bold rounded-xl cursor-pointer">
-                Cancel
+              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer text-center">
+                Assign Plan
               </button>
             </div>
           </form>
@@ -3179,9 +3278,9 @@ export default function AdminDashboard() {
 
       {/* PASSWORD RESET MODAL */}
       {passwordResetUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <form onSubmit={handleResetUserPassword} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-4">
-            <h3 className="text-base font-black text-slate-900 dark:text-white">Reset User Password</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <form onSubmit={handleResetUserPassword} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-sm w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Reset User Password</h3>
             <p className="text-xs text-slate-500 dark:text-zinc-400">Set a new password for {passwordResetUser.name || passwordResetUser.email}</p>
             <div>
               <label className="text-[10px] font-black uppercase text-slate-400">New Password</label>
@@ -3190,52 +3289,53 @@ export default function AdminDashboard() {
                 placeholder="Enter new password"
                 value={passwordResetVal}
                 onChange={e => setPasswordResetVal(e.target.value)}
-                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold"
+                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
                 required
               />
             </div>
-            <div className="flex gap-2">
-              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs cursor-pointer">
-                Save New Password
-              </button>
-              <button type="button" onClick={() => { setPasswordResetUser(null); setPasswordResetVal(''); }} className="py-2.5 px-4 bg-slate-200 dark:bg-zinc-800 text-xs font-bold rounded-xl cursor-pointer">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 pt-1">
+              <button type="button" onClick={() => { setPasswordResetUser(null); setPasswordResetVal(''); }} className="py-2.5 px-4 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 text-xs font-bold rounded-xl cursor-pointer text-center">
                 Cancel
+              </button>
+              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer text-center">
+                Save Password
               </button>
             </div>
           </form>
         </div>
       )}
+
       {/* REFUND CONFIRMATION MODAL */}
       {refundConfirmModal.isOpen && refundConfirmModal.payment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="text-base font-black text-slate-900 dark:text-white">Refund Payment Transaction?</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Refund Payment Transaction?</h3>
             <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
               Are you sure you want to refund this payment? The customer will receive a full reversal, and their subscription status will be updated accordingly.
             </p>
 
-            <div className="bg-slate-50 dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
-              <p><span className="text-slate-400 font-bold">User:</span> <strong className="text-slate-800 dark:text-zinc-200">{refundConfirmModal.payment.userName || refundConfirmModal.payment.userId?.name || 'Advocate Customer'}</strong></p>
-              <p><span className="text-slate-400 font-bold">Email:</span> <span className="text-slate-700 dark:text-zinc-300">{refundConfirmModal.payment.userEmail || refundConfirmModal.payment.userId?.email || 'N/A'}</span></p>
-              <p><span className="text-slate-400 font-bold">Invoice ID:</span> <span className="font-mono text-slate-700 dark:text-zinc-300">{refundConfirmModal.payment.invoiceNumber || refundConfirmModal.payment._id}</span></p>
+            <div className="bg-slate-50 dark:bg-zinc-900 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+              <p className="truncate"><span className="text-slate-400 font-bold">User:</span> <strong className="text-slate-800 dark:text-zinc-200">{refundConfirmModal.payment.userName || refundConfirmModal.payment.userId?.name || 'Advocate Customer'}</strong></p>
+              <p className="truncate"><span className="text-slate-400 font-bold">Email:</span> <span className="text-slate-700 dark:text-zinc-300">{refundConfirmModal.payment.userEmail || refundConfirmModal.payment.userId?.email || 'N/A'}</span></p>
+              <p className="truncate"><span className="text-slate-400 font-bold">Invoice ID:</span> <span className="font-mono text-slate-700 dark:text-zinc-300">{refundConfirmModal.payment.invoiceNumber || refundConfirmModal.payment._id}</span></p>
               <p><span className="text-slate-400 font-bold">Amount:</span> <strong className="text-red-500 font-black">₹{Number(refundConfirmModal.payment.amount || 0).toLocaleString('en-IN')}</strong></p>
               <p><span className="text-slate-400 font-bold">Gateway:</span> <span className="uppercase text-slate-700 dark:text-zinc-300">{refundConfirmModal.payment.gateway || 'Razorpay'}</span></p>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setRefundConfirmModal({ isOpen: false, payment: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors text-center"
+              >
+                Cancel
+              </button>
               <button
                 type="button"
                 onClick={() => handleRefundPayment(refundConfirmModal.payment._id)}
                 className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Confirm Refund
-              </button>
-              <button
-                type="button"
-                onClick={() => setRefundConfirmModal({ isOpen: false, payment: null })}
-                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
-              >
-                Cancel
               </button>
             </div>
           </div>
@@ -3244,33 +3344,33 @@ export default function AdminDashboard() {
 
       {/* MARK PAID CONFIRMATION MODAL */}
       {markPaidConfirmModal.isOpen && markPaidConfirmModal.payment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="text-base font-black text-slate-900 dark:text-white">Mark Payment as Paid?</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Mark Payment as Paid?</h3>
             <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
               Confirm marking this pending transaction as PAID. This will activate the user's selected subscription plan immediately.
             </p>
 
-            <div className="bg-slate-50 dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
-              <p><span className="text-slate-400 font-bold">User:</span> <strong className="text-slate-800 dark:text-zinc-200">{markPaidConfirmModal.payment.userName || markPaidConfirmModal.payment.userId?.name || 'Advocate Customer'}</strong></p>
-              <p><span className="text-slate-400 font-bold">Invoice ID:</span> <span className="font-mono text-slate-700 dark:text-zinc-300">{markPaidConfirmModal.payment.invoiceNumber || markPaidConfirmModal.payment._id}</span></p>
+            <div className="bg-slate-50 dark:bg-zinc-900 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+              <p className="truncate"><span className="text-slate-400 font-bold">User:</span> <strong className="text-slate-800 dark:text-zinc-200">{markPaidConfirmModal.payment.userName || markPaidConfirmModal.payment.userId?.name || 'Advocate Customer'}</strong></p>
+              <p className="truncate"><span className="text-slate-400 font-bold">Invoice ID:</span> <span className="font-mono text-slate-700 dark:text-zinc-300">{markPaidConfirmModal.payment.invoiceNumber || markPaidConfirmModal.payment._id}</span></p>
               <p><span className="text-slate-400 font-bold">Amount:</span> <strong className="text-emerald-500 font-black">₹{Number(markPaidConfirmModal.payment.amount || 0).toLocaleString('en-IN')}</strong></p>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setMarkPaidConfirmModal({ isOpen: false, payment: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors text-center"
+              >
+                Cancel
+              </button>
               <button
                 type="button"
                 onClick={() => handleMarkPaymentPaid(markPaidConfirmModal.payment._id)}
                 className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Confirm Paid
-              </button>
-              <button
-                type="button"
-                onClick={() => setMarkPaidConfirmModal({ isOpen: false, payment: null })}
-                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
-              >
-                Cancel
               </button>
             </div>
           </div>
@@ -3279,9 +3379,9 @@ export default function AdminDashboard() {
 
       {/* PLAN CREATE / EDIT MODAL */}
       {planModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <form onSubmit={handlePlanSaveSubmit} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h3 className="text-base font-black text-slate-900 dark:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <form onSubmit={handlePlanSaveSubmit} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto custom-scrollbar my-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
               {planModal.isEdit ? `Edit Subscription Plan — ${planForm.planName}` : 'Create New Subscription Plan'}
             </h3>
 
@@ -3310,7 +3410,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
               <div>
                 <label className="text-[10px] font-black uppercase text-slate-400">Monthly Price (₹)</label>
                 <input
@@ -3369,7 +3469,7 @@ export default function AdminDashboard() {
               <p className="text-[10px] text-slate-400 mt-1 font-medium">Checkmarks (✓) are added automatically on the plan cards.</p>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-zinc-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2 border-t border-slate-100 dark:border-zinc-800">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -3377,7 +3477,7 @@ export default function AdminDashboard() {
                   onChange={e => setPlanForm(prev => ({ ...prev, isPopular: e.target.checked }))}
                   className="rounded border-slate-300 text-[#C8A34D] focus:ring-[#C8A34D]"
                 />
-                <span className="text-xs font-black text-slate-800 dark:text-zinc-200">Highlight as Popular Tier (Gold Border)</span>
+                <span className="text-xs font-black text-slate-800 dark:text-zinc-200">Highlight as Popular Tier</span>
               </label>
 
               <label className="flex items-center gap-2 cursor-pointer">
@@ -3391,30 +3491,65 @@ export default function AdminDashboard() {
               </label>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setPlanModal({ isOpen: false, isEdit: false, planData: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors text-center"
+              >
+                Cancel
+              </button>
               <button
                 type="submit"
                 className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Save Plan Parameters
               </button>
-              <button
-                type="button"
-                onClick={() => setPlanModal({ isOpen: false, isEdit: false, planData: null })}
-                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
-              >
-                Cancel
-              </button>
             </div>
           </form>
         </div>
       )}
 
+      {/* PLAN DELETE CONFIRMATION MODAL */}
+      {planDeleteConfirmModal.isOpen && planDeleteConfirmModal.plan && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full shadow-2xl space-y-4 my-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Delete Subscription Plan?</h3>
+            <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+              Are you sure you want to delete this subscription plan? Subscribers currently on this plan might be affected.
+            </p>
+
+            <div className="bg-slate-50 dark:bg-zinc-900 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+              <p><span className="text-slate-400 font-bold">Plan:</span> <strong className="text-slate-800 dark:text-zinc-200 font-black">{planDeleteConfirmModal.plan.name || planDeleteConfirmModal.plan.planName || planDeleteConfirmModal.plan.planId}</strong></p>
+              <p><span className="text-slate-400 font-bold">Slug:</span> <span className="font-mono text-slate-700 dark:text-zinc-300">{planDeleteConfirmModal.plan.planId}</span></p>
+              <p><span className="text-slate-400 font-bold">Monthly Price:</span> <span className="text-emerald-500 font-black">₹{planDeleteConfirmModal.plan.priceMonthly || 0}</span></p>
+            </div>
+
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setPlanDeleteConfirmModal({ isOpen: false, plan: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors text-center"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDeletePlanSubmit(planDeleteConfirmModal.plan.planId || planDeleteConfirmModal.plan._id)}
+                className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+              >
+                Confirm Delete Plan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* COUPON CREATE / EDIT MODAL */}
       {couponModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <form onSubmit={handleSaveCouponSubmit} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <h3 className="text-base font-black text-slate-900 dark:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <form onSubmit={handleSaveCouponSubmit} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto custom-scrollbar my-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
               {couponModal.isEdit ? `Edit Coupon: ${couponForm.code}` : 'Create New Promo Code'}
             </h3>
 
@@ -3496,7 +3631,7 @@ export default function AdminDashboard() {
                         }
                         setCouponForm(prev => ({ ...prev, applicablePlans: next }));
                       }}
-                      className={`px-3 py-1.5 rounded-xl text-[11px] font-extrabold border transition-all cursor-pointer ${
+                      className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-extrabold border transition-all cursor-pointer ${
                         isSelected
                           ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D]'
                           : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
@@ -3589,19 +3724,19 @@ export default function AdminDashboard() {
               </label>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setCouponModal({ isOpen: false, isEdit: false, couponData: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors text-center"
+              >
+                Cancel
+              </button>
               <button
                 type="submit"
                 className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Save Coupon 🎉
-              </button>
-              <button
-                type="button"
-                onClick={() => setCouponModal({ isOpen: false, isEdit: false, couponData: null })}
-                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
-              >
-                Cancel
               </button>
             </div>
           </form>
@@ -3610,62 +3745,62 @@ export default function AdminDashboard() {
 
       {/* COUPON STATS & REDEMPTION AUDIT HISTORY MODAL */}
       {couponDetailsModal.isOpen && couponDetailsModal.coupon && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/75 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/75 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
             {/* Header */}
-            <div className="p-6 border-b border-slate-200 dark:border-zinc-800 flex justify-between items-center bg-slate-50/50 dark:bg-zinc-900/50">
+            <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-zinc-800 flex justify-between items-center bg-slate-50/50 dark:bg-zinc-900/50 gap-3">
               <div>
-                <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2 flex-wrap">
                   <span>Coupon Analytics: {couponDetailsModal.coupon.code}</span>
                   <span className="bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-black px-2 py-0.5 rounded-md border border-[#C8A34D]/40">
                     {couponDetailsModal.coupon.discountType === 'percentage' ? `${couponDetailsModal.coupon.discountValue}% OFF` : `₹${couponDetailsModal.coupon.discountValue} OFF`}
                   </span>
                 </h3>
-                <p className="text-xs text-slate-400 font-medium mt-0.5">
+                <p className="text-[11px] sm:text-xs text-slate-400 font-medium mt-0.5">
                   Created: {couponDetailsModal.coupon.createdAt ? new Date(couponDetailsModal.coupon.createdAt).toLocaleDateString('en-GB') : 'N/A'}
                 </p>
               </div>
               <button
                 onClick={() => setCouponDetailsModal({ isOpen: false, coupon: null, stats: null, usageHistory: [] })}
-                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors cursor-pointer"
+                className="p-1.5 sm:p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Body */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+            <div className="p-3.5 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1 custom-scrollbar">
               {/* 4 Telemetry Box Summary */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="p-3 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase">TOTAL USES</p>
-                  <p className="text-lg font-extrabold text-slate-900 dark:text-white mt-1">{couponDetailsModal.stats?.totalUses || couponDetailsModal.coupon.usedCount || 0}</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-xs">
+                <div className="p-2.5 sm:p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800">
+                  <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase">TOTAL USES</p>
+                  <p className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white mt-0.5 sm:mt-1">{couponDetailsModal.stats?.totalUses || couponDetailsModal.coupon.usedCount || 0}</p>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase">DISCOUNT GIVEN</p>
-                  <p className="text-lg font-extrabold text-emerald-500 mt-1">₹{(couponDetailsModal.stats?.totalDiscountGiven || 0).toLocaleString('en-IN')}</p>
+                <div className="p-2.5 sm:p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800">
+                  <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase">DISCOUNT GIVEN</p>
+                  <p className="text-base sm:text-lg font-extrabold text-emerald-500 mt-0.5 sm:mt-1">₹{(couponDetailsModal.stats?.totalDiscountGiven || 0).toLocaleString('en-IN')}</p>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase">REVENUE GENERATED</p>
-                  <p className="text-lg font-extrabold text-[#C8A34D] mt-1">₹{(couponDetailsModal.stats?.totalRevenueGenerated || 0).toLocaleString('en-IN')}</p>
+                <div className="p-2.5 sm:p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800">
+                  <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase">REVENUE GENERATED</p>
+                  <p className="text-base sm:text-lg font-extrabold text-[#C8A34D] mt-0.5 sm:mt-1">₹{(couponDetailsModal.stats?.totalRevenueGenerated || 0).toLocaleString('en-IN')}</p>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase">AVG ORDER VALUE</p>
-                  <p className="text-lg font-extrabold text-blue-500 mt-1">₹{(couponDetailsModal.stats?.averageOrderValue || 0).toLocaleString('en-IN')}</p>
+                <div className="p-2.5 sm:p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800">
+                  <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase">AVG ORDER VALUE</p>
+                  <p className="text-base sm:text-lg font-extrabold text-blue-500 mt-0.5 sm:mt-1">₹{(couponDetailsModal.stats?.averageOrderValue || 0).toLocaleString('en-IN')}</p>
                 </div>
               </div>
 
               {/* Redemption Audit History Table */}
-              <div className="bg-slate-50 dark:bg-zinc-900/60 p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3">
-                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white pb-2 border-b border-slate-200/80 dark:border-zinc-800">
+              <div className="bg-slate-50 dark:bg-zinc-900/60 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3">
+                <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white pb-2 border-b border-slate-200/80 dark:border-zinc-800">
                   Redemption Audit History
                 </h4>
 
                 {couponDetailsModal.usageHistory.length === 0 ? (
                   <p className="text-xs italic text-slate-400 py-4 text-center">No user redemptions recorded yet for this coupon.</p>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
+                  <div className="overflow-x-auto no-scrollbar">
+                    <table className="min-w-[500px] w-full text-left text-xs">
                       <thead>
                         <tr className="border-b border-slate-200/80 dark:border-zinc-800 text-[10px] uppercase font-black text-slate-400">
                           <th className="pb-2">User</th>
@@ -3702,10 +3837,10 @@ export default function AdminDashboard() {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex justify-end">
+            <div className="p-3 sm:p-4 border-t border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex justify-end">
               <button
                 onClick={() => setCouponDetailsModal({ isOpen: false, coupon: null, stats: null, usageHistory: [] })}
-                className="px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer shadow-md transition-all"
+                className="w-full sm:w-auto px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer shadow-md transition-all text-center"
               >
                 Close Details
               </button>
@@ -3716,32 +3851,32 @@ export default function AdminDashboard() {
 
       {/* COUPON DELETE CONFIRMATION MODAL */}
       {couponDeleteConfirmModal.isOpen && couponDeleteConfirmModal.coupon && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="text-base font-black text-slate-900 dark:text-white">Delete Promo Code?</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full shadow-2xl space-y-4 my-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Delete Promo Code?</h3>
             <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
               Are you sure you want to delete this promotional code? Users will no longer be able to redeem it.
             </p>
 
-            <div className="bg-slate-50 dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+            <div className="bg-slate-50 dark:bg-zinc-900 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
               <p><span className="text-slate-400 font-bold">Promo Code:</span> <strong className="text-[#C8A34D] font-black font-mono">{couponDeleteConfirmModal.coupon.code}</strong></p>
               <p><span className="text-slate-400 font-bold">Discount:</span> <span className="text-slate-700 dark:text-zinc-300 font-bold">{couponDeleteConfirmModal.coupon.discountType === 'percentage' ? `${couponDeleteConfirmModal.coupon.discountValue}% OFF` : `₹${couponDeleteConfirmModal.coupon.discountValue} OFF`}</span></p>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setCouponDeleteConfirmModal({ isOpen: false, coupon: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors text-center"
+              >
+                Cancel
+              </button>
               <button
                 type="button"
                 onClick={() => handleDeleteCouponSubmit(couponDeleteConfirmModal.coupon._id)}
                 className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Confirm Delete Code
-              </button>
-              <button
-                type="button"
-                onClick={() => setCouponDeleteConfirmModal({ isOpen: false, coupon: null })}
-                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
-              >
-                Cancel
               </button>
             </div>
           </div>
@@ -3750,21 +3885,21 @@ export default function AdminDashboard() {
 
       {/* MANAGE FEATURE REQUEST MODAL */}
       {featureModal.isOpen && featureModal.feature && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <form onSubmit={handleSaveFeatureStatus} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-zinc-800">
-              <h3 className="text-base font-black text-slate-900 dark:text-white">Manage Feature Request</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <form onSubmit={handleSaveFeatureStatus} className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto custom-scrollbar my-auto">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-zinc-800 gap-2">
+              <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Manage Feature Request</h3>
               <button
                 type="button"
                 onClick={() => setFeatureModal({ isOpen: false, feature: null, status: 'Pending', developerAssigned: 'None', adminNote: '' })}
-                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Read-Only Feature Overview Box */}
-            <div className="bg-slate-50 dark:bg-zinc-900/60 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+            <div className="bg-slate-50 dark:bg-zinc-900/60 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-extrabold text-[#C8A34D] bg-[#C8A34D]/10 border border-[#C8A34D]/30 px-2.5 py-0.5 rounded-lg text-[11px]">
                   {featureModal.feature.category || 'General Feature'}
@@ -3775,7 +3910,7 @@ export default function AdminDashboard() {
                   {featureModal.feature.priority || 'Medium'} Priority
                 </span>
               </div>
-              <h4 className="text-sm font-extrabold text-slate-900 dark:text-white mt-1">{featureModal.feature.title}</h4>
+              <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white mt-1">{featureModal.feature.title}</h4>
               <p className="text-slate-600 dark:text-zinc-300 font-medium">{featureModal.feature.description}</p>
               <p className="text-[10px] text-slate-400 font-bold pt-1">
                 Requested by: {featureModal.feature.email || featureModal.feature.userEmail || 'Advocate Client'} ({featureModal.feature.userPlan || 'ADVOCATE_PRO'})
@@ -3793,7 +3928,7 @@ export default function AdminDashboard() {
                       key={st}
                       type="button"
                       onClick={() => setFeatureModal(prev => ({ ...prev, status: st }))}
-                      className={`px-3 py-1.5 rounded-xl text-[11px] font-black uppercase transition-all cursor-pointer border ${
+                      className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-black uppercase transition-all cursor-pointer border ${
                         isSelected
                           ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-xs'
                           : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
@@ -3817,7 +3952,7 @@ export default function AdminDashboard() {
                       key={dev}
                       type="button"
                       onClick={() => setFeatureModal(prev => ({ ...prev, developerAssigned: dev }))}
-                      className={`px-3 py-1.5 rounded-xl text-[11px] font-black transition-all cursor-pointer border ${
+                      className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-black transition-all cursor-pointer border ${
                         isSelected
                           ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
                           : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
@@ -3838,23 +3973,23 @@ export default function AdminDashboard() {
                 placeholder="Add response to reflect inside client app..."
                 value={featureModal.adminNote}
                 onChange={e => setFeatureModal(prev => ({ ...prev, adminNote: e.target.value }))}
-                className="w-full mt-1 p-3 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
+                className="w-full mt-1 p-2.5 sm:p-3 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
               />
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setFeatureModal({ isOpen: false, feature: null, status: 'Pending', developerAssigned: 'None', adminNote: '' })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors text-center"
+              >
+                Cancel
+              </button>
               <button
                 type="submit"
                 className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Save Update 🎉
-              </button>
-              <button
-                type="button"
-                onClick={() => setFeatureModal({ isOpen: false, feature: null, status: 'Pending', developerAssigned: 'None', adminNote: '' })}
-                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
-              >
-                Cancel
               </button>
             </div>
           </form>
@@ -3863,19 +3998,26 @@ export default function AdminDashboard() {
 
       {/* FEATURE DELETE CONFIRMATION MODAL */}
       {featureDeleteModal.isOpen && featureDeleteModal.feature && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="text-base font-black text-slate-900 dark:text-white">Delete Feature Request?</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full shadow-2xl space-y-4 my-auto">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Delete Feature Request?</h3>
             <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
               Are you sure you want to delete this feature request? This action cannot be undone.
             </p>
 
-            <div className="bg-slate-50 dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+            <div className="bg-slate-50 dark:bg-zinc-900 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
               <p><span className="text-slate-400 font-bold">Category:</span> <span className="font-extrabold text-[#C8A34D]">{featureDeleteModal.feature.category || 'General'}</span></p>
               <p><span className="text-slate-400 font-bold">Title:</span> <strong className="text-slate-800 dark:text-zinc-200">{featureDeleteModal.feature.title}</strong></p>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setFeatureDeleteModal({ isOpen: false, feature: null })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors text-center"
+              >
+                Cancel
+              </button>
               <button
                 type="button"
                 onClick={() => handleDeleteFeatureSubmit(featureDeleteModal.feature._id)}
@@ -3883,12 +4025,96 @@ export default function AdminDashboard() {
               >
                 Confirm Delete Request
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* BUG UPDATE MODAL */}
+      {bugModal.isOpen && bugModal.bug && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto custom-scrollbar my-auto">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-zinc-800 gap-2">
+              <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">Update Bug Report</h3>
               <button
                 type="button"
-                onClick={() => setFeatureDeleteModal({ isOpen: false, feature: null })}
-                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors"
+                onClick={() => setBugModal({ isOpen: false, bug: null, status: 'Open', assignedTo: '' })}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Bug Overview Box */}
+            <div className="bg-slate-50 dark:bg-zinc-900/60 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-red-500/10 text-red-500 border border-red-500/20">
+                  {bugModal.bug.severity || 'Major'}
+                </span>
+                <span className="text-[10px] font-bold text-slate-400">
+                  Status: {bugModal.bug.status || 'Open'}
+                </span>
+              </div>
+              <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">{bugModal.bug.title}</h4>
+              <p className="text-slate-600 dark:text-zinc-300 font-medium">{bugModal.bug.description}</p>
+              {bugModal.bug.userEmail && (
+                <p className="text-[10px] text-slate-400 font-bold pt-1">
+                  Reported by: {bugModal.bug.userEmail}
+                </p>
+              )}
+            </div>
+
+            {/* Status Selector */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase text-slate-400">Resolution Status</label>
+              <div className="flex gap-1.5 flex-wrap">
+                {['Open', 'In Progress', 'Resolved', 'Closed'].map((st) => {
+                  const isSelected = bugModal.status === st;
+                  return (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => setBugModal(prev => ({ ...prev, status: st }))}
+                      className={`px-3 py-1.5 rounded-xl text-[11px] font-black uppercase transition-all cursor-pointer border ${
+                        isSelected
+                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-xs'
+                          : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Assigned To Input */}
+            <div>
+              <label className="text-[10px] font-black uppercase text-slate-400">Assign To Engineer / Team</label>
+              <input
+                type="text"
+                placeholder="e.g. Aditi Verma / Core AI Team"
+                value={bugModal.assignedTo}
+                onChange={e => setBugModal(prev => ({ ...prev, assignedTo: e.target.value }))}
+                className="w-full mt-1 p-2.5 sm:p-3 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setBugModal({ isOpen: false, bug: null, status: 'Open', assignedTo: '' })}
+                className="py-3 px-5 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-bold rounded-xl text-xs cursor-pointer hover:bg-slate-300 transition-colors text-center"
               >
                 Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveBugStatus}
+                className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+              >
+                Save Bug Status
               </button>
             </div>
           </div>

@@ -158,14 +158,41 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Incorrect password" });
     }
 
-    // Reset failed attempts & record lastLogin & enforce strict Super Admin role check
+    const emailLower = (user.email || '').toLowerCase().trim();
+
+    // Check if client is mobile app
+    const isMobileClient = (
+      req.headers['x-device-platform'] === 'mobile' ||
+      req.headers['x-device-platform'] === 'ios' ||
+      req.headers['x-device-platform'] === 'android' ||
+      (req.headers['x-device-name'] && String(req.headers['x-device-name']).toLowerCase().includes('mobile app')) ||
+      (req.headers['user-agent'] && (
+        String(req.headers['user-agent']).includes('okhttp') ||
+        String(req.headers['user-agent']).includes('Expo') ||
+        String(req.headers['user-agent']).includes('React-Native') ||
+        String(req.headers['user-agent']).includes('MobileApp')
+      )) ||
+      req.body?.platform === 'mobile' ||
+      req.body?.isMobileApp === true
+    );
+
+    if (emailLower === 'admin@uwo24.com' && isMobileClient) {
+      return res.status(403).json({
+        success: false,
+        code: "WEB_ADMIN_ONLY",
+        error: "This admin account is restricted to the Web Admin Portal only and cannot be accessed on the mobile app. Please log in on the Web application."
+      });
+    }
+
+    // Reset failed attempts & record lastLogin & enforce strict Super Admin / Admin role check
     user.failedAttempts = 0;
     user.lockoutUntil = null;
     user.lastLogin = Date.now();
 
-    const emailLower = (user.email || '').toLowerCase().trim();
     if (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
       user.role = 'SUPER_ADMIN';
+    } else if (emailLower === 'admin@uwo24.com') {
+      user.role = 'admin';
     } else if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
       user.role = 'user';
     }

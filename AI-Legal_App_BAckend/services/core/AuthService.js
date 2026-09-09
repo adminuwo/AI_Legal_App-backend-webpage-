@@ -250,6 +250,8 @@ export class AuthService extends BaseService {
     const emailLower = (user.email || '').toLowerCase().trim();
     if (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
       user.role = 'SUPER_ADMIN';
+    } else if (emailLower === 'admin@uwo24.com') {
+      user.role = 'admin';
     } else if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
       user.role = 'user';
     }
