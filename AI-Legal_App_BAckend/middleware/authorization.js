@@ -86,7 +86,7 @@ export const isAdmin = async (req, res, next) => {
         }
 
         const emailLower = (req.user.email || '').toLowerCase().trim();
-        if (req.user.role === 'SUPER_ADMIN' || req.user.role === 'admin' || emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
+        if (req.user.role === 'SUPER_ADMIN' || req.user.role === 'admin' || emailLower === 'admin@uwo24.com' || emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
             return next();
         }
 
@@ -95,7 +95,7 @@ export const isAdmin = async (req, res, next) => {
 
         if (user) {
             const dbEmailLower = (user.email || '').toLowerCase().trim();
-            if (user.role === 'SUPER_ADMIN' || user.role === 'admin' || dbEmailLower === 'aditi@uwo24.com' || dbEmailLower === 'aditilakhera0@gmail.com') {
+            if (user.role === 'SUPER_ADMIN' || user.role === 'admin' || dbEmailLower === 'admin@uwo24.com' || dbEmailLower === 'aditi@uwo24.com' || dbEmailLower === 'aditilakhera0@gmail.com') {
                 req.user.role = user.role || 'SUPER_ADMIN';
                 return next();
             }

@@ -15,7 +15,7 @@ const resetAdminPassword = async () => {
         await connectDB();
         
         const email = 'admin@uwo24.com';
-        const newPassword = 'Admin@123';
+        const newPassword = 'Admin@24';
         
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
@@ -24,7 +24,7 @@ const resetAdminPassword = async () => {
             { email: email },
             { 
                 password: hashedPassword,
-                role: 'admin',
+                role: 'SUPER_ADMIN',
                 isVerified: true
             },
             { new: true }
@@ -41,7 +41,7 @@ const resetAdminPassword = async () => {
                 name: 'Admin',
                 email: email,
                 password: hashedPassword,
-                role: 'admin',
+                role: 'SUPER_ADMIN',
                 isVerified: true,
                 credits: 32000
             });
