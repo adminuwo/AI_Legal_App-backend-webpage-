@@ -10,8 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import { generateChatResponse } from '../services/geminiService';
 import { useSubscription } from '../context/SubscriptionContext';
 
-// CATALOG CATEGORIES (30+ Subjects)
-const CATALOG_CATEGORIES = [
+// CATALOG CATEGORIES (30+ Subjects) - India
+const CATALOG_CATEGORIES_INDIA = [
   { id: 'all', label: 'All Subjects' },
   { id: 'criminal', label: 'Criminal Laws' },
   { id: 'constitution', label: 'Constitutional Law' },
@@ -26,8 +26,24 @@ const CATALOG_CATEGORIES = [
   { id: 'exams', label: 'CLAT / AIBE / Judiciary' },
 ];
 
-// COMPREHENSIVE BUILTIN QUIZ TOPICS
-const BUILTIN_TOPICS = [
+// CATALOG CATEGORIES - Nepal
+const CATALOG_CATEGORIES_NEPAL = [
+  { id: 'all', label: 'All Subjects' },
+  { id: 'criminal', label: 'Criminal Laws (मुलुकी अपराध)' },
+  { id: 'constitution', label: 'Constitution of Nepal 2072' },
+  { id: 'civil', label: 'Civil & Contracts (मुलुकी देवानी)' },
+  { id: 'corporate', label: 'Company & Commercial' },
+  { id: 'cyber', label: 'Cyber & Electronic Law (ETA 2063)' },
+  { id: 'evidence', label: 'Evidence Law (प्रमाण ऐन 2031)' },
+  { id: 'banking', label: 'Banking Offence Act 2064' },
+  { id: 'family', label: 'Family & Inheritance' },
+  { id: 'property', label: 'Property & Land Law' },
+  { id: 'international', label: 'International & Treaties' },
+  { id: 'exams', label: 'Nepal Bar Council / Judicial Exam' },
+];
+
+// COMPREHENSIVE BUILTIN QUIZ TOPICS - India
+const BUILTIN_TOPICS_INDIA = [
   // Criminal Laws
   { id: 'bns', title: 'Bharatiya Nyaya Sanhita (BNS 2023)', category: 'criminal', questionsCount: 15, difficulty: 'Intermediate', description: 'Replaces IPC 1860; organized crime, terrorism, mob lynching.' },
   { id: 'bnss', title: 'Bharatiya Nagarik Suraksha Sanhita (BNSS)', category: 'criminal', questionsCount: 15, difficulty: 'Advanced', description: 'Replaces CrPC 1973; summary trials, electronic summons, zero FIR.' },
@@ -69,7 +85,36 @@ const BUILTIN_TOPICS = [
   { id: 'judiciary_prelims', title: 'Judicial Services Prelims Mock Test', category: 'exams', questionsCount: 30, difficulty: 'Advanced', description: 'High-yield prelims questions for State Judicial Services.' },
 ];
 
-const SEARCH_SUGGESTIONS = [
+// COMPREHENSIVE BUILTIN QUIZ TOPICS - Nepal
+const BUILTIN_TOPICS_NEPAL = [
+  // Criminal Laws
+  { id: 'muluki_crime', title: 'Muluki Criminal Code 2074 (मुलुकी अपराध संहिता)', category: 'criminal', questionsCount: 20, difficulty: 'Intermediate', description: 'Homicide, theft, fraud/cheating (ठगी), criminal breach of trust, sentencing principles.' },
+  { id: 'muluki_crim_proc', title: 'Muluki Criminal Procedure Code 2074 (कार्यविधि)', category: 'criminal', questionsCount: 20, difficulty: 'Advanced', description: 'Arrest, bail under Section 67 (थुनछेक), FIR (जाहेरी दरखास्त), charge sheet, trial procedure.' },
+  { id: 'evidence_act_nepal', title: 'Evidence Act, 2031 (प्रमाण ऐन, २०३१)', category: 'evidence', questionsCount: 15, difficulty: 'Intermediate', description: 'Burden of proof Section 25, documentary evidence, expert testimony, admissions.' },
+  { id: 'banking_offence_nepal', title: 'Banking Offence and Punishment Act 2064', category: 'banking', questionsCount: 15, difficulty: 'Intermediate', description: 'Cheque dishonour (Section 3 & 15), unauthorised transactions, banking fraud, penalties.' },
+  
+  // Constitution
+  { id: 'const_nepal_rights', title: 'Fundamental Rights (Constitution of Nepal 2072)', category: 'constitution', questionsCount: 25, difficulty: 'Intermediate', description: 'Articles 16-48: Right to live with dignity, equality, freedom, justice (Art 20), remedies (Art 46).' },
+  { id: 'const_nepal_judiciary', title: 'Supreme Court & High Courts Jurisdiction (Art 133/144)', category: 'constitution', questionsCount: 20, difficulty: 'Advanced', description: 'Extraordinary writ jurisdiction: Habeas Corpus, Mandamus, Certiorari, Prohibition, Quo Warranto.' },
+  { id: 'const_nepal_federalism', title: 'Federal Structure & Directive Principles', category: 'constitution', questionsCount: 15, difficulty: 'Intermediate', description: 'Part 4 Directive principles, 3-tier government (Federal, Provincial, Local), schedule lists.' },
+
+  // Civil & Contract Laws
+  { id: 'muluki_civil', title: 'Muluki Civil Code 2074 (मुलुकी देवानी संहिता)', category: 'civil', questionsCount: 20, difficulty: 'Intermediate', description: 'Contracts, torts, damages, quasi-contracts, performance and breach of agreements.' },
+  { id: 'muluki_civ_proc', title: 'Muluki Civil Procedure Code 2074', category: 'civil', questionsCount: 20, difficulty: 'Advanced', description: 'Summons (म्याद तामेल), Interim Orders (Section 156), Haddmeyad (Section 398/400), execution of decree.' },
+
+  // Cyber & AI Law
+  { id: 'eta_nepal', title: 'Electronic Transactions Act 2063 (ETA 2063)', category: 'cyber', questionsCount: 15, difficulty: 'Intermediate', description: 'Section 56-58 cyber offences, digital signature, electronic record admissibility.' },
+
+  // Corporate & Commercial
+  { id: 'companies_act_nepal', title: 'Companies Act, 2063 (कम्पनी ऐन, २०६३)', category: 'corporate', questionsCount: 15, difficulty: 'Intermediate', description: 'Incorporation, director liabilities, AGM, oppression and winding-up.' },
+  { id: 'ni_act_nepal', title: 'Negotiable Instruments Act, 2034 (विनिमय अधिकारपत्र ऐन)', category: 'banking', questionsCount: 15, difficulty: 'Intermediate', description: 'Promissory notes, bills of exchange, cheques, notice of dishonour.' },
+
+  // Exam Special
+  { id: 'bar_council_nepal', title: 'Nepal Bar Council Advocate Examination Prep', category: 'exams', questionsCount: 30, difficulty: 'Advanced', description: 'Legal profession code of conduct, advocacy ethics, bar council rules, core procedural codes.' },
+  { id: 'judicial_service_nepal', title: 'Judicial Service Exam (न्याय सेवा - अधिकृत/न्यायाधीश)', category: 'exams', questionsCount: 30, difficulty: 'Advanced', description: 'High-yield prelims and subjective questions for Section Officer and District Judge exam.' }
+];
+
+const SEARCH_SUGGESTIONS_INDIA = [
   'Bharatiya Nyaya Sanhita (BNS)',
   'Bharatiya Nagarik Suraksha Sanhita (BNSS)',
   'Bharatiya Sakshya Adhiniyam (BSA)',
@@ -85,7 +130,22 @@ const SEARCH_SUGGESTIONS = [
   'Judicial Services Prelims Exam',
 ];
 
-const TRENDING_TOPICS = [
+const SEARCH_SUGGESTIONS_NEPAL = [
+  'Constitution of Nepal 2072',
+  'Muluki Criminal Code 2074 (मुलुकी अपराध संहिता)',
+  'Muluki Criminal Procedure Code 2074 (कार्यविधि)',
+  'Muluki Civil Code 2074 (मुलुकी देवानी संहिता)',
+  'Muluki Civil Procedure Code 2074',
+  'Evidence Act 2031 (प्रमाण ऐन, २०३१)',
+  'Banking Offence and Punishment Act 2064',
+  'Electronic Transactions Act 2063 (ETA 2063)',
+  'Article 133 Supreme Court Writs',
+  'Haddmeyad Limitation Periods (दफा ३९८/४००)',
+  'Nepal Bar Council Advocate Exam',
+  'Supreme Court Landmark NLR / NKP Precedents',
+];
+
+const TRENDING_TOPICS_INDIA = [
   { label: '🔥 BNS 2023', topic: 'Bharatiya Nyaya Sanhita' },
   { label: '📜 Article 21', topic: 'Article 21 Fundamental Rights' },
   { label: '🤖 AI & Tech Law', topic: 'Artificial Intelligence & Technology Law' },
@@ -94,9 +154,37 @@ const TRENDING_TOPICS = [
   { label: '🎓 CLAT & AIBE', topic: 'All India Bar Examination (AIBE Prep)' },
 ];
 
+const TRENDING_TOPICS_NEPAL = [
+  { label: '🔥 Muluki Crime 2074', topic: 'Muluki Criminal Code 2074 (मुलुकी अपराध संहिता)' },
+  { label: '📜 Constitution Art 133', topic: 'Supreme Court & High Courts Jurisdiction (Art 133/144)' },
+  { label: '⚖️ Evidence Act 2031', topic: 'Evidence Act, 2031 (प्रमाण ऐन, २०३१)' },
+  { label: '💳 Banking Offence 2064', topic: 'Banking Offence and Punishment Act 2064' },
+  { label: '🛡️ ETA 2063 Cyber', topic: 'Electronic Transactions Act 2063 (ETA 2063)' },
+  { label: '🎓 Bar Council Prep', topic: 'Nepal Bar Council Advocate Examination Prep' },
+];
+
 export default function QuizPracticeWorkspace() {
   const navigate = useNavigate();
   const { deductToolUsage } = useSubscription();
+
+  // Detect active legal jurisdiction (Nepal vs India)
+  const isNepal = (() => {
+    try {
+      const rawUser = localStorage.getItem('user');
+      if (rawUser) {
+        const u = JSON.parse(rawUser);
+        if (u?.legalJurisdiction?.countryCode === 'NP' || u?.legalJurisdiction?.country === 'Nepal') {
+          return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  })();
+
+  const CATALOG_CATEGORIES = isNepal ? CATALOG_CATEGORIES_NEPAL : CATALOG_CATEGORIES_INDIA;
+  const BUILTIN_TOPICS = isNepal ? BUILTIN_TOPICS_NEPAL : BUILTIN_TOPICS_INDIA;
+  const SEARCH_SUGGESTIONS = isNepal ? SEARCH_SUGGESTIONS_NEPAL : SEARCH_SUGGESTIONS_INDIA;
+  const TRENDING_TOPICS = isNepal ? TRENDING_TOPICS_NEPAL : TRENDING_TOPICS_INDIA;
 
   // State
   const [outputLanguage, setOutputLanguage] = useState('English');
@@ -204,7 +292,7 @@ export default function QuizPracticeWorkspace() {
 
   // Generate Fallback Multi-Subtopic Unique Questions
   const generateFallbackQuestions = (topic, count, lang, seenNormalizedSet) => {
-    const subtopics = [
+    const subtopicsIndia = [
       {
         sec: `Section 103 of ${topic}`,
         q: `Which section of ${topic} prescribes punishment for murder, replacing previous legacy penal provisions?`,
@@ -305,6 +393,109 @@ export default function QuizPracticeWorkspace() {
       },
     ];
 
+    const subtopicsNepal = [
+      {
+        sec: `Muluki Criminal Code 2074 & ${topic}`,
+        q: `Under Section 177 of the Muluki Criminal Code 2074 (मुलुकी अपराध संहिता), what is the statutory penalty for intentional homicide (कर्तव्य ज्यान)?`,
+        opts: [
+          `Life imprisonment (२५ वर्ष जन्मकैद)`,
+          `Seven years rigorous imprisonment`,
+          `Fine only without incarceration`,
+          `Community service order`,
+        ],
+        ans: 0,
+        exp: `Section 177 of the Muluki Criminal Code 2074 prescribes life imprisonment (25 years) for committing intentional homicide.`,
+        case: 'Supreme Court of Nepal Full Bench Precedent (NKP)',
+        tip: 'Muluki Criminal Code Sec 177 = Life Imprisonment (२५ वर्ष).',
+      },
+      {
+        sec: `Banking Offence Act 2064 & ${topic}`,
+        q: `Under Section 3 & 15 of the Banking Offence and Punishment Act 2064, how is cheque dishonour treated in Nepal?`,
+        opts: [
+          `As a cognizable criminal banking offence with fine and imprisonment`,
+          `Exclusively as a summary civil claim without police investigation`,
+          `As an administrative regulatory breach compoundable by Central Bank`,
+          `Non-cognizable matter with compulsory foreign arbitration`,
+        ],
+        ans: 0,
+        exp: `Under Banking Offence Act 2064, knowingly issuing a cheque with insufficient balance constitutes a criminal banking offence with forfeiture, fine, and imprisonment.`,
+        case: 'Ramesh Maharjan v. State of Nepal (NKP 2076, Decision No. 10260)',
+        tip: 'Banking Offence Act 2064 Sec 3 = Criminal offence for Cheque Bounce.',
+      },
+      {
+        sec: `Evidence Act 2031 & ${topic}`,
+        q: `Under Section 25 of the Evidence Act 2031 (प्रमाण ऐन, २०३१), on whom does the statutory burden of proof (प्रमाणको भार) lie?`,
+        opts: [
+          `On the party asserting the existence of any fact or claim`,
+          `Always shifted automatically onto the defendant in civil suits`,
+          `Exclusively on the trial judge through inquisitorial discovery`,
+          `On the government prosecutor in all private commercial disputes`,
+        ],
+        ans: 0,
+        exp: `Section 25 of Nepal Evidence Act 2031 establishes that the burden of proving any fact lies on the person who wishes the court to believe in its existence.`,
+        case: 'Supreme Court of Nepal Division Bench (NKP)',
+        tip: 'Evidence Act 2031 Sec 25 = Burden of proof on asserting party.',
+      },
+      {
+        sec: `Constitution of Nepal 2072 & ${topic}`,
+        q: `Under Article 133 of the Constitution of Nepal 2072, what extraordinary writ jurisdictions can the Supreme Court (सर्वोच्च अदालत) issue?`,
+        opts: [
+          `Habeas Corpus, Mandamus, Certiorari, Prohibition, and Quo Warranto`,
+          `Injunction and Attachment orders only`,
+          `Summary execution decree without hearing`,
+          `Declaration of national emergency and martial decree`,
+        ],
+        ans: 0,
+        exp: `Article 133(2) and (3) empowers the Supreme Court of Nepal to issue appropriate orders and writs including Habeas Corpus, Mandamus, Certiorari, Prohibition, and Quo Warranto for enforcement of fundamental rights.`,
+        case: 'Santosh Bhandari v. PM KP Sharma Oli (NKP 2077 Decision No. 10602)',
+        tip: 'Article 133 = Supreme Court extraordinary writ powers (५ प्रकारका रिट).',
+      },
+      {
+        sec: `Electronic Transactions Act 2063 & ${topic}`,
+        q: `How is the admissibility and authenticity of electronic records and digital data governed under Nepal's legal framework?`,
+        opts: [
+          `Electronic Transactions Act 2063 (ETA 2063) & Evidence Act 2031`,
+          `Foreign IT Laws and international treaties without domestic enactment`,
+          `Muluki Ain 2020 repealed provisions`,
+          `Purely discretionary assessment without statutory standards`,
+        ],
+        ans: 0,
+        exp: `Sections 56-58 of the Electronic Transactions Act 2063 in conjunction with the Evidence Act 2031 regulate cyber offences and admissibility of electronic documents in Nepal courts.`,
+        case: 'Advocate Sarmila Parajuli v. GoN (NKP 2061)',
+        tip: 'ETA 2063 + Evidence Act 2031 govern digital evidence in Nepal.',
+      },
+      {
+        sec: `Muluki Civil Procedure Code 2074 & ${topic}`,
+        q: `Under Section 156 of the Muluki Civil Procedure Code 2074, what remedy may an applicant seek to preserve the subject-matter?`,
+        opts: [
+          `Interim Order (अन्तरिम आदेश) to prevent irreparable harm or alteration`,
+          `Immediate final decree without filing written response`,
+          `Compulsory seizure of all immovable assets unconditionally`,
+          `Exemption from limitation (हदम्याद) indefinitely`,
+        ],
+        ans: 0,
+        exp: `Section 156 of the Muluki Civil Procedure Code 2074 empowers courts to grant interim orders to preserve status quo and prevent irreparable damage during pendency of suit.`,
+        case: 'Supreme Court of Nepal Civil Digest Precedent',
+        tip: 'Sec 156 Muluki Civ Pro = Interim Order (अन्तरिम आदेश).',
+      },
+      {
+        sec: `Muluki Criminal Procedure Code 2074 & ${topic}`,
+        q: `Under Section 67 of the Muluki Criminal Procedure Code 2074, when may a court grant bail (धरौटी वा जमानत)?`,
+        opts: [
+          `Subject to judicial examination of offence gravity, statutory threshold, and flight risk`,
+          `Bail is strictly forbidden in all criminal allegations under Nepal law`,
+          `Automatic unconditional release upon verbal request`,
+          `Only after conclusion of final appellate proceedings in Supreme Court`,
+        ],
+        ans: 0,
+        exp: `Section 67 regulates pre-trial detention and bail (थुनछेक), granting courts authority to release accused on bail or bank guarantee based on statutory thresholds and circumstances.`,
+        case: 'Supreme Court of Nepal Precedents on Thunchhek (थुनछेक आदेश)',
+        tip: 'Section 67 Muluki Crim Pro = Bail / Thunchhek (थुनछेक).',
+      },
+    ];
+
+    const subtopics = isNepal ? subtopicsNepal : subtopicsIndia;
+
     const result = [];
     let idx = 0;
     while (result.length < count) {
@@ -326,7 +517,9 @@ export default function QuizPracticeWorkspace() {
         });
       } else {
         // Create a unique statutory sub-question variation if base template was already seen
-        const varQ = `Under Section ${105 + result.length} of ${topic}, how is statutory liability and burden of proof determined during judicial proceedings?`;
+        const varQ = isNepal
+          ? `Under statutory provisions of ${topic} in Nepal, how is legal liability and procedural compliance evaluated by the court?`
+          : `Under Section ${105 + result.length} of ${topic}, how is statutory liability and burden of proof determined during judicial proceedings?`;
         const varNorm = normalizeQuestionText(varQ);
         if (!seenNormalizedSet.has(varNorm)) {
           seenNormalizedSet.add(varNorm);
@@ -337,13 +530,13 @@ export default function QuizPracticeWorkspace() {
               `Strict adherence to statutory ingredients and binding Supreme Court precedents`,
               `Arbitrary administrative discretion without legislative support`,
               `Automatic conviction without trial or hearing`,
-              `Exemption from Constitutional writ jurisdiction under Article 32`,
+              `Exemption from Constitutional judicial review`,
             ],
             correctIndex: 0,
-            explanation: `Statutory provisions under Section ${105 + result.length} of ${topic} require fulfilling all legal ingredients and judicial standards.`,
-            sectionRef: `Section ${105 + result.length} of ${topic}`,
-            landmarkCase: 'Supreme Court Constitutional Bench Ruling',
-            memoryTip: 'Focus on statutory ingredients and Constitutional compliance.',
+            explanation: `Statutory provisions governing ${topic} require fulfilling all mandatory legal ingredients, statutory limitation (हदम्याद), and judicial standards.`,
+            sectionRef: `${topic} statutory provisions`,
+            landmarkCase: isNepal ? 'Supreme Court of Nepal (सर्वोच्च अदालत) Landmark Ruling' : 'Supreme Court Constitutional Bench Ruling',
+            memoryTip: 'Focus on statutory ingredients and constitutional compliance.',
           });
         }
       }
@@ -366,11 +559,21 @@ export default function QuizPracticeWorkspace() {
     // Pre-seed seen set from persistent storage
     seenQuestionHashes.forEach((h) => seenNormalizedSet.add(h));
 
-    const prompt = `You are a Senior Bar Council Exam Professor and AI Legal Quiz Engine.
+    const jurisdictionRules = isNepal
+      ? `CRITICAL JURISDICTION RULES FOR NEPAL:
+- Ground ALL questions STRICTLY in Nepalese law: Constitution of Nepal 2072, Muluki Criminal Code 2074 (मुलुकी अपराध संहिता), Muluki Criminal Procedure Code 2074, Muluki Civil Code 2074 (मुलुकी देवानी संहिता), Muluki Civil Procedure Code 2074, Evidence Act 2031 (प्रमाण ऐन, २०३१), Banking Offence and Punishment Act 2064, Negotiable Instruments Act 2034, Electronic Transactions Act 2063 (ETA 2063), and Nepal Bar Council rules.
+- For landmark cases, cite Supreme Court of Nepal (सर्वोच्च अदालत) / Nepal Kanoon Patrika (NKP / NLR).
+- ZERO STATUTORY LEAKAGE: NEVER mention IPC, CrPC, CPC, BNS, BNSS, BSA, Indian Evidence Act 1872, Indian Contract Act 1872, Section 138 NI Act of India, or Indian Courts.`
+      : `CRITICAL JURISDICTION RULES FOR INDIA:
+- Ground all questions strictly in Indian law: BNS 2023, BNSS 2023, BSA 2023, IPC 1860, CrPC 1973, CPC 1908, Indian Evidence Act 1872, NI Act 1881, Constitution of India, and Supreme Court of India precedents.`;
+
+    const prompt = `You are a Senior Bar Council Exam Professor and AI Legal Quiz Engine for ${isNepal ? 'Nepal' : 'India'}.
 Generate a high-yield legal multiple-choice quiz (MCQ) for law students on the topic: "${targetTopicTitle}".
 Difficulty Level: ${difficulty}.
 Target Quantity Needed: EXACTLY ${questionCount} UNIQUE MCQs.
 Output Language: ${outputLanguage}.
+
+${jurisdictionRules}
 
 CRITICAL MANDATORY RULES FOR 100% UNIQUE MCQs:
 1. Every single MCQ MUST be 100% UNIQUE. No duplicate questions, no repeated scenarios, no paraphrased questions.
@@ -388,7 +591,7 @@ CRITICAL MANDATORY RULES FOR 100% UNIQUE MCQs:
 Output strictly as a valid JSON array of objects with keys: "id", "question", "options", "correctIndex", "explanation", "sectionRef", "landmarkCase", "memoryTip". Do not wrap in markdown or commentary.`;
 
     try {
-      const systemPrompt = `You are an AI Legal Quiz Engine. Output valid JSON arrays containing UNIQUE legal MCQs in ${outputLanguage} for law students. Never repeat questions.`;
+      const systemPrompt = `You are an AI Legal Quiz Engine for ${isNepal ? 'Nepal' : 'India'}. Output valid JSON arrays containing UNIQUE legal MCQs in ${outputLanguage} for law students. Never repeat questions. ${jurisdictionRules}`;
       const response = await generateChatResponse([], prompt, systemPrompt, null, outputLanguage);
       
       let rawText = '';

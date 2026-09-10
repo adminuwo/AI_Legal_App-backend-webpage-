@@ -1,6 +1,7 @@
 import express from 'express';
 import Project from '../models/Project.js';
 import { verifyToken } from '../middleware/authorization.js';
+import { jurisdictionManager } from '../services/jurisdictionManager.js';
 
 const router = express.Router();
 
@@ -53,6 +54,19 @@ router.post('/upload', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Case workspace not found' });
         }
 
+        const explicitJurisdiction = req.body.jurisdiction || {
+            country: req.headers['x-legal-jurisdiction'] || req.headers['x-country-code'] || req.body.country,
+            state: req.headers['x-legal-state'] || req.body.state
+        };
+        const resolvedJurisdiction = await jurisdictionManager.resolveLegalJurisdiction({
+            query: `${project.title || ''} ${project.court || ''} ${name || ''}`,
+            headers: req.headers,
+            explicitJurisdiction: (explicitJurisdiction.country || explicitJurisdiction.state) ? explicitJurisdiction : null,
+            userId: req.user.id,
+            userProfile: req.user
+        });
+        const isNepal = resolvedJurisdiction.isNepal;
+
         const orderId = 'order_' + Date.now().toString();
         const newOrder = {
             _id: orderId,
@@ -64,18 +78,18 @@ router.post('/upload', verifyToken, async (req, res) => {
             status: 'AI Analyzed',
             uploadedBy: 'Advocate',
             metadata: {
-                courtName: metadata.courtName || 'Delhi High Court',
-                judgeName: metadata.judgeName || 'Hon\'ble Justice Amit Verma',
+                courtName: metadata.courtName || (isNepal ? 'District Court Kathmandu' : 'Delhi High Court'),
+                judgeName: metadata.judgeName || (isNepal ? 'Hon\'ble District Judge' : 'Hon\'ble Justice Amit Verma'),
                 bench: metadata.bench || 'Single Bench',
                 courtNumber: metadata.courtNumber || 'Courtroom 302',
-                caseNumber: metadata.caseNumber || project.caseNumber || 'CS/102/2026',
+                caseNumber: metadata.caseNumber || project.caseNumber || (isNepal ? '080-CP-102' : 'CS/102/2026'),
                 orderDate: metadata.orderDate || new Date().toISOString().split('T')[0],
                 nextHearingDate: metadata.nextHearingDate || '',
                 orderType: metadata.orderType || 'Interim Order',
                 stageOfCase: metadata.stageOfCase || 'Court',
                 petitioner: metadata.petitioner || project.clientName || 'Plaintiff',
                 respondent: metadata.respondent || project.opponentName || 'Defendant',
-                advocates: metadata.advocates || '',
+                advocates: metadata.advocates || (isNepal ? 'Adv. Narayan Prasad Sharma' : ''),
                 caseStatus: metadata.caseStatus || 'Active'
             },
             aiSummary,
@@ -115,6 +129,19 @@ router.post('/scan', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Case workspace not found' });
         }
 
+        const explicitJurisdiction = req.body.jurisdiction || {
+            country: req.headers['x-legal-jurisdiction'] || req.headers['x-country-code'] || req.body.country,
+            state: req.headers['x-legal-state'] || req.body.state
+        };
+        const resolvedJurisdiction = await jurisdictionManager.resolveLegalJurisdiction({
+            query: `${project.title || ''} ${project.court || ''} ${name || ''}`,
+            headers: req.headers,
+            explicitJurisdiction: (explicitJurisdiction.country || explicitJurisdiction.state) ? explicitJurisdiction : null,
+            userId: req.user.id,
+            userProfile: req.user
+        });
+        const isNepal = resolvedJurisdiction.isNepal;
+
         const orderId = 'order_scan_' + Date.now().toString();
         const newOrder = {
             _id: orderId,
@@ -122,43 +149,47 @@ router.post('/scan', verifyToken, async (req, res) => {
             name: name || 'Scanned Document.pdf',
             url: 'file:///path/to/scanned_document.pdf',
             fileSize: '480 KB',
-            ocrText: 'IN THE HIGH COURT OF DELHI\nCS(COMM) 245/2026\nDelhi High Court Stay Decree. Scanned text details extracted.',
+            ocrText: isNepal
+                ? 'IN THE HIGH COURT PATAN\n080-CP-245\nHigh Court Patan Interim Injunction Order. Scanned text details extracted.'
+                : 'IN THE HIGH COURT OF DELHI\nCS(COMM) 245/2026\nDelhi High Court Stay Decree. Scanned text details extracted.',
             status: 'AI Analyzed',
             uploadedBy: 'Advocate',
             metadata: {
-                courtName: 'High Court of Delhi',
-                judgeName: 'Hon\'ble Justice Manmohan',
+                courtName: isNepal ? 'High Court Patan' : 'High Court of Delhi',
+                judgeName: isNepal ? 'Hon\'ble Judge' : 'Hon\'ble Justice Manmohan',
                 bench: 'Division Bench',
                 courtNumber: 'Courtroom No. 1',
-                caseNumber: project.caseNumber || 'CS(COMM) 245/2026',
+                caseNumber: project.caseNumber || (isNepal ? '080-CP-245' : 'CS(COMM) 245/2026'),
                 orderDate: new Date().toISOString().split('T')[0],
                 nextHearingDate: '2026-08-12',
                 orderType: 'Interim Stay Order',
                 stageOfCase: 'Arguments on Injunction',
                 petitioner: project.clientName || 'Plaintiff',
                 respondent: project.opponentName || 'Defendant',
-                advocates: 'Sr. Adv. Abhishek Singhvi',
+                advocates: isNepal ? 'Adv. Narayan Prasad Sharma' : 'Sr. Adv. Abhishek Singhvi',
                 caseStatus: 'Stay Granted'
             },
             aiSummary: {
-                shortSummary: 'The Court granted an interim injunction stay restraining property transfer pending arguments listed on 12/08/2026.',
+                shortSummary: isNepal
+                    ? 'The Court granted an interim injunction restraining property transfer pending arguments under Section 156 of Muluki Civil Procedure Code 2074.'
+                    : 'The Court granted an interim injunction stay restraining property transfer pending arguments listed on 12/08/2026.',
                 keyPoints: [
-                    'Interim stay granted under Order 39 Rules 1 & 2 CPC.',
+                    isNepal ? 'Interim stay granted under Section 156 of Muluki Civil Procedure Code 2074.' : 'Interim stay granted under Order 39 Rules 1 & 2 CPC.',
                     'Next hearing scheduled on 12/08/2026.'
                 ]
             },
             complianceItems: [
-                { description: 'Order 39 Rule 3 compliance copy service', status: 'Pending', dueDate: '2026-07-15', priority: 'Critical', responsiblePerson: 'Plaintiff' }
+                { description: isNepal ? 'Section 156 injunction notice service compliance' : 'Order 39 Rule 3 compliance copy service', status: 'Pending', dueDate: '2026-07-15', priority: 'Critical', responsiblePerson: 'Plaintiff' }
             ],
             suggestedTimeline: [
-                { title: 'Order Passed', description: 'Stay decree passed.', date: new Date().toLocaleDateString(), accepted: true },
+                { title: 'Order Passed', description: 'Stay decree passed.', date: new Date().toLocaleDateString(isNepal ? 'en-NP' : 'en-IN'), accepted: true },
                 { title: 'Next Hearing', description: 'Listed arguments.', date: '12/08/2026', accepted: false }
             ],
             suggestedTasks: [
-                { title: 'Draft Compliance service', description: 'Prepare speed post packages.', priority: 'High', accepted: false }
+                { title: 'Draft Compliance service', description: 'Prepare notice packages.', priority: 'High', accepted: false }
             ],
             suggestedHearings: [
-                { title: 'Stay Arguments Hearing', date: '2026-08-12', courtroom: 'Courtroom No. 1', judge: 'Justice Manmohan', purpose: 'Stay Arguments', accepted: false }
+                { title: 'Stay Arguments Hearing', date: '2026-08-12', courtroom: 'Courtroom No. 1', judge: isNepal ? 'Hon\'ble Judge' : 'Justice Manmohan', purpose: 'Stay Arguments', accepted: false }
             ],
             suggestedArguments: [],
             suggestedResearch: [],

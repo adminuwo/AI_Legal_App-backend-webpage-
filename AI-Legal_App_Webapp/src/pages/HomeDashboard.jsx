@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FileText, Search, Briefcase, Plus, Gavel, Calendar, 
@@ -91,8 +91,13 @@ export default function HomeDashboard() {
     return () => clearInterval(timer);
   }, []);
 
+  const isSyncingRef = useRef(false);
+
   // Fetch Dashboard data from Backend APIs
   const fetchDashboardData = async (silent = false) => {
+    if (isSyncingRef.current) return;
+    isSyncingRef.current = true;
+
     if (!silent) setIsLoading(true);
     else setIsSyncing(true);
     
@@ -124,6 +129,7 @@ export default function HomeDashboard() {
       console.error("Dashboard synchronization error:", err);
       setError("Failed to fetch current litigation data from the backend.");
     } finally {
+      isSyncingRef.current = false;
       setIsLoading(false);
       setIsSyncing(false);
     }
@@ -163,7 +169,7 @@ export default function HomeDashboard() {
   // Run on mount, user/role switch, and establish background synchronization
   useEffect(() => {
     fetchDashboardData();
-    const syncInterval = setInterval(() => fetchDashboardData(true), 15000);
+    const syncInterval = setInterval(() => fetchDashboardData(true), 30000);
 
     const handleRoleOrWsChange = () => {
       fetchDashboardData(true);

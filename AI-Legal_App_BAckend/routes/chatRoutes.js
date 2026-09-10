@@ -139,6 +139,10 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
     mode = 'LEGAL_TOOLKIT';
   }
 
+  const activeJurisdiction = req.body.jurisdiction || req.headers['x-legal-jurisdiction'] || req.headers['x-jurisdiction'] || null;
+  const activeCountry = req.body.country || req.headers['x-country-code'] || null;
+  const activeState = req.body.state || req.headers['x-legal-state'] || null;
+
   try {
     // 1. LIMIT & CREDIT CHECKS
     const limitCheck = await checkGuestLimits(req, sessionId);
@@ -378,7 +382,11 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
           history: effectiveHistory,
           toolName: resolvedToolName,
           caseContext: masterCaseContext,
-          onChunk: streamOnChunk
+          onChunk: streamOnChunk,
+          jurisdiction: activeJurisdiction,
+          country: activeCountry,
+          state: activeState,
+          headers: req.headers
         });
 
         // If the service returned text directly (e.g. search/image mode fallback), emit remainder
@@ -523,7 +531,11 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
       model,
       history: effectiveHistory,
       toolName: resolvedToolName,
-      caseContext: masterCaseContext
+      caseContext: masterCaseContext,
+      jurisdiction: activeJurisdiction,
+      country: activeCountry,
+      state: activeState,
+      headers: req.headers
     });
 
     let reply = chatResponse.text || "";

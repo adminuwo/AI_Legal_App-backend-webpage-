@@ -8,12 +8,27 @@ const searchCache = new Map();
 const CACHE_TTL = 3 * 60 * 1000;
 
 /**
+ * Builds a partitioned cache key incorporating query, country, state, and language
+ */
+export function buildSearchCacheKey(query, options = {}) {
+    const q = String(query || '').trim().toLowerCase();
+    const country = (options.country || options.jurisdiction?.country || 'India').trim().toLowerCase();
+    const state = (options.state || options.jurisdiction?.state || '').trim().toLowerCase();
+    const lang = (options.language || options.lang || 'en').trim().toLowerCase();
+    return `${q}__${country}__${state}__${lang}`;
+}
+
+/**
  * Get cached search results if available and not expired
  */
-export function getCachedSearch(query) {
-    const cached = searchCache.get(query);
+export function getCachedSearch(query, options = {}) {
+    if (options.bypassCache || options.forceFresh) {
+        return null;
+    }
+    const cacheKey = buildSearchCacheKey(query, options);
+    const cached = searchCache.get(cacheKey) || searchCache.get(query);
     if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
-        console.log(`[CACHE] Found cached results for: "${query}"`);
+        console.log(`[CACHE] Found cached results for: "${cacheKey}"`);
         return cached.data;
     }
     return null;
@@ -22,8 +37,9 @@ export function getCachedSearch(query) {
 /**
  * Set search results in cache
  */
-export function setCachedSearch(query, data) {
-    searchCache.set(query, {
+export function setCachedSearch(query, data, options = {}) {
+    const cacheKey = buildSearchCacheKey(query, options);
+    searchCache.set(cacheKey, {
         timestamp: Date.now(),
         data: data
     });

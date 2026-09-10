@@ -66,6 +66,7 @@ import workspaceRoutes from './routes/workspaceRoutes.js';
 import studentNoteRoutes from './routes/studentNoteRoutes.js';
 import appUpdateRoutes from './routes/appUpdateRoutes.js';
 import enterpriseRoutes from './routes/enterpriseRoutes.js';
+import jurisdictionRoutes from './routes/jurisdictionRoutes.js';
 
 import { startPlanExpiryService } from './services/planExpiryService.js';
 import { langMiddleware } from './middleware/langContext.js';
@@ -293,6 +294,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/auth/sso', ssoRoutes);
 app.use('/api/user', userRoute);
 app.use('/api/user', dataRoutes);  // GDPR data deletion & export
+app.use('/api/jurisdictions', jurisdictionRoutes);
+app.use('/api/user/jurisdiction', jurisdictionRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/api/legal-toolkit', legalToolkitRoutes);
 app.use('/api/contract-analysis', contractAnalysisRoutes);

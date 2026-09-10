@@ -51,6 +51,7 @@ import ShareModal from '../Components/ShareModal';
 import ProfileSettingsDropdown from '../Components/ProfileSettingsDropdown/ProfileSettingsDropdown.jsx';
 import GlobalFloatingNavbar from '../Components/GlobalFloatingNavbar.jsx';
 import { useTheme } from '../context/ThemeContext';
+import { recordStudyActivity } from '../services/streakService';
 
 // AI Legal Modular Components
 import ActionCard from '../Components/ActionCard';
@@ -4069,6 +4070,9 @@ const Chat = () => {
 
     if (longTextPreview) setLongTextPreview(null);
     setIsAutoPreviewDisabled(false);
+
+    // Record real-time student study streak activity (1 per day, Snapchat style)
+    recordStudyActivity().catch(() => {});
 
     // --- Pre-flight Check & Offline Guard ---
     const token = getUserData()?.token;

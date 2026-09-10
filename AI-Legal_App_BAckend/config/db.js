@@ -13,9 +13,11 @@ const connectDB = async (retries = 5, delay = 5000) => {
     try {
       const conn = await mongoose.connect(MONGO_URI, {
         dbName: process.env.DB_NAME || 'AISA',
-        serverSelectionTimeoutMS: 60000,
-        socketTimeoutMS: 60000,
-        connectTimeoutMS: 60000,
+        maxPoolSize: 50,
+        minPoolSize: 5,
+        serverSelectionTimeoutMS: 15000,
+        socketTimeoutMS: 45000,
+        connectTimeoutMS: 30000,
         family: 4, 
       });
       logger.info(`MongoDB Connected: ${conn.connection.host} / Database: ${conn.connection.name}`);

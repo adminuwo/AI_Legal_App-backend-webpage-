@@ -36,21 +36,31 @@ router.get('/search', verifyToken, async (req, res) => {
 
         console.log(`[FRIEND_CHAT_SEARCH] DB Match Count: ${users.length} | Matches:`, users.map(u => u.email));
 
-        // Map status of friendship for each searched user
-        const mappedUsers = await Promise.all(users.map(async (u) => {
-            const request = await FriendRequest.findOne({
-                $or: [
-                    { sender: req.user.id, receiver: u._id },
-                    { sender: u._id, receiver: req.user.id }
-                ]
-            });
+        // Map status of friendship for searched users using single batch query
+        const userIds = users.map(u => u._id);
+        const myUserId = req.user.id;
 
+        const friendRequests = await FriendRequest.find({
+            $or: [
+                { sender: myUserId, receiver: { $in: userIds } },
+                { sender: { $in: userIds }, receiver: myUserId }
+            ]
+        }).lean().catch(() => []);
+
+        const reqMap = new Map();
+        for (const fr of friendRequests) {
+            const otherId = String(fr.sender) === String(myUserId) ? String(fr.receiver) : String(fr.sender);
+            reqMap.set(otherId, fr);
+        }
+
+        const mappedUsers = users.map((u) => {
+            const request = reqMap.get(String(u._id));
             let status = 'none'; // none, pending_sent, pending_received, accepted
             if (request) {
                 if (request.status === 'accepted') {
                     status = 'accepted';
                 } else if (request.status === 'pending') {
-                    status = request.sender.toString() === req.user.id ? 'pending_sent' : 'pending_received';
+                    status = String(request.sender) === String(myUserId) ? 'pending_sent' : 'pending_received';
                 }
             }
 
@@ -62,7 +72,7 @@ router.get('/search', verifyToken, async (req, res) => {
                 friendshipStatus: status,
                 requestId: request ? request._id : null
             };
-        }));
+        });
 
         res.json({ success: true, data: mappedUsers });
     } catch (error) {

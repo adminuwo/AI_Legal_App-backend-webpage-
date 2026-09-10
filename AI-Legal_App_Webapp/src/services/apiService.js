@@ -50,11 +50,15 @@ const getLocaleForLanguage = (language) => {
   return mapping[language] || 'en-IN';
 };
 
-// Request interceptor for adding auth token and language parameters
+// Request interceptor for adding auth token, jurisdiction, and language parameters
 apiClient.interceptors.request.use(
   (config) => {
     const user = localStorage.getItem('user');
     let userLang = 'English';
+    let userJurisdiction = 'India';
+    let userState = '';
+    let userCountryCode = 'IN';
+
     if (user) {
       try {
         const userData = JSON.parse(user);
@@ -62,6 +66,9 @@ apiClient.interceptors.request.use(
           config.headers.Authorization = `Bearer ${userData.token}`;
         }
         userLang = userData.personalizations?.general?.language || localStorage.getItem('ai_legal_lang') || 'English';
+        userJurisdiction = userData.legalJurisdiction?.country || userData.jurisdiction || userData.country || 'India';
+        userState = userData.legalJurisdiction?.state || userData.state || '';
+        userCountryCode = userData.legalJurisdiction?.countryCode || userData.countryCode || (userJurisdiction === 'Nepal' ? 'NP' : 'IN');
       } catch (e) {
         userLang = localStorage.getItem('ai_legal_lang') || 'English';
       }
@@ -80,6 +87,9 @@ apiClient.interceptors.request.use(
     config.headers['X-Workspace-Type'] = activeRole;
     config.headers['X-Active-Workspace-Id'] = activeWsId;
     config.headers['X-Device-Id'] = deviceId;
+    config.headers['X-Legal-Jurisdiction'] = userJurisdiction;
+    config.headers['X-Legal-State'] = userState;
+    config.headers['X-Country-Code'] = userCountryCode;
 
     const isGet = (config.method || '').toLowerCase() === 'get';
 
@@ -94,6 +104,9 @@ apiClient.interceptors.request.use(
       config.data.preferred_response_language = userLang;
       config.data.language = userLang;
       config.data.locale = userLocale;
+      if (!config.data.jurisdiction) config.data.jurisdiction = userJurisdiction;
+      if (!config.data.country) config.data.country = userJurisdiction;
+      if (!config.data.state && userState) config.data.state = userState;
       if (!config.data.role) config.data.role = activeRole;
       if (!config.data.workspaceType) config.data.workspaceType = activeRole;
       if (!config.data.workspaceId) config.data.workspaceId = activeWsId;
@@ -109,10 +122,17 @@ axios.interceptors.request.use(
   (config) => {
     const user = localStorage.getItem('user');
     let userLang = 'English';
+    let userJurisdiction = 'India';
+    let userState = '';
+    let userCountryCode = 'IN';
+
     if (user) {
       try {
         const userData = JSON.parse(user);
         userLang = userData.personalizations?.general?.language || localStorage.getItem('ai_legal_lang') || 'English';
+        userJurisdiction = userData.legalJurisdiction?.country || userData.jurisdiction || userData.country || 'India';
+        userState = userData.legalJurisdiction?.state || userData.state || '';
+        userCountryCode = userData.legalJurisdiction?.countryCode || userData.countryCode || (userJurisdiction === 'Nepal' ? 'NP' : 'IN');
       } catch (e) {
         userLang = localStorage.getItem('ai_legal_lang') || 'English';
       }
@@ -120,12 +140,19 @@ axios.interceptors.request.use(
       userLang = localStorage.getItem('ai_legal_lang') || 'English';
     }
 
+    config.headers['X-Legal-Jurisdiction'] = userJurisdiction;
+    config.headers['X-Legal-State'] = userState;
+    config.headers['X-Country-Code'] = userCountryCode;
+
     const userLocale = getLocaleForLanguage(userLang);
 
     if (config.data && typeof config.data === 'object' && !(config.data instanceof FormData)) {
       config.data.preferred_response_language = userLang;
       config.data.language = userLang;
       config.data.locale = userLocale;
+      if (!config.data.jurisdiction) config.data.jurisdiction = userJurisdiction;
+      if (!config.data.country) config.data.country = userJurisdiction;
+      if (!config.data.state && userState) config.data.state = userState;
     }
 
     return config;

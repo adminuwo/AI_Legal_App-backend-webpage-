@@ -34,12 +34,43 @@ const TIER_2_DOMAINS = [
     'legalserviceindia.com'
 ];
 
+// Authoritative Nepal Legal Domains Hierarchy
+const NEPAL_TIER_1_DOMAINS = [
+    'supremecourt.gov.np',
+    'lawcommission.gov.np',
+    'nepallawcommission.gov.np',
+    'molpa.gov.np',
+    'nepal.gov.np',
+    'parliament.gov.np'
+];
+
+const NEPAL_TIER_2_DOMAINS = [
+    'nepallawjournal.org',
+    'nepallawyers.com',
+    'setopati.com',
+    'ekantipur.com',
+    'kathmandupost.com',
+    'myrepublica.nagariknetwork.com',
+    'thehimalayantimes.com'
+];
+
 /**
- * Categorizes a source URL into authority tiers
+ * Categorizes a source URL into authority tiers based on jurisdiction
  */
-export const classifySourceTier = (url = '') => {
+export const classifySourceTier = (url = '', country = 'India') => {
     try {
         const hostname = new URL(url).hostname.toLowerCase();
+        if (country === 'Nepal' || hostname.endsWith('.np')) {
+            if (NEPAL_TIER_1_DOMAINS.some(d => hostname === d || hostname.endsWith(`.${d}`)) || hostname.endsWith('.gov.np')) {
+                return { tier: 1, label: 'OFFICIAL_NEPAL_GOVT_COURT', weight: 1.0 };
+            }
+            if (NEPAL_TIER_2_DOMAINS.some(d => hostname === d || hostname.endsWith(`.${d}`))) {
+                return { tier: 2, label: 'AUTHORITATIVE_NEPAL_REPORTER', weight: 0.85 };
+            }
+            return { tier: 3, label: 'SECONDARY_COMMENTARY', weight: 0.5 };
+        }
+
+        // Default: India
         if (TIER_1_DOMAINS.some(d => hostname === d || hostname.endsWith(`.${d}`))) {
             return { tier: 1, label: 'OFFICIAL_GOVT_COURT', weight: 1.0 };
         }
@@ -52,32 +83,48 @@ export const classifySourceTier = (url = '') => {
     }
 };
 
-export const getDomainTier = (url = '') => classifySourceTier(url).tier;
-export const isAuthoritativeLegalSource = (url = '') => classifySourceTier(url).tier <= 2;
+export const getDomainTier = (url = '', country = 'India') => classifySourceTier(url, country).tier;
+export const isAuthoritativeLegalSource = (url = '', country = 'India') => classifySourceTier(url, country).tier <= 2;
 
 /**
- * Performs a targeted live search using Tavily API focused on Indian legal sources.
+ * Performs a targeted live search using Tavily API focused on jurisdiction-specific legal sources.
  * Used for Deep Search, Live Precedents, or as the search retrieval layer for OpenAI fallback.
  * 
  * @param {string} query - Search query
- * @param {object} options - Search options
+ * @param {object} options - Search options (including options.jurisdiction)
  * @returns {Promise<object>} { summary, sources: [{ title, url, snippet, tier, date }] }
  */
 export const executeTargetedLegalSearch = async (query, options = {}) => {
     const startTime = Date.now();
-    logger.info(`[LegalSearchOrchestrator] Executing live search for: "${query}"`);
+    const jurisdiction = options.jurisdiction || { country: 'India', state: '' };
+    const country = jurisdiction.country || 'India';
+    const state = jurisdiction.state || '';
+    logger.info(`[LegalSearchOrchestrator] Executing live search for: "${query}" (Jurisdiction: ${state ? state + ', ' : ''}${country})`);
 
     if (TAVILY_API_KEY) {
         try {
             const currentYear = new Date().getFullYear();
-            const response = await axios.post('https://api.tavily.com/search', {
-                api_key: TAVILY_API_KEY,
-                query: `${query} India ${currentYear}`,
-                search_depth: options.depth || 'advanced',
-                include_answer: true,
-                include_raw_content: false,
-                max_results: options.maxResults || 5,
-                include_domains: [
+            let searchQueryStr = query;
+            let domainsToInclude = [];
+
+            if (country !== 'India') {
+                // International (e.g. Nepal)
+                searchQueryStr = `${query} ${state ? state + ' ' : ''}${country} ${currentYear}`;
+                if (country === 'Nepal') {
+                    domainsToInclude = [
+                        'supremecourt.gov.np',
+                        'lawcommission.gov.np',
+                        'nepallawcommission.gov.np',
+                        'molpa.gov.np',
+                        'nepal.gov.np',
+                        'nepallawjournal.org',
+                        'kathmandupost.com'
+                    ];
+                }
+            } else {
+                // India
+                searchQueryStr = `${query} ${state ? state + ' ' : ''}India ${currentYear}`;
+                domainsToInclude = [
                     'sci.gov.in',
                     'indiacode.nic.in',
                     'egazette.gov.in',
@@ -85,17 +132,33 @@ export const executeTargetedLegalSearch = async (query, options = {}) => {
                     'livelaw.in',
                     'barandbench.com',
                     'scconline.com'
-                ]
-            }, { timeout: 20000 });
+                ];
+            }
+
+            const tavilyPayload = {
+                api_key: TAVILY_API_KEY,
+                query: searchQueryStr,
+                search_depth: options.depth || 'advanced',
+                include_answer: true,
+                include_raw_content: false,
+                max_results: options.maxResults || 5
+            };
+
+            // Only pass include_domains if domains were configured
+            if (domainsToInclude.length > 0) {
+                tavilyPayload.include_domains = domainsToInclude;
+            }
+
+            const response = await axios.post('https://api.tavily.com/search', tavilyPayload, { timeout: 20000 });
 
             const results = response.data?.results || [];
             const aiAnswer = response.data?.answer || '';
 
             // Map and classify results by authority tier
             const processedSources = results.map(r => {
-                const tierInfo = classifySourceTier(r.url);
+                const tierInfo = classifySourceTier(r.url, country);
                 return {
-                    title: r.title || 'Legal Source',
+                    title: r.title || `${country} Legal Source`,
                     url: r.url,
                     snippet: r.content ? r.content.substring(0, 400) : '',
                     tier: tierInfo.tier,
@@ -104,7 +167,7 @@ export const executeTargetedLegalSearch = async (query, options = {}) => {
                 };
             }).sort((a, b) => a.tier - b.tier); // Tier 1 first, then Tier 2
 
-            logger.info(`[LegalSearchOrchestrator] Tavily retrieved ${processedSources.length} sources in ${Date.now() - startTime}ms`);
+            logger.info(`[LegalSearchOrchestrator] Tavily retrieved ${processedSources.length} sources for ${country} in ${Date.now() - startTime}ms`);
 
             return {
                 summary: aiAnswer,
@@ -119,10 +182,10 @@ export const executeTargetedLegalSearch = async (query, options = {}) => {
 
     // Secondary search fallback (performWebSearch from searchService)
     try {
-        const fallbackSearch = await performWebSearch(query, 5);
+        const fallbackSearch = await performWebSearch(`${query} ${country}`, 5);
         if (fallbackSearch && fallbackSearch.results && fallbackSearch.results.length > 0) {
             const mapped = fallbackSearch.results.map(r => {
-                const tierInfo = classifySourceTier(r.link);
+                const tierInfo = classifySourceTier(r.link, country);
                 return {
                     title: r.title,
                     url: r.link,
@@ -156,34 +219,37 @@ export const executeTargetedLegalSearch = async (query, options = {}) => {
  * Formats retrieved sources into a clean, authoritative markdown grounding block
  * that can be appended directly to prompts for Gemini or OpenAI GPT-4o.
  */
-export const formatGroundingContext = (sources = [], summary = '') => {
+export const formatGroundingContext = (sources = [], summary = '', jurisdiction = null) => {
     if ((!sources || sources.length === 0) && !summary) {
         return '';
     }
 
     const currentYear = new Date().getFullYear();
     const todayStr = new Date().toLocaleDateString('en-IN', {
-        timeZone: 'Asia/Kolkata',
         dateStyle: 'full'
     });
 
-    let groundingText = `\n\n====================================================
-🏛️ VERIFIED REAL-TIME LEGAL SEARCH GROUNDING (LIVE WEB)
-Current Date: ${todayStr} (Year: ${currentYear})
-====================================================
-The following information was retrieved in real-time from authoritative Indian legal databases and official records.
-You MUST ground your legal answer on these verified current sources rather than outdated model weights.
+    const country = jurisdiction?.country || 'India';
+    const state = jurisdiction?.state || '';
+    const jurisdictionLabel = state ? `${state}, ${country}` : country;
 
-### STRICT RULES FOR GROUNDED LEGAL REASONING:
+    let groundingText = `\n\n====================================================
+🏛️ VERIFIED REAL-TIME LEGAL SEARCH GROUNDING (LIVE WEB — ${jurisdictionLabel.toUpperCase()})
+Current Date: ${todayStr} (Year: ${currentYear})
+Active Legal Jurisdiction: ${jurisdictionLabel}
+====================================================
+The following information was retrieved in real-time from authoritative ${country} legal databases and official records.
+You MUST ground your legal answer strictly on these verified current sources rather than outdated model weights.
+
+### STRICT RULES FOR GROUNDED LEGAL REASONING (${country.toUpperCase()}):
 1. STATUTORY STATUS: Distinguish between provisions that are "PASSED" vs "NOTIFIED" vs "OFFICIALLY BROUGHT INTO FORCE". Do not claim a draft or announced bill is in force unless verified.
-2. RECENT AMENDMENTS: If these sources indicate that an Act, Section, or rule was amended, struck down, or replaced (e.g. BNS / BNSS / BSA replacing IPC / CrPC / Evidence Act), prioritize this latest position.
-3. CONFLICT RESOLUTION: If an older static text or RAG reference conflicts with a verified recent official notification or court judgment from these sources, the RECENT OFFICIAL SOURCE PREVAILS.
-4. NO FABRICATION: Do NOT invent case names, judgments, bench names, SCC/AIR citations, or section numbers. If details are not found in these sources, clearly disclose that they are under judicial determination or unverified.
-5. VALIDATE STATUTORY SECTION NUMBERS: Do NOT assume placeholder or fictitious section names in user queries (e.g., "Section X", "Section XYZ", or non-existent numbers) are real. BNS sections are numbered 1 to 358. If a query mentions "Section X" or an unassigned section, explicitly clarify that no such section exists under BNS.
-6. PROPOSALS & NEWS VS ENACTED LAW: News articles stating the Centre is "likely to amend", "considering amending", or "reports indicate" do NOT constitute an enacted amendment. Always clarify if a change is merely a reported proposal/debate rather than a notified amendment to the BNS.
+2. JURISDICTION FIDELITY: Ground strictly in the statutes and precedents of ${jurisdictionLabel}. Do NOT cite laws, sections, or codes of other jurisdictions (e.g. do not cite Indian BNS/BNSS/BSA for Nepal, or vice-versa).
+3. RECENT AMENDMENTS: If these sources indicate that an Act, Section, or rule was amended, struck down, or replaced, prioritize this latest verified position.
+4. CONFLICT RESOLUTION: If an older static text or reference conflicts with a verified recent official notification or court judgment from these sources, the RECENT OFFICIAL SOURCE PREVAILS.
+5. NO FABRICATION: Do NOT invent statutes, sections, case names, judgments, citations, or courts. If details are not found in these sources or primary law, explicitly state that they are unverified.
 
 ### LIVE WEB SEARCH SIGNALS (VERIFY AGAINST PRIMARY STATUTES):
-${summary ? `Preliminary Web Search Notes: ${summary}\n(Note: Verify all claims against primary statutes. Media speculation or user keywords like 'Section X' are not statutory provisions.)\n` : ''}`;
+${summary ? `Preliminary Web Search Notes: ${summary}\n` : ''}`;
 
     if (sources && sources.length > 0) {
         groundingText += `\n### AUTHORITATIVE SOURCES RETRIEVED:\n`;

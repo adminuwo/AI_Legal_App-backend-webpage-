@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  BarChart3, Users, CreditCard, Package, Ticket, Lightbulb, Bug, AlertTriangle, 
+  BarChart3, Users, CreditCard, Package, Ticket, Lightbulb, Bug, AlertTriangle, AlertCircle, ChevronDown, Sparkles,
   MessageSquare, Globe, Settings, Shield, ShieldAlert, Search, RefreshCw, Plus, PlusCircle, 
   Edit2, Edit3, Trash2, Lock, Unlock, CheckCircle2, XCircle, ExternalLink, Key, DollarSign, 
   TrendingUp, Activity, HardDrive, Terminal, Send, Eye, EyeOff, ChevronRight, X, 
@@ -10,11 +10,13 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useRecoilValue } from 'recoil';
-import { userData } from '../userStore/userData';
+import { userData, setUserData } from '../userStore/userData';
 import { isSuperAdmin } from '../utils/isSuperAdmin';
 import DeleteConfirmModal from '../Components/DeleteConfirmModal';
 import axios from 'axios';
 import { API } from '../types.js';
+import { COUNTRIES } from '../constants/countries';
+import { STATES_BY_COUNTRY } from '../constants/states';
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -245,13 +247,137 @@ export default function AdminDashboard() {
   const [selectedReport, setSelectedReport] = useState(null);
 
   // Jurisdiction Sandbox States
-  const [jSelectedUser, setJSelectedUser] = useState(null);
-  const [jTargetCountry, setJTargetCountry] = useState('India');
-  const [jTargetState, setJTargetState] = useState('Gujarat');
-  const [jOverrideType, setJOverrideType] = useState('Temporary');
+  // Jurisdiction Sandbox States
+  const [jSelectedCountry, setJSelectedCountry] = useState(() => {
+    const saved = user?.legalJurisdiction?.country || user?.country || 'India';
+    return COUNTRIES.find(c => c.name.toLowerCase() === saved.toLowerCase() || c.code.toLowerCase() === (user?.legalJurisdiction?.countryCode || user?.countryCode || '').toLowerCase()) || COUNTRIES.find(c => c.code === 'IN') || { name: 'India', code: 'IN', flag: '🇮🇳' };
+  });
+  const [jTargetState, setJTargetState] = useState(() => {
+    return user?.legalJurisdiction?.state || user?.state || 'Gujarat';
+  });
+  const [savedJurisdiction, setSavedJurisdiction] = useState(() => ({
+    country: user?.legalJurisdiction?.country || user?.country || 'India',
+    countryCode: user?.legalJurisdiction?.countryCode || user?.countryCode || 'IN',
+    state: user?.legalJurisdiction?.state || user?.state || '',
+    jurisdictionType: user?.legalJurisdiction?.jurisdictionType || (user?.state ? 'state' : 'national'),
+  }));
+  const [savingJurisdiction, setSavingJurisdiction] = useState(false);
   const [jTestQuery, setJTestQuery] = useState('');
   const [jTestLoading, setJTestLoading] = useState(false);
   const [jTestResult, setJTestResult] = useState('');
+  const [jTestMetadata, setJTestMetadata] = useState(null);
+
+  // Dependent States based on Selected Country
+  const availableStates = useMemo(() => {
+    if (!jSelectedCountry?.code) return [];
+    return STATES_BY_COUNTRY[jSelectedCountry.code] || [];
+  }, [jSelectedCountry]);
+
+  // Dynamic Template Chips based on Country
+  const jTemplates = useMemo(() => {
+    if (jSelectedCountry?.code === 'NP' || jSelectedCountry?.name === 'Nepal') {
+      return [
+        'Limitation period for criminal complaint under Muluki Criminal Code 2074',
+        'Stamp duty on transfer of land/immovable property in Bagmati Province',
+        'Cheque dishonor under Banking Offence and Punishment Act 2064',
+        'Civil procedure for property partition under Muluki Civil Code 2074'
+      ];
+    }
+    return [
+      'Limitation period for filing a commercial suit',
+      'Stamp duty & registration fees for immovable property',
+      'Anticipatory bail procedure under state amendments',
+      'RERA project registration exemptions'
+    ];
+  }, [jSelectedCountry]);
+
+  const handleCountryChange = (countryName) => {
+    const found = COUNTRIES.find(c => c.name === countryName) || COUNTRIES[0];
+    setJSelectedCountry(found);
+    const states = STATES_BY_COUNTRY[found.code] || [];
+    if (states.length > 0) {
+      setJTargetState(states[0].name);
+    } else {
+      setJTargetState('');
+    }
+  };
+
+  // Fetch active saved jurisdiction on load
+  useEffect(() => {
+    const fetchUserJurisdiction = async () => {
+      try {
+        const token = user?.token || localStorage.getItem('token');
+        if (!token) return;
+        const res = await axios.get(`${API}/jurisdictions/my-jurisdiction`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.data?.success && res.data?.jurisdiction) {
+          const jur = res.data.jurisdiction;
+          setSavedJurisdiction(jur);
+          const found = COUNTRIES.find(c => c.name.toLowerCase() === (jur.country || '').toLowerCase() || c.code === jur.countryCode);
+          if (found) {
+            setJSelectedCountry(found);
+            if (jur.state) setJTargetState(jur.state);
+          }
+        }
+      } catch (err) {
+        // Fallback silently
+      }
+    };
+    fetchUserJurisdiction();
+  }, [user?.token]);
+
+  // Save active jurisdiction to user profile
+  const handleSaveJurisdiction = async () => {
+    setSavingJurisdiction(true);
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      const countryName = jSelectedCountry?.name || 'India';
+      const countryCode = jSelectedCountry?.code || 'IN';
+      const stateName = jTargetState || '';
+
+      const res = await axios.put(`${API}/jurisdictions/my-jurisdiction`, {
+        country: countryName,
+        countryCode: countryCode,
+        state: stateName,
+        jurisdictionType: stateName ? 'state' : 'national'
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.data?.success) {
+        const newJur = res.data.jurisdiction || {
+          country: countryName,
+          countryCode: countryCode,
+          state: stateName,
+          jurisdictionType: stateName ? 'state' : 'national',
+          savedAt: new Date().toISOString(),
+          source: 'user_settings'
+        };
+        setSavedJurisdiction(newJur);
+
+        // Update local storage user profile and sync state
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const updatedUser = {
+          ...storedUser,
+          country: countryName,
+          countryCode: countryCode,
+          state: stateName,
+          legalJurisdiction: newJur
+        };
+        setUserData(updatedUser);
+
+        toast.success(`Legal jurisdiction saved: ${countryName}${stateName ? ` • ${stateName}` : ''}`);
+      } else {
+        toast.error(res.data?.message || 'Failed to save legal jurisdiction.');
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to save legal jurisdiction.';
+      toast.error(msg);
+    } finally {
+      setSavingJurisdiction(false);
+    }
+  };
 
   // Password Change Form
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
@@ -260,12 +386,17 @@ export default function AdminDashboard() {
   // Delete Confirm Modal State
   const [deleteConfig, setDeleteConfig] = useState({ isOpen: false, type: '', id: '', name: '' });
 
+  const inFlightRef = useRef(false);
+
   // Fetch All Backend Data
-  const loadData = async (isSilent = false) => {
+  const loadData = async (isSilent = false, forceRefresh = false) => {
     if (!isAdmin) {
       setLoading(false);
       return;
     }
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
+
     if (!isSilent) setLoading(true);
     else setRefreshing(true);
 
@@ -277,13 +408,14 @@ export default function AdminDashboard() {
           Authorization: `Bearer ${token}`,
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache'
-        } 
+        },
+        timeout: 15000
       };
       const noCacheAuthHeader = authHeader;
 
       const [statsRes, usersRes, billingRes, plansRes, couponsRes, featuresRes, bugsRes, settingsRes, complaintsRes, crashesRes] = await Promise.all([
-        axios.get(`${API}/admin/stats?_t=${tStamp}`, noCacheAuthHeader).catch((err) => ({ data: { success: false, code: err.response?.data?.code } })),
-        axios.get(`${API}/admin/users?limit=10000`, authHeader).catch(() => ({ data: { list: [] } })),
+        axios.get(`${API}/admin/stats?_t=${tStamp}${forceRefresh ? '&force=true' : ''}`, noCacheAuthHeader).catch((err) => ({ data: { success: false, code: err.response?.data?.code } })),
+        axios.get(`${API}/admin/users?limit=500`, authHeader).catch(() => ({ data: { list: [] } })),
         axios.get(`${API}/admin/billing?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
         axios.get(`${API}/admin/plans`, authHeader).catch(() => ({ data: { plans: [] } })),
         axios.get(`${API}/admin/coupons`, authHeader).catch(() => ({ data: { coupons: [], stats: null } })),
@@ -325,6 +457,7 @@ export default function AdminDashboard() {
       console.error('Failed to load Admin Dashboard data:', err);
       toast.error('Failed to refresh Admin Portal telemetry.');
     } finally {
+      inFlightRef.current = false;
       setLoading(false);
       setRefreshing(false);
     }
@@ -332,7 +465,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(() => loadData(true), 20000);
+    const interval = setInterval(() => loadData(true), 45000);
     return () => clearInterval(interval);
   }, [isAdmin]);
 
@@ -1169,16 +1302,39 @@ export default function AdminDashboard() {
 
     setJTestLoading(true);
     setJTestResult('');
+    setJTestMetadata(null);
     try {
       const token = user?.token || localStorage.getItem('token');
+      const countryName = jSelectedCountry?.name || 'India';
       const res = await axios.post(`${API}/admin/jurisdiction-sandbox-test`, {
         query: jTestQuery,
-        country: jTargetCountry,
-        state: jTargetState
+        country: countryName,
+        state: jTargetState || '',
+        jurisdiction: {
+          country: countryName,
+          state: jTargetState || '',
+          source: 'admin_sandbox'
+        }
       }, { headers: { Authorization: `Bearer ${token}` } });
-      setJTestResult(res.data?.response || res.data?.answer || 'Jurisdiction test executed successfully.');
+
+      const data = res.data;
+      setJTestResult(data?.response || data?.answer || 'Jurisdiction test executed successfully.');
+      setJTestMetadata({
+        jurisdiction: data?.jurisdiction || { country: countryName, state: jTargetState },
+        currentnessRequired: data?.currentnessRequired ?? false,
+        googleGroundingUsed: data?.googleGroundingUsed ?? false,
+        tavilyUsed: data?.tavilyUsed ?? false,
+        ragUsed: data?.ragUsed ?? false,
+        sourceCount: data?.sourceCount || (data?.sources?.length || 0),
+        groundingStatus: data?.groundingStatus || 'Direct Legal Engine Analysis',
+        model: data?.model || 'gemini-2.5-flash',
+        sources: data?.sources || []
+      });
+      toast.success('Sandbox test executed successfully.');
     } catch (err) {
-      setJTestResult('Test execution failed. Using default statutory fallbacks.');
+      const errMsg = err.response?.data?.message || 'Test execution failed.';
+      setJTestResult(`Error: ${errMsg}`);
+      toast.error(errMsg);
     } finally {
       setJTestLoading(false);
     }
@@ -1291,7 +1447,7 @@ export default function AdminDashboard() {
 
         <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={() => loadData(true)}
+            onClick={() => loadData(true, true)}
             className="p-2 sm:px-3 sm:py-2 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-xl border border-slate-200/80 dark:border-zinc-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold"
             title="Refresh Live Data"
           >
@@ -2790,37 +2946,160 @@ export default function AdminDashboard() {
         ) : activeTab === 'jurisdiction' ? (
           /* TAB 10: JURISDICTION OVERRIDES & SANDBOX */
           <div className="space-y-4 sm:space-y-6">
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 sm:space-y-6">
+            {/* Active Saved System Jurisdiction Card */}
+            <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent dark:from-emerald-500/15 dark:via-teal-500/10 dark:to-transparent rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-emerald-500/30 dark:border-emerald-500/40 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className="relative">
+                  <span className="text-3xl sm:text-4xl p-2 bg-white dark:bg-zinc-800 rounded-2xl border border-emerald-500/20 shadow-xs block">
+                    {COUNTRIES.find(c => c.name.toLowerCase() === (savedJurisdiction?.country || '').toLowerCase())?.flag || (savedJurisdiction?.country === 'Nepal' ? '🇳🇵' : '🇮🇳')}
+                  </span>
+                  <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                  </span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                      Active System Jurisdiction
+                    </span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-wide text-slate-400 dark:text-zinc-500">
+                      {savedJurisdiction?.jurisdictionType ? savedJurisdiction.jurisdictionType.toUpperCase() : (savedJurisdiction?.state ? 'STATE / PROVINCE' : 'NATIONAL')}
+                    </span>
+                  </div>
+                  <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-1">
+                    {savedJurisdiction?.country || 'India'}
+                    {savedJurisdiction?.state ? ` • ${savedJurisdiction.state}` : ''}
+                  </h4>
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium">
+                    All AI Legal reasoning, searches, drafting tools, and case files default to this active statutory framework.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <span>Enforced Across Web & Mobile</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Notice Alert Banner */}
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-500 shrink-0">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-xs sm:text-sm font-extrabold text-amber-600 dark:text-amber-400">
+                  TEST MODE &mdash; Sandbox Simulator
+                </h4>
+                <p className="text-[11px] sm:text-xs text-amber-700/80 dark:text-amber-300/80 mt-0.5 leading-relaxed">
+                  Queries run live through the multi-tier legal engine (Gemini 2.5 Flash with Google Grounding & Tavily Fallbacks). Use the <strong>Save as Active Jurisdiction</strong> button below whenever you want to apply the selected country/state across the entire platform.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-5">
               <div>
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                   <Globe className="w-5 h-5 text-[#C8A34D] shrink-0" />
                   <span>Global Jurisdiction Administration & Sandbox</span>
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 font-medium">Test legal engine prompts under specific Indian State or Global Country statutory frameworks.</p>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 font-medium">
+                  Select a country and applicable state/territory to test jurisdictional reasoning, verify statutory citations, and save as your active system jurisdiction.
+                </p>
               </div>
 
               <form onSubmit={handleRunJurisdictionTest} className="space-y-4 pt-2 border-t border-slate-100 dark:border-zinc-800">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  {/* Target Country Selector */}
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Target Country</label>
-                    <input
-                      type="text"
-                      value={jTargetCountry}
-                      onChange={e => setJTargetCountry(e.target.value)}
-                      className="w-full mt-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold"
-                    />
+                    <div className="relative mt-1">
+                      <select
+                        value={jSelectedCountry?.name || 'India'}
+                        onChange={e => handleCountryChange(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#C8A34D]"
+                      >
+                        {COUNTRIES.map(c => (
+                          <option key={c.code} value={c.name} className="bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200">
+                            {c.flag} {c.name} ({c.code})
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                   </div>
+
+                  {/* Target State Selector */}
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Target State / Jurisdiction</label>
-                    <input
-                      type="text"
-                      value={jTargetState}
-                      onChange={e => setJTargetState(e.target.value)}
-                      className="w-full mt-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold"
-                    />
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                      Target State / Province / Territory
+                    </label>
+                    <div className="relative mt-1">
+                      <select
+                        value={jTargetState}
+                        onChange={e => setJTargetState(e.target.value)}
+                        disabled={availableStates.length === 0}
+                        className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#C8A34D] ${
+                          availableStates.length === 0 ? 'opacity-60 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        {availableStates.length > 0 ? (
+                          availableStates.map(s => (
+                            <option key={s.code || s.name} value={s.name} className="bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200">
+                              {s.name} ({s.code || s.name})
+                            </option>
+                          ))
+                        ) : (
+                          <option value="">National / Federal Jurisdiction Only</option>
+                        )}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                   </div>
                 </div>
 
+                {/* Save Quick Action Bar */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 p-3 bg-slate-50 dark:bg-zinc-900/80 rounded-xl border border-slate-200/80 dark:border-zinc-800">
+                  <div className="text-xs text-slate-600 dark:text-zinc-300 font-medium flex items-center gap-1.5">
+                    <span>Selected:</span>
+                    <strong className="text-slate-900 dark:text-white font-black">
+                      {jSelectedCountry?.flag || '🌐'} {jSelectedCountry?.name || 'India'}{jTargetState ? ` • ${jTargetState}` : ''}
+                    </strong>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSaveJurisdiction}
+                    disabled={savingJurisdiction}
+                    className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-sm cursor-pointer flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                  >
+                    {savingJurisdiction ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                    <span>{savingJurisdiction ? 'Saving to Profile...' : 'Save as Active Jurisdiction'}</span>
+                  </button>
+                </div>
+
+                {/* Quick Example Chips */}
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                    Quick Test Templates ({jSelectedCountry?.name || 'India'})
+                  </label>
+                  <div className="flex flex-wrap gap-2 mt-1.5">
+                    {jTemplates.map((template, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setJTestQuery(template)}
+                        className="px-2.5 py-1 text-[11px] font-medium bg-slate-100 hover:bg-[#C8A34D]/10 hover:text-[#C8A34D] dark:bg-zinc-800/80 dark:hover:bg-[#C8A34D]/20 text-slate-600 dark:text-zinc-300 rounded-lg border border-slate-200/80 dark:border-zinc-700/80 transition-all cursor-pointer text-left"
+                      >
+                        {template}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Test Legal Query Input */}
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Test Legal Query</label>
                   <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 mt-1">
@@ -2828,24 +3107,150 @@ export default function AdminDashboard() {
                       type="text"
                       value={jTestQuery}
                       onChange={e => setJTestQuery(e.target.value)}
-                      placeholder="e.g. What is the limitation period for filing a commercial suit under State amendments?"
-                      className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold"
+                      placeholder="e.g. What is the statutory limitation period for filing an appeal in the High Court?"
+                      className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#C8A34D]"
                     />
                     <button
                       type="submit"
                       disabled={jTestLoading || !jTestQuery.trim()}
-                      className="w-full sm:w-auto px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer flex items-center justify-center gap-2 shrink-0"
+                      className="w-full sm:w-auto px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer flex items-center justify-center gap-2 shrink-0 transition-all disabled:opacity-50"
                     >
                       {jTestLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Terminal className="w-4 h-4" />}
-                      <span>Run Test</span>
+                      <span>{jTestLoading ? 'Executing Sandbox...' : 'Run Test'}</span>
                     </button>
                   </div>
                 </div>
 
+                {/* Test Results and Telemetry Section */}
                 {jTestResult && (
-                  <div className="p-3.5 sm:p-4 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800">
-                    <p className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D]">AI Jurisdiction Response</p>
-                    <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200 mt-1 whitespace-pre-wrap leading-relaxed">{jTestResult}</p>
+                  <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
+                    {/* Telemetry Header */}
+                    <div className="p-4 bg-slate-50 dark:bg-zinc-900/90 rounded-2xl border border-slate-200 dark:border-zinc-800 space-y-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">{jSelectedCountry?.flag || '🌐'}</span>
+                          <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                            {jSelectedCountry?.name || 'India'}
+                            {jTargetState ? ` • ${jTargetState}` : ''}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30">
+                            {jTestMetadata?.model || 'Gemini 2.5 Flash'}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/15 text-emerald-500 border border-emerald-500/30">
+                            {jTestMetadata?.groundingStatus || 'Live Engine Grounded'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Telemetry KPIs Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-200/60 dark:border-zinc-800 text-[11px]">
+                        <div className="p-2 rounded-xl bg-white dark:bg-zinc-800/60 border border-slate-100 dark:border-zinc-700/60">
+                          <span className="text-slate-400 block text-[10px] uppercase font-bold">Currentness</span>
+                          <span className="font-extrabold text-slate-800 dark:text-zinc-200">
+                            {jTestMetadata?.currentnessRequired ? '🔥 Active (2024-2026)' : 'Standard Statutory'}
+                          </span>
+                        </div>
+                        <div className="p-2 rounded-xl bg-white dark:bg-zinc-800/60 border border-slate-100 dark:border-zinc-700/60">
+                          <span className="text-slate-400 block text-[10px] uppercase font-bold">Google Grounding</span>
+                          <span className={`font-extrabold ${jTestMetadata?.googleGroundingUsed ? 'text-emerald-500' : 'text-slate-500'}`}>
+                            {jTestMetadata?.googleGroundingUsed ? '✓ Connected' : 'Inactive'}
+                          </span>
+                        </div>
+                        <div className="p-2 rounded-xl bg-white dark:bg-zinc-800/60 border border-slate-100 dark:border-zinc-700/60">
+                          <span className="text-slate-400 block text-[10px] uppercase font-bold">Tavily Fallback</span>
+                          <span className={`font-extrabold ${jTestMetadata?.tavilyUsed ? 'text-amber-500' : 'text-slate-500'}`}>
+                            {jTestMetadata?.tavilyUsed ? '✓ Activated' : 'Bypassed'}
+                          </span>
+                        </div>
+                        <div className="p-2 rounded-xl bg-white dark:bg-zinc-800/60 border border-slate-100 dark:border-zinc-700/60">
+                          <span className="text-slate-400 block text-[10px] uppercase font-bold">Citations</span>
+                          <span className="font-extrabold text-[#C8A34D]">
+                            {jTestMetadata?.sourceCount ?? (jTestMetadata?.sources?.length || 0)} Verified Sources
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* AI Response Text */}
+                    <div className="p-4 sm:p-5 bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>AI Jurisdictional Legal Response</span>
+                        </p>
+                      </div>
+                      <div className="text-xs font-medium text-slate-800 dark:text-zinc-200 whitespace-pre-wrap leading-relaxed space-y-2">
+                        {jTestResult}
+                      </div>
+                    </div>
+
+                    {/* Grounded Sources & Citations */}
+                    {jTestMetadata?.sources && jTestMetadata.sources.length > 0 && (
+                      <div className="p-4 bg-slate-50 dark:bg-zinc-900/60 rounded-2xl border border-slate-200 dark:border-zinc-800 space-y-2.5">
+                        <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                          Retrieved Jurisdictional Citations ({jTestMetadata.sources.length})
+                        </p>
+                        <div className="space-y-2">
+                          {jTestMetadata.sources.map((src, sIdx) => (
+                            <div
+                              key={sIdx}
+                              className="p-3 bg-white dark:bg-zinc-800/80 rounded-xl border border-slate-200/80 dark:border-zinc-700/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"
+                            >
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-[#C8A34D]/15 text-[#C8A34D]">
+                                    {src.domainTier || 'Legal Authority'}
+                                  </span>
+                                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                                    {src.title || src.domain || 'Official Legal Source'}
+                                  </p>
+                                </div>
+                                {src.snippet && (
+                                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 line-clamp-1 mt-0.5">
+                                    {src.snippet}
+                                  </p>
+                                )}
+                              </div>
+                              {src.url && (
+                                <a
+                                  href={src.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[11px] font-bold text-[#C8A34D] hover:underline shrink-0 flex items-center gap-1"
+                                >
+                                  <span>View Source</span>
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Bar: Save This Jurisdiction after verification */}
+                    <div className="p-4 bg-gradient-to-r from-emerald-500/10 via-[#C8A34D]/10 to-transparent dark:from-emerald-500/15 dark:via-[#C8A34D]/15 dark:to-transparent rounded-2xl border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                          <span>Satisfied with the statutory response?</span>
+                        </p>
+                        <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
+                          Save <strong>{jSelectedCountry?.name || 'India'}{jTargetState ? ` (${jTargetState})` : ''}</strong> as your active profile jurisdiction so all AI reasoning, chat, and drafting tools follow this country's laws.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleSaveJurisdiction}
+                        disabled={savingJurisdiction}
+                        className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2 transition-all shrink-0 disabled:opacity-50"
+                      >
+                        {savingJurisdiction ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                        <span>{savingJurisdiction ? 'Saving...' : `Save ${jSelectedCountry?.name || 'Jurisdiction'} to Profile`}</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </form>

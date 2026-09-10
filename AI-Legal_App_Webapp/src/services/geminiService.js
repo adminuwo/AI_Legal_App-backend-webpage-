@@ -5,10 +5,18 @@ import { getDeviceFingerprint } from "../utils/fingerprint";
 
 export const generateChatResponse = async (history, currentMessage, systemInstruction, attachments, language, abortSignal = null, mode = null, sessionId = null, projectId = null, userMsgId = null, aiMsgId = null, aspectRatio = null, modelId = null, onChunk = null) => {
     try {
-        const token = getUserData()?.token;
+        const userData = getUserData();
+        const token = userData?.token || (typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null);
+        const userJurisdiction = userData?.legalJurisdiction?.country || userData?.jurisdiction || userData?.country || 'India';
+        const userState = userData?.legalJurisdiction?.state || userData?.state || '';
+        const userCountryCode = userData?.legalJurisdiction?.countryCode || userData?.countryCode || (userJurisdiction === 'Nepal' ? 'NP' : 'IN');
+
         const headers = {
             'X-Device-Fingerprint': getDeviceFingerprint(),
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-Legal-Jurisdiction': userJurisdiction,
+            'X-Legal-State': userState,
+            'X-Country-Code': userCountryCode
         };
         if (token && token !== 'undefined' && token !== 'null') {
             headers.Authorization = `Bearer ${token}`;
@@ -47,6 +55,15 @@ export const generateChatResponse = async (history, currentMessage, systemInstru
             image: images,
             document: documents,
             language: language || 'English',
+            jurisdiction: userJurisdiction,
+            country: userJurisdiction,
+            state: userState,
+            countryCode: userCountryCode,
+            legalJurisdiction: userData?.legalJurisdiction || {
+                country: userJurisdiction,
+                countryCode: userCountryCode,
+                state: userState
+            },
             mode: mode,
             sessionId: sessionId,
             projectId: projectId,

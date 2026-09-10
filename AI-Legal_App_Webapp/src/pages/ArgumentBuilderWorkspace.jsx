@@ -11,13 +11,22 @@ import toast from 'react-hot-toast';
 import { apiService } from '../services/apiService';
 import { useSubscription } from '../context/SubscriptionContext';
 
-const CASE_TYPES = [
+const CASE_TYPES_INDIA = [
   'Cheque Bounce (Sec 138 NI Act)', 
   'Consumer Complaint (COPRA 2019)', 
   'Commercial Rent Default (TP Act)', 
   'Bail Application (Sec 439 CrPC / Sec 483 BNS)',
   'Arbitration Breach (Sec 9 / 11)', 
   'Civil Suit for Recovery'
+];
+
+const CASE_TYPES_NEPAL = [
+  'Banking Offence & Cheque Dishonour (Banking Offence Act 2064)',
+  'Consumer Protection Dispute (Consumer Protection Act 2075)',
+  'Commercial Rent & Property Dispute (Muluki Civil Code 2074)',
+  'Bail & Custody Review (Muluki Criminal Procedure 2074 Sec 67/73)',
+  'Arbitration Dispute & Award Enforcement (Arbitration Act 2055)',
+  'Civil Suit for Recovery / Len-Den (Muluki Civil Code 2074)'
 ];
 
 const LITIGATION_STYLES = [
@@ -28,12 +37,19 @@ const LITIGATION_STYLES = [
 ];
 
 const SUPPORTED_LANGUAGES = [
-  'English', 'Hindi', 'Hinglish', 'Marathi', 'Tamil', 'Telugu', 'Malayalam', 'Punjabi', 'Urdu'
+  'English', 'Nepali', 'Hindi', 'Hinglish', 'Marathi', 'Tamil', 'Telugu', 'Malayalam', 'Punjabi', 'Urdu'
 ];
 
 export default function ArgumentBuilderWorkspace() {
   const navigate = useNavigate();
   const { deductToolUsage } = useSubscription();
+
+  // Active Jurisdiction Detection
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const activeJur = user.activeJurisdiction || user.legalJurisdiction || {};
+  const isNepal = activeJur.country === 'Nepal' || activeJur.countryCode === 'NP' || (typeof activeJur.country === 'string' && activeJur.country.toLowerCase().includes('nepal'));
+
+  const CASE_TYPES = isNepal ? CASE_TYPES_NEPAL : CASE_TYPES_INDIA;
 
   // Workflow Steps: 1 = Input Source, 2 = Review, 3 = Generation, 4 = Workspace
   const [currentStep, setCurrentStep] = useState(1);
@@ -49,11 +65,23 @@ export default function ArgumentBuilderWorkspace() {
   const [uploadedFile, setUploadedFile] = useState(null);
 
   // Manual Input state
-  const [manualForm, setManualForm] = useState({
+  const [manualForm, setManualForm] = useState(isNepal ? {
+    caseTitle: 'Cheque Dishonour Matter - Dishonour of NPR 25 Lakhs',
+    courtName: 'District Court Kathmandu',
+    presidingJudge: 'Hon\'ble District Judge',
+    caseType: CASE_TYPES_NEPAL[0],
+    clientRole: 'Complainant / Creditor',
+    opponentName: 'Apex Logistics Nepal Pvt Ltd',
+    facts: 'Dishonoured cheque of NPR 25,00,000 with Bank Return Memo "Funds Insufficient". Statutory demand notice served, no payment received within statutory window.',
+    statutorySections: 'Banking Offence and Punishment Act 2064 (Section 3 & 7), Negotiable Instruments Act 2034',
+    reliefSought: 'Conviction of accused, recovery of principal NPR 25,00,000 with statutory interest and punitive fine under Banking Offence Act 2064.',
+    keyEvidence: 'Original Cheque Ex P-1, Bank Return Slip Ex P-2, Legal Notice & Dispatch Slip Ex P-3',
+    style: 'aggressive'
+  } : {
     caseTitle: 'Cheque Bounce Matter - Dishonour of Rs 25 Lakhs',
     courtName: 'Metropolitan Magistrate Court, New Delhi',
     presidingJudge: 'Hon\'ble Justice R. K. Varma',
-    caseType: CASE_TYPES[0],
+    caseType: CASE_TYPES_INDIA[0],
     clientRole: 'Complainant / Creditor',
     opponentName: 'Apex Logistics Pvt Ltd',
     facts: 'Dishonoured cheque of Rs 25,00,000 with Return Memo "Funds Insufficient". Statutory notice served on 12th May 2026, no payment received within 15 days.',
@@ -64,7 +92,7 @@ export default function ArgumentBuilderWorkspace() {
   });
 
   // Common Language & Strategy
-  const [outputLanguage, setOutputLanguage] = useState('English');
+  const [outputLanguage, setOutputLanguage] = useState(isNepal ? 'Nepali' : 'English');
   const [selectedStyle, setSelectedStyle] = useState('aggressive');
 
   // Step 3: AI Generation State
@@ -88,7 +116,13 @@ export default function ArgumentBuilderWorkspace() {
   });
   const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
 
-  const DEFAULT_ADVOCATE_CASES = [
+  const DEFAULT_ADVOCATE_CASES = isNepal ? [
+    { _id: 'case_101', name: 'M/S Himalayan Trading vs Kathmandu Traders', caseType: 'Cheque Dishonour (Banking Offence Act 2064)', courtName: 'Kathmandu District Court', clientName: 'Himalayan Trading', caseNumber: 'CC/4521/2081' },
+    { _id: 'case_102', name: 'Gorkha Hydro vs Apex Construction Pvt Ltd', caseType: 'Commercial Arbitration Breach', courtName: 'High Court Patan', clientName: 'Gorkha Hydro', caseNumber: 'ARB/882/2081' },
+    { _id: 'case_103', name: 'Shrestha Consumer Grievance vs Horizon Electronics', caseType: 'Consumer Protection Complaint', courtName: 'Consumer Court / CDO Office, Kathmandu', clientName: 'Suresh Shrestha', caseNumber: 'CC/109/2081' },
+    { _id: 'case_104', name: 'Anand Sharma vs Annapurna Properties', caseType: 'Commercial Rent Default (Muluki Civil Code 2074)', courtName: 'Lalitpur District Court', clientName: 'Anand Sharma', caseNumber: 'CS/330/2081' },
+    { _id: 'case_105', name: 'Bail Application for Bikram Thapa', caseType: 'Bail Application (Muluki Criminal Procedure Sec 67/73)', courtName: 'District Court Kathmandu', clientName: 'Bikram Thapa', caseNumber: 'BA/912/2081' }
+  ] : [
     { _id: 'case_101', name: 'State vs Raj Malhotra & Ors.', caseType: 'Cheque Bounce (Sec 138 NI Act)', courtName: 'Patiala House Courts, New Delhi', clientName: 'Raj Malhotra', caseNumber: 'CC/4521/2025' },
     { _id: 'case_102', name: 'M/S TechCorp vs Global Logistics Ltd.', caseType: 'Commercial Arbitration Breach', courtName: 'Delhi High Court', clientName: 'M/S TechCorp', caseNumber: 'ARB/882/2025' },
     { _id: 'case_103', name: 'Verma Consumer Grievance vs Horizon Electronics', caseType: 'Consumer Complaint (COPRA)', courtName: 'District Consumer Commission', clientName: 'Suresh Verma', caseNumber: 'CC/109/2026' },
@@ -193,17 +227,36 @@ export default function ArgumentBuilderWorkspace() {
   const getSourceTitle = () => {
     if (inputSource === 'existing_case') {
       if (!selectedCase) return 'Selected Case';
-      return selectedCase.name || selectedCase.caseName || selectedCase.title || selectedCase.caseNumber || 'Authorized Legal Matter';
+      return selectedCase.name || selectedCase.caseName || selectedCase.title || 'Selected Case';
     }
     if (inputSource === 'upload_doc') {
-      return uploadedFile ? uploadedFile.name : 'Uploaded Legal Document';
+      return uploadedFile?.name ? `Uploaded Brief: ${uploadedFile.name}` : 'Uploaded Document Brief';
     }
-    return manualForm.caseTitle || 'Manual Legal Context';
+    return manualForm.caseTitle || 'Manual Legal Argument Brief';
   };
 
   const handleCopyOralNotes = () => {
     const title = getSourceTitle();
-    const notesText = `AI LEGAL — COURTROOM ORAL SUBMISSIONS SPEAKING DRAFT
+    const notesText = isNepal ? `AI LEGAL — COURTROOM ORAL SUBMISSIONS SPEAKING DRAFT (NEPAL JURISDICTION)
+Case: ${title}
+Language: ${outputLanguage}
+
+1. OPENING STATEMENT:
+"सम्मानित इजलास समक्ष निवेदक/वादीको तर्फबाट बैंकिङ कसूर तथा सजाय ऐन २०६४ तथा मुलुकी देवानी संहिता २०७४ अन्तर्गत स्पष्ट दायित्वको दाबी प्रस्तुत गरिन्छ।"
+("Hon'ble Bench, the petitioner presents a clear statutory offence and liability under Banking Offence and Punishment Act 2064 and Muluki Civil Code 2074.")
+
+2. CORE FACTS TO EMPHASIZE:
+• Dishonour confirmed via bank return memo / dishonour slip with clear insufficient balance notation.
+• Formal legal demand notice dispatched and delivered within statutory timeline.
+• Accused / Respondent failed to clear the contractual liability.
+
+3. STATUTORY PROVISIONS & PRESUMPTION:
+• Clear offence and penal liability established under Section 3 & 7 Banking Offence and Punishment Act 2064 and Negotiable Instruments Act 2034.
+• Statutory presumption under Section 25 of Nepal Evidence Act 2031 applies once signature execution on the instrument is admitted.
+
+4. REQUESTED RELIEF:
+• Award full principal claim of NPR 25,00,000 with statutory interest, statutory damages, and penal sanction under Banking Offence Act 2064.`
+    : `AI LEGAL — COURTROOM ORAL SUBMISSIONS SPEAKING DRAFT
 Case: ${title}
 Language: ${outputLanguage}
 
@@ -271,7 +324,7 @@ Language: ${outputLanguage}
           </style>
         </head>
         <body>
-          <div class="header-title">Courtroom Argument Preparation Brief</div>
+          <div class="header-title">Courtroom Argument Preparation Brief ${isNepal ? '(Nepal Jurisdiction)' : ''}</div>
           
           <table class="meta-box">
             <tr>
@@ -289,54 +342,64 @@ Language: ${outputLanguage}
           </table>
 
           <div class="section-heading">1. Executive Summary</div>
-          <div class="content-block">• High-Level Synthesis: Complainant filed proceeding following dishonour of Rs 25,00,000 cheque for valid consideration.
-• Bank Return Memo confirms "Funds Insufficient". Statutory demand notice served.
-• Mandatory presumption of legally enforceable debt applies under Section 139 NI Act.</div>
+          <div class="content-block">${isNepal 
+            ? `• High-Level Synthesis: Complainant filed proceeding under Banking Offence and Punishment Act 2064 and Negotiable Instruments Act 2034 following dishonour of NPR 25,00,000 cheque for valid consideration.\n• Official Bank Dishonour Memo confirms "Funds Insufficient". Statutory demand notice served.\n• Statutory presumption of debt obligation applies under Evidence Act 2031 Section 25.`
+            : `• High-Level Synthesis: Complainant filed proceeding following dishonour of Rs 25,00,000 cheque for valid consideration.\n• Bank Return Memo confirms "Funds Insufficient". Statutory demand notice served.\n• Mandatory presumption of legally enforceable debt applies under Section 139 NI Act.`
+          }</div>
 
           <div class="section-heading">2. Case Overview & Parties</div>
           <div class="content-block">• Petitioner / Complainant: ${manualForm.clientRole}
 • Respondent / Accused: ${manualForm.opponentName}
 • Presiding Court: ${manualForm.courtName} | Judge: ${manualForm.presidingJudge}
-• Governing Enactment: Section 138 / 139 / 142 Negotiable Instruments Act, 1881</div>
+• Governing Enactment: ${isNepal 
+  ? 'Banking Offence and Punishment Act 2064 / Negotiable Instruments Act 2034 / Muluki Civil Code 2074'
+  : 'Section 138 / 139 / 142 Negotiable Instruments Act, 1881'
+}</div>
 
           <div class="section-heading">3. Material Facts</div>
-          <div class="content-block">1. Complainant supplied goods/services under valid transaction.
-2. Accused issued cheque towards discharge of legally enforceable debt.
-3. Bank dishonoured cheque with official return memo "Funds Insufficient".
-4. Statutory demand notice dispatched within 30 days of dishonour memo.
-5. Accused failed to repay within 15 days of notice receipt.</div>
+          <div class="content-block">${isNepal
+            ? `1. Complainant supplied goods/services under valid commercial transaction / Lekhat.\n2. Accused issued bank cheque towards discharge of legally enforceable obligation.\n3. Bank dishonoured cheque with official return memo "Funds Insufficient".\n4. Statutory demand notice dispatched within statutory window.\n5. Accused failed to repay within the cure period.`
+            : `1. Complainant supplied goods/services under valid transaction.\n2. Accused issued cheque towards discharge of legally enforceable debt.\n3. Bank dishonoured cheque with official return memo "Funds Insufficient".\n4. Statutory demand notice dispatched within 30 days of dishonour memo.\n5. Accused failed to repay within 15 days of notice receipt.`
+          }</div>
 
           <div class="section-heading">4. Chronological Timeline</div>
-          <div class="content-block">📅 10 Apr 2026 — Cheque issuance date by accused.
-📅 30 Apr 2026 — Bank dishonour return memo received.
-📅 12 May 2026 — Statutory demand notice served via postal delivery.
-📅 28 May 2026 — Expiry of 15-day statutory cure period (Cause of Action accrued).</div>
+          <div class="content-block">${isNepal
+            ? `📅 2081 Baisakh 10 — Cheque issuance date by accused.\n📅 2081 Baisakh 30 — Bank dishonour return memo received.\n📅 2081 Jestha 12 — Statutory demand notice served.\n📅 2081 Jestha 28 — Expiry of statutory cure period (Cause of Action accrued).`
+            : `📅 10 Apr 2026 — Cheque issuance date by accused.\n📅 30 Apr 2026 — Bank dishonour return memo received.\n📅 12 May 2026 — Statutory demand notice served via postal delivery.\n📅 28 May 2026 — Expiry of 15-day statutory cure period (Cause of Action accrued).`
+          }</div>
 
           <div class="section-heading">5. Supporting Arguments (Primary Submissions)</div>
-          <div class="content-block">• Sec 139 NI Act Presumption: Signature on cheque is admitted by accused, triggering mandatory debt presumption.
-• Proof of Dishonour: Official Bank Return Memo serves as primary evidence under Section 146 NI Act.
-• Failure to Reply: Absence of reply to demand notice confirms liability.</div>
+          <div class="content-block">${isNepal
+            ? `• Statutory Presumption (Evidence Act 2031 Sec 25): Signature on cheque is admitted by accused, establishing valid consideration and transaction liability.\n• Proof of Dishonour: Official Bank Return Memo / Slip serves as conclusive evidence under Banking Offence Act 2064.\n• Failure to Settle: Absence of settlement within notice window confirms default.`
+            : `• Sec 139 NI Act Presumption: Signature on cheque is admitted by accused, triggering mandatory debt presumption.\n• Proof of Dishonour: Official Bank Return Memo serves as primary evidence under Section 146 NI Act.\n• Failure to Reply: Absence of reply to demand notice confirms liability.`
+          }</div>
 
           <div class="section-heading">6. Counter Arguments & Rebuttals</div>
-          <div class="content-block">• Opponent Defense Argument: Accused will claim cheque was given as security deposit only.
-• Recommended Rebuttal: Cite Supreme Court judgment in Rangappa v. Sri Mohan (2010 11 SCC 441) holding Sec 139 presumption covers security cheques once default occurs.</div>
+          <div class="content-block">${isNepal
+            ? `• Opponent Defense Argument: Accused will claim cheque was given solely as security collateral.\n• Recommended Rebuttal: Cite Supreme Court of Nepal precedent holding that security defence fails when underlying contractual liability and consideration remain undischarged.`
+            : `• Opponent Defense Argument: Accused will claim cheque was given as security deposit only.\n• Recommended Rebuttal: Cite Supreme Court judgment in Rangappa v. Sri Mohan (2010 11 SCC 441) holding Sec 139 presumption covers security cheques once default occurs.`
+          }</div>
 
           <div class="section-heading">7. Witness & Evidence Checklist</div>
-          <div class="content-block">• Exhibits: Original Cheque (Ex P-1), Bank Return Memo (Ex P-2), Postal Receipt & Tracking (Ex P-3), Invoices/Ledger (Ex P-4).
-• Witnesses: Complainant (CW-1) & Bank Nodal Officer.</div>
+          <div class="content-block">${isNepal
+            ? `• Exhibits: Original Cheque (Ex P-1), Bank Return Memo (Ex P-2), Notice Dispatch Slip & Verification Certificate under ETA 2063 (Ex P-3), Invoices/Lekhat (Ex P-4).\n• Witnesses: Complainant (CW-1) & Bank Manager/Officer.`
+            : `• Exhibits: Original Cheque (Ex P-1), Bank Return Memo (Ex P-2), Postal Receipt & Tracking (Ex P-3), Invoices/Ledger (Ex P-4).\n• Witnesses: Complainant (CW-1) & Bank Nodal Officer.`
+          }</div>
 
           <div class="section-heading">8. Relevant Case Laws & Precedents</div>
-          <div class="content-block">• Rangappa v. Sri Mohan (2010 11 SCC 441 SC) — Enforceable debt presumption under Sec 139.
-• Bir Singh v. Mukesh Kumar (2019 4 SCC 197 SC) — Signature on blank cheque triggers presumption.
-• Sampelly Satyanarayana v. RBI (2016 10 SCC 458 SC) — Security cheques attracting Sec 138.</div>
+          <div class="content-block">${isNepal
+            ? `• Supreme Court of Nepal (NLR Division Bench) — Enforceability of dishonoured cheque under Banking Offence and Punishment Act 2064.\n• Supreme Court of Nepal Landmark Ratio — Execution of negotiable instrument creates enforceable debt liability under Evidence Act 2031.\n• Supreme Court of Nepal Full Bench — Admissibility of electronic banking records and return advices.`
+            : `• Rangappa v. Sri Mohan (2010 11 SCC 441 SC) — Enforceable debt presumption under Sec 139.\n• Bir Singh v. Mukesh Kumar (2019 4 SCC 197 SC) — Signature on blank cheque triggers presumption.\n• Sampelly Satyanarayana v. RBI (2016 10 SCC 458 SC) — Security cheques attracting Sec 138.`
+          }</div>
 
           <div class="section-heading">9. Relief & Final Prayer Draft</div>
           <div class="content-block">${manualForm.reliefSought}</div>
 
           <div class="section-heading">10. Statutory Provisions Matrix</div>
-          <div class="content-block">• NI Act Sec 138 — Dishonour of cheque offense
-• NI Act Sec 139 — Mandatory Presumption of Debt
-• Evidence Act Sec 65B — Admissibility of electronic postal tracking records</div>
+          <div class="content-block">${isNepal
+            ? `• Banking Offence and Punishment Act 2064 Sec 3 & 7 — Cheque dishonour offence and penal liability\n• Negotiable Instruments Act 2034 — Instrument validity and holder in due course rights\n• Evidence Act 2031 Sec 25 — Statutory presumption of consideration\n• Electronic Transactions Act 2063 Sec 56-58 — Admissibility of digital banking records`
+            : `• NI Act Sec 138 — Dishonour of cheque offense\n• NI Act Sec 139 — Mandatory Presumption of Debt\n• Evidence Act Sec 65B — Admissibility of electronic postal tracking records`
+          }</div>
 
           <script>
             window.onload = function() {
@@ -899,7 +962,80 @@ Language: ${outputLanguage}
 
               {/* 12 Accordion Sections Grid */}
               <div className="space-y-3">
-                {[
+                {(isNepal ? [
+                  {
+                    id: 'summary',
+                    title: '1. Executive Summary',
+                    pct: 96,
+                    content: `• High-Level Synthesis: Complainant has initiated proceedings under Banking Offence and Punishment Act 2064 and Negotiable Instruments Act 2034 following the dishonour of a cheque amounting to NPR 25,00,000 for valid commercial consideration.\n• Bank Return Slip / Advice confirms "Funds Insufficient".\n• Statutory demand notice was delivered and no settlement was received within the statutory window.\n• Statutory presumption of consideration under Evidence Act 2031 Section 25 applies in favor of the complainant.`
+                  },
+                  {
+                    id: 'overview',
+                    title: '2. Case Overview & Parties',
+                    pct: 98,
+                    content: `• Petitioner / Complainant: ${manualForm.clientRole}\n• Respondent / Accused: ${manualForm.opponentName}\n• Presiding Court: ${manualForm.courtName}\n• Presiding Judge: ${manualForm.presidingJudge}\n• Governing Enactment: Banking Offence and Punishment Act 2064 / Negotiable Instruments Act 2034 / Muluki Civil Code 2074`
+                  },
+                  {
+                    id: 'facts',
+                    title: '3. Material Facts',
+                    pct: 95,
+                    content: `1. Complainant supplied commercial goods/services to the respondent under valid transaction agreement (Lekhat).\n2. Accused issued bank cheque towards discharge of legally enforceable obligation.\n3. Upon presentation, bank dishonoured the cheque with official memo "Funds Insufficient".\n4. Formal legal notice was served demanding payment within the statutory timeline.\n5. Accused failed to repay the outstanding principal amount within the notice window.`
+                  },
+                  {
+                    id: 'timeline',
+                    title: '4. Chronological Timeline',
+                    pct: 94,
+                    content: `📅 2081 Baisakh 10 — Cheque issuance date by accused.\n📅 2081 Baisakh 30 — Bank dishonour return advice issued.\n📅 2081 Jestha 12 — Statutory legal notice served with delivery tracking.\n📅 2081 Jestha 28 — Expiry of cure period (Cause of Action accrued).`
+                  },
+                  {
+                    id: 'arguments',
+                    title: '5. Supporting Arguments (Primary Submissions)',
+                    pct: 96,
+                    content: `• Mandatory Presumption (Evidence Act 2031 Sec 25): Once signature on instrument is admitted, the court shall presume valid consideration and enforceable liability.\n• Conclusive Evidence of Dishonour: Official Bank Return Slip / Memo serves as conclusive documentary evidence under Banking Offence Act 2064.\n• Failure to Settle: Absence of timely payment after notice establishes deliberate evasion and penal default.`
+                  },
+                  {
+                    id: 'counters',
+                    title: '6. Counter Arguments & Rebuttals',
+                    pct: 90,
+                    content: `• Opponent Defense Argument: Accused will claim cheque was given solely as security collateral or informal guarantee.\n• Recommended Rebuttal: Rely on established Supreme Court of Nepal ratio holding that a security cheque plea fails once default occurs and the underlying commercial liability remains unpaid.`
+                  },
+                  {
+                    id: 'checklist',
+                    title: '7. Witness & Evidence Checklist',
+                    pct: 92,
+                    content: `• Primary Exhibits: Original Cheque (Exhibit P-1), Bank Return Slip (Exhibit P-2), Notice Delivery Proof & ETA 2063 Certification (Exhibit P-3), Transaction Invoices / Lekhat (Exhibit P-4).\n• Witnesses: Complainant (CW-1) and Branch Manager of Drawee Bank.`
+                  },
+                  {
+                    id: 'citations',
+                    title: '8. Relevant Case Laws & Citations',
+                    pct: 94,
+                    content: `• Supreme Court of Nepal (NLR Division Bench) — Principles governing cheque dishonour and penal liability under Banking Offence and Punishment Act 2064.\n• Supreme Court of Nepal Landmark Ratio — Presumption of consideration upon execution of negotiable instrument under Evidence Act 2031.\n• Supreme Court of Nepal Full Bench — Admissibility and evidentiary value of digital banking return advices.`
+                  },
+                  {
+                    id: 'prayer',
+                    title: '9. Relief & Final Prayer Draft',
+                    pct: 98,
+                    content: `• Petitioner Prays For: Conviction of the accused under Section 3 & 7 of Banking Offence and Punishment Act 2064, recovery of principal NPR 25,00,000, statutory damages, fine, and interest in accordance with law.`
+                  },
+                  {
+                    id: 'statutory_matrix',
+                    title: '10. Statutory Provisions Matrix',
+                    pct: 95,
+                    content: `• Banking Offence and Punishment Act 2064 Sec 3 & 7 — Cheque dishonour offence and penal liability.\n• Negotiable Instruments Act 2034 — Instrument rights and holder in due course protections.\n• Evidence Act 2031 Sec 25 — Statutory presumption of consideration.\n• Electronic Transactions Act 2063 Sec 56-58 — Admissibility of digital banking records.`
+                  },
+                  {
+                    id: 'risk',
+                    title: '11. Risk Assessment & Vulnerability Audit',
+                    pct: 89,
+                    content: `• Risk Severity: Low to Moderate (10% vulnerability).\n• Key Vulnerability: Proof of digital notice delivery tracking.\n• Actionable Fix: Obtain certified system administrator certificate under Electronic Transactions Act 2063.`
+                  },
+                  {
+                    id: 'action_points',
+                    title: '12. Drafting Action Points',
+                    pct: 96,
+                    content: `1. Ensure original cheque & bank return slip are marked as exhibits during witness deposition (Bakpatra).\n2. Prepare cross-examination questions on lack of payment despite receipt of formal demand.\n3. Keep certified copies of Supreme Court of Nepal NLR precedents ready for bench citation.`
+                  }
+                ] : [
                   {
                     id: 'summary',
                     title: '1. Executive Summary',
@@ -972,7 +1108,7 @@ Language: ${outputLanguage}
                     pct: 96,
                     content: `1. Ensure original cheque & return memo are marked during CW-1 examination.\n2. Prepare cross-examination questions targeting lack of reply to demand notice.\n3. Keep printed hardcopies of Rangappa SC judgment ready for bench citation.`
                   }
-                ].map(card => {
+                ]).map(card => {
                   const isOpen = openSections.includes(card.id);
                   return (
                     <div
@@ -1051,11 +1187,23 @@ Language: ${outputLanguage}
                     </div>
 
                     <div className="p-4 bg-slate-50 dark:bg-[#0E131F] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs font-mono leading-relaxed space-y-2 text-slate-800 dark:text-slate-200">
-                      <p className="font-bold text-[#C8A34D]">"My Lord, complainant presents a clear statutory breach under Section 138 of the Negotiable Instruments Act..."</p>
-                      <p>1. Signature on the cheque is admitted by the accused, which automatically triggers the mandatory statutory presumption under Section 139 NI Act.</p>
-                      <p>2. Official Bank Return Memo Exhibit P-2 confirms dishonour with 'Funds Insufficient'.</p>
-                      <p>3. Demand notice was delivered on 12th May 2026. Accused failed to reply or repay within 15 days.</p>
-                      <p>4. Prayer: We seek conviction and award of double compensation under Sec 357(3) CrPC.</p>
+                      {isNepal ? (
+                        <>
+                          <p className="font-bold text-[#C8A34D]">"सम्मानित इजलास, निवेदकको तर्फबाट बैंकिङ कसूर तथा सजाय ऐन २०६४ अन्तर्गत स्पष्ट दाबी प्रस्तुत गरिन्छ..."</p>
+                          <p>1. चेकमा भएको हस्ताक्षर विपक्षीले स्वीकार गरेको हुँदा प्रमाण ऐन २०३१ को दफा २५ बमोजिम दायित्वको कानुनी अनुमान आकर्षित हुन्छ।</p>
+                          <p>2. बैंकको बाउन्स स्लिप / रिटर्न मेमोबाट खातामा पर्याप्त रकम नभएको स्पष्ट प्रमाणित छ।</p>
+                          <p>3. कानुनी सूचना तामेल भए पनि म्यादभित्र रकम भुक्तानी भएको छैन।</p>
+                          <p>4. माग दाबी: बैंकिङ कसूर ऐन २०६४ बमोजिम बिगो NPR 25,00,000 भराई हदैसम्मको सजाय गरिपाऊँ।</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="font-bold text-[#C8A34D]">"My Lord, complainant presents a clear statutory breach under Section 138 of the Negotiable Instruments Act..."</p>
+                          <p>1. Signature on the cheque is admitted by the accused, which automatically triggers the mandatory statutory presumption under Section 139 NI Act.</p>
+                          <p>2. Official Bank Return Memo Exhibit P-2 confirms dishonour with 'Funds Insufficient'.</p>
+                          <p>3. Demand notice was delivered on 12th May 2026. Accused failed to reply or repay within 15 days.</p>
+                          <p>4. Prayer: We seek conviction and award of double compensation under Sec 357(3) CrPC.</p>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1069,7 +1217,7 @@ Language: ${outputLanguage}
                           <span>Q1: Was the cheque issued for a legally enforceable debt?</span>
                           <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#C8A34D]/20">98% Confidence</span>
                         </div>
-                        <p className="text-xs text-slate-700 dark:text-slate-300">Answer: Yes My Lord. Invoices and ledger statements Exhibit P-4 establish pre-existing commercial liability for supply of goods.</p>
+                        <p className="text-xs text-slate-700 dark:text-slate-300">Answer: {isNepal ? 'Yes Hon\'ble Court. Invoices and transaction deeds (Lekhat) Exhibit P-4 establish pre-existing commercial obligation.' : 'Yes My Lord. Invoices and ledger statements Exhibit P-4 establish pre-existing commercial liability for supply of goods.'}</p>
                       </div>
 
                       <div className="p-4 bg-slate-50 dark:bg-[#0E131F] rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
@@ -1077,7 +1225,7 @@ Language: ${outputLanguage}
                           <span>Q2: What if defense argues cheque was given as security?</span>
                           <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#C8A34D]/20">95% Confidence</span>
                         </div>
-                        <p className="text-xs text-slate-700 dark:text-slate-300">Answer: My Lord, Rangappa v. Sri Mohan (2010 SC) clearly holds that Section 139 presumption applies even to security cheques once default occurs.</p>
+                        <p className="text-xs text-slate-700 dark:text-slate-300">Answer: {isNepal ? 'Hon\'ble Bench, Supreme Court of Nepal precedents firmly establish that a security cheque defence fails when the underlying consideration and debt are unpaid.' : 'My Lord, Rangappa v. Sri Mohan (2010 SC) clearly holds that Section 139 presumption applies even to security cheques once default occurs.'}</p>
                       </div>
                     </div>
                   </div>
@@ -1092,7 +1240,7 @@ Language: ${outputLanguage}
                         <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full">35% Defense Likelihood</span>
                       </div>
                       <p className="text-slate-600 dark:text-slate-400 font-mono">Opponent Position: Accused will claim cheque was handed over as collateral for transaction.</p>
-                      <p className="text-[#C8A34D] font-mono font-bold">Recommended Rebuttal: Lead with Rangappa SC precedent and show delivery challans confirming actual supply.</p>
+                      <p className="text-[#C8A34D] font-mono font-bold">Recommended Rebuttal: {isNepal ? 'Lead with Supreme Court of Nepal NLR rulings and show transaction invoices/Lekhat confirming debt obligation.' : 'Lead with Rangappa SC precedent and show delivery challans confirming actual supply.'}</p>
                     </div>
                   </div>
                 )}
@@ -1103,10 +1251,10 @@ Language: ${outputLanguage}
                     <div className="p-4 bg-slate-50 dark:bg-[#0E131F] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs space-y-2">
                       <div className="flex items-center gap-2">
                         <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-mono text-[9px] font-bold">MODERATE RISK</span>
-                        <span className="font-bold text-slate-900 dark:text-white">Postal Tracking Receipt Legibility</span>
+                        <span className="font-bold text-slate-900 dark:text-white">Delivery Tracking Receipt Legibility</span>
                       </div>
-                      <p className="text-slate-600 dark:text-slate-300 font-mono">Vulnerability: Thermal postal receipt text may fade over time.</p>
-                      <p className="text-[#C8A34D] font-mono font-bold">Recommended Repair: Obtain certified postal track report under Sec 65B Evidence Act.</p>
+                      <p className="text-slate-600 dark:text-slate-300 font-mono">Vulnerability: Thermal postal or digital dispatch receipt text may fade or require authentication.</p>
+                      <p className="text-[#C8A34D] font-mono font-bold">Recommended Repair: {isNepal ? 'Obtain certified electronic transmission certificate under Sec 56-58 Electronic Transactions Act 2063.' : 'Obtain certified postal track report under Sec 65B Evidence Act.'}</p>
                     </div>
                   </div>
                 )}
@@ -1115,10 +1263,21 @@ Language: ${outputLanguage}
                   <div className="space-y-3">
                     <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Step-by-Step Trial Roadmap</h4>
                     <div className="p-4 bg-slate-50 dark:bg-[#0E131F] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs font-mono space-y-1.5 text-slate-700 dark:text-slate-300">
-                      <p className="text-[#C8A34D] font-bold">Stage 1: Pre-trial admission of cheque signature.</p>
-                      <p>Stage 2: CW-1 Chief Examination & marking Exhibit P-1 to P-4.</p>
-                      <p>Stage 3: Cross-examine accused on failure to reply to notice.</p>
-                      <p>Stage 4: Final arguments citing mandatory double compensation under CrPC 357(3).</p>
+                      {isNepal ? (
+                        <>
+                          <p className="text-[#C8A34D] font-bold">Stage 1: Pre-trial admission of cheque signature.</p>
+                          <p>Stage 2: CW-1 Deposition (Bakpatra) & marking Exhibit P-1 to P-4.</p>
+                          <p>Stage 3: Cross-examination on lack of payment and notice receipt.</p>
+                          <p>Stage 4: Final oral arguments (Bahas) citing Banking Offence Act 2064 & SC precedents.</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-[#C8A34D] font-bold">Stage 1: Pre-trial admission of cheque signature.</p>
+                          <p>Stage 2: CW-1 Chief Examination & marking Exhibit P-1 to P-4.</p>
+                          <p>Stage 3: Cross-examine accused on failure to reply to notice.</p>
+                          <p>Stage 4: Final arguments citing mandatory double compensation under CrPC 357(3).</p>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1129,10 +1288,10 @@ Language: ${outputLanguage}
                     <div className="space-y-2">
                       {[
                         { key: 'chk1', label: 'Original Cheque (Exhibit P-1)' },
-                        { key: 'chk2', label: 'Bank Return Memo (Exhibit P-2)' },
-                        { key: 'chk3', label: 'Postal Tracking Delivery Certificate (Exhibit P-3)' },
-                        { key: 'chk4', label: 'Invoices & Ledger Statements (Exhibit P-4)' },
-                        { key: 'chk5', label: 'Hardcopy of Rangappa v. Sri Mohan (2010 SC)' },
+                        { key: 'chk2', label: 'Bank Return Memo / Slip (Exhibit P-2)' },
+                        { key: 'chk3', label: isNepal ? 'Notice Dispatch Slip & ETA 2063 Certificate (Exhibit P-3)' : 'Postal Tracking Delivery Certificate (Exhibit P-3)' },
+                        { key: 'chk4', label: isNepal ? 'Invoices & Transaction Lekhat (Exhibit P-4)' : 'Invoices & Ledger Statements (Exhibit P-4)' },
+                        { key: 'chk5', label: isNepal ? 'Hardcopy of Supreme Court of Nepal Precedent (NLR)' : 'Hardcopy of Rangappa v. Sri Mohan (2010 SC)' },
                       ].map(item => (
                         <div
                           key={item.key}

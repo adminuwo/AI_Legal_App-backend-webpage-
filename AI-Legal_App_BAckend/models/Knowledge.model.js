@@ -28,6 +28,47 @@ const KnowledgeSchema = new mongoose.Schema({
     sourceUrl: {
         type: String
     },
+    country: {
+        type: String,
+        default: 'India',
+        index: true
+    },
+    countryCode: {
+        type: String,
+        default: 'IN',
+        index: true
+    },
+    state: {
+        type: String,
+        default: ''
+    },
+    province: {
+        type: String,
+        default: ''
+    },
+    jurisdiction: {
+        type: String,
+        default: 'India',
+        index: true
+    },
+    legalSystem: {
+        type: String,
+        default: 'Indian Legal System'
+    },
+    lawType: {
+        type: String,
+        default: 'Statute'
+    },
+    language: {
+        type: String,
+        default: 'English'
+    },
+    effectiveDate: {
+        type: Date
+    },
+    expiryDate: {
+        type: Date
+    },
     contentHash: {
         type: String
     },

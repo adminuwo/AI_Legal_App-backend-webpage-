@@ -41,6 +41,15 @@ const precedentSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    countryCode: {
+        type: String,
+        default: 'IN',
+        index: true
+    },
+    jurisdiction: {
+        type: String,
+        default: 'India'
+    },
     ai_analysis: {
         type: mongoose.Schema.Types.Mixed,
         required: false

@@ -9,6 +9,7 @@ import { apis } from '../types';
 import { 
   APP_STORE_URL, 
   GOOGLE_PLAY_URL, 
+  GOOGLE_PLAY_MARKET_URL,
   UNIVERSAL_DOWNLOAD_URL, 
   MOBILE_APP_VERSION, 
   CONNECTED_ECOSYSTEM_BENEFITS,
@@ -158,6 +159,22 @@ export default function MobileAppPage() {
     }
   };
 
+  const handleGooglePlayClick = (e) => {
+    if (!isRealStoreUrl(storeConfig.googlePlayUrl)) {
+      handleStoreClick(e, storeConfig.googlePlayUrl, 'Google Play');
+      return;
+    }
+    const isAndroid = typeof navigator !== 'undefined' && /android/i.test(navigator.userAgent || '');
+    if (isAndroid) {
+      e.preventDefault();
+      // 1-Click Direct Market Intent: Eliminates mobile browser redirect friction
+      window.location.href = GOOGLE_PLAY_MARKET_URL;
+      setTimeout(() => {
+        window.open(storeConfig.googlePlayUrl, '_blank');
+      }, 1500);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F5F5F5] dark:bg-[#111111] pt-4 md:pt-8 pb-16 px-4 md:px-12 max-w-6xl mx-auto text-[#111111] dark:text-white font-sans space-y-8 select-none">
       
@@ -209,6 +226,7 @@ export default function MobileAppPage() {
           {/* Google Play Badge */}
           <a
             href={storeConfig.googlePlayUrl}
+            onClick={handleGooglePlayClick}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Get AI LEGAL™ on Google Play"
@@ -232,6 +250,24 @@ export default function MobileAppPage() {
           <div className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-[#C8A34D]">
             Latest Version: v{storeConfig.version}
           </div>
+        </div>
+
+        {/* 4. Core AI Legal Workflows / Search Intent Capabilities */}
+        <div className="pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-center gap-1.5 sm:gap-2 flex-nowrap overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-1">
+          {[
+            { label: "Legal Research" },
+            { label: "Legal Drafting" },
+            { label: "Case Analysis" },
+            { label: "Document Assistance" },
+          ].map((wf, idx) => (
+            <div
+              key={idx}
+              className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 flex items-center gap-1 sm:gap-1.5 shrink-0 transition-colors hover:border-[#C8A34D]/50"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C8A34D] shrink-0"></span>
+              <span className="text-[10px] sm:text-xs font-semibold sm:font-bold text-[#111111] dark:text-white whitespace-nowrap">{wf.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 

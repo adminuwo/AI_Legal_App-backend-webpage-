@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import apiService from '../services/apiService';
 import { useSubscription } from '../context/SubscriptionContext';
 
-const CASE_TYPES = [
+const CASE_TYPES_INDIA = [
   'Cheque Bounce (Sec 138 NI Act)',
   'Consumer Complaint (COPRA 2019)',
   'Commercial Rent & Property Dispute',
@@ -22,7 +22,19 @@ const CASE_TYPES = [
   'Constitutional Writ Petition'
 ];
 
-const COURT_LEVELS = [
+const CASE_TYPES_NEPAL = [
+  'Banking Offence & Cheque Dishonour (Banking Offence Act 2064)',
+  'Consumer Protection Dispute (Consumer Protection Act 2075)',
+  'Property, Land & Rent Dispute (Muluki Civil Code 2074)',
+  'Bail Application & Detention Review (Muluki Criminal Procedure 2074)',
+  'Commercial Contract Breach & Specific Performance',
+  'Civil Suit for Recovery & Damages (Len-Den)',
+  'Family, Partition (Amsabanda) & Matrimonial Matter',
+  'Criminal Proceeding / Charge Sheet Defenses',
+  'Constitutional Writ Petition (Supreme Court / High Court)'
+];
+
+const COURT_LEVELS_INDIA = [
   'Supreme Court of India',
   'High Court (State Jurisdiction)',
   'District & Sessions Court',
@@ -31,9 +43,26 @@ const COURT_LEVELS = [
   'Magistrate Court / Debt Recovery Tribunal'
 ];
 
+const COURT_LEVELS_NEPAL = [
+  'Supreme Court of Nepal (Kathmandu)',
+  'High Court (Uchha Adalat - Patan / Biratnagar / Janakpur / Pokhara / Butwal / Surkhet / Dipayal)',
+  'District Court (Zilla Adalat)',
+  'Special Court (Bishes Adalat - Corruption / Money Laundering)',
+  'Debt Recovery Tribunal / Revenue Tribunal',
+  'Consumer Court / Quasi-Judicial Authority (CDO)'
+];
+
 export default function StrategyEngineWorkspace() {
   const navigate = useNavigate();
   const { deductToolUsage } = useSubscription();
+
+  // Active Jurisdiction Detection
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const activeJur = user.activeJurisdiction || user.legalJurisdiction || {};
+  const isNepal = activeJur.country === 'Nepal' || activeJur.countryCode === 'NP' || (typeof activeJur.country === 'string' && activeJur.country.toLowerCase().includes('nepal'));
+
+  const CASE_TYPES = isNepal ? CASE_TYPES_NEPAL : CASE_TYPES_INDIA;
+  const COURT_LEVELS = isNepal ? COURT_LEVELS_NEPAL : COURT_LEVELS_INDIA;
 
   // Navigation Steps: 'INPUT_SELECT' | 'PRE_REVIEW' | 'SCAN' | 'DASHBOARD'
   const [step, setStep] = useState('INPUT_SELECT');
@@ -77,7 +106,13 @@ export default function StrategyEngineWorkspace() {
 
   // Copilot Assistant State
   const [copilotMessages, setCopilotMessages] = useState([
-    { id: 1, role: 'assistant', text: 'I am your Litigation Strategy AI Copilot. Ask me about opponent counter-pleadings, Section 65B BSA compliance, or 14-day immediate action items.' }
+    { 
+      id: 1, 
+      role: 'assistant', 
+      text: isNepal
+        ? 'I am your Litigation Strategy AI Copilot (Nepal Jurisdiction). Ask me about opponent counter-pleadings (Pratiuttarpatra), Evidence Act 2031 & Electronic Transactions Act 2063 compliance, or 14-day immediate action items under Muluki Codes.'
+        : 'I am your Litigation Strategy AI Copilot. Ask me about opponent counter-pleadings, Section 65B BSA compliance, or 14-day immediate action items.'
+    }
   ]);
   const [copilotInput, setCopilotInput] = useState('');
   const [isCopilotThinking, setIsCopilotThinking] = useState(false);
@@ -96,7 +131,10 @@ export default function StrategyEngineWorkspace() {
         setAdvocateCases(casesList);
         setSelectedCase(casesList[0]);
       } else {
-        const defaultList = [
+        const defaultList = isNepal ? [
+          { _id: 'case_401', name: 'M/S Himalayan Trading vs Kathmandu Traders', caseType: 'Cheque Dishonour (Banking Offence Act 2064)', courtName: 'Kathmandu District Court', clientName: 'Himalayan Trading', caseNumber: 'CC/321/2081' },
+          { _id: 'case_402', name: 'Gorkha Hydro vs Apex Construction Pvt. Ltd.', caseType: 'Commercial Contract Dispute & Damages', courtName: 'High Court Patan', clientName: 'Gorkha Hydro', caseNumber: 'HC/882/2081' }
+        ] : [
           { _id: 'case_401', name: 'State vs Raj Malhotra & Ors.', caseType: 'Sec 138 NI Act Cheque Bounce', courtName: 'Patiala House Courts, New Delhi', clientName: 'Raj Malhotra', caseNumber: 'CC/4521/2025' },
           { _id: 'case_402', name: 'M/S TechCorp vs Global Logistics Ltd.', caseType: 'Commercial Contract Breach Arbitration', courtName: 'Delhi High Court', clientName: 'M/S TechCorp', caseNumber: 'ARB/882/2025' }
         ];
@@ -153,7 +191,7 @@ export default function StrategyEngineWorkspace() {
       { stage: 0, pct: 15, label: '1. Document Ingestion & Case Context Analysis' },
       { stage: 1, pct: 35, label: '2. Text & OCR Parsing & Information Extraction' },
       { stage: 2, pct: 55, label: '3. Legal Facts & Claims & Defenses Mapping' },
-      { stage: 3, pct: 75, label: '4. Laws & Supreme Court / High Court Precedents Research' },
+      { stage: 3, pct: 75, label: isNepal ? '4. Nepal Muluki Codes & Supreme Court Precedents Research' : '4. Laws & Supreme Court / High Court Precedents Research' },
       { stage: 4, pct: 90, label: '5. Custom Litigation Strategy & Risk Mitigation Generation' },
       { stage: 5, pct: 100, label: '6. Final Audit & 7-Tab Tactical Roadmap Compilation' }
     ];
@@ -168,11 +206,103 @@ export default function StrategyEngineWorkspace() {
         clearInterval(interval);
 
         // Build Strategy Result Object
-        const caseTitle = inputMode === 'MANUAL' ? manualTitle : selectedCase ? selectedCase.name : uploadedFiles[0]?.name || 'State vs Defendant';
-        const caseCategory = inputMode === 'MANUAL' ? manualCaseType : selectedCase ? selectedCase.caseType : 'General Civil Suit & Money Recovery';
-        const court = inputMode === 'MANUAL' ? manualCourt : selectedCase ? selectedCase.courtName : 'District & Sessions Court';
+        const caseTitle = inputMode === 'MANUAL' ? manualTitle : selectedCase ? selectedCase.name : uploadedFiles[0]?.name || (isNepal ? 'M/S Himalayan Trading vs Defendant' : 'State vs Defendant');
+        const caseCategory = inputMode === 'MANUAL' ? manualCaseType : selectedCase ? selectedCase.caseType : (isNepal ? 'Commercial Contract Breach & Specific Performance' : 'General Civil Suit & Money Recovery');
+        const court = inputMode === 'MANUAL' ? manualCourt : selectedCase ? selectedCase.courtName : (isNepal ? 'District Court (Zilla Adalat)' : 'District & Sessions Court');
 
-        const resultData = {
+        const resultData = isNepal ? {
+          caseTitle,
+          caseCategory,
+          court,
+          readinessScore: 85,
+          litigationStage: 'Pre Trial / Rejoinder (Pratiuttarpatra) Stage',
+          riskLevel: 'Medium Risk',
+          exposurePct: '40% Exposure',
+          governingCodes: 'Muluki Civil Code, 2074 • Muluki Civil Procedure Code, 2074 • Evidence Act, 2031',
+
+          executiveOverview: {
+            readiness: '85/100 Case Readiness Score. Strong documentary foundation with executed deeds and bank records.',
+            stage: 'Pre-Trial Stage / Rejoinder (Pratiuttarpatra) & Preliminary Hearing Stage.',
+            strengths: [
+              'Admitted execution signatures on transaction agreement (Lekhat).',
+              'Timely service of statutory demand / formal notice to the respondent.',
+              'Bank return memo / dishonour slip establishes formal dishonour under Banking Offence Act 2064.'
+            ],
+            prerequisites: [
+              'Digital forensic verification and print certification under Evidence Act 2031 & Electronic Transactions Act 2063.',
+              'Filing formal rejoinder / submission in response to opponent counter-claim (Pratiuttarpatra).'
+            ],
+            actionPlan14Days: [
+              { priority: 'HIGH', action: 'Draft & file formal rebuttal/rejoinder addressing opposing party factual evasions.', reason: 'Adhere to strict procedural timelines under Muluki Civil Procedure Code 2074.', timeframe: 'Next 7 Days' },
+              { priority: 'HIGH', action: 'Secure verified digital transaction certificates for electronic messages under ETA 2063.', reason: 'Prevent admissibility challenges during witness deposition (Bakpatra).', timeframe: 'Next 10 Days' },
+              { priority: 'MEDIUM', action: 'File petition for interim order/preservation of assets under Section 156 of Muluki Civil Procedure Code 2074.', reason: 'Prevent alienation of subject property or account assets.', timeframe: 'Next 14 Days' }
+            ]
+          },
+
+          opponentStrategy: [
+            {
+              id: 'opp1',
+              argument: 'Haddmeyad (Statute of Limitations) Bar Objection',
+              basis: 'Opposing counsel alleges suit is time-barred beyond statutory limitation prescribed in Muluki Civil Code 2074.',
+              likelihood: 'Likely Defense (High Priority)',
+              weakness: 'Opponent ignores continuous written payment admissions and partial reconciliations within the limitation period.',
+              rebuttal: 'Rely on Section 398 & 400 of Muluki Civil Code 2074 regarding acknowledgment of obligation restarting limitation.',
+              pleadingAction: 'Explicitly plead the dates of written acknowledgments in the rejoinder/pleadings.'
+            },
+            {
+              id: 'opp2',
+              argument: 'Lack of Proper Authorization / Power of Attorney (Warishnama)',
+              basis: 'Defendant claims signatory / agent lacked certified Warishnama or Board Resolution authorization.',
+              likelihood: 'Possible Objection (Medium Priority)',
+              weakness: 'Duly certified corporate authority and ratified transactions establish binding principal-agent agency.',
+              rebuttal: 'Cite established Supreme Court of Nepal precedent on indoor management and apparent authority in commercial matters.',
+              pleadingAction: 'Submit certified Board Minutes and Warishnama registered in court.'
+            }
+          ],
+
+          evidenceMatrix: [
+            { id: 'ev1', type: 'Primary Contract', name: 'Master Commercial Agreement / Lekhat & Annexure', strength: 'Strong (95%)', bsaStatus: 'Physical Signature & Fingerprint Verified', action: 'Submit original registered/stamped deed for exhibit marking.' },
+            { id: 'ev2', type: 'Electronic Log', name: 'Electronic Message Logs & Bank Remittances (2080-2081 BS)', strength: 'Moderate (80%)', bsaStatus: 'ETA 2063 Certification Required', action: 'Attach system administrator certificate under Electronic Transactions Act 2063.' },
+            { id: 'ev3', type: 'Financial Ledger', name: 'Bank Statement & Dishonour Return Advice', strength: 'Strong (92%)', bsaStatus: 'Banking Offence Act 2064 Compliant', action: 'Mark authorized bank manager stamp & verification seal.' }
+          ],
+
+          legalArguments: [
+            {
+              id: 'arg1',
+              proposition: 'Statutory Obligation & Presumption of Consideration in Commercial Debt',
+              facts: 'Admitted execution of commercial agreement and dishonoured negotiable instrument delivery.',
+              statutoryBasis: 'Section 395-402 Muluki Civil Code 2074 & Banking Offence and Punishment Act 2064',
+              burdenShift: 'Burden of disproving liability shifts to defendant once execution of deed/cheque is proved under Evidence Act 2031.',
+              precedent: 'Supreme Court of Nepal landmark ratio on cheque dishonour and enforceable contractual liability (NLR Reference)',
+              counterArg: 'Defendant claims cheque was issued solely as informal security collateral.',
+              rebuttal: 'Security defense rejected when underlying contractual debt obligation remains unpaid.'
+            },
+            {
+              id: 'arg2',
+              proposition: 'Grant of Interim Relief and Restraint under Section 156 of Muluki Civil Procedure Code 2074',
+              facts: 'Clear prima facie debt with ongoing risk of defendant diverting disputed assets.',
+              statutoryBasis: 'Section 156, Muluki Civil Procedure Code, 2074',
+              burdenShift: 'Applicant demonstrates prima facie case, balance of convenience, and irreparable loss.',
+              precedent: 'Supreme Court of Nepal principles governing preservation of suit property and interlocutory injunctions',
+              counterArg: 'Defendant argues regular trial must conclude prior to any asset restraint.',
+              rebuttal: 'Interim protection is urgent and mandatory to prevent the decree from becoming nugatory.'
+            }
+          ],
+
+          riskMatrix: [
+            { id: 'r1', risk: 'Procedural Delay in Summons Delivery (Myad Tamel)', severity: 'Medium Risk', exposure: '40% Exposure', impact: 'Delay in initial appearance and submission of Pratiuttarpatra.', mitigation: 'Apply for expedited summons publication or local ward office spot delivery (Tamel).', priority: 'High' },
+            { id: 'r2', risk: 'Challenge to Secondary Copy Admissibility', severity: 'Low Risk', exposure: '20% Exposure', impact: 'Preliminary objection during document examination (Praman Parikshan).', mitigation: 'File formal application under Evidence Act 2031 for admission of secondary copies upon notice to produce originals.', priority: 'Medium' }
+          ],
+
+          roadmapStages: [
+            { stage: '1. Fact Ingestion & Firdi (Plaint)', status: 'Completed', detail: 'Firdi (Plaint) & documentary evidence drafted.' },
+            { stage: '2. Summons Delivery (Myad Tamel)', status: 'Completed', detail: 'Court summons served upon defendant.' },
+            { stage: '3. Pratiuttarpatra & Rebuttal', status: 'Current Stage', detail: 'Reviewing defendant defense & preparing rejoinder.' },
+            { stage: '4. Witness Deposition (Bakpatra)', status: 'Upcoming', detail: 'Chief and cross-examination of witnesses in court.' },
+            { stage: '5. Oral Pleadings (Bahas)', status: 'Upcoming', detail: 'Advocate arguments on statutes and precedents.' },
+            { stage: '6. Final Judgment (Faisala) & Execution (Karyanwayan)', status: 'Future', detail: 'Enforcement of court judgment through court execution wing.' }
+          ]
+        } : {
           caseTitle,
           caseCategory,
           court,
@@ -452,12 +582,18 @@ export default function StrategyEngineWorkspace() {
 
     setTimeout(() => {
       let reply = `Based on the strategy engine audit for "${strategyData?.caseTitle || 'this case'}":\n\n`;
-      if (userText.toLowerCase().includes('limitation') || userText.toLowerCase().includes('delay')) {
-        reply += `To counter the opponent's limitation objection, rely on Section 18 Limitation Act and submit continuous email payment acknowledgments in paragraph 14 of your Replication.`;
-      } else if (userText.toLowerCase().includes('bsa') || userText.toLowerCase().includes('65b') || userText.toLowerCase().includes('evidence')) {
-        reply += `Obtain a notarized Section 65B BSA Affidavit from your IT system administrator for all WhatsApp and email prints before filing chief examination affidavits.`;
+      if (userText.toLowerCase().includes('limitation') || userText.toLowerCase().includes('delay') || userText.toLowerCase().includes('haddmeyad')) {
+        reply += isNepal
+          ? `To counter the opponent's limitation (Haddmeyad) objection, rely on Section 398 & 400 of Muluki Civil Code 2074 and submit continuous written payment admissions / account reconciliations in your Rejoinder (Pratiuttarpatra).`
+          : `To counter the opponent's limitation objection, rely on Section 18 Limitation Act and submit continuous email payment acknowledgments in paragraph 14 of your Replication.`;
+      } else if (userText.toLowerCase().includes('bsa') || userText.toLowerCase().includes('65b') || userText.toLowerCase().includes('evidence') || userText.toLowerCase().includes('praman')) {
+        reply += isNepal
+          ? `Obtain a formal verification certificate under Section 56-58 of the Electronic Transactions Act 2063 and Evidence Act 2031 for digital communication logs before conducting witness examinations (Bakpatra).`
+          : `Obtain a notarized Section 65B BSA Affidavit from your IT system administrator for all WhatsApp and email prints before filing chief examination affidavits.`;
       } else {
-        reply += `The 85/100 readiness score is supported by sample signature admissions. Focus your immediate 14-day actions on serving the formal Replication under Order VIII Rule 9 CPC.`;
+        reply += isNepal
+          ? `The 85/100 readiness score is supported by document execution admissions. Focus your immediate 14-day actions on filing the formal Rejoinder and seeking interim protection under Section 156 of Muluki Civil Procedure Code 2074.`
+          : `The 85/100 readiness score is supported by sample signature admissions. Focus your immediate 14-day actions on serving the formal Replication under Order VIII Rule 9 CPC.`;
       }
 
       setCopilotMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', text: reply }]);
@@ -493,7 +629,9 @@ export default function StrategyEngineWorkspace() {
                 </span>
               </div>
               <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 hidden md:block">
-                Tactical litigation roadmap, opponent strategy prediction, evidence matrix, BSA compliance & risk mitigation.
+                {isNepal
+                  ? 'Tactical litigation roadmap, opponent strategy prediction, evidence matrix, Muluki Codes & risk mitigation.'
+                  : 'Tactical litigation roadmap, opponent strategy prediction, evidence matrix, BSA compliance & risk mitigation.'}
               </p>
             </div>
           </div>
@@ -908,7 +1046,7 @@ export default function StrategyEngineWorkspace() {
               {[
                 { id: 'overview', label: '1. Executive Strategy Overview' },
                 { id: 'opponent', label: '2. Opponent Strategy' },
-                { id: 'evidence', label: '3. Evidence Matrix & BSA' },
+                { id: 'evidence', label: isNepal ? '3. Evidence Matrix & Admissibility' : '3. Evidence Matrix & BSA' },
                 { id: 'arguments', label: '4. Legal Arguments' },
                 { id: 'risk', label: '5. Risk & Mitigation' },
                 { id: 'roadmap', label: '6. Litigation Roadmap' },
@@ -1033,11 +1171,11 @@ export default function StrategyEngineWorkspace() {
               </div>
             )}
 
-            {/* TAB 3: EVIDENCE MATRIX & BSA COMPLIANCE */}
+            {/* TAB 3: EVIDENCE MATRIX & ADMISSIBILITY / BSA COMPLIANCE */}
             {activeTab === 'evidence' && (
               <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
                 <h3 className="text-xs font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-2">
-                  <FileCheck className="w-4 h-4" /> Evidence Matrix & BSA Compliance Audit
+                  <FileCheck className="w-4 h-4" /> {isNepal ? 'Evidence Matrix & Statutory Admissibility Audit' : 'Evidence Matrix & BSA Compliance Audit'}
                 </h3>
 
                 <div className="space-y-3">
@@ -1048,7 +1186,7 @@ export default function StrategyEngineWorkspace() {
                           <span className="px-2 py-0.5 rounded bg-[#C8A34D]/20 text-[#C8A34D] font-extrabold text-[10px] whitespace-nowrap shrink-0">{ev.type}</span>
                           <h4 className="font-extrabold text-slate-900 dark:text-white leading-snug">{ev.name}</h4>
                         </div>
-                        <p className="text-slate-500 text-[11px] leading-snug">BSA Audit: {ev.bsaStatus}</p>
+                        <p className="text-slate-500 text-[11px] leading-snug">{isNepal ? 'Admissibility Audit: ' : 'BSA Audit: '}{ev.bsaStatus}</p>
                         <p className="text-emerald-500 font-bold text-[11px] leading-snug">Recommended Action: {ev.action}</p>
                       </div>
                       <span className="px-3 py-1 rounded-xl bg-emerald-500/15 text-emerald-500 font-black text-xs whitespace-nowrap shrink-0 self-end sm:self-auto">

@@ -1,6 +1,7 @@
 import Precedent from '../../../models/Precedent.js';
 import * as vertexService from '../../../services/vertex.service.js';
 import { performSearch } from '../../../services/webSearch.service.js';
+import { jurisdictionManager } from '../../../services/jurisdictionManager.js';
 import logger from '../../../utils/logger.js';
 import { safeParseLLMJson } from '../../../utils/jsonUtils.js';
 
@@ -13,14 +14,23 @@ const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes cache
  * Main entry point for finding precedents.
  * Supports Dual Mode: MANUAL if userQuery exists, else CURRENT CASE.
  */
-export const findPrecedents = async (userQuery, caseContext = null, language = 'English') => {
+export const findPrecedents = async (userQuery, caseContext = null, language = 'English', jurisdiction = null) => {
     const isManualMode = !!userQuery;
     const modeLabel = isManualMode ? "Manual Search Mode" : "Using Current Case";
 
-    logger.info(`[Precedents] Mode: ${modeLabel}`);
+    const resolvedJurisdiction = (jurisdiction && typeof jurisdiction === 'object' && jurisdiction.country)
+        ? jurisdiction
+        : await jurisdictionManager.resolveLegalJurisdiction({
+            query: `${userQuery || ''} ${caseContext?.title || ''} ${caseContext?.summary || ''}`,
+            explicitJurisdiction: jurisdiction
+        });
+
+    const isNepal = resolvedJurisdiction.isNepal;
+
+    logger.info(`[Precedents] Mode: ${modeLabel} | Jurisdiction: ${resolvedJurisdiction.country} (${resolvedJurisdiction.countryCode})`);
 
     // Check cache
-    const cacheKey = isManualMode ? `manual:${userQuery}:${language}` : `case:${caseContext?._id || 'unknown'}:${language}`;
+    const cacheKey = isManualMode ? `manual:${userQuery}:${language}:${resolvedJurisdiction.countryCode}` : `case:${caseContext?._id || 'unknown'}:${language}:${resolvedJurisdiction.countryCode}`;
     if (searchCache.has(cacheKey)) {
         const cached = searchCache.get(cacheKey);
         if (Date.now() - cached.timestamp < CACHE_TTL_MS) {
@@ -41,7 +51,7 @@ export const findPrecedents = async (userQuery, caseContext = null, language = '
     // Step 1 & 2 & 3: Read Current Case, AI Legal Understanding, and Query Generation
     if (!isManualMode && caseContext) {
         try {
-            const analysisResult = await analyzeCaseAndGenerateQueries(caseContext);
+            const analysisResult = await analyzeCaseAndGenerateQueries(caseContext, resolvedJurisdiction);
             metadata = analysisResult.metadata || metadata;
             searchQueries = analysisResult.searchQueries || [];
             
@@ -58,22 +68,22 @@ export const findPrecedents = async (userQuery, caseContext = null, language = '
             searchQueries = [searchQuery];
         } else if (caseContext) {
             const fallbackQuery = `${caseContext.caseType || ''} ${caseContext.legalIssues?.join(' ') || ''} ${(caseContext.summary || '').split('.')[0]}`.trim();
-            searchQueries = [fallbackQuery || "Supreme Court landmark judgments"];
+            searchQueries = [fallbackQuery || (isNepal ? "Supreme Court of Nepal landmark judgments NLR" : "Supreme Court landmark judgments")];
         } else {
-            searchQueries = ["Supreme Court landmark judgments"];
+            searchQueries = [isNepal ? "Supreme Court of Nepal landmark judgments NLR" : "Supreme Court landmark judgments"];
         }
     }
 
     // Step 4: Search internal DB first to avoid heavy web search latency
-    const internalResults = await searchInternalDB(searchQueries, metadata);
+    const internalResults = await searchInternalDB(searchQueries, metadata, resolvedJurisdiction);
     let externalResults = [];
     
     // Deduplicate internal results first to see if we have sufficient local data
     let uniqueInternal = deduplicateCandidates(internalResults);
     
     if (uniqueInternal.length < 3) {
-        logger.info(`[Precedents] Internal DB returned only ${uniqueInternal.length} candidates. Fetching external live database...`);
-        externalResults = await searchExternal(searchQueries);
+        logger.info(`[Precedents] Internal DB returned only ${uniqueInternal.length} candidates. Fetching external live database for ${resolvedJurisdiction.country}...`);
+        externalResults = await searchExternal(searchQueries, resolvedJurisdiction);
     } else {
         logger.info(`[Precedents] Internal DB returned sufficient candidates (${uniqueInternal.length}). Skipping external search for fast loading.`);
     }
@@ -87,15 +97,15 @@ export const findPrecedents = async (userQuery, caseContext = null, language = '
     if (uniqueCandidates.length === 0) {
         logger.info(`[Precedents] 0 candidates found. Triggering AI expansion and retry...`);
         try {
-            const expandedQueries = await generateExpandedQueries(metadata);
+            const expandedQueries = await generateExpandedQueries(metadata, resolvedJurisdiction);
             logger.info(`[Precedents] Expanded Retry Queries: ${JSON.stringify(expandedQueries)}`);
 
-            const internalRetry = await searchInternalDB(expandedQueries, metadata);
+            const internalRetry = await searchInternalDB(expandedQueries, metadata, resolvedJurisdiction);
             let externalRetry = [];
             
             const uniqueInternalRetry = deduplicateCandidates(internalRetry);
             if (uniqueInternalRetry.length < 3) {
-                externalRetry = await searchExternal(expandedQueries);
+                externalRetry = await searchExternal(expandedQueries, resolvedJurisdiction);
             }
 
             const retryCandidates = [...internalRetry, ...externalRetry];
@@ -184,7 +194,7 @@ const deduplicateCandidates = (candidates) => {
 /**
  * Step 1, 2 & 3: Analyze case context and generate structured metadata + search queries in one call
  */
-const analyzeCaseAndGenerateQueries = async (context) => {
+const analyzeCaseAndGenerateQueries = async (context, resolvedJurisdiction = null) => {
     const name = context.name || '';
     const type = context.caseType || '';
     const issues = context.legalIssues && context.legalIssues.length > 0 ? context.legalIssues.join(', ') : '';
@@ -194,8 +204,18 @@ const analyzeCaseAndGenerateQueries = async (context) => {
         : '';
     const relief = context.reliefGoals || '';
 
+    const isNepal = resolvedJurisdiction?.isNepal;
+    const countryName = resolvedJurisdiction?.country || (isNepal ? 'Nepal' : 'India');
+    const exampleQuery = isNepal
+        ? "cheating property dispute Supreme Court of Nepal Muluki Criminal Code 2074 fraudulent intention NLR"
+        : "cheating property dispute Supreme Court IPC 420 dishonest intention";
+    const exampleSections = isNepal
+        ? ["Muluki Criminal Code 2074 Section 249", "Banking Offence Act 2064 Section 3", "Negotiable Instruments Act 2034"]
+        : ["IPC 420", "IPC 406", "Section 138 NI Act"];
+
     const prompt = `
-    You are an expert Indian Legal Advisor & Research Query Generator.
+    You are an expert Legal Advisor & Research Query Generator for the jurisdiction of ${countryName}.
+    ${isNepal ? 'MANDATORY: Generate search queries strictly grounded in Nepal law, the Muluki Codes 2074, and Supreme Court of Nepal precedents (NLR). ZERO references to IPC, CrPC, CPC, or BNS.' : 'Generate search queries grounded in Indian law, Supreme Court of India, and High Courts.'}
     Analyze the following case details:
     Case Name: ${name}
     Case Type: ${type}
@@ -207,22 +227,18 @@ const analyzeCaseAndGenerateQueries = async (context) => {
     1. Understand what this case is actually about and generate structured metadata.
     2. Generate 5 to 10 optimized, intelligent search queries for retrieving landmark court judgments.
        Instead of names, use specific combinations of Sections, court names, and legal concepts.
-       Example: "cheating property dispute Supreme Court IPC 420 dishonest intention"
+       Example: "${exampleQuery}"
 
     Return ONLY a valid JSON object matching this schema (do not wrap in markdown or include extra text):
     {
       "metadata": {
         "caseType": "Criminal or Civil or Family etc.",
         "primaryIssues": ["issue1", "issue2", "issue3"],
-        "legalSections": ["IPC 420", "IPC 406", "Section 138 NI Act" etc.],
+        "legalSections": ${JSON.stringify(exampleSections)},
         "keywords": ["keyword1", "keyword2", "keyword3"]
       },
       "searchQueries": [
-        "Supreme Court cheating breach of contract IPC 420 dishonest intention",
-        "Section 420 landmark judgments",
-        "Criminal breach of trust Supreme Court",
-        "IPC 406 420 precedent",
-        "Fraudulent inducement landmark case"
+        "${exampleQuery}"
       ]
     }
     `;
@@ -244,11 +260,15 @@ const analyzeCaseAndGenerateQueries = async (context) => {
 /**
  * Step 6: Expand queries for retry when 0 results are retrieved
  */
-const generateExpandedQueries = async (metadata) => {
+const generateExpandedQueries = async (metadata, resolvedJurisdiction = null) => {
+    const isNepal = resolvedJurisdiction?.isNepal;
+    const country = resolvedJurisdiction?.country || (isNepal ? 'Nepal' : 'India');
+    const fallback = isNepal ? ["Supreme Court of Nepal landmark judgments NLR"] : ["Supreme Court landmark judgments"];
     try {
         const prompt = `
-        You are a legal research query expansion system.
-        Analyze the following case metadata and generate 3 expanded, high-level legal search queries.
+        You are a legal research query expansion system for the jurisdiction of ${country}.
+        Analyze the following case metadata and generate 3 expanded, high-level legal search queries for ${country} courts.
+        ${isNepal ? 'MANDATORY: Focus strictly on Supreme Court of Nepal and Nepal Law Commission authorities. ZERO references to Indian acts.' : ''}
         Use synonym legal terms, wider concepts, related acts, and search for major landmark judgments.
         Return ONLY a JSON array of 3 queries. No other text.
         
@@ -265,10 +285,10 @@ const generateExpandedQueries = async (metadata) => {
             temperature: 0.3
         });
         
-        return safeParseLLMJson(response, ["Supreme Court landmark judgments"]);
+        return safeParseLLMJson(response, fallback);
     } catch (err) {
         logger.error(`[Precedents] Query expansion failed: ${err.message}`);
-        return ["Supreme Court landmark judgments"];
+        return fallback;
     }
 };
 
@@ -276,15 +296,16 @@ const generateExpandedQueries = async (metadata) => {
  * searchInternalDB
  * Searches local MongoDB precedents database using text indexes and regex fallback
  */
-const searchInternalDB = async (queries, metadata) => {
+const searchInternalDB = async (queries, metadata, resolvedJurisdiction = null) => {
     try {
         const resultsMap = new Map();
+        const countryFilter = resolvedJurisdiction?.countryCode ? { countryCode: resolvedJurisdiction.countryCode } : {};
         
         // 1. Text search for top queries in parallel
         await Promise.all(queries.slice(0, 3).map(async (q) => {
             try {
                 const cases = await Precedent.find(
-                    { $text: { $search: q } },
+                    { ...countryFilter, $text: { $search: q } },
                     { score: { $meta: "textScore" } }
                 ).sort({ score: { $meta: "textScore" } }).limit(5);
                 
@@ -315,6 +336,7 @@ const searchInternalDB = async (queries, metadata) => {
         
         if (regexConditions.length > 0 && resultsMap.size < 10) {
             const regexCases = await Precedent.find({
+                ...countryFilter,
                 $or: regexConditions
             }).limit(10);
             
@@ -335,15 +357,21 @@ const searchInternalDB = async (queries, metadata) => {
 
 /**
  * searchExternal
- * Scrapes/indexes external Indian judgments via Gemini Web Search grounding in parallel
+ * Scrapes/indexes external judgments via Gemini Web Search grounding in parallel
  */
-const searchExternal = async (queries) => {
+const searchExternal = async (queries, resolvedJurisdiction = null) => {
     try {
-        logger.info(`[Precedents] Searching external for queries: ${queries.slice(0, 3).join(', ')}`);
+        const isNepal = resolvedJurisdiction?.isNepal;
+        const countryName = resolvedJurisdiction?.country || (isNepal ? 'Nepal' : 'India');
+        logger.info(`[Precedents] Searching external for ${countryName} with queries: ${queries.slice(0, 3).join(', ')}`);
         
         const searchResults = await Promise.all(queries.slice(0, 3).map(async (q) => {
             try {
-                const res = await performSearch(`Find landmark legal judgements, case laws, and precedents related to: "${q}". Focus on Supreme Court and High Court cases with complete citations (AIR, SCC, etc.) and brief reasoning.`, 'English');
+                const searchPrompt = isNepal
+                    ? `Find landmark legal judgements, case laws, and precedents in Nepal related to: "${q}". Focus on Supreme Court of Nepal and High Court cases with complete citations (NLR, Nepal Law Report, SC Decision No.) and brief reasoning under Nepal law.`
+                    : `Find landmark legal judgements, case laws, and precedents related to: "${q}". Focus on Supreme Court and High Court cases with complete citations (AIR, SCC, etc.) and brief reasoning.`;
+
+                const res = await performSearch(searchPrompt, 'English');
                 return res?.summary || '';
             } catch (err) {
                 logger.error(`[Precedents] External search failed for query "${q}": ${err.message}`);
@@ -396,11 +424,13 @@ const searchExternal = async (queries) => {
                 if (!dbCase) {
                     dbCase = await Precedent.create({
                         case_name: c.case_name,
-                        court: c.court || 'Supreme Court',
+                        court: c.court || (isNepal ? 'Supreme Court of Nepal' : 'Supreme Court'),
                         year: parseInt(c.year) || 2025,
                         citation: c.citation || 'Citation unavailable',
                         text: c.text || c.facts || c.reasoning || '',
-                        tags: c.area ? [c.area] : []
+                        tags: c.area ? [c.area] : [],
+                        countryCode: resolvedJurisdiction?.countryCode || (isNepal ? 'NP' : 'IN'),
+                        jurisdiction: countryName
                     });
                 }
                 
@@ -792,7 +822,10 @@ export const processPrecedentsBatchWithAI = async (candidates, context = null, l
  * analyzePrecedent
  * Performs specific AI tasks like Summarization, Comparison, or full Intelligence Report.
  */
-export const analyzePrecedent = async (actionType, precedentData, activeCaseData = null, language = 'English') => {
+export const analyzePrecedent = async (actionType, precedentData, activeCaseData = null, language = 'English', resolvedJurisdiction = null) => {
+    const isNepal = Boolean(resolvedJurisdiction?.isNepal || resolvedJurisdiction?.country === 'Nepal' || precedentData?.countryCode === 'NP');
+    const countryName = isNepal ? 'Nepal' : 'India';
+
     const isHindi = language === 'Hindi' || language === 'hi';
     const langRule = isHindi
         ? "\n\n### MANDATORY LANGUAGE RULE:\n- Generate ALL text in HINDI.\n- Use professional legal Hindi terminology.\n- Maintain high formal tone."
@@ -802,8 +835,9 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
 
     if (actionType === 'intelligence_report') {
         prompt = `
-        You are a Senior Legal Analyst and Supreme Court Advocate.
-        Generate a comprehensive, professional, and detailed Intelligence Report for the following landmark precedent judgment.
+        You are a Senior Legal Analyst and ${isNepal ? 'Supreme Court of Nepal' : 'Supreme Court'} Advocate.
+        Generate a comprehensive, professional, and detailed Intelligence Report for the following landmark precedent judgment in ${countryName}.
+        ${isNepal ? 'CRITICAL MANDATORY JURISDICTION RULES FOR NEPAL:\n- Ground all legal concepts strictly in Nepal Law (Muluki Codes 2074, Evidence Act 2031, Banking Offence Act 2064, Constitution of Nepal 2072).\n- ZERO references to IPC, CrPC, CPC, BNS, BNSS, BSA, or Indian Courts.' : ''}
         ${langRule}
 
         PRECEDENT DATA:
@@ -837,10 +871,10 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
         (Key strategic takeaways for a lawyer handling similar cases)
 
         ### 📖 6. Landmark Principle
-        (What makes this case a landmark decision in Indian jurisprudence)
+        ${isNepal ? '(What makes this case a landmark decision in Nepalese jurisprudence / Supreme Court of Nepal)' : '(What makes this case a landmark decision in Indian jurisprudence)'}
 
         ### 📜 7. Relevant Sections
-        (All relevant statutory sections, e.g., IPC, NI Act, CrPC, applied in the case)
+        ${isNepal ? '(All relevant statutory sections under Muluki Codes, Banking Offence Act 2064, Evidence Act 2031, etc.)' : '(All relevant statutory sections, e.g., IPC, NI Act, CrPC, applied in the case)'}
 
         ### 🤝 8. Similarity with Current Case
         (Detailed similarity analysis comparing facts, issues, and sections. If no active case is provided, analyze typical similarities with similar disputes.)
@@ -1001,7 +1035,7 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
 
         STRUCTURE YOUR RESPONSE (SCANNABLE MARKDOWN):
         ### 📜 Extracted Statutes & Acts
-        - Bullet list of Acts referenced (e.g. Indian Penal Code, Contract Act).
+        - Bullet list of Acts referenced (e.g. ${isNepal ? 'Muluki Codes 2074, Banking Offence Act 2064, Evidence Act 2031, ETA 2063' : 'Indian Penal Code, Contract Act, BNS, BSA'}).
         
         ### 📑 Specific Sections & Rules
         - Detailed explanation of how each section was interpreted or applied in this judgment.
@@ -1009,7 +1043,7 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
     } else if (actionType === 'find_stronger') {
         prompt = `
         You are a Senior Legal Research Specialist.
-        Analyze the following precedent and find 2 to 3 stronger binding authorities or higher bench judgments on this topic in Indian Jurisprudence.
+        Analyze the following precedent and find 2 to 3 stronger binding authorities or higher bench judgments on this topic in ${isNepal ? 'Nepalese Jurisprudence (Supreme Court of Nepal / NKP)' : 'Indian Jurisprudence'}.
         Explain why each is stronger (e.g., larger bench size, Supreme Court vs High Court status, or more recent clarification).
         ${langRule}
 
@@ -1022,8 +1056,8 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
 
         STRUCTURE YOUR RESPONSE (SCANNABLE MARKDOWN):
         ### 👑 1. Primary Stronger Authority
-        - **Case Name & Citation**: [Provide Case Name and Citation, e.g. Bir Singh v. Mukesh Kumar (2019) 4 SCC 197]
-        - **Bench & Court**: [e.g. 2-Judge Bench, Supreme Court of India]
+        - **Case Name & Citation**: [Provide Case Name and Citation${isNepal ? ', e.g. Santosh Bhandari v. PM KP Sharma Oli (NKP 2077)' : ', e.g. Bir Singh v. Mukesh Kumar (2019) 4 SCC 197'}]
+        - **Bench & Court**: [e.g. ${isNepal ? '5-Judge Constitutional Bench, Supreme Court of Nepal' : '2-Judge Bench, Supreme Court of India'}]
         - **Why it is Stronger**: [Why it binds higher or clarifies the point better]
 
         ### 👑 2. Secondary Clarification
@@ -1066,7 +1100,11 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
         Citation: ${precedentData.case_identity?.citation || precedentData.citation}
 
         STRUCTURE YOUR RESPONSE (SCANNABLE MARKDOWN):
-        - **SCC**: [SCC Citation format, e.g. (2010) 11 SCC 441]
+        ${isNepal ? `- **NKP**: [Nepal Kanoon Patrika format, e.g. NKP 2076, Vol. 61, Decision No. 10260]
+        - **NLR**: [Nepal Law Reports Citation format]
+        - **SC Bull**: [Supreme Court Bulletin format]
+        - **Neutral Citation**: [e.g. 2076 SC Nepal 10260]
+        - **Standard Academic**: [Standard law review citation format]` : `- **SCC**: [SCC Citation format, e.g. (2010) 11 SCC 441]
         - **AIR**: [AIR Citation format, e.g. AIR 2010 SC 1898]
         - **SCR**: [SCR Citation format]
         - **CrLJ**: [Criminal Law Journal format, if criminal case, else state N/A]
@@ -1074,7 +1112,7 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
         - **Bluebook (21st ed)**: [Standard Bluebook citation]
         - **OSCOLA**: [OSCOLA citation format]
         - **APA (7th ed)**: [APA citation format]
-        - **MLA (9th ed)**: [MLA citation format]
+        - **MLA (9th ed)**: [MLA citation format]`}
         `;
     }
 

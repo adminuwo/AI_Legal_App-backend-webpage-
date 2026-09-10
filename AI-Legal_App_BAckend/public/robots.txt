@@ -1,0 +1,58 @@
+# Robots.txt for AI LEGAL™ Platform
+# Primary: https://ailegal.aisa24.com
+
+# Standard Search Engines (Google, Bing, Apple)
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Applebot
+User-agent: DuckDuckBot
+Allow: /
+Allow: /mobile-app
+Allow: /pricing
+Allow: /privacy
+Allow: /terms
+Allow: /security
+Allow: /help
+Disallow: /admin
+Disallow: /api/
+Disallow: /auth/reset-password/
+
+# AI Search & Indexing Crawlers (ChatGPT, Claude, Perplexity)
+User-agent: GPTBot
+Allow: /
+Allow: /mobile-app
+Allow: /pricing
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /mobile-app
+Allow: /pricing
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /mobile-app
+Allow: /pricing
+
+User-agent: Claude-Web
+Allow: /
+Allow: /mobile-app
+Allow: /pricing
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /mobile-app
+Allow: /pricing
+
+# Default for all other web crawlers
+User-agent: *
+Allow: /
+Allow: /mobile-app
+Allow: /pricing
+Allow: /privacy
+Allow: /terms
+Disallow: /admin
+Disallow: /api/
+Disallow: /auth/reset-password/
+
+# Sitemaps
+Sitemap: https://ailegal.aisa24.com/sitemap.xml

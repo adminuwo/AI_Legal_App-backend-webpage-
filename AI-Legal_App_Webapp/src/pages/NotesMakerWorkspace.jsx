@@ -20,7 +20,7 @@ const NOTE_CHIPS = [
   { id: 'bare_act', label: '📖 Bare Act Summary', desc: 'Clause-by-clause simplified text' },
 ];
 
-const TRENDING_TOPICS = [
+const TRENDING_TOPICS_INDIA = [
   'Article 21 Right to Life',
   'Bharatiya Nyaya Sanhita (BNS 2023)',
   'IPC Section 302 vs BNS 103',
@@ -33,13 +33,34 @@ const TRENDING_TOPICS = [
   'Tort Law & Medical Negligence',
 ];
 
-const ACADEMIC_LEVELS = [
+const TRENDING_TOPICS_NEPAL = [
+  'Constitution of Nepal 2072 (Fundamental Rights)',
+  'Muluki Criminal Code 2074 (मुलुकी अपराध संहिता)',
+  'Muluki Criminal Procedure Code 2074 (थुनछेक/जमानत)',
+  'Muluki Civil Code 2074 (करार तथा देवानी दायित्व)',
+  'Muluki Civil Procedure Code 2074 (अन्तरिम आदेश/हदम्याद)',
+  'Evidence Act 2031 (प्रमाण ऐन, २०३१ दफा २५)',
+  'Banking Offence and Punishment Act 2064',
+  'Electronic Transactions Act 2063 (ETA 2063)',
+  'Supreme Court Writs (Article 133 Constitution)',
+  'Nepal Bar Council Examination Preparation',
+];
+
+const ACADEMIC_LEVELS_INDIA = [
   'BA LLB',
   'LLB',
   'LLM',
   'Judiciary Prep',
   'CLAT',
   'AIBE',
+];
+
+const ACADEMIC_LEVELS_NEPAL = [
+  'BA LLB (TU / KU / Purbanchal)',
+  'LLB',
+  'LLM',
+  'Nepal Bar Council Exam',
+  'Judicial Service Exam (न्याय सेवा)',
 ];
 
 const LOADING_STEPS = [
@@ -130,11 +151,28 @@ export default function NotesMakerWorkspace() {
   const navigate = useNavigate();
   const { deductToolUsage } = useSubscription();
 
+  // Detect active legal jurisdiction (Nepal vs India)
+  const isNepal = (() => {
+    try {
+      const rawUser = localStorage.getItem('user');
+      if (rawUser) {
+        const u = JSON.parse(rawUser);
+        if (u?.legalJurisdiction?.countryCode === 'NP' || u?.legalJurisdiction?.country === 'Nepal') {
+          return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  })();
+
+  const TRENDING_TOPICS = isNepal ? TRENDING_TOPICS_NEPAL : TRENDING_TOPICS_INDIA;
+  const ACADEMIC_LEVELS = isNepal ? ACADEMIC_LEVELS_NEPAL : ACADEMIC_LEVELS_INDIA;
+
   // Screen View State
   const [screenState, setScreenState] = useState('home'); // home | workspace
   const [inputMode, setInputMode] = useState('ai_topic'); // ai_topic | user_input
   const [outputLanguage, setOutputLanguage] = useState('English');
-  const [academicLevel, setAcademicLevel] = useState('BA LLB');
+  const [academicLevel, setAcademicLevel] = useState(isNepal ? 'BA LLB (TU / KU / Purbanchal)' : 'BA LLB');
   const [selectedChip, setSelectedChip] = useState('short');
 
   // Search & Inputs
@@ -321,7 +359,9 @@ export default function NotesMakerWorkspace() {
           'Executive declaration',
         ],
         ans: 0,
-        exp: `Burden of proof follows statutory provisions and Evidence Act / BSA rules.`,
+        exp: isNepal
+          ? 'Burden of proof follows statutory provisions under Evidence Act 2031 Section 25 (प्रमाण ऐन, २०३१).'
+          : 'Burden of proof follows statutory provisions and Evidence Act / BSA rules.',
       },
       {
         id: 3,
@@ -449,10 +489,19 @@ CRITICAL RULES:
 
     const chipLabel = NOTE_CHIPS.find((c) => c.id === selectedChip)?.label || 'Study Notes';
 
-    const systemInstruction = `You are an expert Legal Study Assistant for ${academicLevel} law students.
+    const jurisdictionRules = isNepal
+      ? `CRITICAL JURISDICTION RULES FOR NEPAL:
+- Ground ALL notes strictly in the legal framework of NEPAL: Constitution of Nepal 2072, Muluki Criminal Code 2074 (मुलुकी अपराध संहिता), Muluki Criminal Procedure Code 2074 (मुलुकी फौजदारी कार्यविधि संहिता), Muluki Civil Code 2074 (मुलुकी देवानी संहिता), Muluki Civil Procedure Code 2074 (मुलुकी देवानी कार्यविधि संहिता), Evidence Act 2031 (प्रमाण ऐन, २०३१), Banking Offence and Punishment Act 2064, Negotiable Instruments Act 2034, Electronic Transactions Act 2063 (ETA 2063), and Nepal Bar Council syllabus.
+- For landmark precedents, cite Supreme Court of Nepal (सर्वोच्च अदालत) / Nepal Kanoon Patrika (NKP / NLR).
+- ZERO STATUTORY LEAKAGE: NEVER cite Indian statutes (IPC, CrPC, CPC, BNS, BNSS, BSA, Indian Evidence Act 1872, Indian Contract Act 1872, Section 138 NI Act of India) or Indian Courts.`
+      : `CRITICAL JURISDICTION RULES FOR INDIA:
+- Ground all study notes in Indian law: BNS 2023, BNSS 2023, BSA 2023, IPC 1860, CrPC 1973, CPC 1908, Indian Evidence Act 1872, NI Act 1881, and Supreme Court of India precedents.`;
+
+    const systemInstruction = `You are an expert Legal Study Assistant for ${academicLevel} law students in ${isNepal ? 'Nepal' : 'India'}.
 Generate comprehensive, highly detailed exam study notes for: "${topicToUse}" (${chipLabel}).
 Output strictly in ${outputLanguage} using clean Markdown with headings (# Title, ## Subheading, ### Section), bold terms, and bullet points (- Bullet).
-Do NOT wrap output in JSON or code blocks.`;
+Do NOT wrap output in JSON or code blocks.
+${jurisdictionRules}`;
 
     const userPromptContent = `Generate ${chipLabel} for ${academicLevel} law student on topic: "${topicToUse}" in ${outputLanguage}.`;
 
@@ -489,7 +538,7 @@ Do NOT wrap output in JSON or code blocks.`;
     setFollowUpThread((prev) => [...prev, userMsgItem, aiMsgItem]);
 
     const cleanNotes = extractCleanText(masterNotesContent);
-    const sysInst = `You are AI Legal Tutor attached directly to this Student Study Note.
+    const sysInst = `You are AI Legal Tutor attached directly to this Student Study Note in ${isNepal ? 'Nepal' : 'India'}.
 Topic: "${activeTopicTitle}"
 Academic Level: "${academicLevel}"
 
@@ -497,6 +546,7 @@ ACTIVE NOTE CONTENT CONTEXT:
 "${cleanNotes.slice(0, 3500)}"
 
 CRITICAL RULE:
+${isNepal ? 'Adhere strictly to Nepal law (Muluki Codes 2074, Evidence Act 2031, Constitution of Nepal 2072). Zero statutory leakage from Indian law.' : 'Adhere to Indian jurisprudence.'}
 Answer the student's question specifically in context of this active study note. Format your answer using clean Markdown with bold text and bullet points. Output language: ${outputLanguage}.`;
 
     try {

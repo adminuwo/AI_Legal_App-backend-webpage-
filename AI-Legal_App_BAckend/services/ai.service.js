@@ -23,6 +23,7 @@ import { safeParseLLMJson } from '../utils/jsonUtils.js';
 import { performGlobalDatabaseSearch } from "../utils/aiMemorySystem.js";
 import { analyzeFreshness } from './freshnessDetector.js';
 import { executeTargetedLegalSearch, formatGroundingContext } from './legalSearchOrchestrator.js';
+import { jurisdictionManager } from './jurisdictionManager.js';
 
 
 // Real RAG Storage (MongoDB Atlas)
@@ -87,7 +88,7 @@ export const chat = async (message, activeDocContent = null, options = {}) => {
             message = String(message || "");
         }
 
-        const { systemInstruction, mode, images, documents, userName, language, conversationId, userId, model, history, toolName, caseContext, onChunk } = options;
+        const { systemInstruction, mode, images, documents, userName, language, conversationId, userId, model, history, toolName, caseContext, onChunk, jurisdiction, country, state, headers } = options;
 
         const lowerMsg = message.toLowerCase().trim();
         const companyKeywords = ['uwo', 'aisa', 'ai mall', 'unified web', 'what can you do', 'your features', 'your capabilities', 'who are you', 'how can you help', 'tell me about your services'];
@@ -107,10 +108,19 @@ export const chat = async (message, activeDocContent = null, options = {}) => {
 
         const isLegalMode = mode === 'LEGAL_TOOLKIT' || (toolName && toolName.startsWith('legal_'));
 
+        // --- CENTRALIZED JURISDICTION RESOLUTION ---
+        const resolvedJurisdiction = await jurisdictionManager.resolveLegalJurisdiction({
+            query: message,
+            headers: headers || (options.req ? options.req.headers : null),
+            explicitJurisdiction: jurisdiction || (country ? { country, state } : null),
+            userId: userId,
+            userProfile: options.userProfile
+        });
+
         // --- CENTRALIZED LEGAL FRESHNESS & SEARCH DECISION ---
-        const freshnessDecision = analyzeFreshness(message, mode, toolName, activeDocContent);
+        const freshnessDecision = analyzeFreshness(message, mode, toolName, activeDocContent, resolvedJurisdiction);
         const isFreshnessRequired = freshnessDecision.isFreshnessRequired;
-        logger.info(`[AI-Service] Lang: ${resolvedLang.language} | Freshness: ${isFreshnessRequired ? 'REQUIRED (' + freshnessDecision.reason + ')' : 'NOT_REQUIRED'} | SearchType: ${freshnessDecision.searchType}`);
+        logger.info(`[AI-Service] Lang: ${resolvedLang.language} | Jurisdiction: ${resolvedJurisdiction.state ? resolvedJurisdiction.state + ', ' : ''}${resolvedJurisdiction.country} | Freshness: ${isFreshnessRequired ? 'REQUIRED (' + freshnessDecision.reason + ')' : 'NOT_REQUIRED'} | SearchType: ${freshnessDecision.searchType}`);
 
         // --- CONVERSATION MEMORY RAG ---
         // Combine history from frontend and retrieved memory from DB if available
@@ -220,17 +230,22 @@ To perform a conversion, you MUST respond with a JSON action strictly in this fo
 }
 Maintain any text response outside the JSON block.`;
         } else if (mode === 'LEGAL_TOOLKIT' || mode === 'NORMAL_CHAT' || mode === 'CHAT' || !mode) {
+            const applicableStatutes = resolvedJurisdiction.isNepal
+                ? "Constitution of Nepal 2072, Muluki Civil Code 2074, Muluki Criminal Code 2074, Muluki Civil/Criminal Procedure Codes 2074, Evidence Act 2031, Banking Offence Act 2064"
+                : "Constitution of India, BNS, BNSS, BSA, IPC, CrPC, CPC, Indian Evidence Act, Contract Act";
+            const refusalCountryLaw = resolvedJurisdiction.isNepal ? "laws of Nepal" : "Indian laws";
+
             toolRestrictions = `\n\n### MODE: LEGAL SYSTEM ACTIVE — STRICT DOMAIN LOCK ⚖️
-- You are a Senior Legal Assistant specialist EXCLUSIVELY for legal matters.
-- 🚨 ABSOLUTE RESTRICTION: You MUST ONLY respond to queries related to: law, legal acts, IPC/CrPC/CPC/BNS/BNSS/BSA sections, court procedures, legal documents, contracts, FIR, rights, legal strategy, affidavits, legal notices, evidence, case analysis, or any legal guidance.
+- You are a Senior Legal Assistant specialist EXCLUSIVELY for legal matters under the active jurisdiction (${resolvedJurisdiction.country || 'Applicable Jurisdiction'}).
+- 🚨 ABSOLUTE RESTRICTION: You MUST ONLY respond to queries related to: law, legal acts, ${applicableStatutes} sections, court procedures, legal documents, contracts, FIR / Jaheri Darkhast, rights, legal strategy, affidavits, legal notices, evidence, case analysis, or any legal guidance.
 - 🌐 MULTILINGUAL & LANGUAGE COMMAND MANDATE:
-  - If the user requests a language or language switch (e.g. "Marathi me smjhao", "Explain in Sanskrit", "Explain in Tamil", "Translate into Gujarati", "कन्नडदल्लि हेळि", "अब से हिंदी में जवाब दो"), you MUST IMMEDIATELY accept and fulfill the request in ${resolvedLang.language}.
+  - If the user requests a language or language switch (e.g. "Marathi me smjhao", "Explain in Sanskrit", "Explain in Tamil", "Translate into Gujarati", "कन्नडदल्लि हेळि", "अब से हिंदी में जवाब दो", "नेपालीमा सम्झाउनुहोस्"), you MUST IMMEDIATELY accept and fulfill the request in ${resolvedLang.language}.
   - DO NOT reject or output refusal messages when the user specifies a language preference.
   - If prior conversation history exists, re-explain or summarize the last legal topic in ${resolvedLang.language}.
   - If no prior context exists, greet the user in ${resolvedLang.language} as AI Legal™ Assistant and invite them to ask their legal question.
   - NEVER output "I can only assist in English", "I only support English and Hindi", "I cannot explain in ${resolvedLang.language}", or similar restrictive messages.
 - 🚫 STRICT NON-LEGAL DOMAIN REFUSAL: If the user asks ANY question or topic that is NOT related to law or legal matters (e.g. recipes, cooking, entertainment, sports, movies, coding/programming, algorithms, math, weather, non-legal trivia, science, etc.), you MUST IMMEDIATELY politely decline to answer:
-  "I am AI Legal™ Assistant, specialized strictly in legal queries, Indian laws, court procedures, and legal guidance. Your question appears to be outside the legal domain. Please ask any legal-related question." (Translate appropriately into user's language if asked in Hindi/other languages).
+  "I am AI Legal™ Assistant, specialized strictly in legal queries, ${refusalCountryLaw}, court procedures, and legal guidance. Your question appears to be outside the legal domain. Please ask any legal-related question." (Translate appropriately into user's language if asked in Hindi/Nepali/other languages).
 - 📊 LEGAL COMPARISON & DIFFERENCE MANDATE: Whenever the user asks for a difference, distinction, or comparison between legal terms, concepts, acts, sections, or offences (e.g. "What is the difference between crime and wrong", "IPC vs BNS", "Civil vs Criminal", "Lease vs License"), you MUST present the comparison using a clean, well-structured Markdown Table with proper column headers (| Aspect / Basis | Concept A | Concept B |) and alignment separator (|---|---|---|). 🚨 STRICT RULE: Do NOT use asterisks '*' or double asterisks '**' (such as writing "**Definition**") inside table headers or cell text. Write raw text like "Definition" instead of "**Definition**". Keep all text inside table cells clean and plain text. Provide detailed comparative rows (Definition, Applicable Law, Nature of Injury, Remedy, Burden of Proof, Examples).
 - DO NOT include any legal disclaimers, warnings, or professional advice notices in the response. The system appends these automatically.`;
 
@@ -315,7 +330,7 @@ Maintain any text response outside the JSON block.`;
             const isRedundant = toolName === classification?.intent;
             if (!isRedundant) {
                 logger.info(`[AI-Service] Legal Intent Detected: ${classification.intent}.`);
-                legalInstruction = `\n\n### SPECIALIZED LEGAL TOOL: ${classification.intent}\n${getLegalPrompt(classification.intent)}`;
+                legalInstruction = `\n\n### SPECIALIZED LEGAL TOOL: ${classification.intent}\n${getLegalPrompt(classification.intent, resolvedJurisdiction)}`;
             }
         }
 
@@ -355,7 +370,7 @@ Maintain any text response outside the JSON block.`;
 
         let activeToolInstruction = "";
         if (isLegalMode && toolName && toolName.startsWith('legal_') && toolName !== 'legal_contract_analyzer') {
-            activeToolInstruction = `\n\n### ACTIVE LEGAL TOOL: ${toolName}\n${getLegalPrompt(toolName)}`;
+            activeToolInstruction = `\n\n### ACTIVE LEGAL TOOL: ${toolName}\n${getLegalPrompt(toolName, resolvedJurisdiction)}`;
         }
 
         const lastAssistantMessageObj = [...(combinedHistory || [])].reverse().find(m => (m.role === 'model' || m.role === 'assistant') && (m.content || m.text));
@@ -412,10 +427,12 @@ STRICT MANDATE FOR THIS TURN:
 6. MEMORY RESET: Only reset memory when the user explicitly requests: "Start a new topic", "Forget previous conversation", "Clear context", or "Reset".
 `;
 
+        const jurisdictionInstruction = jurisdictionManager.getJurisdictionPrompt(resolvedJurisdiction);
+
         // Construct dynamic instruction with unified multilingual language context and persistent memory rules appended
-        const dynamicSystemInstruction = GLOBAL_RULES + "\n\n" + memorySystemRules + followUpContext + ((toolName === 'legal_contract_analyzer'
-            ? (systemInstruction || "") + `\n\n${getLegalPrompt('legal_contract_analyzer')}`
-            : (systemInstruction || "") + personaContext + toolRestrictions) + summaryContext + crossSearchContext) + `\n\n${langContext}`;
+        const dynamicSystemInstruction = jurisdictionInstruction + "\n\n" + GLOBAL_RULES + "\n\n" + memorySystemRules + followUpContext + ((toolName === 'legal_contract_analyzer'
+            ? (systemInstruction || "") + `\n\n${getLegalPrompt('legal_contract_analyzer', resolvedJurisdiction)}`
+            : (systemInstruction || "") + personaContext + toolRestrictions) + summaryContext + crossSearchContext) + (activeToolInstruction ? `\n\n${activeToolInstruction}` : '') + (legalInstruction ? `\n\n${legalInstruction}` : '') + `\n\n${langContext}`;
 
         // Helper to build context-aware prompt
         const buildMemoryPrompt = (query) => {
@@ -496,7 +513,11 @@ STRICT MANDATE FOR THIS TURN:
                 userId,
                 useSearch: isFreshnessRequired,
                 searchQueryOverride: freshnessDecision.searchQuery,
-                returnSources: true
+                returnSources: true,
+                jurisdiction,
+                country,
+                state,
+                headers
             });
 
             const vertexText = typeof vertexResponse === 'object' ? vertexResponse.text : vertexResponse;
@@ -679,7 +700,11 @@ STRICT MANDATE FOR THIS TURN:
                             userId,
                             useSearch: isFreshnessRequired,
                             searchQueryOverride: freshnessDecision.searchQuery,
-                            returnSources: true
+                            returnSources: true,
+                            jurisdiction: resolvedJurisdiction,
+                            country: resolvedJurisdiction.country,
+                            state: resolvedJurisdiction.state,
+                            headers
                         });
                         aiResponse = typeof vertexRes === 'object' ? vertexRes.text : vertexRes;
                         responseSources = typeof vertexRes === 'object' ? (vertexRes.sources || []) : [];

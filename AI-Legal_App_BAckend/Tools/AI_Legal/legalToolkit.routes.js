@@ -10,12 +10,9 @@ import { subscriptionService } from '../../services/subscriptionService.js';
 import logger from '../../utils/logger.js';
 import * as FeatureAccessManager from '../../services/featureAccessManager.js';
 import { resolveResponseLanguage } from '../../utils/languageResolver.js';
+import { jurisdictionManager } from '../../services/jurisdictionManager.js';
 
 const router = express.Router();
-
-/**
- * Note: getStrictToolPrompt was removed in favor of centralized services/legal/legalPrompts.js
- */
 
 const buildCaseContextString = (caseContext) => {
     if (!caseContext) return '';
@@ -252,8 +249,20 @@ router.post('/execute', verifyToken, creditMiddleware, async (req, res) => {
             });
         }
 
+        // 🔥 STEP 0: RESOLVE JURISDICTION (5-TIER PRIORITY)
+        const explicitJurisdiction = req.body.jurisdiction || {
+            country: req.headers['x-legal-jurisdiction'] || req.headers['x-country-code'] || req.body.country,
+            state: req.headers['x-legal-state'] || req.body.state
+        };
+        const resolvedJurisdiction = await jurisdictionManager.resolveLegalJurisdiction({
+            query: message,
+            headers: req.headers,
+            explicitJurisdiction: (explicitJurisdiction.country || explicitJurisdiction.state) ? explicitJurisdiction : null,
+            userProfile: req.user
+        });
+
         // 🔥 STEP 1: Get STRICT TOOL PROMPT from Centralized Service
-        let systemPrompt = getLegalPrompt(toolName);
+        let systemPrompt = getLegalPrompt(toolName, resolvedJurisdiction);
         if (caseContext) {
             systemPrompt = buildCaseContextString(caseContext) + systemPrompt;
         }
@@ -286,7 +295,7 @@ ${message}
 - Use Legal Knowledge (RAG) for references.
 `;
 
-        logger.info(`[LegalToolkit] Tool: ${toolName} | User: ${req.user?._id}`);
+        logger.info(`[LegalToolkit] Tool: ${toolName} | User: ${req.user?._id} | Jurisdiction: ${resolvedJurisdiction.state ? resolvedJurisdiction.state + ', ' : ''}${resolvedJurisdiction.country}`);
 
         // 🔥 STEP 3: CALL AI
         const responseData = await generateChatResponse(
@@ -299,7 +308,13 @@ ${message}
             'LEGAL_TOOLKIT',
             sessionId,
             effectiveProjectId,
-            toolName
+            toolName,
+            {
+                userId: req.user?._id,
+                headers: req.headers,
+                jurisdiction: resolvedJurisdiction,
+                userProfile: req.user
+            }
         );
 
 
@@ -312,10 +327,10 @@ ${message}
                 .replace(/\n+(?:Let me know if you (?:need|would like).*?$)/gi, '')
                 .replace(/\n+(?:I hope this (?:helps|draft|document).*?$)/gi, '')
                 .replace(/\[\s*(?:Insert|Fill|Specify|Enter|Select)?\s*[^\]]+\]/gi, (match) => {
-                    if (/date/i.test(match)) return new Date().toLocaleDateString('en-IN');
-                    if (/court/i.test(match)) return 'Hon\'ble Court';
-                    if (/place|city|location/i.test(match)) return 'New Delhi';
-                    if (/amount|rs|fee|sum/i.test(match)) return '₹50,000/-';
+                    if (/date/i.test(match)) return new Date().toLocaleDateString(resolvedJurisdiction.isNepal ? 'en-NP' : 'en-IN');
+                    if (/court/i.test(match)) return resolvedJurisdiction.isNepal ? 'Hon\'ble District Court / High Court' : 'Hon\'ble Court';
+                    if (/place|city|location/i.test(match)) return resolvedJurisdiction.isNepal ? (resolvedJurisdiction.state || 'Kathmandu') : (resolvedJurisdiction.state || 'New Delhi');
+                    if (/amount|rs|fee|sum/i.test(match)) return resolvedJurisdiction.isNepal ? 'NPR 50,000/-' : '₹50,000/-';
                     return '';
                 })
                 .replace(/\[\s*__+\s*\]/g, '_____________')

@@ -7,6 +7,7 @@ import { verifyToken } from '../middleware/authorization.js';
 import { verifyFeatureAccess } from '../middleware/subscriptionCheck.middleware.js';
 import { extractTextFromBuffer } from '../services/documentIntelligence.service.js';
 import { askOpenAI } from '../services/openai.service.js';
+import { jurisdictionManager } from '../services/jurisdictionManager.js';
 import logger from '../utils/logger.js';
 
 const router = express.Router();
@@ -86,8 +87,28 @@ router.post('/review', verifyToken, verifyFeatureAccess('contract_review'), asyn
             ? contractText.substring(0, maxChars) + '\n\n[Document truncated at 40,000 characters. Critical clauses above are sufficient for full review.]'
             : contractText;
 
-        // ── Step 2: Build the structured GPT-4o contract review prompt ──
-        const systemInstruction = `You are a Senior Enterprise Legal AI Contract Analyst with 20+ years of experience reviewing commercial, employment, NDA, lease, vendor, and technology contracts across Indian and international jurisdictions.
+        // ── Step 2: Build the structured GPT-4o contract review prompt with strict jurisdiction ──
+        const explicitJurisdiction = req.body.jurisdiction || {
+            country: req.headers['x-legal-jurisdiction'] || req.headers['x-country-code'] || req.body.country,
+            state: req.headers['x-legal-state'] || req.body.state
+        };
+        const resolvedJurisdiction = await jurisdictionManager.resolveLegalJurisdiction({
+            query: `${fileName} ${contractText.substring(0, 1000)}`,
+            headers: req.headers,
+            explicitJurisdiction: (explicitJurisdiction.country || explicitJurisdiction.state) ? explicitJurisdiction : null,
+            userId,
+            userProfile: req.user
+        });
+
+        const jurisdictionRules = resolvedJurisdiction.isNepal
+            ? `\n\n### ACTIVE JURISDICTION: NEPAL
+- Governing Legal Framework: Muluki Civil Code 2074 (Part 5: Law of Contracts and Other Obligations), Arbitration Act 2055, Companies Act 2063, Labor Act 2074.
+- 🚨 ZERO FOREIGN STATUTE LEAKAGE: Do NOT cite Indian Contract Act 1872 or Indian statutes. All compliance, termination, validity, and penalty evaluations must be grounded in Nepal's statutory frameworks and commercial practices.`
+            : `\n\n### ACTIVE JURISDICTION: INDIA
+- Governing Legal Framework: Indian Contract Act 1872, Arbitration and Conciliation Act 1996, Specific Relief Act 1963, Companies Act 2013.
+- Reference relevant Indian statutory sections where applicable.`;
+
+        const systemInstruction = `You are a Senior Enterprise Legal AI Contract Analyst specializing in commercial, employment, NDA, lease, vendor, and technology contracts under the laws of ${resolvedJurisdiction.country || 'the applicable jurisdiction'}.${jurisdictionRules}
 
 You MUST analyze ONLY the actual contract text provided. Do NOT make up clauses, parties, dates, or facts. If information is not present in the document, set that field to null or an empty array.
 
@@ -220,6 +241,7 @@ JSON Schema (all fields required):
         return res.json({
             success: true,
             analysis,
+            jurisdiction: resolvedJurisdiction,
             ocrTextLength: contractText.length,
             savedId: savedDoc?._id || null,
             savedVersion: savedDoc?.version || null,

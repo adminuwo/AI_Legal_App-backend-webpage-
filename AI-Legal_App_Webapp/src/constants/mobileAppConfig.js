@@ -11,6 +11,11 @@ export const GOOGLE_PLAY_URL =
   import.meta.env.VITE_GOOGLE_PLAY_URL ||
   "https://play.google.com/store/apps/details?id=com.uwo.ailegal";
 
+export const GOOGLE_PLAY_MARKET_URL =
+  "market://details?id=com.uwo.ailegal";
+
+export const APP_DEEP_LINK_SCHEME = "ailegal://";
+
 export const UNIVERSAL_DOWNLOAD_URL =
   import.meta.env.VITE_UNIVERSAL_DOWNLOAD_URL || GOOGLE_PLAY_URL;
 
@@ -19,7 +24,7 @@ export const MOBILE_APP_VERSION = "1.0.3";
 export const isRealStoreUrl = (url) => {
   if (!url || typeof url !== 'string') return false;
   if (url.includes('id123456789') || url.includes('123456789')) return false;
-  return url.startsWith('http://') || url.startsWith('https://');
+  return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('market://');
 };
 
 export const CONNECTED_ECOSYSTEM_BENEFITS = [

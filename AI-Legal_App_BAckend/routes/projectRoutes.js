@@ -638,12 +638,6 @@ router.get('/', verifyToken, async (req, res) => {
             };
         }
 
-        // Auto-fix any cases where isLegalCase was not set to true
-        await Project.updateMany(
-            { userId: req.user.id, $or: [{ isLegalCase: false }, { isLegalCase: { $exists: false } }] },
-            { $set: { isLegalCase: true } }
-        );
-
         const projects = await Project.find(roleQuery).populate('clientId').sort({ createdAt: -1 });
         res.json(projects);
     } catch (error) {

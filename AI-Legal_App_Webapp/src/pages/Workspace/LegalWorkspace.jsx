@@ -1833,23 +1833,46 @@ const LegalWorkspace = () => {
 
     if (isGeneralCopilot) {
       const isStudentRole = activeRole === 'student' || selectedRole === 'student' || location.pathname.includes('/tutor');
-      const generalRemaining = isStudentRole ? [
-        { label: "📖 Article 21 Rights & Cases", prompt: "Explain Article 21 of Indian Constitution simply with key landmark cases." },
-        { label: "⚖️ IPC 300 vs Culpable Homicide", prompt: "Explain Section 300 IPC vs Culpable Homicide with clear examples." },
-        { label: "📚 Kesavananda Bharati Ratio", prompt: "Summarize Kesavananda Bharati case law ratio decidendi in IRAC format." },
-        { label: "🎯 Judiciary Exam MCQs", prompt: "Generate 5 practice MCQs on Constitutional Law & Fundamental Rights." },
-        { label: "🎓 Moot Court Memorial Draft", prompt: "Help me structure a Moot Court Memorial Argument for Appellant." },
-        { label: "✍️ Indian Contract Act Sec 10", prompt: "Explain Section 10 of Indian Contract Act 1872 valid contract elements." }
-      ] : [
-        { label: "📑 Draft Sec 483 BNSS Bail", prompt: "Draft a formal bail application under Section 483 BNSS (CrPC 439) with grounds." },
-        { label: "⚖️ Sec 138 NI Act Precedents", prompt: "Search latest Supreme Court precedents on Section 138 Negotiable Instruments Act." },
-        { label: "📝 Draft Legal Notice", prompt: "Draft a formal legal notice for breach of contract with damages claim." },
-        { label: "🛡️ Cross-Examination Strategy", prompt: "Generate cross-examination questions for witness in court." },
-        { label: "📄 Property Partition Suit Plaint", prompt: "Draft a suit for partition of ancestral property under Hindu Succession Act." },
-        { label: "💼 Draft NDA Agreement", prompt: "Draft a standard Non-Disclosure Agreement (NDA) under Indian law." },
-        { label: "🔍 Contract Risk Analysis", prompt: "Analyze contract clauses for hidden legal risks and liabilities." },
-        { label: "🧾 Consumer Court Complaint", prompt: "Draft a consumer court complaint for deficiency of service." }
-      ];
+      const storedCountry = localStorage.getItem('ai_legal_selected_country') || localStorage.getItem('legal_country') || 'India';
+      const isNepal = storedCountry.toLowerCase().includes('nepal') || localStorage.getItem('legal_country_code') === 'NP';
+
+      const generalRemaining = isStudentRole ? (
+        isNepal ? [
+          { label: "📖 Art 16-20 Nepal Constitution", prompt: "Explain Fundamental Rights under Constitution of Nepal 2072 with landmark NKP rulings." },
+          { label: "⚖️ Muluki Criminal Code Sec 177", prompt: "Explain Section 177 Homicide provisions under Muluki Criminal Code 2074 with examples." },
+          { label: "📚 Santosh Bhandari Ratio", prompt: "Summarize Santosh Bhandari v. Prime Minister (NKP 2077) ratio decidendi in IRAC format." },
+          { label: "🎯 Nepal Bar Exam MCQs", prompt: "Generate 5 practice MCQs on Nepal Constitutional & Criminal Law." },
+          { label: "🎓 Moot Court Memorial Draft", prompt: "Help me structure a Moot Court Memorial Argument for Kathmandu District / High Court." },
+          { label: "✍️ Muluki Civil Code Sec 504", prompt: "Explain Section 504 valid contract elements under Muluki Civil Code 2074." }
+        ] : [
+          { label: "📖 Article 21 Rights & Cases", prompt: "Explain Article 21 of Indian Constitution simply with key landmark cases." },
+          { label: "⚖️ IPC 300 vs Culpable Homicide", prompt: "Explain Section 300 IPC vs Culpable Homicide with clear examples." },
+          { label: "📚 Kesavananda Bharati Ratio", prompt: "Summarize Kesavananda Bharati case law ratio decidendi in IRAC format." },
+          { label: "🎯 Judiciary Exam MCQs", prompt: "Generate 5 practice MCQs on Constitutional Law & Fundamental Rights." },
+          { label: "🎓 Moot Court Memorial Draft", prompt: "Help me structure a Moot Court Memorial Argument for Appellant." },
+          { label: "✍️ Indian Contract Act Sec 10", prompt: "Explain Section 10 of Indian Contract Act 1872 valid contract elements." }
+        ]
+      ) : (
+        isNepal ? [
+          { label: "📑 Draft Bail Petition (Sec 73)", prompt: "Draft a formal bail application under Section 67/73 of Muluki Criminal Procedure Code 2074." },
+          { label: "⚖️ Banking Offence Act 2064", prompt: "Search latest Supreme Court of Nepal precedents on Banking Offence Act 2064 cheque dishonour." },
+          { label: "📝 Draft Legal Notice (Nepal)", prompt: "Draft a formal legal notice under Nepal law for breach of contract with damages claim in NPR." },
+          { label: "🛡️ Cross-Examination Strategy", prompt: "Generate cross-examination questions for witness in Nepal District Court." },
+          { label: "📄 Property Partition Plaint (Ansha)", prompt: "Draft a plaint for partition of ancestral property (Ansha-banda) under Muluki Civil Code 2074." },
+          { label: "💼 Commercial Agreement (Nepal)", prompt: "Draft a standard Commercial Agreement under Muluki Civil Code 2074." },
+          { label: "🔍 Contract Risk Analysis", prompt: "Analyze contract clauses for hidden risks under Nepal Contract Law." },
+          { label: "🧾 Consumer Complaint (Nepal)", prompt: "Draft a consumer complaint under Consumer Protection Act 2075 to District Administration Office." }
+        ] : [
+          { label: "📑 Draft Sec 483 BNSS Bail", prompt: "Draft a formal bail application under Section 483 BNSS (CrPC 439) with grounds." },
+          { label: "⚖️ Sec 138 NI Act Precedents", prompt: "Search latest Supreme Court precedents on Section 138 Negotiable Instruments Act." },
+          { label: "📝 Draft Legal Notice", prompt: "Draft a formal legal notice for breach of contract with damages claim." },
+          { label: "🛡️ Cross-Examination Strategy", prompt: "Generate cross-examination questions for witness in court." },
+          { label: "📄 Property Partition Suit Plaint", prompt: "Draft a suit for partition of ancestral property under Hindu Succession Act." },
+          { label: "💼 Draft NDA Agreement", prompt: "Draft a standard Non-Disclosure Agreement (NDA) under Indian law." },
+          { label: "🔍 Contract Risk Analysis", prompt: "Analyze contract clauses for hidden legal risks and liabilities." },
+          { label: "🧾 Consumer Court Complaint", prompt: "Draft a consumer court complaint for deficiency of service." }
+        ]
+      );
 
       const sortedTemplates = [...generalRemaining].sort((a, b) => {
         const countA = getSuggestionClickCount(a.prompt);
@@ -5545,7 +5568,9 @@ ${selectedRole === 'student' ? `
 ### STUDENT ROLE MODE (AI LEGAL™ TUTOR):
 - You are acting as AI LEGAL™ TUTOR.
 - Be an encouraging, expert, and engaging AI Legal Learning Companion for law students, judiciary aspirants, and moot court competitors.
-- Explain statutory provisions (IPC, BNS, CrPC, BNSS, BSA, Constitution) in simple, easy-to-understand language.
+${(localStorage.getItem('ai_legal_selected_country') || '').toLowerCase().includes('nepal') || localStorage.getItem('legal_country_code') === 'NP'
+  ? '- Explain statutory provisions under Nepal law (Muluki Civil Code 2074, Muluki Criminal Code 2074, Evidence Act 2031, Banking Offence Act 2064, Constitution of Nepal 2072).\n- MANDATORY JURISDICTION: NEPAL. Strictly advise under Nepal statutes and NKP precedents. Zero Indian statutory leakage (no BNS/BNSS/BSA/IPC/CrPC). Currency: NPR.'
+  : '- Explain statutory provisions (IPC, BNS, CrPC, BNSS, BSA, Constitution of India) in simple, easy-to-understand language.'}
 - Structure case law summaries in concise IRAC format (Issue, Rule, Application, Conclusion).
 - When student asks short follow-up questions like "example?", "exam me kaise puch skte hai?", "mcq do", build seamlessly on the previous turn's context.
 ` : ''}
@@ -5981,7 +6006,14 @@ ${documentConvertActive ? `### DOCUMENT CONVERSION MODE ENABLED (CRITICAL):
             let cleanedList = rawList.map(cleanSuggestionItem).filter(Boolean);
 
             if (cleanedList.length === 0) {
-              cleanedList = [
+              const storedC = localStorage.getItem('ai_legal_selected_country') || localStorage.getItem('legal_country') || 'India';
+              const isNP = storedC.toLowerCase().includes('nepal') || localStorage.getItem('legal_country_code') === 'NP';
+              cleanedList = isNP ? [
+                "Research relevant NKP Case Laws",
+                "Explain Muluki Code Sections",
+                "Suggest Courtroom Strategy",
+                "Predict Case Outcome"
+              ] : [
                 "Research relevant Case Laws",
                 "Explain applicable IPC/BNS Sections",
                 "Suggest Legal Strategy",
@@ -10298,12 +10330,21 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                       ? msg.suggestions
                                       : ((suggestions && Array.isArray(suggestions) && suggestions.length > 0)
                                         ? suggestions
-                                        : [
-                                          "⚖️ Explain IPC & BNS Sections",
-                                          "📝 Draft Legal Notice",
-                                          "📚 Supreme Court Precedents",
-                                          "🔍 Cross-Examination Questions"
-                                        ]);
+                                        : (() => {
+                                            const storedC = localStorage.getItem('ai_legal_selected_country') || localStorage.getItem('legal_country') || 'India';
+                                            const isNP = storedC.toLowerCase().includes('nepal') || localStorage.getItem('legal_country_code') === 'NP';
+                                            return isNP ? [
+                                              "⚖️ Explain Muluki Code Sections",
+                                              "📝 Draft Legal Notice (Nepal)",
+                                              "📚 Landmark NKP Precedents",
+                                              "🔍 Cross-Examination Questions"
+                                            ] : [
+                                              "⚖️ Explain IPC & BNS Sections",
+                                              "📝 Draft Legal Notice",
+                                              "📚 Supreme Court Precedents",
+                                              "🔍 Cross-Examination Questions"
+                                            ];
+                                          })());
 
                                     return (
                                       <div className="flex flex-wrap gap-2 mt-4 animate-in fade-in duration-300 select-none">

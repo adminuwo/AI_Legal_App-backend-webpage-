@@ -53,6 +53,117 @@ route.get("/usage-status", verifyToken, async (req, res) => {
     }
 });
 
+// GET /api/user/streak - Get real-time student study streak (consecutive daily usage)
+route.get("/streak", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const user = await userModel.findById(userId).select("studyStreak createdAt");
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+
+        let currentStreak = user.studyStreak?.currentStreak || 0;
+        const lastActiveDate = user.studyStreak?.lastActiveDate || '';
+        const bestStreak = user.studyStreak?.bestStreak || 0;
+        const totalActiveDays = user.studyStreak?.totalActiveDays || 0;
+
+        let isStreakActiveToday = false;
+
+        if (lastActiveDate) {
+            const lastDateObj = new Date(lastActiveDate + 'T00:00:00');
+            const todayDateObj = new Date(todayStr + 'T00:00:00');
+            const diffDays = Math.round((todayDateObj.getTime() - lastDateObj.getTime()) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) {
+                isStreakActiveToday = true;
+            } else if (diffDays === 1) {
+                isStreakActiveToday = false;
+            } else if (diffDays > 1) {
+                currentStreak = 0;
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            streak: currentStreak,
+            bestStreak,
+            totalActiveDays,
+            lastActiveDate,
+            isStreakActiveToday
+        });
+    } catch (error) {
+        console.error("[GET STREAK ERROR]", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// POST /api/user/streak/ping - Record real-time app / feature activity (like Snapchat streak)
+route.post("/streak/ping", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+
+        let currentStreak = user.studyStreak?.currentStreak || 0;
+        let lastActiveDate = user.studyStreak?.lastActiveDate || '';
+        let bestStreak = user.studyStreak?.bestStreak || 0;
+        let totalActiveDays = user.studyStreak?.totalActiveDays || 0;
+
+        if (!lastActiveDate) {
+            currentStreak = 1;
+            lastActiveDate = todayStr;
+            totalActiveDays = 1;
+            bestStreak = 1;
+        } else if (lastActiveDate === todayStr) {
+            if (currentStreak === 0) currentStreak = 1;
+        } else {
+            const lastDateObj = new Date(lastActiveDate + 'T00:00:00');
+            const todayDateObj = new Date(todayStr + 'T00:00:00');
+            const diffDays = Math.round((todayDateObj.getTime() - lastDateObj.getTime()) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+                currentStreak += 1;
+                totalActiveDays += 1;
+            } else if (diffDays > 1) {
+                currentStreak = 1;
+                totalActiveDays += 1;
+            }
+            lastActiveDate = todayStr;
+            bestStreak = Math.max(bestStreak, currentStreak);
+        }
+
+        user.studyStreak = {
+            currentStreak,
+            lastActiveDate,
+            bestStreak,
+            totalActiveDays
+        };
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            streak: currentStreak,
+            bestStreak,
+            totalActiveDays,
+            lastActiveDate,
+            isStreakActiveToday: true
+        });
+    } catch (error) {
+        console.error("[STREAK PING ERROR]", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // GET /api/user/:id - Retrieve profile details by ID
 route.get("/:id", verifyToken, async (req, res) => {
     try {

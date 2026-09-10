@@ -11,11 +11,18 @@ import apiService from '../services/apiService';
 import { generateChatResponse } from '../services/geminiService';
 import { useSubscription } from '../context/SubscriptionContext';
 
-const COURTS = [
+const COURTS_INDIA = [
   'District & Sessions Court',
   'High Court of Judicature',
   'Supreme Court of India',
   'Commercial Appellate Tribunal (NCLT / NCDRC)'
+];
+
+const COURTS_NEPAL = [
+  'District Court (जिल्ला अदालत)',
+  'High Court Patan / Biratnagar (उच्च अदालत)',
+  'Supreme Court of Nepal (सर्वोच्च अदालत)',
+  'Debt Recovery Tribunal / Special Court (ऋण असुली न्यायाधिकरण)'
 ];
 
 const DIFFICULTIES = [
@@ -38,6 +45,22 @@ const LANGUAGES = ['English', 'Hindi', 'Auto-Detect'];
 export default function MockCourtroomWorkspace() {
   const navigate = useNavigate();
   const { deductToolUsage } = useSubscription();
+
+  // Detect active legal jurisdiction (Nepal vs India)
+  const isNepal = (() => {
+    try {
+      const rawUser = localStorage.getItem('user');
+      if (rawUser) {
+        const u = JSON.parse(rawUser);
+        if (u?.legalJurisdiction?.countryCode === 'NP' || u?.legalJurisdiction?.country === 'Nepal') {
+          return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  })();
+
+  const COURTS = isNepal ? COURTS_NEPAL : COURTS_INDIA;
 
   // Navigation Steps: 'SETUP' | 'CONFIRM' | 'COURTROOM' | 'REPORT'
   const [step, setStep] = useState('SETUP');
@@ -96,7 +119,13 @@ export default function MockCourtroomWorkspace() {
   const [persuasivenessScore, setPersuasivenessScore] = useState(80);
 
   // Real-Time Strategy Assistant State
-  const [strategyTip, setStrategyTip] = useState({
+  const [strategyTip, setStrategyTip] = useState(isNepal ? {
+    strongArg: 'Reference dishonoured cheque Exhibit P-1 and Banking Offence and Punishment Act 2064 Section 3.',
+    section: 'Banking Offence and Punishment Act 2064 — Section 3 & 15 / Negotiable Instruments Act 2034',
+    objection: 'Object if defense counsel attempts oral rebuttal without submitting written statement (प्रतिउत्तरपत्र).',
+    missingEv: 'Electronic Evidence Certificate under Electronic Transactions Act 2063 (ETA 2063) & Evidence Act 2031.',
+    suggestedReply: 'My Lord, under Section 25 of the Evidence Act 2031, execution of the transaction is admitted; statutory liability of debt is proven.'
+  } : {
     strongArg: 'Reference dishonoured cheque Exhibit P-1 and Section 139 statutory presumption.',
     section: 'Negotiable Instruments Act, 1881 — Section 138 & 139',
     objection: 'Object if defense counsel attempts oral rebuttal without written reply.',
@@ -164,7 +193,10 @@ export default function MockCourtroomWorkspace() {
         setAdvocateCases(casesList);
         setSelectedCase(casesList[0]);
       } else {
-        const defaultList = [
+        const defaultList = isNepal ? [
+          { _id: 'case_501', name: 'Nepal SBI Bank Ltd. vs Apex Industries Pvt. Ltd.', caseType: 'Banking Offence Act 2064 (Cheque Dishonour)', courtName: 'Kathmandu District Court', clientName: 'Apex Industries' },
+          { _id: 'case_502', name: 'Himalayan Trading Corp vs Everest Infrastructure', caseType: 'Commercial Contract & Specific Performance', courtName: 'High Court Patan', clientName: 'Himalayan Trading' }
+        ] : [
           { _id: 'case_501', name: 'State vs Raj Malhotra & Ors.', caseType: 'Sec 138 NI Act Cheque Bounce', courtName: 'Patiala House Courts, New Delhi', clientName: 'Raj Malhotra' },
           { _id: 'case_502', name: 'M/S TechCorp vs Global Logistics Ltd.', caseType: 'Commercial Arbitration Breach', courtName: 'Delhi High Court', clientName: 'M/S TechCorp' }
         ];
@@ -470,6 +502,15 @@ export default function MockCourtroomWorkspace() {
         parts: [{ text: `${m.senderName}: ${m.text}` }]
       }));
 
+      const jurisdictionRules = isNepal
+        ? `CRITICAL JURISDICTION RULES FOR NEPAL:
+- Ground all courtroom proceedings strictly in the legal framework of NEPAL.
+- Applicable Codes: Constitution of Nepal 2072, Muluki Criminal Code 2074 (मुलुकी अपराध संहिता), Muluki Criminal Procedure Code 2074 (मुलुकी फौजदारी कार्यविधि संहिता), Muluki Civil Code 2074 (मुलुकी देवानी संहिता), Muluki Civil Procedure Code 2074 (मुलुकी देवानी कार्यविधि संहिता), Evidence Act 2031 (प्रमाण ऐन, २०३१), Banking Offence and Punishment Act 2064, Negotiable Instruments Act 2034, Electronic Transactions Act 2063 (ETA 2063).
+- Courtroom & Bench Culture: Presiding Judge addresses counsel formally, referencing Nepal District Courts, High Court Patan, or Supreme Court of Nepal (सर्वोच्च अदालत). Precedents cite Nepal Kanoon Patrika (NKP / NLR).
+- ZERO STATUTORY LEAKAGE: NEVER cite Indian statutes (IPC, CrPC, CPC, BNS, BNSS, BSA, Indian Evidence Act 1872, Indian Contract Act 1872, Section 138 NI Act of India) or Indian Courts.`
+        : `CRITICAL JURISDICTION RULES FOR INDIA:
+- Ground all courtroom proceedings in Indian law: BNS 2023, BNSS 2023, BSA 2023, IPC 1860, CrPC 1973, CPC 1908, Indian Evidence Act 1872, Section 138 NI Act, High Courts, Supreme Court of India.`;
+
       const systemInstruction = `You are the AI Courtroom Simulation Engine operating in ${selectedCourt}.
 Case Title: ${caseTitleStr}
 Case Details:
@@ -479,9 +520,11 @@ Bench Difficulty: ${selectedDifficulty} (Standard/Moderate/Strict)
 Active Stage: ${stageName}
 Language: ${selectedLanguage}
 
+${jurisdictionRules}
+
 CRITICAL RULES:
 1. NEVER repeat previous responses. Dynamically respond to the advocate's exact text.
-2. Analyze if the advocate cited evidence (Exhibit P-1, receipts, bank statements), statutory sections (Sec 138, Sec 139, Sec 65B), or answered a judge question.
+2. Analyze if the advocate cited evidence (Exhibit P-1, receipts, bank statements), statutory sections (${isNepal ? 'Banking Offence Act Sec 3, Evidence Act Sec 25, ETA 2063' : 'Sec 138, Sec 139, Sec 65B'}), or answered a judge question.
 3. If advocate answered correctly, acknowledge and advance the proceeding.
 4. If advocate made a strong legal argument, probe deeper or raise an opponent objection.
 5. If advocate contradicted the record, point out the discrepancy.
@@ -526,7 +569,7 @@ Respond strictly in valid JSON format:
             if (!existingTexts.includes(parsed.text)) {
               return {
                 actor: parsed.actor || 'judge',
-                actorName: parsed.actorName || 'Judge Shrivastava',
+                actorName: parsed.actorName || (isNepal ? 'Judge Sharma' : 'Judge Shrivastava'),
                 text: parsed.text,
                 secondActor: parsed.secondActor || null,
                 secondActorName: parsed.secondActorName || null,
@@ -535,7 +578,7 @@ Respond strictly in valid JSON format:
                 logic: parsed.logic || 85,
                 evidence: parsed.evidence || 82,
                 persuasion: parsed.persuasion || 85,
-                suggestedReply: parsed.suggestedReply || 'My Lord, petitioner submits Exhibit P-2 in further support of the claim.',
+                suggestedReply: parsed.suggestedReply || (isNepal ? 'My Lord, petitioner submits Exhibit P-2 in further support of the claim under Section 25 of the Evidence Act 2031.' : 'My Lord, petitioner submits Exhibit P-2 in further support of the claim.'),
                 advanceStage: parsed.advanceStage || false
               };
             }
@@ -546,10 +589,10 @@ Respond strictly in valid JSON format:
           if (cleanReply && !existingTexts.includes(cleanReply)) {
             return {
               actor: 'judge',
-              actorName: 'Judge Shrivastava',
+              actorName: isNepal ? 'Judge Sharma' : 'Judge Shrivastava',
               text: cleanReply,
               accuracy: 86, logic: 84, evidence: 80, persuasion: 85,
-              suggestedReply: 'My Lord, petitioner submits Exhibit P-1 in primary support of the claim.'
+              suggestedReply: isNepal ? 'My Lord, petitioner submits Exhibit P-1 in primary support under Banking Offence Act 2064.' : 'My Lord, petitioner submits Exhibit P-1 in primary support of the claim.'
             };
           }
         }
@@ -565,19 +608,24 @@ Respond strictly in valid JSON format:
 
     if (mentionsSection || mentionsExhibit) {
       const isStrict = selectedDifficulty === 'Strict';
+      const strictJudgeQuery = isStrict
+        ? (isNepal
+            ? 'However, Counsel, how do you satisfy the Court that electronic records of this nature are admissible without statutory certification under the Electronic Transactions Act 2063 (ETA 2063) and Evidence Act 2031?'
+            : 'However, Counsel, how do you satisfy the Court that secondary evidence of this nature is admissible under the Bharatiya Sakshya Adhiniyam?')
+        : 'Counsel, proceed to show how this connects to the underlying liability of the respondent.';
+      const strictSuggestedReply = isNepal
+        ? 'My Lord, electronic certificate under Section 56-58 ETA 2063 and Evidence Act 2031 has been duly submitted with the original primary record.'
+        : 'My Lord, compliance under Section 65B BSA has been duly filed along with the original primary record.';
+
       return {
         actor: 'judge',
-        actorName: 'Judge Shrivastava',
-        text: `Noted. The Court takes note of your submission regarding statutory compliance and documentary evidence. ${
-          isStrict
-            ? 'However, Counsel, how do you satisfy the Court that secondary evidence of this nature is admissible under the Bharatiya Sakshya Adhiniyam?'
-            : 'Counsel, proceed to show how this connects to the underlying liability of the respondent.'
-        }`,
+        actorName: isNepal ? 'Judge Sharma' : 'Judge Shrivastava',
+        text: `Noted. The Court takes note of your submission regarding statutory compliance and documentary evidence. ${strictJudgeQuery}`,
         secondActor: isStrict ? 'opponent' : null,
         secondActorName: isStrict ? 'Opposing Senior Counsel' : null,
         secondText: isStrict ? 'My Lord, we reserve our right to object to the mode of proof during exhibit marking.' : null,
         accuracy: 91, logic: 88, evidence: 86, persuasion: 89,
-        suggestedReply: 'My Lord, compliance under Section 65B BSA has been duly filed along with the original primary record.',
+        suggestedReply: strictSuggestedReply,
         advanceStage: true
       };
     }
@@ -588,7 +636,7 @@ Respond strictly in valid JSON format:
         actorName: 'Witness (Deponent)',
         text: 'My Lord, I state on oath that the signature on the document was affixed in my presence at the corporate branch.',
         secondActor: 'judge',
-        secondActorName: 'Judge Shrivastava',
+        secondActorName: isNepal ? 'Judge Sharma' : 'Judge Shrivastava',
         secondText: 'Counsel, cross-examination on this specific factual assertion may continue.',
         accuracy: 86, logic: 84, evidence: 82, persuasion: 85,
         suggestedReply: 'Witness, inspect Exhibit P-1. Did you obtain board authorization prior to signing?'
@@ -612,10 +660,12 @@ Respond strictly in valid JSON format:
 
     return {
       actor: 'judge',
-      actorName: 'Judge Shrivastava',
+      actorName: isNepal ? 'Judge Sharma' : 'Judge Shrivastava',
       text: uniqueSelectedText,
       accuracy: 82, logic: 80, evidence: 78, persuasion: 80,
-      suggestedReply: `My Lord, under binding High Court precedents, statutory presumption stands unrebutted on record.`,
+      suggestedReply: isNepal
+        ? `My Lord, under binding Supreme Court of Nepal precedents (NKP), statutory liability stands established on record.`
+        : `My Lord, under binding High Court precedents, statutory presumption stands unrebutted on record.`,
       advanceStage: false
     };
   };

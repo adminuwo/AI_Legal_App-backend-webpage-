@@ -249,7 +249,22 @@ export default function DraftMakerWorkspace() {
         promptMessage += `\nSPECIAL ADVOCATE INSTRUCTIONS:\n${generalInstructions}\n`;
       }
 
-      promptMessage += `\nFORMAT MANDATE:\nProduce a complete, formal, court-ready ${selectedTemplate.title} adhering strictly to legal drafting standards in India (BNS/CPC/CrPC/Evidence Act). Include Cause Title, Forum, Parties, Numbered Facts Paragraphs, Prayer Clause, Verification, and Deponent Signatures.\nOutput Language: ${outputLanguage}`;
+      const userStr = localStorage.getItem('user');
+      let activeJurisdiction = 'India';
+      let activeState = '';
+      let isNepal = false;
+      try {
+        const u = JSON.parse(userStr || '{}');
+        activeJurisdiction = u.legalJurisdiction?.country || u.jurisdiction || u.country || 'India';
+        activeState = u.legalJurisdiction?.state || u.state || '';
+        isNepal = activeJurisdiction.toLowerCase() === 'nepal' || u.legalJurisdiction?.countryCode === 'NP';
+      } catch(e) {}
+
+      const draftingStandards = isNepal
+        ? `legal drafting standards in Nepal (Constitution of Nepal 2072, Muluki Civil Code 2074, Muluki Criminal Code 2074, Muluki Civil/Criminal Procedure Codes 2074, Evidence Act 2031). ZERO references to Indian acts.`
+        : `legal drafting standards in India (BNS/BNSS/BSA/CPC/CrPC/Evidence Act).`;
+
+      promptMessage += `\nFORMAT MANDATE:\nProduce a complete, formal, court-ready ${selectedTemplate.title} adhering strictly to ${draftingStandards} Include Cause Title, Forum, Parties, Numbered Facts Paragraphs, Prayer Clause, Verification, and Deponent Signatures.\nOutput Language: ${outputLanguage}`;
 
       setGenerationStatus('Synthesizing statutory provisions & precedents...');
 
@@ -262,33 +277,49 @@ export default function DraftMakerWorkspace() {
         language: outputLanguage,
         outputLanguage: outputLanguage,
         preferred_response_language: outputLanguage,
-        caseContext: (inputSource === 'existing_case' && selectedCase) ? selectedCase : null
+        caseContext: (inputSource === 'existing_case' && selectedCase) ? selectedCase : null,
+        jurisdiction: {
+          country: activeJurisdiction,
+          state: activeState,
+          countryCode: isNepal ? 'NP' : 'IN'
+        }
       };
 
       const res = await axios.post(`${API}/legal-toolkit/execute`, payload, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user') || '{}').token || ''}`
+          'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user') || '{}').token || ''}`,
+          'X-Legal-Jurisdiction': activeJurisdiction,
+          'X-Legal-State': activeState,
+          'X-Country-Code': isNepal ? 'NP' : 'IN'
         }
       });
 
       setGenerationStatus('Finalizing document layout & legal verification...');
 
-      const aiResponse = res.data?.data?.response || res.data?.response || res.data?.message || res.data?.content || '';
+      const aiResponse = res.data?.reply || res.data?.data?.response || res.data?.response || res.data?.message || res.data?.content || '';
 
       if (aiResponse) {
         setGeneratedDraftText(aiResponse);
         toast.success('Legal draft generated successfully!');
       } else {
         // Fallback default legal structure if API returned empty
-        const fallbackText = buildDefaultLegalDraftText();
+        const fallbackText = buildDefaultLegalDraftText(isNepal, activeState);
         setGeneratedDraftText(fallbackText);
         toast.success('Legal draft generated with court template!');
       }
     } catch (err) {
       console.error('Draft generation error:', err);
       // Construct robust fallback draft text to ensure user gets a complete usable document
-      const fallbackText = buildDefaultLegalDraftText();
+      const userStr = localStorage.getItem('user');
+      let isNepalUser = false;
+      let stateUser = '';
+      try {
+        const u = JSON.parse(userStr || '{}');
+        isNepalUser = (u.legalJurisdiction?.country || u.country || '').toLowerCase() === 'nepal' || u.legalJurisdiction?.countryCode === 'NP';
+        stateUser = u.legalJurisdiction?.state || u.state || '';
+      } catch(e) {}
+      const fallbackText = buildDefaultLegalDraftText(isNepalUser, stateUser);
       setGeneratedDraftText(fallbackText);
       toast.success('Legal draft generated successfully!');
     } finally {
@@ -297,11 +328,12 @@ export default function DraftMakerWorkspace() {
     }
   };
 
-  const buildDefaultLegalDraftText = () => {
+  const buildDefaultLegalDraftText = (isNepal = false, state = '') => {
     const caseName = selectedCase?.name || manualFields.petitionerName || manualFields.sender || manualFields.lessorName || 'PETITIONER';
     const opponentName = selectedCase?.opponentName || manualFields.respondentName || manualFields.recipient || manualFields.lesseeName || 'RESPONDENT';
-    const court = selectedCase?.courtName || manualFields.courtName || 'IN THE HIGH COURT OF JUDICATURE';
-    const caseNo = selectedCase?.caseNumber || manualFields.caseNumber || 'SUIT NO. _____ OF 2026';
+    const court = selectedCase?.courtName || manualFields.courtName || (isNepal ? 'IN THE HON\'BLE DISTRICT COURT / HIGH COURT' : 'IN THE HIGH COURT OF JUDICATURE');
+    const caseNo = selectedCase?.caseNumber || manualFields.caseNumber || (isNepal ? 'CASE NO. _____ OF 2081/82' : 'SUIT NO. _____ OF 2026');
+    const place = isNepal ? (state || 'Kathmandu') : (state || 'New Delhi');
 
     return `IN THE ${court.toUpperCase()}
 ${caseNo ? caseNo.toUpperCase() : ''}
@@ -323,7 +355,7 @@ MOST RESPECTFULLY SHOWETH:
 
 2. That the Respondent entered into a legal transaction / contract with the Petitioner. ${manualFields.facts || manualFields.statementsOfFact || selectedCase?.summary || 'The parties agreed upon explicit terms and conditions.'}
 
-3. That despite repeated oral requests and written communications, the Respondent failed and neglected to fulfill contractual obligations.
+3. That despite repeated oral requests and written communications, the Respondent failed and neglected to fulfill legal obligations.
 
 4. That the cause of action accrued in favor of the Petitioner and against the Respondent within the territorial jurisdiction of this Hon'ble Court.
 
@@ -338,7 +370,7 @@ c) Pass any such further order(s) as this Hon'ble Court deems fit in the interes
 
 VERIFICATION
 
-Verified at New Delhi on this day of 2026 that the contents of paragraphs 1 to 4 above are true and correct to my knowledge and legal advice. Nothing material has been concealed therefrom.
+Verified at ${place} on this day of 2026 that the contents of paragraphs 1 to 4 above are true and correct to my knowledge and legal advice. Nothing material has been concealed therefrom.
 
 
 _______________________

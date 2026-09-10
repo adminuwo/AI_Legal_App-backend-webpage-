@@ -30,6 +30,12 @@ const TEXT_SOURCES = [
 export default function EvidenceAnalystWorkspace() {
   const navigate = useNavigate();
   const { refreshSubscription, deductToolUsage } = useSubscription();
+
+  // Active Jurisdiction Detection
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const activeJur = user.activeJurisdiction || user.legalJurisdiction || {};
+  const isNepal = activeJur.country === 'Nepal' || activeJur.countryCode === 'NP' || (typeof activeJur.country === 'string' && activeJur.country.toLowerCase().includes('nepal'));
+
   // Navigation & Flow Steps: 'SELECT_SOURCE' | 'COLLECT' | 'SCAN' | 'DASHBOARD'
   const [step, setStep] = useState('SELECT_SOURCE');
   const [selectedSource, setSelectedSource] = useState('gallery');
@@ -58,7 +64,7 @@ export default function EvidenceAnalystWorkspace() {
   const [authenticityScore, setAuthenticityScore] = useState(95);
   const [forgeryRisk, setForgeryRisk] = useState('0% FORGERY RISK');
   const [courtReadinessScore, setCourtReadinessScore] = useState(90);
-  const [bsaStatus, setBsaStatus] = useState('Affidavit Required (BSA Sec 65B)');
+  const [bsaStatus, setBsaStatus] = useState(isNepal ? 'Certificate Required (ETA 2063 / Evidence Act 2031)' : 'Affidavit Required (BSA Sec 65B)');
   const [ocrText, setOcrText] = useState('');
   const [simpleExplanation, setSimpleExplanation] = useState('Evidence digital structure is intact with no detected editing anomalies.');
 
@@ -90,7 +96,7 @@ export default function EvidenceAnalystWorkspace() {
     setEvidenceType(item.type || 'Document');
     setHashValue(item.hash || generateSha256(item.name + Date.now()));
     setAuthenticityScore(item.authenticity || 95);
-    setBsaStatus(item.bsa || 'Affidavit Required (BSA Sec 65B)');
+    setBsaStatus(item.bsa || (isNepal ? 'Certificate Required (ETA 2063 / Evidence Act 2031)' : 'Affidavit Required (BSA Sec 65B)'));
     setOcrText(item.ocr || 'Saved exhibit details recorded in forensic vault.');
     setSimpleExplanation(item.explanation || 'Evidence digital structure verified with zero detected anomalies.');
     setStep('DASHBOARD');
@@ -109,7 +115,13 @@ export default function EvidenceAnalystWorkspace() {
 
   // AI Copilot State
   const [copilotMessages, setCopilotMessages] = useState([
-    { id: 1, role: 'assistant', text: 'I am your Digital Evidence Forensic AI Copilot. Ask me any question regarding admissibility, Sec 65B compliance, or pixel integrity of this exhibit.' }
+    { 
+      id: 1, 
+      role: 'assistant', 
+      text: isNepal
+        ? 'I am your Digital Evidence Forensic AI Copilot (Nepal Jurisdiction). Ask me any question regarding admissibility under Evidence Act 2031, Electronic Transactions Act 2063 compliance, or pixel integrity of this exhibit.'
+        : 'I am your Digital Evidence Forensic AI Copilot. Ask me any question regarding admissibility, Sec 65B compliance, or pixel integrity of this exhibit.' 
+    }
   ]);
   const [copilotInput, setCopilotInput] = useState('');
   const [isCopilotThinking, setIsCopilotThinking] = useState(false);
@@ -245,14 +257,20 @@ export default function EvidenceAnalystWorkspace() {
       setEvidenceType('Manual Statement');
       setSimpleExplanation('Written statement text structure verified. Statement chronology intact.');
     } else if (evidenceType === 'Photograph') {
-      setOcrText('OCR Text Extracted: "AGREEMENT OF LEASE • Executed at New Delhi on 14th August 2024. Lessee signature admitted."');
+      setOcrText(isNepal
+        ? 'OCR Text Extracted: "AGREEMENT OF LEASE • Executed at Kathmandu, Nepal on 2081 Baisakh 14. Lessee signature admitted."'
+        : 'OCR Text Extracted: "AGREEMENT OF LEASE • Executed at New Delhi on 14th August 2024. Lessee signature admitted."');
       setResolutionValue('3840x2160 (4K UHD)');
       setSimpleExplanation('Photograph pixel structure intact. Single light source shadow vectors match.');
     } else if (evidenceType === 'Document') {
-      setOcrText('DOCUMENT PARSED: "IN THE HIGH COURT OF DELHI • PETITION UNDER SECTION 138 NI ACT • Annexure P-1 Commercial Contract."');
+      setOcrText(isNepal
+        ? 'DOCUMENT PARSED: "IN THE DISTRICT COURT OF KATHMANDU • PETITION UNDER BANKING OFFENCE ACT 2064 • Annexure P-1 Commercial Contract."'
+        : 'DOCUMENT PARSED: "IN THE HIGH COURT OF DELHI • PETITION UNDER SECTION 138 NI ACT • Annexure P-1 Commercial Contract."');
       setSimpleExplanation('Adobe digital signature structure valid. Zero hidden layers detected.');
     } else if (evidenceType === 'WhatsApp Chat') {
-      setOcrText('CHAT TRANSCRIPT: "[14/08/2024, 10:15 AM] Petitioner: Payment received for invoice #402. [14/08/2024, 10:18 AM] Respondent: Cheque issued."');
+      setOcrText(isNepal
+        ? 'CHAT TRANSCRIPT: "[2081/01/14, 10:15 AM] Petitioner: Payment received for invoice #402. [2081/01/14, 10:18 AM] Respondent: Cheque issued."'
+        : 'CHAT TRANSCRIPT: "[14/08/2024, 10:15 AM] Petitioner: Payment received for invoice #402. [14/08/2024, 10:18 AM] Respondent: Cheque issued."');
       setSimpleExplanation('Chat transcript timestamps follow continuous linear sequence.');
     } else if (evidenceType === 'Voice Recording') {
       setOcrText('SPEECH-TO-TEXT: "I hereby confirm receipt of the original property deed on 12th July."');
@@ -296,11 +314,13 @@ export default function EvidenceAnalystWorkspace() {
     setIsCopilotThinking(true);
 
     setTimeout(() => {
-      let responseText = `Forensic Audit Findings for "${evidenceName || 'Analyzed Exhibit'}":\n- Authenticity: ${authenticityScore}% Verified.\n- BSA Sec 65B Admissibility: ${bsaStatus}.\n- Forgery Risk: ${forgeryRisk}.\n- Key Finding: ${simpleExplanation}`;
+      let responseText = `Forensic Audit Findings for "${evidenceName || 'Analyzed Exhibit'}":\n- Authenticity: ${authenticityScore}% Verified.\n- ${isNepal ? 'ETA 2063 / Evidence Act Admissibility' : 'BSA Sec 65B Admissibility'}: ${bsaStatus}.\n- Forgery Risk: ${forgeryRisk}.\n- Key Finding: ${simpleExplanation}`;
       
       const lower = userText.toLowerCase();
-      if (lower.includes('65b') || lower.includes('affidavit') || lower.includes('bsa')) {
-        responseText = `Section 65B BSA Audit Analysis:\nBecause this exhibit is an electronic record, an Affidavit under Section 65B of Bharatiya Sakshya Adhiniyam (BSA) / Indian Evidence Act is MANDATORY. Ensure device hash (${hashValue.substring(0, 16)}...) is stated in paragraph 4 of your court filing.`;
+      if (lower.includes('65b') || lower.includes('affidavit') || lower.includes('bsa') || lower.includes('eta') || lower.includes('praman') || lower.includes('evidence')) {
+        responseText = isNepal
+          ? `Electronic Transactions Act 2063 & Evidence Act 2031 Audit Analysis:\nBecause this exhibit is an electronic record, a verification certificate under Section 56-58 of the Electronic Transactions Act 2063 and Evidence Act 2031 is required for conclusive judicial admissibility. Ensure device hash (${hashValue.substring(0, 16)}...) is stated in your court submission.`
+          : `Section 65B BSA Audit Analysis:\nBecause this exhibit is an electronic record, an Affidavit under Section 65B of Bharatiya Sakshya Adhiniyam (BSA) / Indian Evidence Act is MANDATORY. Ensure device hash (${hashValue.substring(0, 16)}...) is stated in paragraph 4 of your court filing.`;
       } else if (lower.includes('forgery') || lower.includes('fake') || lower.includes('pixel')) {
         responseText = `Forgery Assessment:\nPixel-level Error Level Analysis (ELA) returned 0% tampering probability. High-frequency noise vectors show uniform distribution across the entire matrix.`;
       } else if (lower.includes('prove') || lower.includes('summary')) {
@@ -338,7 +358,7 @@ export default function EvidenceAnalystWorkspace() {
         <body>
           <div class="banner">
             <h1>AI Legal — Evidence Forensic Audit Dossier</h1>
-            <p>Digital Evidence Forensics • BSA Section 65B Admissibility Certificate</p>
+            <p>${isNepal ? 'Digital Evidence Forensics • ETA 2063 & Evidence Act 2031 Admissibility Certificate' : 'Digital Evidence Forensics • BSA Section 65B Admissibility Certificate'}</p>
           </div>
           <table class="table">
             <tr>
@@ -355,7 +375,7 @@ export default function EvidenceAnalystWorkspace() {
             </tr>
             <tr>
               <td><strong>Court Readiness</strong>${courtReadinessScore}% Court Ready</td>
-              <td><strong>BSA Sec 65B Status</strong>${bsaStatus}</td>
+              <td><strong>${isNepal ? 'Admissibility Status' : 'BSA Sec 65B Status'}</strong>${bsaStatus}</td>
             </tr>
             <tr>
               <td colspan="2"><strong>Associated Case Matter</strong>${selectedCase ? selectedCase.name : 'N/A'}</td>
@@ -368,7 +388,7 @@ Stage 2: Metadata & EXIF — Verified (${exifDate})
 Stage 3: SHA-256 Fingerprint — ${hashValue}
 Stage 4: OCR & Entity Extraction — ${ocrText ? 'Complete' : 'N/A'}
 Stage 5: Pixel & Deepfake Forgery Risk — Negative (0% Tampering)
-Stage 6: BSA Section 65B Audit — ${bsaStatus}</div>
+Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Audit'} — ${bsaStatus}</div>
 
           <div class="sec">2. OCR Extracted Text & Exhibit Matrix</div>
           <div class="box">${ocrText || 'No readable text matrix found.'}</div>
@@ -854,13 +874,17 @@ Stage 6: BSA Section 65B Audit — ${bsaStatus}</div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">Ready for trial exhibit submission.</p>
               </div>
 
-              {/* BSA Sec 65B Status */}
+              {/* BSA / ETA Admissibility Status */}
               <div className="p-5 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-1 shadow-sm">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block">BSA Sec 65B Status</span>
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block">
+                  {isNepal ? 'Admissibility (ETA 2063)' : 'BSA Sec 65B Status'}
+                </span>
                 <div className="flex items-baseline justify-between">
                   <span className="text-xs font-black text-amber-500 truncate">{bsaStatus}</span>
                 </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">Affidavit mandated under BSA rules.</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {isNepal ? 'Certificate under ETA 2063 rules.' : 'Affidavit mandated under BSA rules.'}
+                </p>
               </div>
             </div>
 
@@ -995,7 +1019,9 @@ Stage 6: BSA Section 65B Audit — ${bsaStatus}</div>
                       <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1">
                         <Gavel className="w-3 h-3 text-[#C8A34D]" /> Legal Provisions
                       </span>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">BSA Sec 65B • Sec 138 NI Act</p>
+                      <p className="text-xs font-bold text-slate-900 dark:text-white">
+                        {isNepal ? 'Evidence Act 2031 • ETA 2063 • Banking Offence Act 2064' : 'BSA Sec 65B • Sec 138 NI Act'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1004,19 +1030,21 @@ Stage 6: BSA Section 65B Audit — ${bsaStatus}</div>
               {/* Right Column: BSA Panel & AI Copilot */}
               <div className="space-y-6">
 
-                {/* BSA Section 65B Audit Panel */}
+                {/* BSA / ETA Section 65B Audit Panel */}
                 <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border-2 border-[#C8A34D] space-y-4 shadow-md">
                   <div className="flex items-center gap-2">
                     <Gavel className="w-5 h-5 text-[#C8A34D]" />
                     <h3 className="text-xs font-black uppercase tracking-wider text-[#C8A34D]">
-                      BSA Sec 65B Admissibility Panel
+                      {isNepal ? 'ETA 2063 & Evidence Act Panel' : 'BSA Sec 65B Admissibility Panel'}
                     </h3>
                   </div>
 
                   <div className="p-4 rounded-2xl bg-[#C8A34D]/10 border border-[#C8A34D]/30 space-y-2 text-xs">
                     <span className="font-extrabold text-slate-900 dark:text-white block">Statutory Audit Requirement:</span>
                     <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                      Electronic record requires Section 65B Affidavit under Bharatiya Sakshya Adhiniyam (BSA). Cryptographic SHA-256 hash must be recited.
+                      {isNepal
+                        ? 'Electronic record requires formal verification certificate under Section 56-58 of Electronic Transactions Act 2063 and Evidence Act 2031. Cryptographic SHA-256 hash must be recited.'
+                        : 'Electronic record requires Section 65B Affidavit under Bharatiya Sakshya Adhiniyam (BSA). Cryptographic SHA-256 hash must be recited.'}
                     </p>
                   </div>
 
@@ -1024,7 +1052,7 @@ Stage 6: BSA Section 65B Audit — ${bsaStatus}</div>
                     onClick={handleExportForensicPDF}
                     className="w-full py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm"
                   >
-                    Generate Sec 65B BSA Affidavit Draft
+                    {isNepal ? 'Generate ETA 2063 Certificate Draft' : 'Generate Sec 65B BSA Affidavit Draft'}
                   </button>
                 </div>
 

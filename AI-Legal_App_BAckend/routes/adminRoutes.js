@@ -29,6 +29,7 @@ import {
     applyJurisdictionOverride,
     resetJurisdictionOverride,
     testJurisdictionAI,
+    handleJurisdictionSandboxTest,
     reportCrashLog,
     getCrashLogs,
     updateCrashStatus,
@@ -60,10 +61,11 @@ router.get('/billing/export-csv', verifyToken, isAdmin, exportBillingCsv);
 router.post('/billing/:id/refund', verifyToken, isAdmin, refundPayment);
 router.post('/billing/:id/mark-paid', verifyToken, isAdmin, markPaidPayment);
 
-// Jurisdiction Override Management
+// Jurisdiction Override & Sandbox Testing Management
 router.post('/jurisdiction-override', verifyToken, isAdmin, applyJurisdictionOverride);
 router.post('/jurisdiction-override/reset', verifyToken, isAdmin, resetJurisdictionOverride);
 router.post('/jurisdiction-override/test', verifyToken, isAdmin, testJurisdictionAI);
+router.post('/jurisdiction-sandbox-test', verifyToken, isAdmin, handleJurisdictionSandboxTest);
 
 import {
     adminGetAllCoupons,

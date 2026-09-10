@@ -17,9 +17,16 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { getIO } from '../utils/socket.js';
 import * as FeatureAccessManager from '../services/featureAccessManager.js';
+import { runJurisdictionSandboxTest } from '../services/jurisdictionSandboxService.js';
+
+// In-memory cache for admin stats to prevent database hammering
+let adminStatsCache = null;
+let adminStatsCacheTime = 0;
+const STATS_CACHE_TTL = 25 * 1000; // 25 seconds
 
 // Helper: Broadcast real-time refresh to all connected admin clients
 export const broadcastAdminRefresh = (type, data) => {
+    adminStatsCache = null; // Invalidate cache on mutations
     try {
         const io = getIO();
         io.emit('admin:refresh', { type, data });
@@ -34,6 +41,15 @@ export const getAdminStats = async (req, res) => {
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
+
+        const forceRefresh = req.query.force === 'true';
+        if (!forceRefresh && adminStatsCache && (Date.now() - adminStatsCacheTime < STATS_CACHE_TTL)) {
+            return res.status(200).json({
+                success: true,
+                stats: adminStatsCache,
+                cached: true
+            });
+        }
 
         const todayStart = new Date();
         todayStart.setHours(0,0,0,0);
@@ -125,8 +141,8 @@ export const getAdminStats = async (req, res) => {
         const totalCreditsUsed = creditUsageData[0]?.totalUsed || 0;
         const storageUsed = Math.round(totalCases * 1.5 + contractsAnalyzed * 0.8) || 0; // in MB
 
-        // Real 7-day daily activity graph aggregated from MongoDB
-        const dailyActivity = [];
+        // Real 7-day daily activity graph aggregated from MongoDB in parallel
+        const dayPromises = [];
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
@@ -137,42 +153,50 @@ export const getAdminStats = async (req, res) => {
 
             const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
 
-            const cLogs = await CreditLog.countDocuments({ createdAt: { $gte: d, $lt: nextD } });
-            const cSessions = await ChatSession.countDocuments({ createdAt: { $gte: d, $lt: nextD } });
-            const uLogins = await User.countDocuments({ lastLogin: { $gte: d, $lt: nextD } });
-
-            dailyActivity.push({
-                label: dayName,
-                val: cLogs + cSessions + uLogins
-            });
+            dayPromises.push(
+                Promise.all([
+                    CreditLog.countDocuments({ createdAt: { $gte: d, $lt: nextD } }),
+                    ChatSession.countDocuments({ createdAt: { $gte: d, $lt: nextD } }),
+                    User.countDocuments({ lastLogin: { $gte: d, $lt: nextD } })
+                ]).then(([cLogs, cSessions, uLogins]) => ({
+                    label: dayName,
+                    val: cLogs + cSessions + uLogins
+                }))
+            );
         }
+        const dailyActivity = await Promise.all(dayPromises);
+
+        const statsPayload = {
+            totalUsers,
+            activeUsers,
+            onlineUsers,
+            premiumUsers,
+            freeUsers,
+            revenueToday,
+            revenueMonth,
+            revenueLifetime,
+            totalCreditsUsed,
+            totalCases,
+            contractsAnalyzed,
+            courtPrepSessions,
+            strategyReports,
+            casePredictorReports,
+            draftsGenerated,
+            evidenceAnalyses,
+            chatUsage,
+            apiUsage,
+            storageUsed,
+            pendingFeatures,
+            openBugs,
+            dailyActivity
+        };
+
+        adminStatsCache = statsPayload;
+        adminStatsCacheTime = Date.now();
 
         res.status(200).json({
             success: true,
-            stats: {
-                totalUsers,
-                activeUsers,
-                onlineUsers,
-                premiumUsers,
-                freeUsers,
-                revenueToday,
-                revenueMonth,
-                revenueLifetime,
-                totalCreditsUsed,
-                totalCases,
-                contractsAnalyzed,
-                courtPrepSessions,
-                strategyReports,
-                casePredictorReports,
-                draftsGenerated,
-                evidenceAnalyses,
-                chatUsage,
-                apiUsage,
-                storageUsed,
-                pendingFeatures,
-                openBugs,
-                dailyActivity
-            }
+            stats: statsPayload
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -269,26 +293,44 @@ export const getAllUsers = async (req, res) => {
         }
 
         const skip = (Number(page) - 1) * Number(limit);
-        const fetchLimit = Number(limit) > 0 ? Number(limit) : 10000;
+        const fetchLimit = Math.min(Number(limit) > 0 ? Number(limit) : 500, 1000);
         const users = await User.find(query)
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(fetchLimit)
             .lean();
 
-        const list = await Promise.all(users.map(async (u) => {
-            let planName = 'Free';
-            let casesCount = 0;
-            try {
-                const sub = await Subscription.findOne({ $or: [{ accountId: u._id }, { userId: u._id }] }).populate('planId').lean();
-                planName = getPlanDisplayName(u, sub);
-            } catch (e) {
-                planName = getPlanDisplayName(u, null);
-            }
+        const userIds = users.map(u => u._id);
 
-            try {
-                casesCount = await Project.countDocuments({ userId: u._id });
-            } catch (e) {}
+        // Fetch subscriptions & case counts in 2 batch queries instead of 2 * N queries
+        const [subs, projectCounts] = await Promise.all([
+            Subscription.find({
+                $or: [
+                    { accountId: { $in: userIds } },
+                    { userId: { $in: userIds } }
+                ]
+            }).lean().catch(() => []),
+            Project.aggregate([
+                { $match: { userId: { $in: userIds } } },
+                { $group: { _id: '$userId', count: { $sum: 1 } } }
+            ]).catch(() => [])
+        ]);
+
+        const subMap = new Map();
+        for (const sub of subs) {
+            if (sub.accountId) subMap.set(String(sub.accountId), sub);
+            if (sub.userId) subMap.set(String(sub.userId), sub);
+        }
+
+        const projectCountMap = new Map();
+        for (const p of projectCounts) {
+            if (p._id) projectCountMap.set(String(p._id), p.count);
+        }
+
+        const list = users.map((u) => {
+            const sub = subMap.get(String(u._id)) || null;
+            const planName = getPlanDisplayName(u, sub);
+            const casesCount = projectCountMap.get(String(u._id)) || 0;
 
             return {
                 _id: String(u._id),
@@ -305,7 +347,7 @@ export const getAllUsers = async (req, res) => {
                 totalCases: casesCount,
                 deviceOS: u.deviceOS || 'android'
             };
-        }));
+        });
 
         const filteredTotal = await User.countDocuments(query);
         res.status(200).json({
@@ -968,8 +1010,13 @@ export const resetJurisdictionOverride = async (req, res) => {
 // 17. Run AI Testing panel message
 export const testJurisdictionAI = async (req, res) => {
     try {
-        const { userId, prompt } = req.body;
-        if (!userId || !prompt) {
+        const { userId, prompt, query } = req.body;
+        // If called in sandbox mode without userId, forward to sandbox runner
+        if (!userId && (query || prompt)) {
+            return handleJurisdictionSandboxTest(req, res);
+        }
+
+        if (!userId || (!prompt && !query)) {
             return res.status(400).json({ success: false, message: 'Missing parameters' });
         }
 
@@ -978,15 +1025,35 @@ export const testJurisdictionAI = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        const systemInstruction = `You are a professional legal AI. Analyze the question and answer under the active jurisdiction's laws. You MUST strictly use the active jurisdiction.`;
+        const activeCountry = jurisdictionManager.getTemporaryOverride(userId) || user.jurisdiction || user.country || 'India';
+        const activeState = user.state || '';
 
-        const answer = await askOpenAI(prompt, null, {
-            systemInstruction,
-            userId: user._id.toString(),
-            userName: user.name
-        });
+        // Run through high-accuracy multi-tier sandbox runner (Vertex Gemini 2.5 Flash + Google Grounding + Tavily)
+        try {
+            const sandboxResult = await runJurisdictionSandboxTest({
+                query: prompt || query,
+                country: activeCountry,
+                state: activeState,
+                userId: user._id.toString()
+            });
 
-        res.status(200).json({ success: true, answer });
+            const finalAns = sandboxResult.response || 'No response generated';
+            return res.status(200).json({
+                success: true,
+                answer: finalAns,
+                response: finalAns,
+                ...sandboxResult
+            });
+        } catch (sandboxErr) {
+            console.warn('[AdminOverrideTest] Sandbox runner fallback to OpenAI:', sandboxErr.message);
+            const systemInstruction = `You are a professional legal AI. Analyze the question and answer under ${activeCountry}'s laws. You MUST strictly use the active jurisdiction (${activeCountry}).`;
+            const answer = await askOpenAI(prompt || query, null, {
+                systemInstruction,
+                userId: user._id.toString(),
+                userName: user.name
+            });
+            return res.status(200).json({ success: true, answer, response: answer });
+        }
     } catch (error) {
         console.error('[AdminOverrideTest] Error:', error);
         res.status(500).json({ success: false, message: error.message });
@@ -1089,4 +1156,38 @@ export const clearCrashLogs = async (req, res) => {
     }
 };
 
+// ==========================================
+// GLOBAL JURISDICTION SANDBOX CONTROLLER
+// Testing environment only - zero user data modification
+// ==========================================
+
+export const handleJurisdictionSandboxTest = async (req, res) => {
+    try {
+        const { query, country, state, jurisdiction } = req.body;
+        const targetCountry = jurisdiction?.country || country || 'India';
+        const targetState = jurisdiction?.state || state || '';
+
+        if (!query || !query.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: 'Test query is required.'
+            });
+        }
+
+        const result = await runJurisdictionSandboxTest({
+            query,
+            country: targetCountry,
+            state: targetState,
+            userId: req.user?.id || req.user?._id || 'admin'
+        });
+
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error('[handleJurisdictionSandboxTest] Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to execute jurisdiction sandbox test'
+        });
+    }
+};
 

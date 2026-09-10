@@ -14,6 +14,199 @@ import axios from 'axios';
 
 // ─── BARE ACTS DATABASE ───────────────────────────────────────────────────
 
+const NEPAL_LEGAL_BOOKS_DATABASE = [
+  {
+    id: 'consti-np',
+    title: 'Constitution of Nepal, 2072',
+    nepaliTitle: 'नेपालको संविधान २०७२',
+    coverColor: '#1E3A8A',
+    accentColor: '#C8A34D',
+    textColor: '#FFFFFF',
+    icon: '🇳🇵',
+    edition: 'Official 2072 Edition',
+    chaptersCount: 35,
+    sectionsCount: 308,
+    lastUpdated: 'Updated recently',
+    parts: [
+      {
+        title: 'Part 3: Fundamental Rights and Duties',
+        chapters: [
+          {
+            title: 'Fundamental Rights',
+            sections: [
+              {
+                id: 'np-consti-16',
+                actTitle: 'Constitution of Nepal 2072',
+                num: 'Article 16',
+                title: 'Right to live with dignity',
+                difficulty: 'Fundamental',
+                readTime: '4 min',
+                progress: '100%',
+                originalBareAct: '(1) Every person shall have the right to live with dignity. (2) No law shall be made providing for the death penalty to any person.',
+                plainEnglish: 'Guarantees absolute dignity of life to every person and abolishes capital punishment in Nepal.',
+                nepaliExplanation: 'प्रत्येक व्यक्तिलाई सम्मानपूर्वक बाँच्न पाउने हक हुनेछ र कसैलाई पनि मृत्युदण्डको सजाय दिने गरी कानून बनाइने छैन।',
+                realExample: 'State authorities cannot conduct unlawful summary executions or subject prisoners to degrading conditions.',
+                lawyerInterpretation: 'Article 16(2) provides constitutional immunity against death penalty. Enforceable via Article 133 writ petition in Supreme Court.',
+                importantNotes: 'Complete abolition of death penalty enshrined directly into Part 3.',
+                landmarkJudgments: '• Sunil Babu Pant v. Nepal Government (NKP 2065): Right to dignity encompasses equal protection of fundamental identity.',
+                ipcEquivalent: 'N/A',
+                bnsEquivalent: 'N/A',
+              },
+              {
+                id: 'np-consti-20',
+                actTitle: 'Constitution of Nepal 2072',
+                num: 'Article 20',
+                title: 'Rights relating to justice',
+                difficulty: 'Core',
+                readTime: '6 min',
+                progress: '90%',
+                originalBareAct: '(1) No person shall be detained in custody without being informed of the ground for arrest. (2) Any arrested person shall have the right to consult a legal practitioner.',
+                plainEnglish: 'Ensures criminal procedural safeguards, legal counsel representation, and production before judicial magistrate within 24 hours.',
+                nepaliExplanation: 'पक्राउ गरिएको व्यक्तिलाई पक्राउ गर्नुको कारण नखुलाई थुनामा राखिने छैन र आफ्नो कानूनी व्यवसायीसँग सल्लाह लिन पाउने हक हुनेछ।',
+                realExample: 'Detainee must be presented before the District Court judge within 24 hours of arrest excluding travel time.',
+                lawyerInterpretation: 'Fundamental procedural safeguard in all criminal proceedings across Nepal District Courts.',
+                importantNotes: 'Constitutional basis for habeas corpus writ under Article 133.',
+                landmarkJudgments: '• Santosh Bhandari v. Prime Minister (NKP 2077): Due process and constitutional rule of law supremacy.',
+                ipcEquivalent: 'N/A',
+                bnsEquivalent: 'N/A',
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'muluki-crim',
+    title: 'Muluki Criminal Code, 2074',
+    nepaliTitle: 'मुलुकी अपराध संहिता २०७४',
+    coverColor: '#800020',
+    accentColor: '#C8A34D',
+    textColor: '#FFFFFF',
+    icon: '⚖️',
+    edition: '2074 Enacted Edition',
+    chaptersCount: 28,
+    sectionsCount: 308,
+    lastUpdated: 'Updated recently',
+    parts: [
+      {
+        title: 'Part 2: Specific Offences',
+        chapters: [
+          {
+            title: 'Chapter 12: Offences Relating to Life',
+            sections: [
+              {
+                id: 'np-crim-177',
+                actTitle: 'Muluki Criminal Code 2074',
+                num: 'Section 177',
+                title: 'Prohibition on Homicide (ज्यान मार्न नहुने)',
+                difficulty: 'Critical',
+                readTime: '8 min',
+                progress: '85%',
+                originalBareAct: 'No person shall commit homicide. Whoever commits homicide shall be liable to imprisonment for life.',
+                plainEnglish: 'Strictly penalizes deliberate murder with mandatory life imprisonment (25 years).',
+                nepaliExplanation: 'कसैले पनि कसैको ज्यान मार्न वा मार्न लगाउन हुँदैन। यस्तो कसूर गर्नेलाई जन्मकैदको सजाय हुनेछ।',
+                realExample: 'Intentional infliction of fatal bodily harm resulting in victim demise.',
+                lawyerInterpretation: 'Replaced Muluki Ain 2020 Jan-marne chapter. Standard life imprisonment term is 25 years under Section 41.',
+                importantNotes: 'Mandatory trial under government-attorney prosecution in District Court.',
+                landmarkJudgments: '• Nepal Government v. DB Lama (NKP 2072): Standard of proof beyond reasonable doubt in homicide.',
+                ipcEquivalent: 'N/A',
+                bnsEquivalent: 'N/A',
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'muluki-civil',
+    title: 'Muluki Civil Code, 2074',
+    nepaliTitle: 'मुलुकी देवानी संहिता २०७४',
+    coverColor: '#14532D',
+    accentColor: '#C8A34D',
+    textColor: '#FFFFFF',
+    icon: '📜',
+    edition: '2074 Enacted Edition',
+    chaptersCount: 30,
+    sectionsCount: 721,
+    lastUpdated: 'Updated recently',
+    parts: [
+      {
+        title: 'Part 5: Contracts and Obligations',
+        chapters: [
+          {
+            title: 'Chapter 1: Formation of Contracts',
+            sections: [
+              {
+                id: 'np-civil-504',
+                actTitle: 'Muluki Civil Code 2074',
+                num: 'Section 504',
+                title: 'Definition and Formation of Contract',
+                difficulty: 'Core',
+                readTime: '5 min',
+                progress: '95%',
+                originalBareAct: 'A contract is an agreement entered into between two or more parties that creates legally binding reciprocal rights and obligations.',
+                plainEnglish: 'Governs the fundamental criteria of offer, acceptance, lawful consideration, and contractual enforceability.',
+                nepaliExplanation: 'दुई वा दुईभन्दा बढी व्यक्तिहरू बीच कुनै काम गर्न वा नगर्नका लागि भएको कानून बमोजिम कार्यान्वयन गर्न सकिने सहमतिलाई करार मानिन्छ।',
+                realExample: 'Written commercial supplier agreements signed by corporate representatives.',
+                lawyerInterpretation: 'Foundation of commercial and civil contract litigation in Nepal Courts. Governed under Section 504-540.',
+                importantNotes: 'Replaced Contract Act 2056.',
+                landmarkJudgments: '• Ramesh Maharjan v. State (NKP 2076): Delineation between civil contract default and penal banking offence.',
+                ipcEquivalent: 'N/A',
+                bnsEquivalent: 'N/A',
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'banking-np',
+    title: 'Banking Offence and Punishment Act, 2064',
+    nepaliTitle: 'बैंकिङ्ग कसूर तथा सजाय ऐन २०६४',
+    coverColor: '#4C1D95',
+    accentColor: '#C8A34D',
+    textColor: '#FFFFFF',
+    icon: '💳',
+    edition: '2064 Act (Second Amendment 2073)',
+    chaptersCount: 5,
+    sectionsCount: 29,
+    lastUpdated: 'Updated recently',
+    parts: [
+      {
+        title: 'Chapter 2: Banking Offences',
+        chapters: [
+          {
+            title: 'Dishonour of Cheque & Unauthorised Transactions',
+            sections: [
+              {
+                id: 'np-bank-3c',
+                actTitle: 'Banking Offence Act 2064',
+                num: 'Section 3(c)',
+                title: 'Prohibition on Drawing Cheques Without Sufficient Deposit',
+                difficulty: 'Essential',
+                readTime: '5 min',
+                progress: '100%',
+                originalBareAct: 'No person shall draw a cheque to bear payment from an account where they know there is no sufficient balance.',
+                plainEnglish: 'Strictly prohibits drawing cheques without adequate funds in the commercial bank account.',
+                nepaliExplanation: 'आफ्नो खातामा पर्याप्त मौज्दात छैन भन्ने जानीजानी कसैलाई चेक खिचेर दिन हुँदैन।',
+                realExample: 'Issuing a NPR 5,00,000 cheque when bank balance is zero, which is dishonoured by bank return memo.',
+                lawyerInterpretation: 'Section 15 prescribes repayment of principal claim amount plus fine and imprisonment up to 3 months to 2 years.',
+                importantNotes: 'Limitation to file FIR with Nepal Police CIB / District Police is 1 year from cause of action.',
+                landmarkJudgments: '• Ramesh Maharjan v. Nepal Government (NKP 2076): Establishing elements of banking offence cheque default.',
+                ipcEquivalent: 'N/A',
+                bnsEquivalent: 'N/A',
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+];
+
 const LEGAL_BOOKS_DATABASE = [
   {
     id: 'consti',
@@ -305,8 +498,12 @@ export default function KnowledgeHubWorkspace() {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Selected Book & Section
-  const [selectedBook, setSelectedBook] = useState(LEGAL_BOOKS_DATABASE[0]);
-  const [activeSection, setActiveSection] = useState(LEGAL_BOOKS_DATABASE[0].parts[0].chapters[0].sections[0]);
+  const storedC = localStorage.getItem('ai_legal_selected_country') || localStorage.getItem('legal_country') || 'India';
+  const isNepal = storedC.toLowerCase().includes('nepal') || localStorage.getItem('legal_country_code') === 'NP';
+  const ACTIVE_DATABASE = isNepal ? NEPAL_LEGAL_BOOKS_DATABASE : LEGAL_BOOKS_DATABASE;
+
+  const [selectedBook, setSelectedBook] = useState(ACTIVE_DATABASE[0]);
+  const [activeSection, setActiveSection] = useState(ACTIVE_DATABASE[0].parts[0].chapters[0].sections[0]);
 
   // Reader Customization Controls
   const [readingTheme, setReadingTheme] = useState('sepia'); // 'light' | 'dark' | 'sepia'
@@ -419,7 +616,7 @@ export default function KnowledgeHubWorkspace() {
     let matchedSec = null;
     let matchedBk = null;
 
-    for (const book of LEGAL_BOOKS_DATABASE) {
+    for (const book of ACTIVE_DATABASE) {
       const tempBook = { ...book };
       handleSelectBook(tempBook);
       for (const part of tempBook.parts || []) {
@@ -601,7 +798,7 @@ export default function KnowledgeHubWorkspace() {
             <Search className="w-4 h-4 text-[#C8A34D] absolute left-3 top-2.5" />
             <input 
               type="text"
-              placeholder="Search Article 21, Section 101 BNS, IPC 420..."
+              placeholder={isNepal ? "Search Article 16, Muluki Code 177, Banking Act..." : "Search Article 21, Section 101 BNS, IPC 420..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -684,13 +881,13 @@ export default function KnowledgeHubWorkspace() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500">
-                    Primary Statutory Acts ({LEGAL_BOOKS_DATABASE.length})
+                    Primary Statutory Acts ({ACTIVE_DATABASE.length})
                   </h3>
                   <span className="text-[11px] font-bold text-[#C8A34D]">Select volume to open Table of Contents</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {LEGAL_BOOKS_DATABASE.map((book) => (
+                  {ACTIVE_DATABASE.map((book) => (
                     <div 
                       key={book.id}
                       onClick={() => handleSelectBook(book)}

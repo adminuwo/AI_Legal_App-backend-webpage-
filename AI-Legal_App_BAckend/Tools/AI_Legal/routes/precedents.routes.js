@@ -4,6 +4,7 @@ import Project from '../../../models/Project.js';
 import Precedent from '../../../models/Precedent.js';
 import logger from '../../../utils/logger.js';
 import { generatePrecedentPDF } from '../services/pdf.service.js';
+import { jurisdictionManager } from '../../../services/jurisdictionManager.js';
 
 import { verifyToken } from '../../../middleware/authorization.js';
 import { verifyFeatureAccess } from '../../../middleware/subscriptionCheck.middleware.js';
@@ -17,7 +18,7 @@ const router = express.Router();
 router.post('/search', verifyToken, verifyFeatureAccess('legal_precedent'), async (req, res) => {
     const startTime = Date.now();
     try {
-        const { query, projectId, language } = req.body;
+        const { query, projectId, language, jurisdiction } = req.body;
         
         let caseContext = null;
         if (projectId) {
@@ -35,9 +36,24 @@ router.post('/search', verifyToken, verifyFeatureAccess('legal_precedent'), asyn
             }
         }
 
-        const results = await findPrecedents(query, caseContext, language);
+        const explicitJurisdiction = jurisdiction || {
+            country: req.headers['x-legal-jurisdiction'] || req.headers['x-country-code'] || req.body.country,
+            state: req.headers['x-legal-state'] || req.body.state
+        };
+        const resolvedJurisdiction = await jurisdictionManager.resolveLegalJurisdiction({
+            query: `${query || ''} ${caseContext?.title || ''} ${caseContext?.court || ''}`,
+            headers: req.headers,
+            explicitJurisdiction: (explicitJurisdiction.country || explicitJurisdiction.state) ? explicitJurisdiction : null,
+            userId: req.user.id,
+            userProfile: req.user
+        });
+
+        const results = await findPrecedents(query, caseContext, language, resolvedJurisdiction);
         if (req.commitUsage) await req.commitUsage();
-        res.json(results);
+        res.json({
+            ...results,
+            jurisdiction: resolvedJurisdiction
+        });
     } catch (error) {
         logger.error(`[PrecedentsRoute] Search failed: ${error.message}`);
         res.status(500).json({ error: 'Failed to retrieve precedents.' });
@@ -85,11 +101,23 @@ router.post('/analyze', verifyToken, verifyFeatureAccess('legal_precedent'), asy
             }
         }
 
+        const explicitJurisdiction = req.body.jurisdiction || {
+            country: req.headers['x-legal-jurisdiction'] || req.headers['x-country-code'] || req.body.country,
+            state: req.headers['x-legal-state'] || req.body.state
+        };
+        const resolvedJurisdiction = await jurisdictionManager.resolveLegalJurisdiction({
+            query: `${fullPrecedentData?.case_name || ''} ${activeCaseData?.title || ''}`,
+            headers: req.headers,
+            explicitJurisdiction: (explicitJurisdiction.country || explicitJurisdiction.state) ? explicitJurisdiction : null,
+            userId: req.user.id,
+            userProfile: req.user
+        });
+
         const { analyzePrecedent } = await import('../services/precedents.service.js');
-        const analysis = await analyzePrecedent(actionType, fullPrecedentData, activeCaseData, language);
+        const analysis = await analyzePrecedent(actionType, fullPrecedentData, activeCaseData, language, resolvedJurisdiction);
         
         if (req.commitUsage) await req.commitUsage();
-        res.json({ analysis });
+        res.json({ analysis, jurisdiction: resolvedJurisdiction });
     } catch (error) {
         logger.error(`[PrecedentsRoute] Analysis failed: ${error.message}`);
         res.status(500).json({ error: 'Failed to generate AI analysis.', details: error.message });

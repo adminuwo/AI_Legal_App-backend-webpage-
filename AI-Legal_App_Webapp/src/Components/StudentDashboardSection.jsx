@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   GraduationCap, BookOpen, Flame, Sparkles, Search, 
@@ -8,22 +8,31 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import StudentProductGuideModal from './StudentProductGuideModal';
+import { getStudyStreak, recordStudyActivity } from '../services/streakService';
 
 export default function StudentDashboardSection({ user, cases = [] }) {
   const navigate = useNavigate();
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const userName = user?.name || 'Law Student';
   
-  // Calculate dynamic metrics based on real user data
-  const createdDate = user?.createdAt ? new Date(user.createdAt) : new Date();
-  const daysActive = Math.max(1, Math.floor((Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+  const userIdStr = user?._id || user?.id || 'default';
+
+  // Real-time Snapchat-style Study Streak state (1 streak per day)
+  const [streakData, setStreakData] = useState(() => getStudyStreak(userIdStr));
+
+  useEffect(() => {
+    recordStudyActivity(userIdStr, user?.token).then((data) => {
+      setStreakData(data);
+    });
+  }, [userIdStr]);
+
+  const daysActive = streakData.streak;
 
   // Dynamic user cases / student matters count (strictly 0 for brand new user)
   const savedMattersCount = Array.isArray(cases) ? cases.length : 0;
   const mattersLimit = 3;
 
   // Tools completed dynamic tracking from local user activity storage (0 for fresh user)
-  const userIdStr = user?._id || user?.id || 'default';
   const completedToolsCount = parseInt(localStorage.getItem(`student_tools_completed_${userIdStr}`) || '0', 10);
   const toolsLimit = 5;
 
@@ -133,13 +142,17 @@ export default function StudentDashboardSection({ user, cases = [] }) {
 
           <div>
             <div className="text-xl sm:text-2xl font-black text-amber-500 dark:text-amber-400">
-              {studentDashboardData.streak} Days
+              {daysActive} {daysActive === 1 ? 'Day' : 'Days'}
             </div>
-            <span className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">Active Member</span>
+            <span className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+              {streakData.isStreakActiveToday ? 'Active Today' : 'Daily Study Goal'}
+            </span>
           </div>
 
           <div className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 text-[10px] sm:text-xs font-semibold inline-flex items-center gap-1 w-full sm:w-fit">
-            <span className="truncate">🔥 Keep learning daily.</span>
+            <span className="truncate">
+              {daysActive <= 1 ? '🔥 Great start today!' : daysActive < 7 ? '🔥 On fire! Keep going' : '🏆 Unstoppable momentum!'}
+            </span>
           </div>
         </div>
       </div>

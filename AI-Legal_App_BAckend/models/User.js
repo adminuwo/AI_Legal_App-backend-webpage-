@@ -30,6 +30,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'India'
     },
+    state: {
+        type: String,
+        default: ''
+    },
+    legalJurisdiction: {
+        country: { type: String, default: 'India' },
+        countryCode: { type: String, default: 'IN' },
+        state: { type: String, default: '' },
+        jurisdictionType: { type: String, default: 'state' },
+        savedAt: { type: Date, default: Date.now },
+        source: { type: String, default: 'user_selected' }
+    },
     email: {
         type: String,
         required: true,
@@ -208,6 +220,14 @@ const userSchema = new mongoose.Schema({
     deviceOS: { type: String, enum: ['android', 'ios', 'web', 'unknown'], default: 'unknown' },
     deactivatedAt: { type: Date },
     deletedAt: { type: Date },
+
+    // Real-Time Student / User Study Streak (Snapchat-style daily consecutive active days)
+    studyStreak: {
+        currentStreak: { type: Number, default: 0 },
+        lastActiveDate: { type: String, default: '' }, // YYYY-MM-DD
+        bestStreak: { type: Number, default: 0 },
+        totalActiveDays: { type: Number, default: 0 }
+    },
 
     notificationsInbox: [{
         id: String,

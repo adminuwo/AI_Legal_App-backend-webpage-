@@ -557,7 +557,7 @@ export const askVertex = async (prompt, context = null, options = {}) => {
             systemInstruction = globalLanguageInstruction + "\n\n" + systemInstruction + dateContext;
         }
 
-        systemInstruction = await jurisdictionManager.injectJurisdictionPrompt(systemInstruction, options.userId);
+        systemInstruction = await jurisdictionManager.injectJurisdictionPrompt(systemInstruction, options.userId, options);
 
         // Add User Name context if provided (except for legal toolkit specialized modes to avoid conversational pollution)
         if (options.userName && !options.isLegalTool) {
