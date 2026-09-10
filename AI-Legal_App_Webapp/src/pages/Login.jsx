@@ -17,8 +17,6 @@ import ThemeToggle from '../Components/ThemeToggle';
 import DeviceLimitModal from '../Components/DeviceLimitModal';
 import UWOLoginModal from '../Components/UWOLoginModal';
 
-import loginBg from './login_bg.gif';
-
 const getDeviceId = () => {
   let id = localStorage.getItem('aisa_device_id');
   if (!id) {

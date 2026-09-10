@@ -204,7 +204,7 @@ const Landing = () => {
                             <div className="flex flex-col items-start gap-4 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <img src={logo} alt="AI LEGAL™" className="w-12 h-12 relative transform group-hover:scale-110 transition-transform duration-500" />
+                                    <img src={logo} alt="AI LEGAL™" loading="eager" decoding="async" className="w-12 h-12 relative transform group-hover:scale-110 transition-transform duration-500" />
                                 </div>
                                 <span aria-label="AI LEGAL™" className="text-xl font-black tracking-tighter transition-all duration-300" style={{ background: 'linear-gradient(135deg, #9333ea 0%, #3b82f6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontFamily: '"Times New Roman", Times, serif', display: 'inline-block', paddingRight: '2px' }}>AI LEGAL<span aria-hidden="true" style={{ fontSize: '0.6em', verticalAlign: 'super', marginLeft: '2px' }}>™</span></span>
                             </div>
@@ -222,7 +222,7 @@ const Landing = () => {
                                     { img: "/social-media-icons/Whatsapp.svg", href: "https://wa.me/918358990909" },
                                 ].map((s, i) => (
                                     <a key={i} href={s.href} target="_blank" rel="noreferrer" className="w-10 h-10 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/5 hover:bg-primary/20 hover:scale-110 shadow-sm transition-all duration-300 group">
-                                        <img src={s.img} alt="social" className="w-5 h-5 transition-transform duration-300" />
+                                        <img src={s.img} alt="social" loading="lazy" decoding="async" className="w-5 h-5 transition-transform duration-300" />
                                     </a>
                                 ))}
                             </div>
