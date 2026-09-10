@@ -422,7 +422,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
             <Database className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-extrabold text-slate-900 dark:text-white">AI Legal Knowledge Hub</h3>
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-white">AI Legal<sup className="text-[10px] font-bold text-slate-900 dark:text-white ml-0.5">TM</sup> Knowledge Hub</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
               Search Indian laws, sections, judgments, legal procedures and get AI-powered legal answers.
             </p>

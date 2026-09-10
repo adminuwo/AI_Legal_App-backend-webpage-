@@ -506,7 +506,7 @@ const Chat = () => {
     }
 
     // Admin Access Rule
-    if ((user.email && user.email.toLowerCase() === 'admin@uwo24.com') || (user.role === 'admin') || isSuperAdmin(user)) {
+    if (user.role === 'admin' || user.role === 'SUPER_ADMIN' || isSuperAdmin(user)) {
       setIsAdminUser(true);
       setIsPremiumUser(true);
       setUserPlanName(isSuperAdmin(user) ? 'AI LEGAL™ Super Admin' : 'AI LEGAL™ Admin');
@@ -524,7 +524,7 @@ const Chat = () => {
   }, []);
 
   const user = getUserData();
-  const isAdmin = user?.token && (user?.role === 'admin' || user?.email === 'admin@uwo24.com' || isSuperAdmin(user));
+  const isAdmin = user?.token && (user?.role === 'admin' || user?.role === 'SUPER_ADMIN' || isSuperAdmin(user));
 
   const checkPremiumTool = (toolName) => {
     if (!user?.token) {
@@ -533,7 +533,7 @@ const Chat = () => {
     }
 
     // Admin Access Rule: Treat all tools as unlocked
-    if (user.email === 'admin@uwo24.com' || isAdminUser || isSuperAdmin(user)) return true;
+    if (isAdminUser || isSuperAdmin(user) || user?.role === 'admin' || user?.role === 'SUPER_ADMIN') return true;
 
     if (isPremiumUser === null) return true; // still loading, allow optimistically
 

@@ -124,7 +124,7 @@ const GUIDE_TOPICS = [
 const SettingsPage = () => {
   const navigate = useNavigate();
   const [currentUserData] = useRecoilState(userData);
-  const user = currentUserData.user || getUserData() || { name: 'Advocate', email: 'aditi@uwo24.com' };
+  const user = currentUserData.user || getUserData() || { name: 'Advocate', email: 'user@aisa.in' };
   const { personalizations, updatePersonalization, resetPersonalizations } = usePersonalization();
   const { theme, setTheme } = useTheme();
   

@@ -125,7 +125,7 @@ export default function VerificationForm() {
             alt="AI LEGAL™" 
             className="w-24 h-24 sm:w-28 sm:h-28 object-contain -mb-2.5 drop-shadow-sm" 
           />
-          <span className="text-lg font-black text-[#111827] dark:text-zinc-100 tracking-wider uppercase mb-1">AI LEGAL™</span>
+          <span className="text-lg font-black text-[#111827] dark:text-zinc-100 tracking-wider uppercase mb-1">AI LEGAL<sup className="text-[10px] font-bold text-[#111827] dark:text-zinc-100 ml-0.5">TM</sup></span>
           <h1 className="text-2xl font-bold text-[#111827] dark:text-zinc-100 tracking-tight mb-1">Verify Your Email</h1>
           <p className="text-sm text-[#6B7280] dark:text-zinc-400">We've sent a 6-digit code to</p>
           

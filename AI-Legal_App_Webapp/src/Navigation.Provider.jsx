@@ -15,7 +15,7 @@ import SharedChat from './pages/SharedChat';
 
 
 
-import { AppRoute, apis } from './types';
+import { AppRoute, apis, API } from './types';
 import { Menu, Bell, Sun, Moon, LogIn, User, Gavel, Scale } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
@@ -167,7 +167,7 @@ const DashboardLayout = () => {
   const location = useLocation();
   const isFullScreen = false;
 
-  const currentUserData = useRecoilValue(userData);
+  const [currentUserData, setUserRecoil] = useRecoilState(userData);
   // Re-evaluate user and token based on Recoil state changes or fallback to localStorage
   const user = currentUserData?.user || getUserData() || { name: 'Guest' };
   const token = currentUserData?.user?.token || getUserData()?.token;
@@ -215,6 +215,26 @@ const DashboardLayout = () => {
       window.removeEventListener('open_sidebar', handleOpen);
       window.removeEventListener('toggle_sidebar', handleToggle);
     };
+  }, []);
+
+  // Sync live user profile from MongoDB to ensure roles and permissions always stay up-to-date
+  useEffect(() => {
+    const activeToken = localStorage.getItem('token') || user?.token;
+    if (!activeToken || activeToken === 'undefined' || activeToken === 'null') return;
+    axios.get(`${API}/user`, {
+      headers: { Authorization: `Bearer ${activeToken}` }
+    })
+    .then(res => {
+      const freshUser = res?.data;
+      if (freshUser && freshUser.role) {
+        const current = getUserData() || {};
+        if (current.role !== freshUser.role) {
+          const updated = setUserData({ ...current, ...freshUser, role: freshUser.role });
+          setUserRecoil({ user: updated });
+        }
+      }
+    })
+    .catch(() => {});
   }, []);
 
   // Sync CSS variable for child pages top-padding
@@ -284,7 +304,7 @@ const DashboardLayout = () => {
 
               <div className="lg:hidden flex items-center gap-2">
                 <img src="/logo/logo_transparent.png" alt="AI LEGAL" className="w-5 h-5 object-contain" />
-                <span className="font-black text-xs tracking-tight text-[#111111] dark:text-white">AI LEGAL<span className="text-[#C8A34D]">.</span></span>
+                <span className="font-black text-xs tracking-tight text-[#111111] dark:text-white">AI LEGAL<sup className="text-[9px] font-bold text-[#111111] dark:text-white ml-0.5">TM</sup><span className="text-[#C8A34D]">.</span></span>
               </div>
             </div>
           </div>

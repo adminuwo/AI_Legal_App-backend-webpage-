@@ -9,7 +9,7 @@ import {
   CreditCard, Shield, Zap, GraduationCap, Building2, MessageSquare, BookOpen, Smartphone, X
 } from 'lucide-react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { userData, selectedRoleState, clearUser } from '../../userStore/userData';
+import { userData, selectedRoleState, clearUser, updateUser } from '../../userStore/userData';
 import { AppRoute } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -43,6 +43,29 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
   const [currentUserData, setUserRecoil] = useRecoilState(userData);
   const selectedRole = useRecoilValue(selectedRoleState) || 'advocate';
   const user = currentUserData.user || { name: "Advocate", email: "..." };
+
+  const tokenRole = (() => {
+    try {
+      const t = user?.token || localStorage.getItem('token');
+      if (t && typeof t === 'string' && t.includes('.')) {
+        return JSON.parse(atob(t.split('.')[1]))?.role;
+      }
+    } catch (e) {}
+    return null;
+  })();
+
+  const resolvedRole = user?.role || tokenRole;
+  const isSuperAdminUser = isSuperAdmin(user) || resolvedRole === 'SUPER_ADMIN' || badge === 'SUPER ADMIN';
+  const isAdminUser = isSuperAdminUser || resolvedRole === 'admin' || badge === 'ADMIN';
+
+  // Self-heal user.role in localStorage & Recoil if badge or token confirms admin
+  useEffect(() => {
+    if (isAdminUser && user && user.role !== 'admin' && user.role !== 'SUPER_ADMIN') {
+      const targetRole = isSuperAdminUser ? 'SUPER_ADMIN' : 'admin';
+      const updated = updateUser({ role: targetRole });
+      setUserRecoil({ user: updated });
+    }
+  }, [isAdminUser, isSuperAdminUser, user, setUserRecoil]);
 
   // Collapse State
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -239,7 +262,16 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
       >
         <div className="flex items-center gap-3">
           <item.icon className={`w-4 h-4 ${isLinkActive ? 'text-[#C8A34D]' : 'text-slate-400'}`} />
-          <span className="text-sm">{item.name}</span>
+          <span className="text-sm">
+            {typeof item.name === 'string' && /AI Legal/i.test(item.name) ? (
+              <>
+                AI Legal<sup className="text-[9px] font-bold text-[#111827] dark:text-white ml-0.5">TM</sup>
+                {item.name.split(/AI Legal/i)[1]}
+              </>
+            ) : (
+              item.name
+            )}
+          </span>
         </div>
         {isDisabled && <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500">🔒 Lock</span>}
       </button>
@@ -252,8 +284,6 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
       : selectedRole === 'law_firm' 
       ? 'Law Firm Profile' 
       : 'My Advocate Profile';
-
-    const isAdminUser = isSuperAdmin(user);
 
     const menuItems = [
       { name: profileLabel, icon: User, action: 'profile' },
@@ -283,7 +313,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
               <p className="text-sm font-extrabold text-slate-800 dark:text-white truncate leading-tight capitalize">{user.name || 'Advocate Profile'}</p>
               <p className="text-[11px] font-semibold text-slate-400 truncate mt-0.5">{user.email || 'Advocate Account'}</p>
               <span className="inline-block mt-1 px-2 py-0.5 rounded bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20 text-[9px] font-bold uppercase tracking-wider">
-                {isAdminUser ? 'SUPER ADMIN' : selectedRole === 'student' ? 'Law Student' : selectedRole === 'law_firm' ? 'Law Firm Associate' : 'Advocate / Practitioner'}
+                {isSuperAdminUser ? 'SUPER ADMIN' : isAdminUser ? 'ADMIN' : selectedRole === 'student' ? 'Law Student' : selectedRole === 'law_firm' ? 'Law Firm Associate' : 'Advocate / Practitioner'}
               </span>
             </div>
           </div>
@@ -362,7 +392,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
             <>
               <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/dashboard')}>
                 <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-8 h-8 object-contain drop-shadow-xs" />
-                <span className="text-xl font-black tracking-tight text-[#111827] dark:text-white">AI LEGAL<span className="text-[#C8A34D]">.</span></span>
+                <span className="text-xl font-black tracking-tight text-[#111827] dark:text-white">AI LEGAL<sup className="text-[10px] font-bold text-[#111827] dark:text-white ml-0.5 align-super">TM</sup><span className="text-[#C8A34D]">.</span></span>
               </div>
               <button
                 onClick={toggleCollapse}
@@ -438,7 +468,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
                   <div className="flex items-center gap-1.5 min-w-0">
                     <p className="text-sm font-bold text-[#111827] dark:text-white truncate leading-tight capitalize">{user.name}</p>
                     <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 shrink-0">
-                      {isSuperAdmin(user) ? 'SUPER ADMIN' : badge === 'SUPER ADMIN' ? 'Free' : badge}
+                      {isSuperAdminUser ? 'SUPER ADMIN' : isAdminUser ? 'ADMIN' : badge === 'SUPER ADMIN' ? 'Free' : badge}
                     </span>
                   </div>
                   <p className="text-xs text-[#6B7280] dark:text-slate-400 truncate mt-0.5">{user.email}</p>
@@ -534,7 +564,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
               <div className="space-y-2">
                 <h3 className="text-base font-extrabold text-slate-800 tracking-tight">Confirm Logout</h3>
                 <p className="text-xs font-semibold text-slate-500 leading-relaxed px-2">
-                  Are you sure you want to log out of your AI LEGAL account? This will end your active session.
+                  Are you sure you want to log out of your AI LEGAL<sup className="text-[9px] font-bold text-[#111827] dark:text-white ml-0.5">TM</sup> account? This will end your active session.
                 </p>
               </div>
               <div className="flex gap-3 pt-2">

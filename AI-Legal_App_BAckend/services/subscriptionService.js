@@ -153,7 +153,7 @@ export const subscriptionService = {
             }
         }
 
-        const isAdmin = user.role === 'admin' || (user.email && user.email.toLowerCase() === 'admin@uwo24.com');
+        const isAdmin = user.role === 'admin' || user.role === 'SUPER_ADMIN';
         if (isAdmin) return true;
 
         const totalCost = toolsRequested.reduce((acc, tool) => acc + getToolCost(tool, metadata), 0);
@@ -167,7 +167,7 @@ export const subscriptionService = {
         const user = await User.findById(userId);
         if (!user) throw new Error("User not found");
 
-        const isAdmin = user.role === 'admin' || (user.email && user.email.toLowerCase() === 'admin@uwo24.com');
+        const isAdmin = user.role === 'admin' || user.role === 'SUPER_ADMIN';
         if (isAdmin) return true;
 
         const totalCost = toolsUsed.reduce((acc, tool) => acc + getToolCost(tool, metadata), 0);

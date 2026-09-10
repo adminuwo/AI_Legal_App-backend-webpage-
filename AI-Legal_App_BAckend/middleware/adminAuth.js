@@ -29,9 +29,8 @@ export const verifyAdmin = async (req, res, next) => {
             return res.status(401).json({ error: "User not found" });
         }
 
-        // Check if user is admin (email or role check)
-        const PRIMARY_ADMIN_EMAIL = 'admin@uwo24.com';
-        if (user.role === 'admin' || user.email === PRIMARY_ADMIN_EMAIL) {
+        // Check if user has admin/SUPER_ADMIN role in database
+        if (user.role === 'admin' || user.role === 'SUPER_ADMIN') {
             req.user = decoded;
             req.adminUser = user;
             next();

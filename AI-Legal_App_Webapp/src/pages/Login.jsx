@@ -112,6 +112,14 @@ const Login = () => {
     const userEmail = params.get('userEmail');
     const provider = params.get('provider');
     const picture = params.get('picture');
+    const roleParam = params.get('role');
+    let userRole = roleParam;
+    try {
+      if ((!userRole || userRole === 'user') && token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload?.role) userRole = payload.role;
+      }
+    } catch (e) {}
 
     // sso_token is now handled globally in Navigation.Provider.jsx via SSOInterceptor
 
@@ -123,7 +131,7 @@ const Login = () => {
         name: userName,
         email: userEmail,
         token: token,
-        role: "user",
+        role: userRole || "user",
         plan: "Basic",
         provider: provider || "local",
         avatar: picture || ""
@@ -259,7 +267,7 @@ const Login = () => {
             alt="AI LEGAL™" 
             className="w-24 h-24 sm:w-28 sm:h-28 object-contain -mb-2.5 drop-shadow-sm" 
           />
-          <span className="text-lg font-black text-[#111827] dark:text-zinc-100 tracking-wider uppercase mb-1">AI LEGAL™</span>
+          <span className="text-lg font-black text-[#111827] dark:text-zinc-100 tracking-wider uppercase mb-1">AI LEGAL<sup className="text-[10px] font-bold text-[#111827] dark:text-zinc-100 ml-0.5">TM</sup></span>
           <h1 className="text-2xl font-bold text-[#111827] dark:text-zinc-100 tracking-tight mb-1">Welcome Back</h1>
           <p className="text-sm text-[#6B7280] dark:text-zinc-400">Enter credentials to access your secure workspace.</p>
         </div>

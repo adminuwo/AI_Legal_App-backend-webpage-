@@ -160,8 +160,8 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
 
     if (req.user) {
       // Early Admin Bypass
-      if (req.user.email && req.user.email.toLowerCase() === 'admin@uwo24.com') {
-        console.log(`[Admin-Bypass] Granting immediate access to admin@uwo24.com`);
+      if (req.user.role === 'admin' || req.user.role === 'SUPER_ADMIN') {
+        console.log(`[Admin-Bypass] Granting immediate access to admin user (${req.user.id || req.user._id})`);
       } else {
         const userId = req.user.id || req.user._id;
         const targetTool = req.body.activeTool || req.body.toolName || req.body.tool || 'ai_chat';
@@ -535,7 +535,7 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
       detectedMode,
       isRealTime: isWebSearchResponse,
       sources: searchSources,
-      language: language || 'English',
+      language: effectiveLanguage || language || 'English',
       suggestions: chatResponse.suggestions || []
     };
 

@@ -176,24 +176,13 @@ router.post("/login", async (req, res) => {
       req.body?.isMobileApp === true
     );
 
-    if (emailLower === 'admin@uwo24.com' && isMobileClient) {
-      return res.status(403).json({
-        success: false,
-        code: "WEB_ADMIN_ONLY",
-        error: "This admin account is restricted to the Web Admin Portal only and cannot be accessed on the mobile app. Please log in on the Web application."
-      });
-    }
-
-    // Reset failed attempts & record lastLogin & enforce strict Super Admin / Admin role check
+    // Reset failed attempts & record lastLogin
     user.failedAttempts = 0;
     user.lockoutUntil = null;
     user.lastLogin = Date.now();
 
-    if (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
-      user.role = 'SUPER_ADMIN';
-    } else if (emailLower === 'admin@uwo24.com') {
-      user.role = 'admin';
-    } else if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
+    // Role is strictly managed in the database (defaults to 'user' if unset)
+    if (!user.role) {
       user.role = 'user';
     }
     await user.save();
@@ -461,9 +450,9 @@ const handleSocialUser = async (profile, req, res, isRedirect = true) => {
       }
     }
 
-    const socialEmailLower = (user.email || '').toLowerCase().trim();
-    if (socialEmailLower === 'aditi@uwo24.com' || socialEmailLower === 'aditilakhera0@gmail.com') {
-      user.role = 'SUPER_ADMIN';
+    // Role is strictly managed in the database (defaults to 'user' if unset)
+    if (!user.role) {
+      user.role = 'user';
       await user.save();
     }
 
@@ -475,7 +464,7 @@ const handleSocialUser = async (profile, req, res, isRedirect = true) => {
 
     if (isRedirect) {
       const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-      const redirectUrl = `${frontendUrl}/login?social_auth=true&token=${token}&userId=${user._id}&userName=${encodeURIComponent(user.name)}&userEmail=${user.email}&provider=${provider.toLowerCase()}&picture=${encodeURIComponent(user.avatar || "")}`;
+      const redirectUrl = `${frontendUrl}/login?social_auth=true&token=${token}&userId=${user._id}&userName=${encodeURIComponent(user.name)}&userEmail=${user.email}&role=${user.role || 'user'}&provider=${provider.toLowerCase()}&picture=${encodeURIComponent(user.avatar || "")}`;
       return res.redirect(redirectUrl);
     } else {
       return res.status(200).json({

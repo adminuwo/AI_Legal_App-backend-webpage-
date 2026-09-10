@@ -60,7 +60,7 @@ export default function StudentDashboardSection({ user, cases = [] }) {
                 onClick={() => setIsGuideOpen(true)}
                 className="text-xs text-[#C8A34D] hover:underline font-semibold flex items-center gap-1 bg-[#C8A34D]/5 px-2 py-0.5 rounded-md cursor-pointer"
               >
-                <Info className="w-3.5 h-3.5 text-[#C8A34D]" /> AI Legal Product Guide
+                <Info className="w-3.5 h-3.5 text-[#C8A34D]" /> AI Legal<sup className="text-[9px] font-bold text-[#111827] dark:text-white ml-0.5">TM</sup> Product Guide
               </button>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-[#111827] dark:text-white tracking-tight">

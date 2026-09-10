@@ -11,7 +11,7 @@ const CreditUpsellPopup = () => {
     useEffect(() => {
         const handleOutOfCredits = () => {
             const user = getUserData();
-            if (user && user.email && user.email.toLowerCase() === 'admin@uwo24.com') return;
+            if (user && (user.role === 'admin' || user.role === 'SUPER_ADMIN')) return;
             setIsOpen(true);
         };
         window.addEventListener('out_of_credits', handleOutOfCredits);

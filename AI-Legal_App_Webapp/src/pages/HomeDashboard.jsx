@@ -723,7 +723,7 @@ export default function HomeDashboard() {
                     <BookOpen className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-extrabold text-[#111111] dark:text-white">AI Legal Knowledge Hub</h3>
+                    <h3 className="text-base font-extrabold text-[#111111] dark:text-white">AI Legal<sup className="text-[10px] font-bold text-[#111111] dark:text-white ml-0.5">TM</sup> Knowledge Hub</h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Search Indian laws, sections, judgments & legal procedures.</p>
                   </div>
                 </div>
@@ -779,7 +779,7 @@ export default function HomeDashboard() {
                   </button>
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="w-4 h-4 text-[#C8A34D]" />
-                    <h3 className="text-sm font-extrabold text-[#0F172A] dark:text-white">New to AI LEGAL?</h3>
+                    <h3 className="text-sm font-extrabold text-[#0F172A] dark:text-white">New to AI LEGAL<sup className="text-[9px] font-bold text-[#0F172A] dark:text-white ml-0.5">TM</sup>?</h3>
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-300 font-semibold mb-3">Meet your AI Product Guide.</p>
                   <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mb-4 font-medium">
@@ -957,7 +957,7 @@ export default function HomeDashboard() {
                   <div className="flex justify-between items-center pb-4 border-b border-slate-100 shrink-0">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-5 h-5 text-purple-600" />
-                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">AI LEGAL Product Guide</h3>
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">AI LEGAL<sup className="text-[9px] font-bold text-slate-900 ml-0.5">TM</sup> Product Guide</h3>
                     </div>
                     <button onClick={() => setIsProductGuideOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors p-1">
                       <X size={18} />
@@ -965,7 +965,7 @@ export default function HomeDashboard() {
                   </div>
 
                   <div className="py-6 space-y-4 text-slate-700 text-xs font-medium overflow-y-auto custom-scrollbar flex-1">
-                    <p className="font-semibold text-slate-900 text-sm">Welcome to your AI LEGAL Litigation Practice Workspace!</p>
+                    <p className="font-semibold text-slate-900 text-sm">Welcome to your AI LEGAL<sup className="text-[9px] font-bold text-slate-900 ml-0.5">TM</sup> Litigation Practice Workspace!</p>
                     
                     <div className="p-4 rounded-xl bg-purple-50/60 border border-purple-100 space-y-2">
                       <h4 className="font-extrabold text-purple-950 text-xs">1. 📁 Litigation Case Folders</h4>
@@ -973,7 +973,7 @@ export default function HomeDashboard() {
                     </div>
 
                     <div className="p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 space-y-2">
-                      <h4 className="font-extrabold text-indigo-950 text-xs">2. 🤖 AI Legal Assistant & Tools</h4>
+                      <h4 className="font-extrabold text-indigo-950 text-xs">2. 🤖 AI Legal<sup className="text-[9px] font-bold text-indigo-950 ml-0.5">TM</sup> Assistant & Tools</h4>
                       <p className="text-indigo-900/80">Automate petition drafting, case law precedent searches, document OCR scanning, and trial argument building.</p>
                     </div>
 

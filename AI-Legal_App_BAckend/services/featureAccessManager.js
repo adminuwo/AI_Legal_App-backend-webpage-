@@ -334,9 +334,8 @@ export const normalizeWorkspace = (ws) => {
 export const resolveActiveUserPlan = async (user, targetWorkspace) => {
     if (!user) return 'FREE';
 
-    // SUPER_ADMIN / ADMIN: Permanent unlimited access — bypass all subscription logic strictly for aditi@uwo24.com, aditilakhera0@gmail.com and admin@uwo24.com
-    const emailLower = (user.email || '').toLowerCase().trim();
-    if ((user.role === 'SUPER_ADMIN' || user.role === 'admin') && (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com' || emailLower === 'admin@uwo24.com')) {
+    // SUPER_ADMIN / ADMIN: Permanent unlimited access — bypass all subscription logic based on database role
+    if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
         return user.role === 'SUPER_ADMIN' ? 'SUPER_ADMIN' : 'ENTERPRISE';
     }
 
@@ -1122,24 +1121,10 @@ export const getUsageStatus = async (userId, targetWorkspace) => {
         return { plan: 'FREE', badge: 'FREE', cases: { used: 0, limit: 3, remaining: 3 }, features: {} };
     }
 
-    // Auto-heal/verify role strictly for aditi@uwo24.com, aditilakhera0@gmail.com and admin@uwo24.com
-    const emailLower = (user.email || '').toLowerCase().trim();
-    if (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
-        if (user.role !== 'SUPER_ADMIN') {
-            user.role = 'SUPER_ADMIN';
-            await user.save();
-            console.log(`[Self-Healing] Upgraded ${user.email} to SUPER_ADMIN in getUsageStatus`);
-        }
-    } else if (emailLower === 'admin@uwo24.com') {
-        if (user.role !== 'admin' && user.role !== 'SUPER_ADMIN') {
-            user.role = 'admin';
-            await user.save();
-            console.log(`[Self-Healing] Ensured ${user.email} has admin role in getUsageStatus`);
-        }
-    } else if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
+    // Database role is the single source of truth (defaults to 'user' if unset)
+    if (!user.role) {
         user.role = 'user';
         await user.save();
-        console.log(`[Self-Healing] Reset non-admin account ${user.email} to user role`);
     }
 
     const storageStats = await getUserStorageUsage(userId);

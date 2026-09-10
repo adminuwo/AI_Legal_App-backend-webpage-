@@ -13,6 +13,22 @@ const getAvatarUrl = (user) => {
 
 const processUser = (user) => {
   if (user) {
+    // If role is missing or 'user', attempt to recover it from JWT token
+    if (!user.role || user.role === 'user') {
+      try {
+        const token = user.token || (typeof localStorage !== 'undefined' && localStorage.getItem('token'));
+        if (token && typeof token === 'string' && token.includes('.')) {
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            const payload = JSON.parse(atob(parts[1]));
+            if (payload?.role && payload.role !== 'user') {
+              user.role = payload.role;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
     // Fallback if no avatar exists or it's the default placeholder
     if (!user.avatar || user.avatar === '/User.jpeg' || user.avatar === '') {
       return { ...user, avatar: getAvatarUrl(user) };
@@ -113,14 +129,18 @@ const getUser = () => {
     if (!item || item === "undefined" || item === "null") return null;
     const user = JSON.parse(item);
     if (user) {
-      return processUser(user)
+      const processed = processUser(user);
+      if (processed?.role && processed.role !== user.role) {
+        localStorage.setItem('user', JSON.stringify(processed));
+      }
+      return processed;
     }
   } catch (e) {
     console.error("Error parsing user from localStorage", e);
     localStorage.removeItem('user'); // Clear corrupted data
   }
-  return null
-}
+  return null;
+};
 export const toggleState = atom({
   key: "toggle",
   default: { subscripPgTgl: false, notify: false, sidebarOpen: false, platformSubTgl: false, focusMode: false }

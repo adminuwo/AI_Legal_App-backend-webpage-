@@ -77,8 +77,8 @@ export const creditMiddleware = async (req, res, next) => {
 
     // Admins and Super Admins bypass all credit checks
     const userRec = await User.findById(req.user.id || req.user._id);
-    const isAdmin = (req.user && (req.user.role === 'SUPER_ADMIN' || req.user.role === 'admin' || (req.user.email && req.user.email.toLowerCase() === 'admin@uwo24.com'))) ||
-        (userRec && (userRec.role === 'SUPER_ADMIN' || userRec.role === 'admin' || (userRec.email && userRec.email.toLowerCase() === 'admin@uwo24.com')));
+    const isAdmin = (req.user && (req.user.role === 'SUPER_ADMIN' || req.user.role === 'admin')) ||
+        (userRec && (userRec.role === 'SUPER_ADMIN' || userRec.role === 'admin'));
 
     // SUPER_ADMIN: Skip all credit processing immediately
     if (isAdmin && (req.user?.role === 'SUPER_ADMIN' || userRec?.role === 'SUPER_ADMIN')) {

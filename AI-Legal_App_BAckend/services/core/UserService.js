@@ -46,30 +46,14 @@ export class UserService extends BaseService {
       user = await userModel.findOne({ email: reqUser.email });
     }
 
-    // Self-healing Super Admin & Admin role strictly for aditi@uwo24.com and admin@uwo24.com
-    if (user && user.email) {
-      const emailLower = user.email.toLowerCase().trim();
-      if (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
-        if (user.role !== 'SUPER_ADMIN') {
-          user.role = 'SUPER_ADMIN';
-          await user.save();
-          LoggerService.info(`[UserService] Upgraded ${user.email} to SUPER_ADMIN on profile fetch`);
-        }
-      } else if (emailLower === 'admin@uwo24.com') {
-        if (user.role !== 'admin') {
-          user.role = 'admin';
-          await user.save();
-          LoggerService.info(`[UserService] Ensured ${user.email} has admin role on profile fetch`);
-        }
-      } else if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
-        user.role = 'user';
-        await user.save();
-        LoggerService.info(`[UserService] Reset non-admin account ${user.email} to user role`);
-      }
+    // Ensure role defaults to 'user' if undefined, preserving MongoDB role as single source of truth
+    if (user && !user.role) {
+      user.role = 'user';
+      await user.save();
     }
 
     if (!user) {
-      const isKnownAdmin = reqUser.email === 'admin@uwo24.com';
+      const isKnownAdmin = reqUser.role === 'admin' || reqUser.role === 'SUPER_ADMIN';
       LoggerService.warn(`[UserService] User ${userId} not found in DB. Returning fallback user.`);
       return {
         statusCode: 200,
@@ -77,7 +61,7 @@ export class UserService extends BaseService {
           _id: userId,
           name: reqUser.name || (isKnownAdmin ? 'ADMIN' : 'AISA User'),
           email: reqUser.email || 'user@aisa.in',
-          role: isKnownAdmin ? 'admin' : 'user',
+          role: isKnownAdmin ? reqUser.role : 'user',
           credits: 0,
           personalizations: {}
         }

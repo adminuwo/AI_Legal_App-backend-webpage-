@@ -26,14 +26,7 @@ export default function ProductGuideWorkspace() {
   // Authorization Check
   const isAdmin = useMemo(() => {
     if (!user) return false;
-    const email = (user.email || '').toLowerCase().trim();
-    return (
-      user.role === 'admin' ||
-      user.role === 'SUPER_ADMIN' ||
-      email === 'aditi@uwo24.com' ||
-      email === 'admin@uwo24.com' ||
-      isSuperAdmin(user)
-    );
+    return user.role === 'admin' || user.role === 'SUPER_ADMIN' || isSuperAdmin(user);
   }, [user]);
 
   const isKnowledgeRoute = useMemo(() => {

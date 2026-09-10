@@ -60,7 +60,7 @@ export default function StudentProductGuideModal({ isOpen, onClose }) {
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 inline-flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-[#C8A34D]" /> AI LEGAL™ PRODUCT GUIDE
+                <Sparkles className="w-3 h-3 text-[#C8A34D]" /> AI LEGAL<sup className="text-[8px] font-bold text-[#111827] dark:text-white ml-0.5">TM</sup> PRODUCT GUIDE
               </span>
               <h2 className="text-xl sm:text-2xl font-black text-[#111827] dark:text-white tracking-tight">
                 Welcome to Law Student Suite 📚⚖️

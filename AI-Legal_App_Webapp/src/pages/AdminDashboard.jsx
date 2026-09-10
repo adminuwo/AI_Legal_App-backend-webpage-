@@ -39,15 +39,17 @@ export default function AdminDashboard() {
   // Authorization Check
   const isAdmin = useMemo(() => {
     if (!user) return false;
-    const email = (user.email || '').toLowerCase().trim();
-    return (
-      user.role === 'admin' ||
-      user.role === 'SUPER_ADMIN' ||
-      email === 'aditi@uwo24.com' ||
-      email === 'aditilakhera0@gmail.com' ||
-      email === 'admin@uwo24.com' ||
-      isSuperAdmin(user)
-    );
+    let role = user.role;
+    if (!role || role === 'user') {
+      try {
+        const token = user?.token || localStorage.getItem('token');
+        if (token && typeof token === 'string' && token.includes('.')) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          if (payload?.role) role = payload.role;
+        }
+      } catch (e) {}
+    }
+    return role === 'admin' || role === 'SUPER_ADMIN' || isSuperAdmin(user);
   }, [user]);
 
   // Tab State

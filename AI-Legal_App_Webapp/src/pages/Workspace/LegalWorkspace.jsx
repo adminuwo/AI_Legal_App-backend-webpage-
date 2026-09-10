@@ -930,7 +930,7 @@ const LegalWorkspace = () => {
     }
 
     // Admin Access Rule
-    if ((user.email && user.email.toLowerCase() === 'admin@uwo24.com') || (user.role === 'admin') || isSuperAdmin(user)) {
+    if (user.role === 'admin' || user.role === 'SUPER_ADMIN' || isSuperAdmin(user)) {
       setIsAdminUser(true);
       setIsPremiumUser(true);
       setUserPlanName(isSuperAdmin(user) ? 'AI LEGAL™ Super Admin' : 'AI LEGAL™ Admin');
@@ -948,7 +948,7 @@ const LegalWorkspace = () => {
   }, []);
 
   const user = getUserData();
-  const isAdmin = user?.token && (user?.role === 'admin' || user?.email === 'admin@uwo24.com' || isSuperAdmin(user));
+  const isAdmin = user?.token && (user?.role === 'admin' || user?.role === 'SUPER_ADMIN' || isSuperAdmin(user));
 
   const checkPremiumTool = (toolName) => {
     if (!user?.token) {
@@ -957,7 +957,7 @@ const LegalWorkspace = () => {
     }
 
     // Admin Access Rule: Treat all tools as unlocked
-    if (user.email === 'admin@uwo24.com' || isAdminUser || isSuperAdmin(user)) return true;
+    if (isAdminUser || isSuperAdmin(user) || user?.role === 'admin' || user?.role === 'SUPER_ADMIN') return true;
 
     if (isPremiumUser === null) return true; // still loading, allow optimistically
 
@@ -8391,7 +8391,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                       </div>
                       <div>
                         <h3 className="text-[17px] font-black text-slate-800 dark:text-white uppercase tracking-tight leading-none">
-                          AI LEGAL Tools
+                          AI LEGAL<sup className="text-[10px] font-bold text-slate-800 dark:text-white ml-0.5">TM</sup> Tools
                         </h3>
                         <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-widest">Advanced Suite</p>
                       </div>

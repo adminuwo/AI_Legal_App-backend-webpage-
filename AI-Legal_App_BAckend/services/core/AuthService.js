@@ -247,12 +247,8 @@ export class AuthService extends BaseService {
     user.lockoutUntil = undefined;
     user.lastLoginAt = new Date();
 
-    const emailLower = (user.email || '').toLowerCase().trim();
-    if (emailLower === 'aditi@uwo24.com' || emailLower === 'aditilakhera0@gmail.com') {
-      user.role = 'SUPER_ADMIN';
-    } else if (emailLower === 'admin@uwo24.com') {
-      user.role = 'admin';
-    } else if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
+    // Role is strictly managed in the database (defaults to 'user' if unset)
+    if (!user.role) {
       user.role = 'user';
     }
     await user.save();

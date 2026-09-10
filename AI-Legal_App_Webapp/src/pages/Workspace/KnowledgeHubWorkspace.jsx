@@ -585,7 +585,7 @@ export default function KnowledgeHubWorkspace() {
             </div>
             <div>
               <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-zinc-100 tracking-tight">
-                AI Legal Knowledge Hub
+                AI Legal<sup className="text-[10px] font-bold text-slate-900 dark:text-zinc-100 ml-0.5">TM</sup> Knowledge Hub
               </h1>
               <p className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400 hidden sm:block">
                 Explore Indian laws, sections, judgments and legal concepts with AI intelligence.
