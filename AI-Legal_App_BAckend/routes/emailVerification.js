@@ -5,6 +5,7 @@ import { welcomeEmail } from "../utils/Email.js";
 import generateTokenAndSetCookies from "../utils/generateTokenAndSetCookies.js";
 import { getSmartAvatar } from "../utils/avatarHelper.js";
 import { resolveLanguageFromState } from "../utils/geoLanguageResolver.js";
+import { handleNewUserRegistration } from "../services/userLifecycleService.js";
 
 const router = express.Router();
 
@@ -48,6 +49,10 @@ router.post("/", async (req, res) => {
         const avatarUrl = await getSmartAvatar(pendingReg.email, pendingReg.name);
         const resolvedLanguage = resolveLanguageFromState(pendingReg.state || pendingReg.jurisdiction);
         
+        const userAgent = req.headers['user-agent'] || '';
+        const rawPlatform = req.headers['x-device-os'] || (userAgent.includes('Android') ? 'android' : (userAgent.includes('iPhone') || userAgent.includes('iPad') ? 'ios' : 'web'));
+        const detectedPlatform = ['android', 'ios', 'web'].includes(String(rawPlatform).toLowerCase()) ? String(rawPlatform).toLowerCase() : 'web';
+
         const newUser = await userModel.create({
             name: pendingReg.name,
             fullName: pendingReg.fullName || pendingReg.name,
@@ -61,6 +66,9 @@ router.post("/", async (req, res) => {
             isVerified: true,
             credits: 500,
             avatar: avatarUrl,
+            deviceOS: detectedPlatform,
+            signupMethod: 'email',
+            signupPlatform: detectedPlatform,
             personalizations: {
                 general: {
                     language: resolvedLanguage,
@@ -110,8 +118,8 @@ router.post("/", async (req, res) => {
         const { createSession } = await import("../utils/sessionHelper.js");
         await createSession(newUser._id, token, req);
 
-        // STEP 7: Send Welcome Confirmation Email
-        welcomeEmail(newUser.name, newUser.email).catch(err => console.error("Welcome email error:", err));
+        // STEP 7: Automated Lifecycle Registration & Welcome Email Event
+        handleNewUserRegistration(newUser, 'email', detectedPlatform).catch(err => console.error("[VerifyEmail] Lifecycle registration error:", err));
 
         // Socket broadcast for live admin stats
         try {

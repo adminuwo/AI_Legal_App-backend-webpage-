@@ -329,7 +329,7 @@ const Hero = () => {
           >
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <img src={logo} alt="AI LEGAL™"
+              <img src={logo} alt="AI LEGAL™ - Next-Generation AI Legal Assistant Platform"
                 style={{
                   height: window.innerWidth < 640 ? '32px' : '50px',
                   width: 'auto',

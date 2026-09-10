@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  BarChart3, Users, CreditCard, Package, Ticket, Lightbulb, Bug, AlertTriangle, AlertCircle, ChevronDown, Sparkles,
+  BarChart3, Users, CreditCard, Package, Ticket, Lightbulb, Bug, AlertCircle, ChevronDown, Sparkles,
   MessageSquare, Globe, Settings, Shield, ShieldAlert, Search, RefreshCw, Plus, PlusCircle, 
   Edit2, Edit3, Trash2, Lock, Unlock, CheckCircle2, XCircle, ExternalLink, Key, DollarSign, 
   TrendingUp, Activity, HardDrive, Terminal, Send, Eye, EyeOff, ChevronRight, X, 
-  FileText, Check, RotateCw, Building2, UserCheck, Zap, ArrowLeft, Download, Tag, Wrench
+  FileText, Check, RotateCw, Building2, UserCheck, Zap, ArrowLeft, Download, Tag, Wrench, Calendar
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useRecoilValue } from 'recoil';
@@ -18,6 +18,20 @@ import { API } from '../types.js';
 import { COUNTRIES } from '../constants/countries';
 import { STATES_BY_COUNTRY } from '../constants/states';
 
+export const DATE_RANGE_OPTIONS = [
+  { id: 'today', label: 'Today' },
+  { id: 'yesterday', label: 'Yesterday' },
+  { id: '7d', label: 'Last 7 Days' },
+  { id: '30d', label: 'Last 30 Days' },
+  { id: '60d', label: 'Last 60 Days' },
+  { id: '90d', label: 'Last 90 Days' },
+  { id: '3m', label: 'Last 3 Months' },
+  { id: '6m', label: 'Last 6 Months' },
+  { id: '9m', label: 'Last 9 Months' },
+  { id: '1y', label: 'Last 1 Year' },
+  { id: 'all', label: 'All Time' }
+];
+
 const TABS = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
   { id: 'users', label: 'Users', icon: Users },
@@ -27,7 +41,6 @@ const TABS = [
   { id: 'addons', label: 'Add-on Requests', icon: PlusCircle },
   { id: 'features', label: 'Requests', icon: Lightbulb },
   { id: 'bugs', label: 'Bugs', icon: Bug },
-  { id: 'crashes', label: 'Crash Reports', icon: AlertTriangle },
   { id: 'reports', label: 'Response Reports', icon: MessageSquare },
   { id: 'jurisdiction', label: 'Jurisdiction', icon: Globe },
   { id: 'settings', label: 'Settings', icon: Settings }
@@ -94,8 +107,6 @@ export default function AdminDashboard() {
   const [featuresList, setFeaturesList] = useState([]);
   const [bugsList, setBugsList] = useState([]);
   const [complaintsList, setComplaintsList] = useState([]);
-  const [crashesList, setCrashesList] = useState([]);
-  const [crashStats, setCrashStats] = useState({ total: 0, unresolved: 0 });
 
   // Enterprise Add-on Requests State & Sync
   const [addonRequestsList, setAddonRequestsList] = useState(() => {
@@ -173,6 +184,10 @@ export default function AdminDashboard() {
   });
 
   // Filter States
+  const [dateFilter, setDateFilter] = useState('today');
+  const [usersPage, setUsersPage] = useState(1);
+  const [userPagination, setUserPagination] = useState({ page: 1, limit: 25, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false });
+  const [usersLoading, setUsersLoading] = useState(false);
   const [userSearch, setUserSearch] = useState('');
   const [userFilter, setUserFilter] = useState('all');
   const [platformFilter, setPlatformFilter] = useState('all'); // 'all' | 'android' | 'ios'
@@ -182,7 +197,6 @@ export default function AdminDashboard() {
   const [featureFilter, setFeatureFilter] = useState('all');
   const [bugSeverityFilter, setBugSeverityFilter] = useState('all');
   const [bugStatusFilter, setBugStatusFilter] = useState('all');
-  const [crashSourceFilter, setCrashSourceFilter] = useState('all');
 
   // Modals & Actions States
   const [editUserModal, setEditUserModal] = useState(null);
@@ -240,8 +254,7 @@ export default function AdminDashboard() {
   // Bug Details Modal
   const [bugModal, setBugModal] = useState({ isOpen: false, bug: null, status: 'Open', assignedTo: '' });
 
-  // Crash Detail Modal
-  const [selectedCrash, setSelectedCrash] = useState(null);
+
 
   // Response Report Detail Modal
   const [selectedReport, setSelectedReport] = useState(null);
@@ -413,17 +426,16 @@ export default function AdminDashboard() {
       };
       const noCacheAuthHeader = authHeader;
 
-      const [statsRes, usersRes, billingRes, plansRes, couponsRes, featuresRes, bugsRes, settingsRes, complaintsRes, crashesRes] = await Promise.all([
+      const [statsRes, usersRes, billingRes, plansRes, couponsRes, featuresRes, bugsRes, settingsRes, complaintsRes] = await Promise.all([
         axios.get(`${API}/admin/stats?_t=${tStamp}${forceRefresh ? '&force=true' : ''}`, noCacheAuthHeader).catch((err) => ({ data: { success: false, code: err.response?.data?.code } })),
-        axios.get(`${API}/admin/users?limit=500`, authHeader).catch(() => ({ data: { list: [] } })),
+        axios.get(`${API}/admin/users?dateRange=today&page=1&limit=25`, authHeader).catch(() => ({ data: { list: [], pagination: null } })),
         axios.get(`${API}/admin/billing?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
         axios.get(`${API}/admin/plans`, authHeader).catch(() => ({ data: { plans: [] } })),
         axios.get(`${API}/admin/coupons`, authHeader).catch(() => ({ data: { coupons: [], stats: null } })),
         axios.get(`${API}/admin/feature-requests?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
         axios.get(`${API}/admin/bug-reports?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
         axios.get(`${API}/admin/settings`, authHeader).catch(() => ({ data: { settings: null } })),
-        axios.get(`${API}/complaints?limit=200`, authHeader).catch(() => ({ data: { data: [] } })),
-        axios.get(`${API}/admin/crashes?limit=200`, authHeader).catch(() => ({ data: { crashes: [], stats: null } }))
+        axios.get(`${API}/complaints?limit=200`, authHeader).catch(() => ({ data: { data: [] } }))
       ]);
 
       if (statsRes.data?.code === 'SESSION_REVOKED') {
@@ -442,6 +454,7 @@ export default function AdminDashboard() {
       }
       if (Array.isArray(usersRes.data?.list)) setUsersList(usersRes.data.list);
       if (usersRes.data?.counts) setUsersCounts(usersRes.data.counts);
+      if (usersRes.data?.pagination) setUserPagination(usersRes.data.pagination);
       if (Array.isArray(billingRes.data?.list)) setPaymentsList(billingRes.data.list);
       if (Array.isArray(plansRes.data?.plans)) setPlansList(plansRes.data.plans);
       if (Array.isArray(couponsRes.data?.coupons)) setCouponsList(couponsRes.data.coupons);
@@ -450,8 +463,6 @@ export default function AdminDashboard() {
       if (Array.isArray(featuresRes.data?.list)) setFeaturesList(featuresRes.data.list);
       if (Array.isArray(bugsRes.data?.list)) setBugsList(bugsRes.data.list);
       if (Array.isArray(complaintsRes.data?.data)) setComplaintsList(complaintsRes.data.data);
-      if (Array.isArray(crashesRes.data?.crashes)) setCrashesList(crashesRes.data.crashes);
-      if (crashesRes.data?.stats) setCrashStats(crashesRes.data.stats);
       if (settingsRes.data?.settings) setAdminSettings(prev => ({ ...prev, ...settingsRes.data.settings }));
     } catch (err) {
       console.error('Failed to load Admin Dashboard data:', err);
@@ -463,91 +474,86 @@ export default function AdminDashboard() {
     }
   };
 
+  // Dedicated Server-Side Users Fetcher
+  const fetchUsersList = async (page = 1, filterOverrides = {}) => {
+    try {
+      setUsersLoading(true);
+      const token = user?.token || localStorage.getItem('token');
+      const authHeader = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      const dRange = filterOverrides.dateRange ?? dateFilter;
+      const plat = filterOverrides.platform ?? platformFilter;
+      const dom = filterOverrides.domain ?? emailDomainFilter;
+      const pln = filterOverrides.plan ?? userFilter;
+      const srch = filterOverrides.search !== undefined ? filterOverrides.search : userSearch;
+
+      const params = new URLSearchParams();
+      params.append('page', String(page));
+      params.append('limit', '25');
+      params.append('dateRange', dRange || 'today');
+      if (plat && plat !== 'all') params.append('platform', plat);
+      if (dom && dom !== 'all') params.append('domain', dom);
+      if (pln && pln !== 'all') params.append('plan', pln);
+      if (srch && srch.trim()) params.append('search', srch.trim());
+
+      const res = await axios.get(`${API}/admin/users?${params.toString()}`, authHeader);
+      if (res.data?.success) {
+        setUsersList(Array.isArray(res.data.list) ? res.data.list : []);
+        if (res.data.counts) setUsersCounts(res.data.counts);
+        if (res.data.pagination) setUserPagination(res.data.pagination);
+      }
+    } catch (err) {
+      console.error('Failed to fetch users:', err);
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
+  // Re-fetch users server-side on filter, search, or page change
+  const isUsersInitialMount = useRef(true);
+  useEffect(() => {
+    if (isUsersInitialMount.current) {
+      isUsersInitialMount.current = false;
+      return;
+    }
+    const timer = setTimeout(() => {
+      fetchUsersList(usersPage);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [dateFilter, platformFilter, emailDomainFilter, userFilter, userSearch, usersPage]);
+
   useEffect(() => {
     loadData();
     const interval = setInterval(() => loadData(true), 45000);
     return () => clearInterval(interval);
   }, [isAdmin]);
 
-  // --- Filtered Users List ---
-  const filteredUsers = useMemo(() => {
-    return usersList.filter(u => {
-      const q = userSearch.toLowerCase().trim();
-      const nameMatch = (u.name || u.displayName || '').toLowerCase().includes(q);
-      const emailMatch = (u.email || '').toLowerCase().includes(q);
-      const phoneMatch = (u.phone || '').includes(q);
-      const jurisdictionMatch = (u.jurisdiction || u.country || '').toLowerCase().includes(q);
-      const idMatch = (u._id || '').toLowerCase().includes(q);
-      const searchMatch = !q || nameMatch || emailMatch || phoneMatch || jurisdictionMatch || idMatch;
-
-      const plan = String(u.subscription?.plan || u.currentPlan || 'FREE').toUpperCase();
-      const isBlocked = u.isBlocked === true || u.status === 'Suspended';
-      let filterMatch = true;
-      if (userFilter === 'free') filterMatch = plan === 'FREE' || plan.includes('BASIC');
-      if (userFilter === 'premium') filterMatch = plan !== 'FREE' && !plan.includes('BASIC');
-      if (userFilter === 'suspended') filterMatch = isBlocked;
-
-      const uPlatform = String(u.deviceOS || 'android').toLowerCase();
-      let platformMatch = true;
-      if (platformFilter === 'android') platformMatch = uPlatform === 'android';
-      if (platformFilter === 'ios') platformMatch = uPlatform === 'ios';
-
-      const emailStr = String(u.email || '').toLowerCase().trim();
-      let domainMatch = true;
-      if (emailDomainFilter === 'gmail') {
-        domainMatch = emailStr.includes('gmail.com');
-      } else if (emailDomainFilter === 'icloud') {
-        domainMatch = emailStr.includes('icloud.com') || emailStr.includes('me.com') || emailStr.includes('mac.com') || emailStr.includes('appleid');
-      } else if (emailDomainFilter === 'other') {
-        const isG = emailStr.includes('gmail.com');
-        const isI = emailStr.includes('icloud.com') || emailStr.includes('me.com') || emailStr.includes('mac.com') || emailStr.includes('appleid');
-        domainMatch = !isG && !isI;
-      }
-
-      return searchMatch && filterMatch && platformMatch && domainMatch;
-    });
-  }, [usersList, userSearch, userFilter, platformFilter, emailDomainFilter]);
+  // --- Users List & Dynamic Telemetry Counts ---
+  const filteredUsers = usersList;
 
   const emailDomainCounts = useMemo(() => {
-    let gmail = 0;
-    let icloud = 0;
-    let other = 0;
-
-    usersList.forEach(u => {
-      const uPlatform = String(u.deviceOS || 'android').toLowerCase();
-      if (platformFilter === 'android' && uPlatform !== 'android') return;
-      if (platformFilter === 'ios' && uPlatform !== 'ios') return;
-
-      const emailStr = String(u.email || '').toLowerCase().trim();
-      if (emailStr.includes('gmail.com')) gmail++;
-      else if (emailStr.includes('icloud.com') || emailStr.includes('me.com') || emailStr.includes('mac.com') || emailStr.includes('appleid')) icloud++;
-      else other++;
-    });
-
-    return { all: gmail + icloud + other, gmail, icloud, other };
-  }, [usersList, platformFilter]);
-
-  const platformCounts = useMemo(() => {
-    if (usersCounts && typeof usersCounts.total === 'number' && usersCounts.total > 0) {
+    if (usersCounts?.domains) {
       return {
-        all: usersCounts.total,
-        android: usersCounts.android,
-        ios: usersCounts.ios
+        all: usersCounts.domains.all ?? 0,
+        gmail: usersCounts.domains.gmail ?? 0,
+        icloud: usersCounts.domains.icloud ?? 0,
+        other: usersCounts.domains.other ?? 0
       };
     }
-    let android = 0;
-    let ios = 0;
-    usersList.forEach(u => {
-      const p = String(u.deviceOS || 'android').toLowerCase();
-      if (p === 'ios') ios++;
-      else android++;
-    });
-    return {
-      all: usersList.length,
-      android,
-      ios
-    };
-  }, [usersList, usersCounts]);
+    return { all: 0, gmail: 0, icloud: 0, other: 0 };
+  }, [usersCounts]);
+
+  const platformCounts = useMemo(() => {
+    if (usersCounts && typeof usersCounts.total === 'number') {
+      return {
+        all: usersCounts.total,
+        android: usersCounts.android ?? 0,
+        ios: usersCounts.ios ?? 0
+      };
+    }
+    return { all: 0, android: 0, ios: 0 };
+  }, [usersCounts]);
 
   // --- Live Billing KPIs & Filtered Payments List ---
   const liveBillingStats = useMemo(() => {
@@ -1264,17 +1270,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // --- CRASH STATUS ---
-  const handleResolveCrash = async (id, status) => {
-    try {
-      const token = user?.token || localStorage.getItem('token');
-      await axios.patch(`${API}/admin/crashes/${id}`, { status }, { headers: { Authorization: `Bearer ${token}` } });
-      toast.success(`Crash alert status updated to ${status}.`);
-      loadData(true);
-    } catch (err) {
-      toast.error('Failed to update crash status.');
-    }
-  };
+
 
   // --- JURISDICTION OVERRIDE & SANDBOX TEST ---
   const handleSaveJurisdictionOverride = async (e) => {
@@ -1706,7 +1702,7 @@ export default function AdminDashboard() {
             <div className="space-y-3 sm:space-y-4">
               <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">PENDING TRIAGE</h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <button
                   onClick={() => setActiveTab('bugs')}
                   className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs"
@@ -1743,26 +1739,6 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex items-center gap-1.5 text-xs font-black text-blue-500 group-hover:translate-x-1 transition-transform">
                     <span>View Requests</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => setActiveTab('crashes')}
-                  className="bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-zinc-800/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 text-left transition-all cursor-pointer flex flex-col justify-between space-y-4 group shadow-xs sm:col-span-2 md:col-span-1"
-                >
-                  <div className="flex justify-between items-start">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
-                      UNRESOLVED CRASH TELEMETRY
-                    </span>
-                    <AlertTriangle className="w-5 h-5 text-amber-500" />
-                  </div>
-                  <div>
-                    <h4 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{crashStats.unresolved || crashesList.length}</h4>
-                    <p className="text-[11px] sm:text-xs font-medium text-slate-500 mt-1">System exception telemetry</p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-black text-amber-500 group-hover:translate-x-1 transition-transform">
-                    <span>View Crash Reports</span>
                     <ChevronRight className="w-4 h-4" />
                   </div>
                 </button>
@@ -1820,23 +1796,52 @@ export default function AdminDashboard() {
 
             {/* Search & Filter Toolbar */}
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col md:flex-row gap-3 sm:gap-4 justify-between items-stretch md:items-center">
-              <div className="relative flex-1 w-full">
-                <Search className="w-4 h-4 text-[#C8A34D] absolute left-3.5 top-3" />
-                <input
-                  type="text"
-                  placeholder="Search by name, email, phone, role, ID..."
-                  value={userSearch}
-                  onChange={e => setUserSearch(e.target.value)}
-                  className="w-full pl-10 pr-8 py-2 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#C8A34D] bg-slate-50 dark:bg-zinc-900"
-                />
-                {userSearch && (
-                  <button
-                    onClick={() => setUserSearch('')}
-                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
+              <div className="flex flex-col sm:flex-row items-center gap-2.5 flex-1 w-full">
+                <div className="relative flex-1 w-full">
+                  <Search className="w-4 h-4 text-[#C8A34D] absolute left-3.5 top-3" />
+                  <input
+                    type="text"
+                    placeholder="Search by name, email, phone, role, ID..."
+                    value={userSearch}
+                    onChange={e => {
+                      setUserSearch(e.target.value);
+                      if (usersPage !== 1) setUsersPage(1);
+                    }}
+                    className="w-full pl-10 pr-8 py-2 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#C8A34D] bg-slate-50 dark:bg-zinc-900"
+                  />
+                  {userSearch && (
+                    <button
+                      onClick={() => {
+                        setUserSearch('');
+                        if (usersPage !== 1) setUsersPage(1);
+                      }}
+                      className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Date / Registration Filter Dropdown immediately beside search bar */}
+                <div className="relative w-full sm:w-auto shrink-0">
+                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 hover:border-[#C8A34D] transition-colors">
+                    <Calendar className="w-3.5 h-3.5 text-[#C8A34D] shrink-0" />
+                    <select
+                      value={dateFilter}
+                      onChange={e => {
+                        setDateFilter(e.target.value);
+                        setUsersPage(1);
+                      }}
+                      className="bg-transparent text-xs font-black text-slate-800 dark:text-zinc-200 focus:outline-none cursor-pointer pr-1"
+                    >
+                      {DATE_RANGE_OPTIONS.map(opt => (
+                        <option key={opt.id} value={opt.id} className="bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200">
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
 
               {/* Status & Email Domain Filter Toolbar */}
@@ -1844,7 +1849,10 @@ export default function AdminDashboard() {
                 {/* Email Domain Filter Dropdown */}
                 <select
                   value={emailDomainFilter}
-                  onChange={e => setEmailDomainFilter(e.target.value)}
+                  onChange={e => {
+                    setEmailDomainFilter(e.target.value);
+                    setUsersPage(1);
+                  }}
                   className="px-3 py-2 rounded-xl text-xs font-black bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 focus:outline-none focus:border-[#C8A34D] cursor-pointer flex-1 sm:flex-initial"
                 >
                   <option value="all">ALL DOMAINS ({emailDomainCounts.all})</option>
@@ -1864,7 +1872,10 @@ export default function AdminDashboard() {
                   ].map((f) => (
                     <button
                       key={f.id}
-                      onClick={() => setUserFilter(f.id)}
+                      onClick={() => {
+                        setUserFilter(f.id);
+                        setUsersPage(1);
+                      }}
                       className={`px-3 py-1.5 rounded-xl text-[11px] font-black transition-all cursor-pointer border shrink-0 ${
                         userFilter === f.id
                           ? 'bg-[#C8A34D]/15 text-[#C8A34D] border-[#C8A34D]/50 shadow-2xs'
@@ -1885,16 +1896,19 @@ export default function AdminDashboard() {
                   <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">User Accounts Directory</h3>
                   <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Manage user profiles, roles, AI credits, subscriptions and access controls</p>
                 </div>
-                <span className="text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20 self-start sm:self-auto shrink-0">
-                  {filteredUsers.length} Users Found
+                <span className="text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20 self-start sm:self-auto shrink-0 flex items-center gap-1.5">
+                  {usersLoading && <RotateCw className="w-3 h-3 animate-spin text-[#C8A34D]" />}
+                  <span>{userPagination.total ?? filteredUsers.length} Users Found</span>
                 </span>
               </div>
 
               {filteredUsers.length === 0 ? (
                 <div className="py-16 text-center space-y-3 px-4">
                   <Users className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
-                  <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No User Accounts Match Criteria</p>
-                  <p className="text-[11px] text-slate-400">Try adjusting your search query, status or platform filter.</p>
+                  <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">
+                    {dateFilter === 'today' ? 'No users registered today.' : 'No users registered in selected period.'}
+                  </p>
+                  <p className="text-[11px] text-slate-400">Try adjusting your date range, search query, platform, or status filter.</p>
                 </div>
               ) : (
                 <>
@@ -2048,6 +2062,46 @@ export default function AdminDashboard() {
                         })}
                       </tbody>
                     </table>
+                  </div>
+
+                  {/* Server-Side Pagination Controls */}
+                  <div className="p-3.5 sm:p-4 border-t border-slate-200/80 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs bg-slate-50/50 dark:bg-zinc-900/30">
+                    <div className="text-slate-500 dark:text-zinc-400 font-semibold text-[11px] sm:text-xs">
+                      Showing <span className="font-bold text-slate-800 dark:text-zinc-200">{filteredUsers.length > 0 ? (userPagination.page - 1) * userPagination.limit + 1 : 0}</span> to{' '}
+                      <span className="font-bold text-slate-800 dark:text-zinc-200">{Math.min(userPagination.page * userPagination.limit, userPagination.total)}</span> of{' '}
+                      <span className="font-bold text-[#C8A34D]">{userPagination.total}</span> users
+                      {dateFilter === 'today' && <span className="ml-1 text-[10px] text-slate-400 font-bold">(Registered Today)</span>}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          if (userPagination.hasPrevPage && !usersLoading) {
+                            setUsersPage(prev => Math.max(1, prev - 1));
+                          }
+                        }}
+                        disabled={!userPagination.hasPrevPage || usersLoading}
+                        className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 font-bold text-xs disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors flex items-center gap-1 cursor-pointer"
+                      >
+                        Previous
+                      </button>
+
+                      <span className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-black text-xs">
+                        Page {userPagination.page} of {Math.max(1, userPagination.totalPages)}
+                      </span>
+
+                      <button
+                        onClick={() => {
+                          if (userPagination.hasNextPage && !usersLoading) {
+                            setUsersPage(prev => prev + 1);
+                          }
+                        }}
+                        disabled={!userPagination.hasNextPage || usersLoading}
+                        className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 font-bold text-xs disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors flex items-center gap-1 cursor-pointer"
+                      >
+                        Next
+                      </button>
+                    </div>
                   </div>
                 </>
               )}
@@ -2881,38 +2935,6 @@ export default function AdminDashboard() {
                       >
                         Update Bug
                       </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        ) : activeTab === 'crashes' ? (
-          /* TAB 8: CRASH REPORTS */
-          <div className="space-y-4 sm:space-y-6">
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Automated Exception & Telemetry Logs</h3>
-              {crashesList.length === 0 ? (
-                <div className="py-8 text-center text-xs text-slate-400 font-medium">No crash telemetry events reported.</div>
-              ) : (
-                <div className="space-y-3">
-                  {crashesList.map((c, idx) => (
-                    <div key={c._id || idx} className="p-3.5 sm:p-4 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800 space-y-2.5">
-                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                        <div>
-                          <h4 className="text-xs sm:text-sm font-bold font-mono text-red-500">{c.errorName || 'UnhandledException'}</h4>
-                          <p className="text-[11px] sm:text-xs text-slate-400 font-mono mt-0.5">{c.filePath || 'src/app/index.tsx'}:{c.lineNumber || 42}</p>
-                        </div>
-                        <button
-                          onClick={() => handleResolveCrash(c._id, 'RESOLVED')}
-                          className="w-full sm:w-auto px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl cursor-pointer text-center"
-                        >
-                          Mark Resolved
-                        </button>
-                      </div>
-                      <pre className="p-2.5 sm:p-3 bg-amber-50/90 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800/60 rounded-xl text-[10px] sm:text-[11px] font-mono font-semibold max-h-48 overflow-x-auto shadow-sm">
-                        {c.stackTrace || 'Error: Processing failed at line 42'}
-                      </pre>
                     </div>
                   ))}
                 </div>

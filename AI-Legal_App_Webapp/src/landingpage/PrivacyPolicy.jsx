@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PRIVACY_POLICY_DEFAULTS } from '../Tools/AI_Legal/constants/legalDefaults';
-import { Database, Lock, Shield, Eye, UserCheck, FileText, ArrowLeft } from 'lucide-react';
+import { Database, Lock, Shield, Eye, UserCheck, FileText, ArrowLeft, Scale, CheckCircle2, Cpu } from 'lucide-react';
 import { apiService } from '../services/apiService';
-import { name } from '../constants';
+import { name, logo } from '../constants';
 
 const PrivacyPolicy = () => {
     const navigate = useNavigate();
@@ -60,31 +60,187 @@ const PrivacyPolicy = () => {
                         <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                         <span className="font-medium">Back</span>
                     </button>
-                    <h1 className="text-xl font-extrabold text-amber-600">{name} <sup className="text-xs text-slate-400">TM</sup></h1>
+                    <div className="flex items-center gap-2">
+                        <img
+                            src={logo || '/favicon.png'}
+                            alt="AI LEGAL™ - Official Legal Intelligence Logo"
+                            className="w-8 h-8 rounded-lg object-contain"
+                        />
+                        <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">
+                            AI LEGAL<sup className="text-[10px] font-bold text-slate-400 ml-0.5">TM</sup>
+                        </h1>
+                    </div>
                 </div>
             </header>
 
             {/* Main Content */}
-            <main className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-12">
+            <main className="max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-10">
                 {/* Hero Section */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-8 sm:mb-16"
+                    className="text-center mb-8 sm:mb-10"
                 >
-                    <div className="inline-flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-amber-500/10 mb-4 sm:mb-6">
-                        <Shield className="w-7 h-7 sm:w-10 sm:h-10 text-amber-600" />
+                    <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-amber-500/10 mb-3 sm:mb-4">
+                        <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-amber-600" />
                     </div>
-                    <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 mb-2 sm:mb-4">
-                        Privacy Policy
+                    <h1 className="text-2xl sm:text-4xl font-black text-slate-900 mb-2">
+                        Privacy Policy & Trust Center
                     </h1>
-                    <p className="text-sm sm:text-lg text-slate-600 max-w-2xl mx-auto font-medium">
-                        Your privacy matters to us. Learn how we collect, use, and protect your data.
+                    <p className="text-xs sm:text-base text-slate-600 max-w-2xl mx-auto font-medium">
+                        Your privacy, credibility, and data security matter to us. Learn how we protect your legal workflows.
                     </p>
-                    <p className="text-xs sm:text-sm text-slate-500 mt-2 sm:mt-4">
+                    <p className="text-xs text-slate-500 mt-2">
                         <strong>Last Updated:</strong> {lastUpdated}
                     </p>
                 </motion.div>
+
+                {/* ── UNIFIED TRUST & GOVERNANCE SECTION (4 PILLARS IN ONE ROW) ── */}
+                <section id="trust" className="mb-8 sm:mb-12 scroll-mt-24">
+                    <div className="text-center mb-6">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-[11px] font-bold uppercase tracking-wider mb-2">
+                            <Shield className="w-3.5 h-3.5 text-amber-600" />
+                            Unified Trust & Governance
+                        </div>
+                        <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                            Built on 4 Pillars of Absolute Trust
+                        </h2>
+                        <p className="text-slate-600 text-[11px] sm:text-xs max-w-xl mx-auto mt-1.5">
+                            Every legal query, drafting workflow, and case file is safeguarded under strict Indian legal standards and verified zero-leakage security.
+                        </p>
+                    </div>
+
+                    {/* 4 Pillars in a Single Row on Desktop */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
+                        {/* Pillar 1: Credibility */}
+                        <motion.div
+                            whileHover={{ y: -3 }}
+                            className="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200 hover:border-amber-500/40 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between"
+                        >
+                            <div>
+                                <div className="flex items-center justify-between gap-2 mb-2.5">
+                                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+                                        <Scale className="w-4 h-4 text-amber-600" />
+                                    </div>
+                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800">
+                                        Citations
+                                    </span>
+                                </div>
+                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 mb-1.5">
+                                    1. Verified Credibility
+                                </h3>
+                                <p className="text-[11px] text-slate-600 leading-relaxed mb-3">
+                                    Grounded strictly in BNS, BNSS, BSA & verified Supreme Court and High Court precedents with zero synthetic hallucinations.
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-1 text-[10px] font-medium text-slate-700 pt-2 border-t border-slate-100">
+                                <span className="px-1.5 py-0.5 rounded bg-slate-100">⚖️ SCC Precedents</span>
+                                <span className="px-1.5 py-0.5 rounded bg-slate-100">📜 BNS 2024</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Pillar 2: Privacy */}
+                        <motion.div
+                            whileHover={{ y: -3 }}
+                            className="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200 hover:border-blue-500/40 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between"
+                        >
+                            <div>
+                                <div className="flex items-center justify-between gap-2 mb-2.5">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                                        <Lock className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-800">
+                                        Privilege
+                                    </span>
+                                </div>
+                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 mb-1.5">
+                                    2. Client-Attorney Privacy
+                                </h3>
+                                <p className="text-[11px] text-slate-600 leading-relaxed mb-3">
+                                    Absolute advocate-client privilege. Case files and client data are never sold, never shared, and never used to train public models.
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-1 text-[10px] font-medium text-slate-700 pt-2 border-t border-slate-100">
+                                <span className="px-1.5 py-0.5 rounded bg-slate-100">🔒 Zero Selling</span>
+                                <span className="px-1.5 py-0.5 rounded bg-slate-100">🛡️ Tenant Isolation</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Pillar 3: Data Security */}
+                        <motion.div
+                            whileHover={{ y: -3 }}
+                            className="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200 hover:border-emerald-500/40 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between"
+                        >
+                            <div>
+                                <div className="flex items-center justify-between gap-2 mb-2.5">
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                                        <Shield className="w-4 h-4 text-emerald-600" />
+                                    </div>
+                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800">
+                                        AES-256
+                                    </span>
+                                </div>
+                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 mb-1.5">
+                                    3. Bank-Grade Security
+                                </h3>
+                                <p className="text-[11px] text-slate-600 leading-relaxed mb-3">
+                                    Military-grade AES-256 encryption at rest and TLS 1.3 cryptographic tunnels in transit with continuous automated audit logging.
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-1 text-[10px] font-medium text-slate-700 pt-2 border-t border-slate-100">
+                                <span className="px-1.5 py-0.5 rounded bg-slate-100">🔐 AES-256 Bit</span>
+                                <span className="px-1.5 py-0.5 rounded bg-slate-100">🌐 TLS 1.3</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Pillar 4: Responsible AI */}
+                        <motion.div
+                            whileHover={{ y: -3 }}
+                            className="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200 hover:border-purple-500/40 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between"
+                        >
+                            <div>
+                                <div className="flex items-center justify-between gap-2 mb-2.5">
+                                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                                        <Cpu className="w-4 h-4 text-purple-600" />
+                                    </div>
+                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-purple-100 text-purple-800">
+                                        Human-Led
+                                    </span>
+                                </div>
+                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 mb-1.5">
+                                    4. Responsible AI
+                                </h3>
+                                <p className="text-[11px] text-slate-600 leading-relaxed mb-3">
+                                    Engineered as an assistant for practitioners. Strict fact-grounding with human-in-the-loop validation for generated drafts.
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-1 text-[10px] font-medium text-slate-700 pt-2 border-t border-slate-100">
+                                <span className="px-1.5 py-0.5 rounded bg-slate-100">🎯 Zero Hallucination</span>
+                                <span className="px-1.5 py-0.5 rounded bg-slate-100">🤝 Human In Loop</span>
+                            </div>
+                        </motion.div>
+                    </div>
+
+                    {/* Trust Badges Verification Strip */}
+                    <div className="mt-4 bg-white rounded-xl p-3 border border-slate-200 flex flex-wrap items-center justify-around gap-2 text-center">
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span className="text-[11px] font-semibold text-slate-700">BNS & BNSS 2024 Compliant</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span className="text-[11px] font-semibold text-slate-700">Encrypted Cloud Workspaces</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span className="text-[11px] font-semibold text-slate-700">Client Confidentiality Protected</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span className="text-[11px] font-semibold text-slate-700">Real-Time Legal Grounding</span>
+                        </div>
+                    </div>
+                </section>
 
                 {/* Introduction */}
                 <motion.div
@@ -94,10 +250,10 @@ const PrivacyPolicy = () => {
                     className="bg-white rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 mb-6 sm:mb-8 border border-slate-200 shadow-sm"
                 >
                     <p className="text-slate-700 leading-relaxed mb-4 text-xs sm:text-base font-medium">
-                        Welcome to {name}™ ("we," "our," or "us"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered intelligent assistant platform.
+                        Welcome to {name} ("we," "our," or "us"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered intelligent assistant platform.
                     </p>
                     <p className="text-slate-700 leading-relaxed text-xs sm:text-base font-medium">
-                        By using {name}™, you agree to the collection and use of information in accordance with this policy. We are committed to maintaining the highest standards of privacy and security for all our users.
+                        By using {name}, you agree to the collection and use of information in accordance with this policy. We are committed to maintaining the highest standards of privacy and security for all our users.
                     </p>
                 </motion.div>
 
@@ -141,7 +297,7 @@ const PrivacyPolicy = () => {
                 >
                     <h2 className="text-lg sm:text-2xl font-bold text-slate-900 mb-2 sm:mb-4">Global Regulatory Compliance</h2>
                     <p className="text-xs sm:text-base text-slate-600 leading-relaxed mb-4">
-                        AISA™ operates in compliance with major global data protection and privacy regulations. We are committed to upholding user rights across all jurisdictions.
+                        AI LEGAL™ operates in compliance with major global data protection and privacy regulations. We are committed to upholding user rights across all jurisdictions.
                     </p>
                     <div className="space-y-2 sm:space-y-3">
                         {[

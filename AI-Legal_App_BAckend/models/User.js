@@ -229,6 +229,15 @@ const userSchema = new mongoose.Schema({
         totalActiveDays: { type: Number, default: 0 }
     },
 
+    // User Lifecycle & Email Automation Tracking
+    welcomeEmailSent: { type: Boolean, default: false },
+    welcomeEmailSentAt: { type: Date, default: null },
+    signupMethod: { type: String, enum: ['email', 'google', 'apple', 'local', 'other'], default: 'email' },
+    signupPlatform: { type: String, enum: ['web', 'android', 'ios', 'unknown'], default: 'unknown' },
+    lifecycleStage: { type: String, enum: ['new', 'active', 'free_partially_exhausted', 'free_fully_exhausted', 'upgraded'], default: 'new' },
+    finalExhaustionEmailSent: { type: Boolean, default: false },
+    finalExhaustionEmailSentAt: { type: Date, default: null },
+
     notificationsInbox: [{
         id: String,
         title: String,
@@ -240,6 +249,11 @@ const userSchema = new mongoose.Schema({
         data: { type: mongoose.Schema.Types.Mixed, default: null }
     }]
 }, { timestamps: true });
+
+// Optimize query performance for admin registration date filtering and pagination
+userSchema.index({ createdAt: -1 });
+userSchema.index({ createdAt: -1, deviceOS: 1 });
+userSchema.index({ welcomeEmailSent: 1, createdAt: -1 });
 
 // Sanitize user serialization to prevent password and token exposure
 userSchema.methods.toJSON = function () {

@@ -7,8 +7,12 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   envPrefix: ["AISA_", "VITE_"],
   server: {
+    port: 5173,
     host: true, // Listen on all network interfaces
     allowedHosts: true, // Allow ngrok URLs to bypass host checks in Vite 6
+    watch: {
+      ignored: ['**/dist/**', '**/.git/**']
+    }
   },
   esbuild: {
     pure: ['console.log', 'console.debug']

@@ -101,6 +101,128 @@ const checkGuestLimits = async (req, sessionId) => {
   return { allowed: true };
 };
 
+/**
+ * Resolves whether the current message is an actual specialized tool invocation
+ * or a general assistant/chat query.
+ * If user asks general questions (e.g., "What's your company name ?", "Who are you?", "Help", general legal advice)
+ * while in assistant or specialized mode, it falls back to 'ai_chat' so specialized limits (like draft_maker: 2)
+ * are NEVER triggered or depleted on general queries.
+ */
+export const resolveEffectiveTool = (requestedTool, content = '', document = null, image = null) => {
+  const norm = (requestedTool || '').trim();
+  if (!norm || norm === 'ai_chat' || norm === 'chat' || norm === 'legal_my_case' || norm === 'caseAssistant' || norm === 'none') {
+    return 'ai_chat';
+  }
+
+  const text = (content || '').toLowerCase().trim();
+  const hasDocs = (document && (Array.isArray(document) ? document.length > 0 : Boolean(document.base64Data))) || Boolean(image);
+
+  // Common general conversational questions & identity queries
+  const isGeneralConversational = [
+    'company name', 'who are you', 'what is your name', 'who created', 'who made', 'what are you',
+    'what can you do', 'help', 'hi', 'hello', 'hey', 'namaste', 'kem cho', 'good morning', 'good evening',
+    'thanks', 'thank you', 'ok', 'okay', 'got it', 'understood', 'what is this app'
+  ].some(phrase => text.includes(phrase));
+
+  // 1. Draft Maker checking
+  const isDraftTool = ['draftMaker', 'legal_draft_maker', 'draft_maker', 'legal_notice_generator', 'legal_fir_generator', 'legal_affidavit_generator'].includes(norm);
+  if (isDraftTool) {
+    const isPureQuestion = /^(what is|what are|explain|meaning of|who is|who are|tell me about|how does|what's your|whats your)/i.test(text);
+    if (isPureQuestion && !text.includes('format') && !text.includes('bana') && !text.includes('draft karo')) {
+      return 'ai_chat';
+    }
+
+    const draftingKeywords = [
+      'draft', 'prepare', 'write', 'create', 'generate',
+      'banao', 'bana do', 'taiyar karo', 'likh do', 'likho',
+      'notice', 'agreement', 'affidavit', 'petition', 'application', 'deed', 'contract',
+      'complaint', 'bail', 'fir', 'will', 'power of attorney', 'nda', 'document format',
+      'in document format', 'as a document', 'downloadable format'
+    ];
+    const hasDraftIntent = draftingKeywords.some(kw => text.includes(kw));
+    if (!hasDraftIntent) {
+      return 'ai_chat';
+    }
+    return norm;
+  }
+
+  // 2. Contract Review / Analyzer checking
+  const isContractTool = ['contractAnalyzer', 'legal_contract_analyzer', 'contract_review'].includes(norm);
+  if (isContractTool) {
+    if (isGeneralConversational && !hasDocs) {
+      return 'ai_chat';
+    }
+    const contractKeywords = ['contract', 'agreement', 'clause', 'review this', 'analyze this', 'risks', 'breach', 'indemnity', 'termination clause', 'liability'];
+    const hasContractIntent = hasDocs || contractKeywords.some(kw => text.includes(kw));
+    if (!hasContractIntent) {
+      return 'ai_chat';
+    }
+    return norm;
+  }
+
+  // 3. Case Predictor checking
+  const isPredictorTool = ['casePredictor', 'legal_case_predictor'].includes(norm);
+  if (isPredictorTool) {
+    if (isGeneralConversational) {
+      return 'ai_chat';
+    }
+    const predictKeywords = ['predict', 'outcome', 'chance of winning', 'chances', 'win probability', 'will i win', 'jeeten', 'jeete'];
+    const hasPredictIntent = predictKeywords.some(kw => text.includes(kw));
+    if (!hasPredictIntent) {
+      return 'ai_chat';
+    }
+    return norm;
+  }
+
+  // 4. Evidence Analyst checking
+  const isEvidenceTool = ['evidenceAnalyst', 'legal_evidence_checker', 'evidence_analysis'].includes(norm);
+  if (isEvidenceTool) {
+    if (isGeneralConversational && !hasDocs) {
+      return 'ai_chat';
+    }
+    const evidenceKeywords = ['evidence', 'forensic', 'witness', 'timeline', 'proof', 'saboot', 'gawah'];
+    const hasEvidenceIntent = hasDocs || evidenceKeywords.some(kw => text.includes(kw));
+    if (!hasEvidenceIntent) {
+      return 'ai_chat';
+    }
+    return norm;
+  }
+
+  // 5. Strategy Engine checking
+  const isStrategyTool = ['strategyEngine', 'legal_strategy_engine'].includes(norm);
+  if (isStrategyTool) {
+    if (isGeneralConversational) {
+      return 'ai_chat';
+    }
+    const strategyKeywords = ['strategy', 'litigation plan', 'defense plan', 'tactics', 'how to defend', 'defense strategy'];
+    const hasStrategyIntent = strategyKeywords.some(kw => text.includes(kw));
+    if (!hasStrategyIntent) {
+      return 'ai_chat';
+    }
+    return norm;
+  }
+
+  // 6. Argument Builder checking
+  const isArgumentTool = ['argumentBuilder', 'legal_argument_builder', 'court_prep'].includes(norm);
+  if (isArgumentTool) {
+    if (isGeneralConversational) {
+      return 'ai_chat';
+    }
+    const argumentKeywords = ['argument', 'counter argument', 'cross examination', 'submissions', 'oral argument', 'rebuttal', 'dalil'];
+    const hasArgumentIntent = argumentKeywords.some(kw => text.includes(kw));
+    if (!hasArgumentIntent) {
+      return 'ai_chat';
+    }
+    return norm;
+  }
+
+  if (isGeneralConversational && !hasDocs) {
+    return 'ai_chat';
+  }
+
+  return norm;
+};
+
 // --- CORE CHAT ENDPOINT ---
 router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
   const { content, history, systemInstruction, image, video, document, language, model, mode: reqMode, sessionId, userMsgId, aiMsgId, aspectRatio, modelId: reqModelId, skipSession } = req.body;
@@ -168,7 +290,8 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
         console.log(`[Admin-Bypass] Granting immediate access to admin user (${req.user.id || req.user._id})`);
       } else {
         const userId = req.user.id || req.user._id;
-        const targetTool = req.body.activeTool || req.body.toolName || req.body.tool || 'ai_chat';
+        const requestedTool = req.body.activeTool || req.body.toolName || req.body.tool || 'ai_chat';
+        const targetTool = resolveEffectiveTool(requestedTool, content, document, image);
         try {
           const FeatureAccessManager = await import('../services/featureAccessManager.js');
           const accessCheck = await FeatureAccessManager.checkAccess(userId, targetTool);
@@ -185,11 +308,11 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
           console.warn('[FeatureAccessCheck Error]', accErr.message);
         }
 
-        // Verify activeTool subscription access & trial limits
-        if (req.body.activeTool) {
+        // Verify activeTool subscription access & trial limits ONLY if actually invoking specialized feature
+        if (targetTool && targetTool !== 'ai_chat' && targetTool !== 'chat' && targetTool !== 'legal_my_case') {
           const userRec = await userModel.findById(userId);
           if (userRec) {
-            const subCheck = await checkFeatureSubscription(userRec, req.body.activeTool);
+            const subCheck = await checkFeatureSubscription(userRec, targetTool);
             if (!subCheck.success) {
               return res.status(200).json(subCheck);
             }
@@ -486,7 +609,8 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
         }
 
         const finalUserId = req.user?.id || req.user?._id;
-        const activeToolStream = req.body.activeTool || req.body.toolName || req.body.tool || req.body.featureKey || req.body.feature || (req.body.mode && req.body.mode !== 'CHAT' && req.body.mode !== 'NORMAL_CHAT' ? req.body.mode : 'ai_chat');
+        const rawActiveToolStream = req.body.activeTool || req.body.toolName || req.body.tool || req.body.featureKey || req.body.feature || (req.body.mode && req.body.mode !== 'CHAT' && req.body.mode !== 'NORMAL_CHAT' ? req.body.mode : 'ai_chat');
+        const activeToolStream = resolveEffectiveTool(rawActiveToolStream, content, document, image);
         let streamUsageStatus = null;
         if (finalUserId) {
           try {
@@ -734,7 +858,8 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
           }
         })();
 
-        const activeTool = req.body.activeTool || req.body.toolName || req.body.tool || req.body.featureKey || req.body.feature || (req.body.mode && req.body.mode !== 'CHAT' && req.body.mode !== 'NORMAL_CHAT' ? req.body.mode : 'ai_chat');
+        const rawActiveTool = req.body.activeTool || req.body.toolName || req.body.tool || req.body.featureKey || req.body.feature || (req.body.mode && req.body.mode !== 'CHAT' && req.body.mode !== 'NORMAL_CHAT' ? req.body.mode : 'ai_chat');
+        const activeTool = resolveEffectiveTool(rawActiveTool, content, document, image);
 
         if (finalUserId) {
             try {

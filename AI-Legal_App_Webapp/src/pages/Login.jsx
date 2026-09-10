@@ -207,19 +207,34 @@ const Login = () => {
     setGoogleLoading(true);
 
     try {
-      // Get user info from Google using the access token
-      const userInfoRes = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-      });
+      let email = '';
+      let name = '';
+      let picture = '';
 
-      const { email, name, picture } = userInfoRes.data;
+      // Retrieve user info using native fetch (clean headers, no CORS preflight conflict)
+      try {
+        const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+        });
+        if (userInfoRes.ok) {
+          const info = await userInfoRes.json();
+          email = info.email || '';
+          name = info.name || '';
+          picture = info.picture || '';
+        }
+      } catch (fetchErr) {
+        console.warn('[Google Login] Client userinfo fetch skipped/failed, backend will resolve server-side:', fetchErr);
+      }
 
-      // Send to our backend
+      // Send to our backend (backend verifies token and resolves profile server-side)
       const res = await axios.post(apis.googleLogin, {
         credential: tokenResponse.access_token,
         email,
         name,
-        picture
+        picture,
+        deviceOS: 'web',
+        platform: 'web',
+        signupPlatform: 'web'
       });
 
       toast.success('Logged in with Google!');

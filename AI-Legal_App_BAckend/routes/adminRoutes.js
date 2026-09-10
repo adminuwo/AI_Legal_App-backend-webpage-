@@ -101,4 +101,33 @@ router.get('/crashes', verifyToken, isAdmin, getCrashLogs);
 router.patch('/crashes/:id/status', verifyToken, isAdmin, updateCrashStatus);
 router.delete('/crashes/clear', verifyToken, isAdmin, clearCrashLogs);
 
+// User Lifecycle & Email Audit Reporting
+import { getLifecycleReportData, generateLifecycleExcelBuffer } from '../services/userLifecycleService.js';
+
+router.get('/lifecycle', verifyToken, isAdmin, async (req, res) => {
+    try {
+        const { dateRange = 'all' } = req.query;
+        const data = await getLifecycleReportData(dateRange);
+        return res.status(200).json({ success: true, ...data });
+    } catch (err) {
+        console.error('[ADMIN LIFECYCLE ERROR]', err);
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+router.get('/lifecycle/export', verifyToken, isAdmin, async (req, res) => {
+    try {
+        const { dateRange = 'all' } = req.query;
+        const buffer = await generateLifecycleExcelBuffer(dateRange);
+        const filename = `ai_legal_user_lifecycle_report_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        return res.status(200).send(buffer);
+    } catch (err) {
+        console.error('[ADMIN LIFECYCLE EXPORT ERROR]', err);
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 export default router;

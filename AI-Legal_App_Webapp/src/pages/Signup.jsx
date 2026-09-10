@@ -182,18 +182,34 @@ const Signup = () => {
     setGoogleLoading(true);
 
     try {
-      const userInfoRes = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-      });
+      let email = '';
+      let name = '';
+      let picture = '';
 
-      console.log('[Google Signup] User info:', userInfoRes.data);
-      const { email, name, picture } = userInfoRes.data;
+      // Retrieve user info using native fetch (clean headers, no CORS preflight conflict)
+      try {
+        const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+        });
+        if (userInfoRes.ok) {
+          const info = await userInfoRes.json();
+          email = info.email || '';
+          name = info.name || '';
+          picture = info.picture || '';
+          console.log('[Google Signup] User info fetched:', email);
+        }
+      } catch (fetchErr) {
+        console.warn('[Google Signup] Client userinfo fetch skipped/failed, backend will resolve server-side:', fetchErr);
+      }
 
       const res = await axios.post(apis.googleLogin, {
         credential: tokenResponse.access_token,
         email,
         name,
-        picture
+        picture,
+        deviceOS: 'web',
+        platform: 'web',
+        signupPlatform: 'web'
       });
 
       console.log('[Google Signup] Backend response:', res.data);

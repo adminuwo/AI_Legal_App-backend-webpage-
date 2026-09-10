@@ -204,7 +204,7 @@ const Landing = () => {
                             <div className="flex flex-col items-start gap-4 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <img src={logo} alt="AI LEGAL™" loading="eager" decoding="async" className="w-12 h-12 relative transform group-hover:scale-110 transition-transform duration-500" />
+                                    <img src={logo} alt="AI LEGAL™ - India's Premier Legal AI Platform Logo" loading="eager" decoding="async" className="w-12 h-12 relative transform group-hover:scale-110 transition-transform duration-500" />
                                 </div>
                                 <span aria-label="AI LEGAL™" className="text-xl font-black tracking-tighter transition-all duration-300" style={{ background: 'linear-gradient(135deg, #9333ea 0%, #3b82f6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontFamily: '"Times New Roman", Times, serif', display: 'inline-block', paddingRight: '2px' }}>AI LEGAL<span aria-hidden="true" style={{ fontSize: '0.6em', verticalAlign: 'super', marginLeft: '2px' }}>™</span></span>
                             </div>

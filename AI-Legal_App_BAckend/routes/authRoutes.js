@@ -19,6 +19,7 @@ import AuditLog from "../models/AuditLog.js";
 import AuthService from "../services/core/AuthService.js";
 import PendingRegistration from "../models/PendingRegistration.js";
 import { detectLanguageFromRequest } from "../utils/geoLanguageResolver.js";
+import { handleNewUserRegistration } from "../services/userLifecycleService.js";
 
 const router = express.Router();
 const authService = new AuthService();
@@ -406,6 +407,10 @@ const handleSocialUser = async (profile, req, res, isRedirect = true) => {
         // 3. Create new user with auto-detected regional language
         console.log(`[Social Auth] Creating new user via ${provider.toUpperCase()}: ${email}`);
         const detectedLang = detectLanguageFromRequest(req);
+        const userAgent = req.headers['user-agent'] || '';
+        const rawPlatform = req.headers['x-device-os'] || (userAgent.includes('Android') ? 'android' : (userAgent.includes('iPhone') || userAgent.includes('iPad') ? 'ios' : 'web'));
+        const detectedPlatform = ['android', 'ios', 'web'].includes(String(rawPlatform).toLowerCase()) ? String(rawPlatform).toLowerCase() : 'web';
+
         user = await UserModel.create({
           name: name || `${provider} User`,
           email: email,
@@ -415,7 +420,16 @@ const handleSocialUser = async (profile, req, res, isRedirect = true) => {
           isVerified: true,
           provider: provider.toLowerCase(),
           providerId: providerId,
+          deviceOS: detectedPlatform,
+          signupMethod: provider.toLowerCase(),
+          signupPlatform: detectedPlatform,
           socialLinks: [{ provider, providerId }],
+          subscription: {
+            plan: 'FREE',
+            status: 'active',
+            amount: 0,
+            expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+          },
           personalizations: {
             general: {
               language: detectedLang,
@@ -433,6 +447,9 @@ const handleSocialUser = async (profile, req, res, isRedirect = true) => {
             }
           ]
         });
+
+        // 📝 Automated User Lifecycle & Welcome Email Event
+        handleNewUserRegistration(user, provider.toLowerCase(), detectedPlatform).catch(err => console.error(`[Social Auth] Lifecycle registration error for ${email}:`, err));
 
         // 📝 Log Initial Free Credits
         try {
@@ -926,6 +943,20 @@ router.post("/google", async (req, res) => {
         } catch (userInfoErr) {
           console.error("[Google Login] Access token verification failed:", userInfoErr.message);
           return res.status(401).json({ error: "Invalid or expired Google Access Token" });
+        }
+      }
+
+      // If name or picture are still missing (tokeninfo only returns sub & email), fetch userinfo server-side
+      if (!name || !picture) {
+        try {
+          const userInfo = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+            headers: { Authorization: `Bearer ${credential}` },
+          });
+          if (!email) email = userInfo.data.email;
+          if (!name) name = userInfo.data.name;
+          if (!picture) picture = userInfo.data.picture;
+        } catch (infoErr) {
+          console.warn("[Google Login] Server-side userinfo fallback warning:", infoErr.message);
         }
       }
     }

@@ -5119,15 +5119,23 @@ const LegalWorkspace = () => {
           setInputValue('');
           handleRemoveFile();
 
-          // Credit Check & Deduction for AI Legal Tools (Exclude General Chat)
+          // Check if message is a general query
+          const lowerMsgCheck = (contentToSend || '').toLowerCase().trim();
+          const isGeneralQuery = [
+            'company name', 'who are you', 'what is your name', 'who created', 'who made',
+            'what are you', 'what can you do', 'help', 'hi', 'hello', 'hey', 'namaste',
+            'thanks', 'thank you', 'ok', 'okay', 'got it'
+          ].some(q => lowerMsgCheck.includes(q));
+
+          // Credit Check & Deduction for AI Legal Tools (Exclude General Chat and general assistant queries)
           const premiumLegalTools = [
-            'legal_my_case', 'legal_precedents', 'legal_draft_maker',
+            'legal_precedents', 'legal_draft_maker', 'legal_notice_generator',
             'legal_evidence_checker', 'legal_argument_builder', 'legal_case_predictor',
             'legal_contract_analyzer', 'legal_strategy_engine', 'legal_research_assistant',
             'legal_research'
           ];
 
-          if (premiumLegalTools.includes(activeToolId)) {
+          if (!isGeneralQuery && premiumLegalTools.includes(activeToolId)) {
             const creditSuccess = await handleToolUsage(activeToolName || "AI Legal Tool");
             if (!creditSuccess) {
               gen.complete(activeSessionId);
@@ -10435,7 +10443,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                   whileHover={{ scale: 1.05 }}
                                   className="flex items-center justify-center -mb-2"
                                 >
-                                  <img src="/logo/logo_transparent.png" className="w-20 h-20 sm:w-28 sm:h-28 object-contain drop-shadow-sm" alt="AI Legal Logo" />
+                                  <img src="/logo/logo_transparent.png" className="w-20 h-20 sm:w-28 sm:h-28 object-contain drop-shadow-sm" alt="AI LEGAL™ - Enterprise Legal Assistant Platform Logo" />
                                 </motion.div>
                               ) : (
                                 <motion.div

@@ -117,9 +117,24 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Apply interceptors to global axios as well
+// Apply interceptors to global axios as well (only for internal/backend requests)
 axios.interceptors.request.use(
   (config) => {
+    // CRITICAL FIX: Do NOT attach custom AI Legal headers to third-party external domains (e.g. Google APIs, OAuth, CDNs)
+    // Non-standard headers on external domains trigger browser CORS preflight (OPTIONS) rejections!
+    if (config.url && /^https?:\/\//i.test(config.url)) {
+      const isInternal =
+        (typeof window !== 'undefined' && config.url.includes(window.location.hostname)) ||
+        (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE && config.url.startsWith(import.meta.env.VITE_API_BASE)) ||
+        config.url.includes('aisa24.com') ||
+        config.url.includes('localhost') ||
+        config.url.includes('127.0.0.1');
+
+      if (!isInternal) {
+        return config;
+      }
+    }
+
     const user = localStorage.getItem('user');
     let userLang = 'English';
     let userJurisdiction = 'India';

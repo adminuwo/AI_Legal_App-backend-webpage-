@@ -697,6 +697,19 @@ export const incrementUsage = async (userId, feature) => {
         { upsert: true, new: true }
     );
 
+    // Automated Lifecycle: Check and Trigger Feature Limit Exhaustion Email (Exact transition: remaining > 0 to 0)
+    if (limit !== Infinity && currentUsed < limit && newUsedCount >= limit) {
+        try {
+            const { checkAndTriggerFeatureExhaustion } = await import('./userLifecycleService.js');
+            setImmediate(() => {
+                checkAndTriggerFeatureExhaustion(userId, normalizedFeature, newUsedCount, limit, plan)
+                    .catch(err => console.error('[FeatureAccessManager] Lifecycle exhaustion check error:', err));
+            });
+        } catch (e) {
+            console.warn('[FeatureAccessManager] Failed to trigger lifecycle exhaustion check:', e.message);
+        }
+    }
+
     // Socket.IO Real-Time Cross-Platform Broadcast to User's Channel
     try {
         const { getIO } = await import('../utils/socket.js');

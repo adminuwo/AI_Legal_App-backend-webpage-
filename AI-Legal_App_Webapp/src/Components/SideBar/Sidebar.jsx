@@ -229,7 +229,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
           }`}
         >
           {item.useLogoIcon ? (
-            <img src="/logo/logo_gold_emblem.png" className="w-6 h-6 object-contain shrink-0" alt="AI LEGAL Emblem" />
+            <img src="/logo/logo_gold_emblem.png" className="w-6 h-6 object-contain shrink-0" alt="AI LEGAL™ - Verified Judicial Intelligence Emblem" />
           ) : (
             <item.icon className={`w-5 h-5 ${isLinkActive ? 'text-[#C8A34D]' : 'text-slate-400 dark:text-slate-400'}`} />
           )}

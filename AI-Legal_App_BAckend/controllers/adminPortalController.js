@@ -256,53 +256,209 @@ const backfillDeviceOS = async () => {
     }
 };
 
-// 2. Query/CRUD Users (Pure MongoDB Live Fetch)
+// Helper: Calculate date range boundaries in Asia/Kolkata (IST, UTC+5:30)
+export const getDateRangeBoundaries = (dateRange) => {
+    if (!dateRange || dateRange === 'all') {
+        return null;
+    }
+
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+    });
+
+    const parts = formatter.formatToParts(now);
+    const partMap = {};
+    for (const p of parts) {
+        partMap[p.type] = p.value;
+    }
+    const year = parseInt(partMap.year, 10);
+    const month = parseInt(partMap.month, 10); // 1-12
+    const day = parseInt(partMap.day, 10);
+
+    // In UTC, midnight in Asia/Kolkata (UTC+5:30) is 18:30 of previous UTC day
+    const IST_OFFSET_MS = 19800000; // 5.5 * 3600 * 1000
+    const startOfTodayMs = Date.UTC(year, month - 1, day) - IST_OFFSET_MS;
+    const startOfToday = new Date(startOfTodayMs);
+    const startOfTomorrow = new Date(startOfTodayMs + 86400000);
+    const startOfYesterday = new Date(startOfTodayMs - 86400000);
+
+    let start = null;
+    let end = startOfTomorrow; // Includes records up to end of today
+
+    switch (dateRange) {
+        case 'today':
+            start = startOfToday;
+            end = startOfTomorrow;
+            break;
+        case 'yesterday':
+            start = startOfYesterday;
+            end = startOfToday;
+            break;
+        case '7d':
+            start = new Date(startOfTodayMs - 7 * 86400000);
+            break;
+        case '30d':
+            start = new Date(startOfTodayMs - 30 * 86400000);
+            break;
+        case '60d':
+            start = new Date(startOfTodayMs - 60 * 86400000);
+            break;
+        case '90d':
+            start = new Date(startOfTodayMs - 90 * 86400000);
+            break;
+        case '3m':
+            start = new Date(Date.UTC(year, month - 1 - 3, day) - IST_OFFSET_MS);
+            break;
+        case '6m':
+            start = new Date(Date.UTC(year, month - 1 - 6, day) - IST_OFFSET_MS);
+            break;
+        case '9m':
+            start = new Date(Date.UTC(year, month - 1 - 9, day) - IST_OFFSET_MS);
+            break;
+        case '1y':
+            start = new Date(Date.UTC(year - 1, month - 1, day) - IST_OFFSET_MS);
+            break;
+        default:
+            return null;
+    }
+
+    return { start, end };
+};
+
+// 2. Query/CRUD Users (Pure MongoDB Live Fetch with Server-side Date Filter & Pagination)
 export const getAllUsers = async (req, res) => {
     try {
         await backfillDeviceOS();
 
-        const { search, status, platform, page = 1, limit = 200 } = req.query;
+        const {
+            search,
+            status,
+            platform,
+            domain,
+            plan,
+            dateRange = 'today',
+            page = 1,
+            limit = 20
+        } = req.query;
+
         const query = {};
 
-        if (search && search.trim()) {
-            const s = search.trim();
-            query.$or = [
-                { name: { $regex: s, $options: 'i' } },
-                { fullName: { $regex: s, $options: 'i' } },
-                { email: { $regex: s, $options: 'i' } }
-            ];
+        // 1. Date Range Filter (Default: today)
+        const boundaries = getDateRangeBoundaries(dateRange);
+        if (boundaries) {
+            query.createdAt = {
+                $gte: boundaries.start,
+                $lt: boundaries.end
+            };
         }
 
-        if (status === 'suspended') {
+        // 2. Search Filter (name, fullName, email, phone, jurisdiction, or MongoDB ID)
+        if (search && search.trim()) {
+            const s = search.trim();
+            const orConditions = [
+                { name: { $regex: s, $options: 'i' } },
+                { fullName: { $regex: s, $options: 'i' } },
+                { email: { $regex: s, $options: 'i' } },
+                { phone: { $regex: s, $options: 'i' } },
+                { jurisdiction: { $regex: s, $options: 'i' } }
+            ];
+            if (mongoose.Types.ObjectId.isValid(s)) {
+                orConditions.push({ _id: new mongoose.Types.ObjectId(s) });
+            }
+            query.$or = orConditions;
+        }
+
+        // 3. Plan / Status Filter
+        if (status === 'suspended' || plan === 'suspended') {
             query.isBlocked = true;
         } else if (status === 'active') {
             query.isBlocked = { $ne: true };
         }
 
-        // Compute real-time database counts across all 7800+ users in MongoDB
-        const baseQuery = { ...query };
-        const [totalAll, totalAndroid, totalIos, totalWeb] = await Promise.all([
-            User.countDocuments(baseQuery),
-            User.countDocuments({ ...baseQuery, deviceOS: 'android' }),
-            User.countDocuments({ ...baseQuery, deviceOS: 'ios' }),
-            User.countDocuments({ ...baseQuery, deviceOS: 'web' })
+        if (plan === 'free') {
+            query.isBlocked = { $ne: true };
+            query.$and = query.$and || [];
+            query.$and.push({
+                $or: [
+                    { 'subscription.plan': { $in: [/^free/i, /^basic/i, null] } },
+                    { 'subscription.plan': { $exists: false } }
+                ]
+            });
+        } else if (plan === 'premium') {
+            query.isBlocked = { $ne: true };
+            query.$and = query.$and || [];
+            query.$and.push({
+                'subscription.plan': { $nin: [/^free/i, /^basic/i, null], $exists: true }
+            });
+        }
+
+        // 4. Base Query for Platform Counts (before platform filter is applied)
+        const basePlatformQuery = { ...query };
+        if (domain && domain.toLowerCase() !== 'all') {
+            if (domain === 'gmail') {
+                basePlatformQuery.email = { $regex: /gmail\.com$/i };
+            } else if (domain === 'icloud') {
+                basePlatformQuery.email = { $regex: /(icloud\.com|me\.com|mac\.com|appleid)/i };
+            } else if (domain === 'other') {
+                basePlatformQuery.email = { $not: /(gmail\.com|icloud\.com|me\.com|mac\.com|appleid)/i };
+            }
+        }
+
+        const [totalAll, totalAndroid, totalIos, totalWeb, globalTotal] = await Promise.all([
+            User.countDocuments(basePlatformQuery),
+            User.countDocuments({ ...basePlatformQuery, deviceOS: 'android' }),
+            User.countDocuments({ ...basePlatformQuery, deviceOS: 'ios' }),
+            User.countDocuments({ ...basePlatformQuery, deviceOS: 'web' }),
+            User.estimatedDocumentCount().catch(() => User.countDocuments({}))
         ]);
 
+        // 5. Apply Platform Filter to main query
         if (platform && platform.toLowerCase() !== 'all') {
             query.deviceOS = platform.toLowerCase();
         }
 
-        const skip = (Number(page) - 1) * Number(limit);
-        const fetchLimit = Math.min(Number(limit) > 0 ? Number(limit) : 500, 1000);
-        const users = await User.find(query)
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(fetchLimit)
-            .lean();
+        // 6. Base Query for Domain Counts (with platform applied, before domain filter is applied)
+        const baseDomainQuery = { ...query };
+        const [domainAll, domainGmail, domainIcloud, domainOther] = await Promise.all([
+            User.countDocuments(baseDomainQuery),
+            User.countDocuments({ ...baseDomainQuery, email: { $regex: /gmail\.com$/i } }),
+            User.countDocuments({ ...baseDomainQuery, email: { $regex: /(icloud\.com|me\.com|mac\.com|appleid)/i } }),
+            User.countDocuments({ ...baseDomainQuery, email: { $not: /(gmail\.com|icloud\.com|me\.com|mac\.com|appleid)/i } })
+        ]);
 
+        // 7. Apply Domain Filter to main query
+        if (domain && domain.toLowerCase() !== 'all') {
+            if (domain === 'gmail') {
+                query.email = { $regex: /gmail\.com$/i };
+            } else if (domain === 'icloud') {
+                query.email = { $regex: /(icloud\.com|me\.com|mac\.com|appleid)/i };
+            } else if (domain === 'other') {
+                query.email = { $not: /(gmail\.com|icloud\.com|me\.com|mac\.com|appleid)/i };
+            }
+        }
+
+        // 8. Server-side Pagination
+        const p = Math.max(1, parseInt(page, 10) || 1);
+        const l = Math.min(Math.max(1, parseInt(limit, 10) || 20), 100);
+        const skip = (p - 1) * l;
+
+        const [filteredTotal, users] = await Promise.all([
+            User.countDocuments(query),
+            User.find(query)
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(l)
+                .lean()
+        ]);
+
+        const totalPages = Math.ceil(filteredTotal / l) || 1;
         const userIds = users.map(u => u._id);
 
-        // Fetch subscriptions & case counts in 2 batch queries instead of 2 * N queries
+        // Fetch subscriptions & case counts in 2 batch queries
         const [subs, projectCounts] = await Promise.all([
             Subscription.find({
                 $or: [
@@ -323,8 +479,8 @@ export const getAllUsers = async (req, res) => {
         }
 
         const projectCountMap = new Map();
-        for (const p of projectCounts) {
-            if (p._id) projectCountMap.set(String(p._id), p.count);
+        for (const prj of projectCounts) {
+            if (prj._id) projectCountMap.set(String(prj._id), prj.count);
         }
 
         const list = users.map((u) => {
@@ -349,20 +505,32 @@ export const getAllUsers = async (req, res) => {
             };
         });
 
-        const filteredTotal = await User.countDocuments(query);
         res.status(200).json({
             success: true,
             list,
             users: list,
             total: filteredTotal,
+            pagination: {
+                page: p,
+                limit: l,
+                total: filteredTotal,
+                totalPages,
+                hasNextPage: p < totalPages,
+                hasPrevPage: p > 1
+            },
             counts: {
                 total: totalAll,
+                globalTotal,
                 android: totalAndroid,
                 ios: totalIos,
-                web: totalWeb
-            },
-            page: Number(page),
-            limit: fetchLimit
+                web: totalWeb,
+                domains: {
+                    all: domainAll,
+                    gmail: domainGmail,
+                    icloud: domainIcloud,
+                    other: domainOther
+                }
+            }
         });
     } catch (error) {
         console.error('[getAllUsers Error]', error);
