@@ -172,7 +172,12 @@ const ToolPreviewContent = ({ id, prompt, active }) => {
           >
             {getResultImage() ? (
               <div className="w-full h-full rounded-xl overflow-hidden relative group">
-                <img src={getResultImage()} className="w-full h-full object-cover" alt="Preview" />
+                <img 
+                  src={getResultImage()} 
+                  className="w-full h-full object-cover" 
+                  alt={prompt ? `AI LEGAL™ ${prompt} feature preview` : "AI LEGAL™ legal AI feature demonstration"} 
+                  loading="lazy"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
                   <p className="text-[10px] text-white font-bold truncate">{prompt}</p>
                 </div>

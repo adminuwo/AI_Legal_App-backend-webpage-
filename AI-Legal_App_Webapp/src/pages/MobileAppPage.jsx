@@ -275,9 +275,9 @@ export default function MobileAppPage() {
             <QrCode className="w-4 h-4" />
             <span>Scan to Download</span>
           </div>
-          <h3 className="text-lg md:text-xl font-bold text-[#111111] dark:text-white">
+          <h2 className="text-lg md:text-xl font-bold text-[#111111] dark:text-white">
             Quick Mobile Setup
-          </h3>
+          </h2>
           <p className="text-xs md:text-sm text-slate-600 dark:text-slate-300 max-w-md leading-relaxed">
             Scan with your phone camera to open the official app download page directly on iOS or Android.
           </p>
@@ -307,9 +307,9 @@ export default function MobileAppPage() {
           <ShieldCheck className="w-5 h-5" />
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-extrabold text-[#111111] dark:text-white">
+          <h3 className="text-sm font-extrabold text-[#111111] dark:text-white">
             Your AI LEGAL™ account works across platforms.
-          </h4>
+          </h3>
           <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
             Sign in with the same account on Web or Mobile. Subscription access, feature usage limits and account data are managed through the shared AI LEGAL™ backend.
           </p>

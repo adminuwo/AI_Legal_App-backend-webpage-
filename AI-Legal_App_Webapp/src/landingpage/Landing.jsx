@@ -213,16 +213,16 @@ const Landing = () => {
                             </p>
                             <div className="flex items-center gap-3">
                                 {[
-                                    { img: "/social-media-icons/Linkedin.svg", href: "https://www.linkedin.com/in/aimall-global/" },
-                                    { img: "/social-media-icons/X.svg", href: "https://x.com/aimallglobal" },
-                                    { img: "/social-media-icons/Threads.svg", href: "https://www.threads.net/@aimall.global" },
-                                    { img: "/social-media-icons/YT.svg", href: "https://www.youtube.com/@aimallglobal" },
-                                    { img: "/social-media-icons/FB.svg", href: "https://www.facebook.com/aimallglobal/" },
-                                    { img: "/social-media-icons/Insta.svg", href: "https://www.instagram.com/aimall.global/" },
-                                    { img: "/social-media-icons/Whatsapp.svg", href: "https://wa.me/918358990909" },
+                                    { name: "LinkedIn", img: "/social-media-icons/Linkedin.svg", href: "https://www.linkedin.com/in/aimall-global/" },
+                                    { name: "X (Twitter)", img: "/social-media-icons/X.svg", href: "https://x.com/aimallglobal" },
+                                    { name: "Threads", img: "/social-media-icons/Threads.svg", href: "https://www.threads.net/@aimall.global" },
+                                    { name: "YouTube", img: "/social-media-icons/YT.svg", href: "https://www.youtube.com/@aimallglobal" },
+                                    { name: "Facebook", img: "/social-media-icons/FB.svg", href: "https://www.facebook.com/aimallglobal/" },
+                                    { name: "Instagram", img: "/social-media-icons/Insta.svg", href: "https://www.instagram.com/aimall.global/" },
+                                    { name: "WhatsApp", img: "/social-media-icons/Whatsapp.svg", href: "https://wa.me/918358990909" },
                                 ].map((s, i) => (
-                                    <a key={i} href={s.href} target="_blank" rel="noreferrer" className="w-10 h-10 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/5 hover:bg-primary/20 hover:scale-110 shadow-sm transition-all duration-300 group">
-                                        <img src={s.img} alt="social" loading="lazy" decoding="async" className="w-5 h-5 transition-transform duration-300" />
+                                    <a key={i} href={s.href} target="_blank" rel="noreferrer" aria-label={`AI LEGAL on ${s.name}`} className="w-10 h-10 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/5 hover:bg-primary/20 hover:scale-110 shadow-sm transition-all duration-300 group">
+                                        <img src={s.img} alt={`AI LEGAL™ official ${s.name} channel`} loading="lazy" decoding="async" className="w-5 h-5 transition-transform duration-300" />
                                     </a>
                                 ))}
                             </div>
