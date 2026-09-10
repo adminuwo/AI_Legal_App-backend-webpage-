@@ -9,6 +9,7 @@ import { getLegalPrompt, LEGAL_DISCLAIMER } from './legalPrompts.js';
 import { subscriptionService } from '../../services/subscriptionService.js';
 import logger from '../../utils/logger.js';
 import * as FeatureAccessManager from '../../services/featureAccessManager.js';
+import { resolveResponseLanguage } from '../../utils/languageResolver.js';
 
 const router = express.Router();
 
@@ -160,6 +161,7 @@ const buildCaseContextString = (caseContext) => {
     }
 
     ctx += `=== MANDATORY CASE ASSISTANT OPERATIONAL DIRECTIVES ===\n`;
+
     ctx += `1. SINGLE SOURCE OF TRUTH: The above Live Case Workspace Context contains verified facts. DO NOT ask the user to provide information that is ALREADY PRESENT above (such as Client Name, Opponent Name, Court, Case Number, Facts, Documents, Orders, or Hearings). Use existing data automatically!\n`;
     ctx += `2. PARTIAL INFORMATION RULE: If 90% of required information exists in the context above, use that 90% and ask ONLY for the missing 10% required to complete the task.\n`;
     ctx += `3. ZERO FABRICATION: Never invent missing facts, addresses, citations, or case details. If an item is missing and required, state specifically what is missing.\n`;
@@ -204,7 +206,12 @@ router.post('/execute', verifyToken, creditMiddleware, async (req, res) => {
             }
         }
 
-        const targetLanguage = outputLanguage || language || preferred_response_language || target_language || req.query.preferred_response_language || req.query.language || req.query.outputLanguage || 'English';
+        const appSelectedLang = outputLanguage || language || preferred_response_language || target_language || req.query.preferred_response_language || req.query.language || req.query.outputLanguage || '';
+        const resolvedLang = resolveResponseLanguage({
+            currentMessage: message,
+            selectedLanguage: appSelectedLang
+        });
+        const targetLanguage = resolvedLang.language;
 
         if (!toolName) {
             return res.status(400).json({
@@ -253,7 +260,7 @@ router.post('/execute', verifyToken, creditMiddleware, async (req, res) => {
 
         // Add explicit language instruction to system prompt as well
         if (targetLanguage && targetLanguage !== 'English') {
-            systemPrompt += `\n\n🌐 MANDATORY OUTPUT LANGUAGE: ${targetLanguage}\nCRITICAL: Respond 100% in ${targetLanguage} script/tongue. Translate all section titles, analysis, clauses, recommendations, and legal text into ${targetLanguage}.`;
+            systemPrompt += `\n\n🌐 MANDATORY OUTPUT LANGUAGE: ${targetLanguage} (${resolvedLang.script} script)\nCRITICAL: Respond 100% in ${targetLanguage} script/tongue. Translate all section titles, analysis, clauses, recommendations, and legal text into ${targetLanguage}.`;
         }
 
         // 🔥 STEP 2: FORCE TOOL MODE (ALIGNED WITH DRAFT-FIRST WORKFLOW AND MULTILINGUAL OUTPUT)
@@ -262,7 +269,7 @@ router.post('/execute', verifyToken, creditMiddleware, async (req, res) => {
         const isFollowUp = conversationHistory && conversationHistory.length > 0;
         
         const langDirective = (targetLanguage && targetLanguage !== 'English')
-            ? `🌐 MANDATORY TARGET OUTPUT LANGUAGE: ${targetLanguage}\nCRITICAL MULTILINGUAL MANDATE: You MUST generate 100% of your response, analysis, headers, points, recommendations, and text in ${targetLanguage}. Do NOT write in English unless the user requested English.\n\n`
+            ? `🌐 MANDATORY TARGET OUTPUT LANGUAGE: ${targetLanguage}\nCRITICAL MULTILINGUAL MANDATE: You MUST generate 100% of your response, analysis, headers, points, recommendations, and text in ${targetLanguage} (${resolvedLang.script} script). Do NOT write in English unless requested.\n\n`
             : '';
 
         const enforcedMessage = isDraftingTool 

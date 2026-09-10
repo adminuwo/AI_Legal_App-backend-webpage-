@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node tests/securityAudit.test.js && node tests/apiSecurityEndpoints.test.js && node tests/fullEndpointSecurityTest.js",
+    "test": "node tests/securityAudit.test.js && node tests/apiSecurityEndpoints.test.js && node tests/fullEndpointSecurityTest.js && node tests/legalFreshnessPipeline.test.js",
+    "test:legal": "node tests/legalFreshnessPipeline.test.js",
+    "test:e2e": "node tests/e2eLegalChatGrounding.test.js",
     "start": "node server.js",
     "dev": "npx nodemon server.js"
   },

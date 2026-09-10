@@ -42,9 +42,23 @@ Understand the user's expertise level and topic preference implicitly from their
             finalSystemContent += `\n\n### USER IDENTIFICATION:\nThe user's name is ${userName}. You MUST use their name to address them directly and naturally in your responses (e.g., "Yes, Sakshi", or "Here is the information, ${userName}"). Make the conversation feel personalized by acknowledging their name.\n`;
         }
 
-        finalSystemContent = await jurisdictionManager.injectJurisdictionPrompt(finalSystemContent, options.userId);
+        if (options.groundedSearchContext) {
+            finalSystemContent += "\n\n" + options.groundedSearchContext;
+        }
 
         messages.push({ role: 'system', content: finalSystemContent });
+
+        // 1.5 Inject Conversation History for Multi-Turn Continuity
+        if (options.history && Array.isArray(options.history) && options.history.length > 0) {
+            for (const msg of options.history) {
+                const text = typeof msg.content === 'string' ? msg.content : (msg.text || '');
+                if (text && text.trim()) {
+                    const role = (msg.role === 'assistant' || msg.role === 'model') ? 'assistant' : 'user';
+                    messages.push({ role, content: text.trim() });
+                }
+            }
+        }
+
         // 2. Add Context if provided
         let finalPrompt = prompt;
         if (context) {
@@ -92,6 +106,9 @@ Understand the user's expertise level and topic preference implicitly from their
         if (response.data && response.data.choices && response.data.choices[0]) {
             const text = response.data.choices[0].message.content;
             logger.info(`[OPENAI] Response received successfully (${text.length} chars).`);
+            if (options.returnSources) {
+                return { text, sources: options.sources || [] };
+            }
             return text;
         }
 

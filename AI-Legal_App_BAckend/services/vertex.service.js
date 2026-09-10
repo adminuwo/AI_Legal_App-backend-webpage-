@@ -11,6 +11,7 @@ import pdf from 'pdf-parse/lib/pdf-parse.js';
 import { existsSync } from 'fs';
 
 import { resolveResponseLanguage } from '../utils/languageResolver.js';
+import { executeTargetedLegalSearch, formatGroundingContext } from './legalSearchOrchestrator.js';
 
 export const getGlobalLanguageInstruction = (language, messageText = '') => {
     const resolved = resolveResponseLanguage({
@@ -571,7 +572,7 @@ export const askVertex = async (prompt, context = null, options = {}) => {
 
         let finalPrompt = prompt;
         if (targetLanguage) {
-            finalPrompt = `${prompt}\n\npreferred_response_language=${targetLanguage}`;
+            finalPrompt = `${prompt}\n\npreferred_response_language=${targetLanguage}${resolvedLang.style === 'Hinglish' ? ' (Hinglish / Roman Hindi)' : (resolvedLang.style === 'Bilingual' ? ' (Bilingual)' : '')}`;
         }
         // Combine context with prompt if available (if not using system instruction to carry context)
         if (context) {
@@ -788,6 +789,7 @@ export const askVertex = async (prompt, context = null, options = {}) => {
                     const fallbackModel = fallbackGenAI.getGenerativeModel({
                         model: 'gemini-1.5-flash',
                         systemInstruction: systemInstruction,
+                        tools: options.useSearch ? [{ googleSearch: {} }] : []
                     });
                     if (onChunk) {
                         result = await fallbackModel.generateContentStream({ contents });
@@ -796,18 +798,34 @@ export const askVertex = async (prompt, context = null, options = {}) => {
                     }
                 } else if (process.env.OPENAI_API_KEY) {
                     logger.warn(`[VERTEX API 403 -> OPENAI FALLBACK] Falling back to OpenAI (gpt-4o)...`);
+                    let groundedSearchContext = '';
+                    let fallbackSources = [];
+                    if (options.useSearch) {
+                        try {
+                            const liveSearchRes = await executeTargetedLegalSearch(options.searchQueryOverride || prompt);
+                            fallbackSources = liveSearchRes.sources || [];
+                            groundedSearchContext = formatGroundingContext(fallbackSources, liveSearchRes.summary);
+                            logger.info(`[LEGAL-FRESHNESS] SEARCH_REQUIRED=true | ENGINE=tavily_fallback | SOURCES=${fallbackSources.length} | STATUS=fallback_grounded`);
+                        } catch (sErr) {
+                            logger.warn(`[VERTEX -> OPENAI FALLBACK] Live search failed: ${sErr.message}`);
+                        }
+                    }
                     const { askOpenAI } = await import('./openai.service.js');
                     const aiText = await askOpenAI(finalPrompt, context, {
                         systemInstruction,
                         userName: options.userName,
                         language: targetLanguage,
                         userId: options.userId,
-                        isJson: isJsonMode
+                        history: options.history,
+                        isJson: isJsonMode,
+                        groundedSearchContext,
+                        sources: fallbackSources,
+                        returnSources: options.returnSources
                     });
                     if (onChunk) {
-                        onChunk(aiText);
+                        onChunk(typeof aiText === 'string' ? aiText : aiText.text);
                     }
-                    return options.returnSources ? { text: aiText, sources: [] } : aiText;
+                    return options.returnSources ? (typeof aiText === 'object' ? aiText : { text: aiText, sources: fallbackSources }) : (typeof aiText === 'object' ? aiText.text : aiText);
                 } else {
                     throw execErr;
                 }
@@ -816,7 +834,8 @@ export const askVertex = async (prompt, context = null, options = {}) => {
                 const fallbackModel = genAIInstance.getGenerativeModel({
                     model: 'gemini-2.5-flash',
                     systemInstruction: systemInstruction,
-                    generationConfig: { maxOutputTokens: 4096 }
+                    generationConfig: { maxOutputTokens: 4096 },
+                    tools: options.useSearch ? [{ googleSearch: {} }] : []
                 });
                 if (onChunk) {
                     result = await fallbackModel.generateContentStream({ contents });
@@ -826,18 +845,34 @@ export const askVertex = async (prompt, context = null, options = {}) => {
             } else {
                 if (process.env.OPENAI_API_KEY) {
                     logger.warn(`[VERTEX UNHANDLED -> OPENAI FALLBACK] Error: ${errStr}. Falling back to OpenAI...`);
+                    let groundedSearchContext = '';
+                    let fallbackSources = [];
+                    if (options.useSearch) {
+                        try {
+                            const liveSearchRes = await executeTargetedLegalSearch(options.searchQueryOverride || prompt);
+                            fallbackSources = liveSearchRes.sources || [];
+                            groundedSearchContext = formatGroundingContext(fallbackSources, liveSearchRes.summary);
+                            logger.info(`[LEGAL-FRESHNESS] SEARCH_REQUIRED=true | ENGINE=tavily_fallback | SOURCES=${fallbackSources.length} | STATUS=fallback_grounded`);
+                        } catch (sErr) {
+                            logger.warn(`[VERTEX -> OPENAI FALLBACK] Live search failed: ${sErr.message}`);
+                        }
+                    }
                     const { askOpenAI } = await import('./openai.service.js');
                     const aiText = await askOpenAI(finalPrompt, context, {
                         systemInstruction,
                         userName: options.userName,
                         language: targetLanguage,
                         userId: options.userId,
-                        isJson: isJsonMode
+                        history: options.history,
+                        isJson: isJsonMode,
+                        groundedSearchContext,
+                        sources: fallbackSources,
+                        returnSources: options.returnSources
                     });
                     if (onChunk) {
-                        onChunk(aiText);
+                        onChunk(typeof aiText === 'string' ? aiText : aiText.text);
                     }
-                    return options.returnSources ? { text: aiText, sources: [] } : aiText;
+                    return options.returnSources ? (typeof aiText === 'object' ? aiText : { text: aiText, sources: fallbackSources }) : (typeof aiText === 'object' ? aiText.text : aiText);
                 }
                 throw execErr;
             }
@@ -903,6 +938,7 @@ export const askVertex = async (prompt, context = null, options = {}) => {
                 }
                 return null;
             }).filter(Boolean);
+            logger.info(`[LEGAL-FRESHNESS] SEARCH_REQUIRED=true | ENGINE=google_grounding | SOURCES=${sources.length} | STATUS=success`);
         }
 
         logger.info(`[VERTEX] Response received successfully (${text.length} chars).`);

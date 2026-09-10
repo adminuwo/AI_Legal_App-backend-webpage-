@@ -129,24 +129,32 @@ function detectExplicitInMessageLanguage(message) {
     return { language: 'Hindi', style: 'Hinglish', script: 'Latin', source: 'explicit_message_request' };
   }
 
+  // Handle typo variants of Sanskrit like 'sandruit', 'samskrit', 'sanskrt', 'sanscrit'
+  if (/\b(sandruit|samskrit|sanskrt|sanscrit|sanskrit)\b/i.test(text)) {
+    return { language: 'Sanskrit', style: 'Standard', script: 'Devanagari', source: 'explicit_message_request' };
+  }
+
   // Explicit Hindi / English check
-  if (/\b(explain in hindi|hindi me|hindi mein|hindi please|in hindi|hindi language|hindi me samjhao|hindi mein samjhao|hindi me batao)\b/i.test(text)) {
+  if (/\b(explain in hindi|hindi me|hindi mein|hindi please|in hindi|hindi language|hindi me samjhao|hindi mein samjhao|hindi me batao|pure hindi|shuddh hindi)\b/i.test(text)) {
     return { language: 'Hindi', style: 'Standard', script: 'Devanagari', source: 'explicit_message_request' };
   }
-  if (/\b(explain in english|in english|english please|english language)\b/i.test(text)) {
+  if (/\b(explain in english|in english|english please|english language|english me|english mein|english me samjhao|english me batao)\b/i.test(text)) {
     return { language: 'English', style: 'Standard', script: 'Latin', source: 'explicit_message_request' };
   }
 
-  // Check language suffix/prefix patterns e.g., "in marathi", "marathi me", "marathi madhe", "explain in sanskrit", "tell in tamil", "kannada dalli heli"
+  // Check language suffix/prefix patterns e.g., "in marathi", "marathi me", "marathi madhe", "explain in sanskrit", "tell me in sanskrit", "tell in tamil", "kannada dalli heli"
   const targetPatternMatches = [
-    /\b(?:explain|translate|write|speak|reply|answer|give|continue|batao|samjhao|smjhao|bataiye)\s+(?:in|into|to|with)?\s*(?:everything|this|all)?\s*([a-z]+)\b/i,
-    /\b([a-z]+)\s+(?:me|mein|madhe|lo|dalli|ma|vich|te|il|re)\s*(?:samjhao|smjhao|batao|bataiye|do|kar|karo|tell|explain|say|speak|jawab)?\b/i
+    /\b(?:explain|translate|write|speak|reply|answer|give|continue|tell|teach|show|batao|samjhao|smjhao|bataiye|samjha)\s+(?:me|us|to\s+me|to\s+us|this|that|all|everything)?\s*(?:in|into|to|with)?\s*([a-z]+)\b/i,
+    /\b([a-z]+)\s*(?:me|mein|madhe|lo|dalli|ma|vich|te|il|re|la)\s*(?:samjhao|smjhao|batao|bataiye|samjha|bata|bolo|likho|do|kar|karo|tell|explain|say|speak|jawab)?\b/i
   ];
 
   for (const pattern of targetPatternMatches) {
     const match = text.match(pattern);
     if (match && match[1]) {
       const candidateKey = match[1].toLowerCase();
+      if (candidateKey === 'sandruit' || candidateKey === 'samskrit' || candidateKey === 'sanskrt') {
+        return { language: 'Sanskrit', style: 'Standard', script: 'Devanagari', source: 'explicit_message_request' };
+      }
       if (ALL_SUPPORTED_LANGUAGES_MAP[candidateKey]) {
         const info = ALL_SUPPORTED_LANGUAGES_MAP[candidateKey];
         return {
@@ -162,7 +170,7 @@ function detectExplicitInMessageLanguage(message) {
   // Direct keyword occurrences
   for (const [key, info] of Object.entries(ALL_SUPPORTED_LANGUAGES_MAP)) {
     if (key === 'english' || key === 'hindi') continue; // Handled specially to avoid false positive on words like "in"
-    const regex = new RegExp(`\\b(in|into|explain in|speak in|translate into|give in|${key} me|${key} mein|${key} madhe|${key} lo|${key} dalli|${key} ma|${key} vich|${key} te|${key} il|${key} re)\\s+${key}\\b|\\b${key}\\s+(me|mein|madhe|lo|dalli|ma|vich|te|il|re|smjhao|samjhao)\\b`, 'i');
+    const regex = new RegExp(`\\b(in|into|explain in|speak in|translate into|give in|tell in|${key} me|${key} mein|${key} madhe|${key} lo|${key} dalli|${key} ma|${key} vich|${key} te|${key} il|${key} re)\\s+${key}\\b|\\b${key}\\s+(me|mein|madhe|lo|dalli|ma|vich|te|il|re|smjhao|samjhao|batao|bataiye)\\b`, 'i');
     if (regex.test(text)) {
       return {
         language: info.language,
@@ -173,45 +181,54 @@ function detectExplicitInMessageLanguage(message) {
     }
   }
 
-  // General "in english" / "english me" check
-  if (/\b(in english|english me|english mein|explain in english|give in english|english text|in english please|key points in english)\b/i.test(text)) {
-    return { language: 'English', style: 'Standard', script: 'Latin', source: 'explicit_message_request' };
-  }
-
   return null;
 }
 
 /**
- * Detect language & style from raw message text (Priority 3)
+ * Detect language & style from raw message text
  */
 function detectMessageLanguageAndStyle(message) {
   if (!message || typeof message !== 'string') {
-    return { language: 'English', style: 'Standard', script: 'Latin', source: 'default_fallback' };
+    return { language: 'English', style: 'Standard', script: 'Latin', source: 'default_fallback', isNeutral: true };
   }
 
+  const trimmed = message.trim();
+
   // 1. Devanagari script check (Hindi vs Marathi vs Sanskrit)
-  if (SCRIPTS.Hindi_Devanagari.test(message)) {
-    const isSanskrit = SANSKRIT_DEVANAGARI_KEYWORDS.some(kw => message.includes(kw));
+  if (SCRIPTS.Hindi_Devanagari.test(trimmed)) {
+    const isSanskrit = SANSKRIT_DEVANAGARI_KEYWORDS.some(kw => trimmed.includes(kw));
     if (isSanskrit) {
-      return { language: 'Sanskrit', style: 'Standard', script: 'Devanagari', source: 'detected_script' };
+      return { language: 'Sanskrit', style: 'Standard', script: 'Devanagari', source: 'detected_script', isNeutral: false };
     }
-    const isMarathi = MARATHI_DEVANAGARI_KEYWORDS.some(kw => message.includes(kw));
+    const isMarathi = MARATHI_DEVANAGARI_KEYWORDS.some(kw => trimmed.includes(kw));
     if (isMarathi) {
-      return { language: 'Marathi', style: 'Standard', script: 'Devanagari', source: 'detected_script' };
+      return { language: 'Marathi', style: 'Standard', script: 'Devanagari', source: 'detected_script', isNeutral: false };
     }
-    return { language: 'Hindi', style: 'Standard', script: 'Devanagari', source: 'detected_script' };
+    return { language: 'Hindi', style: 'Standard', script: 'Devanagari', source: 'detected_script', isNeutral: false };
   }
 
   // 2. Check other native scripts
   for (const [scriptName, regex] of Object.entries(SCRIPTS)) {
-    if (scriptName !== 'Hindi_Devanagari' && regex.test(message)) {
+    if (scriptName !== 'Hindi_Devanagari' && regex.test(trimmed)) {
       const langName = scriptName === 'Punjabi' ? 'Punjabi' : scriptName;
-      return { language: langName, style: 'Standard', script: scriptName, source: 'detected_script' };
+      return { language: langName, style: 'Standard', script: scriptName, source: 'detected_script', isNeutral: false };
     }
   }
 
-  // 3. Latin script check: Hinglish vs English
-  const words = message.toLowerCase().replace(/[?.!,:;()]/g, '').split(/\s+/).filter(w => w.length > 0);
+  // 3. Latin script check: Hinglish vs English vs Ambiguous/Neutral
+  const cleanText = trimmed.toLowerCase().replace(/[?.!,:;()#_/[\]"']/g, ' ');
+  const words = cleanText.split(/\s+/).filter(w => w.length > 0);
+
+  if (words.length === 0) {
+    return { language: 'English', style: 'Standard', script: 'Latin', source: 'default_fallback', isNeutral: true };
+  }
+
+  // Check if input is purely digits, section numbers, or neutral short codes (e.g. "106", "420", "ok", "yes", "no")
+  const isPurelyNeutral = words.every(w => /^\d+$/.test(w) || ['ok', 'okay', 'yes', 'no', 'fine', 'sure', 'hi', 'hello', 'hey'].includes(w));
+  if (isPurelyNeutral && words.length <= 2) {
+    return { language: 'English', style: 'Standard', script: 'Latin', source: 'neutral_short_code', isNeutral: true };
+  }
+
   let hinglishScore = 0;
   let hasDistinctMarker = false;
   words.forEach(w => {
@@ -219,17 +236,21 @@ function detectMessageLanguageAndStyle(message) {
     if (DISTINCT_HINGLISH_MARKERS.includes(w)) hasDistinctMarker = true;
   });
 
-  const threshold = Math.max(2, Math.ceil(words.length * 0.18));
+  const threshold = Math.max(2, Math.ceil(words.length * 0.15));
   if (hasDistinctMarker || hinglishScore >= threshold) {
-    return { language: 'Hindi', style: 'Hinglish', script: 'Latin', source: 'detected_hinglish' };
+    return { language: 'Hindi', style: 'Hinglish', script: 'Latin', source: 'detected_hinglish', isNeutral: false };
   }
 
-  return { language: 'English', style: 'Standard', script: 'Latin', source: 'detected_english' };
+  return { language: 'English', style: 'Standard', script: 'Latin', source: 'detected_english', isNeutral: false };
 }
 
 /**
  * MASTER LANGUAGE RESOLVER
- * Enforces Priority 1 -> Priority 2 -> Priority 3
+ * Strict Dynamic Priority:
+ * Priority 1: Explicit user instruction inside the message query (e.g. "Explain in Sanskrit", "Explain me in sandruit", "मराठीत सांगा")
+ * Priority 2: Auto-detected input language & script mirroring (Pure Hindi Devanagari -> Hindi; English -> English; Hinglish -> Hinglish; Native scripts -> Native)
+ * Priority 3: Fallback to selectedLanguage / app setting ONLY when input is neutral/ambiguous (e.g. "106", "420", "OK")
+ * Priority 4: Default fallback (English)
  */
 export function resolveResponseLanguage({
   currentMessage = '',
@@ -239,7 +260,7 @@ export function resolveResponseLanguage({
   appLocale = ''
 } = {}) {
 
-  // Priority 1: Explicit user instruction inside the message query (e.g. "Explain in Marathi", "Marathi me smjhao", "उत्तर संस्कृत में दो")
+  // Priority 1: Explicit user instruction inside the message query (e.g. "Explain in Marathi", "Marathi me smjhao", "उत्तर संस्कृत में दो", "explain in sandruit")
   const explicitInMessage = detectExplicitInMessageLanguage(currentMessage);
   if (explicitInMessage) {
     return {
@@ -248,7 +269,19 @@ export function resolveResponseLanguage({
     };
   }
 
-  // Priority 2: Selected Output Language inside AI Legal™ settings or module
+  // Priority 2: Automatic per-message detection & mirroring
+  const detected = detectMessageLanguageAndStyle(currentMessage);
+
+  // If user clearly typed in a language (English, pure Hindi Devanagari, Hinglish, Marathi, etc.) that is NOT neutral:
+  // Directly MIRROR that language! (Do not let background UI dropdown hijack user's typed input)
+  if (!detected.isNeutral) {
+    return {
+      ...detected,
+      systemInstruction: buildSystemLanguageInstruction(detected)
+    };
+  }
+
+  // Priority 3: Fallback to selectedLanguage ONLY when input is neutral/ambiguous (e.g. "106", "420", "ok")
   const normalizedAppLang = String(explicitRequestedLanguage || selectedLanguage || '').trim();
   if (normalizedAppLang && normalizedAppLang !== 'Auto' && normalizedAppLang !== 'UI_ONLY') {
     if (normalizedAppLang === 'Bilingual' || normalizedAppLang.includes('English + Hindi')) {
@@ -267,8 +300,7 @@ export function resolveResponseLanguage({
     }
   }
 
-  // Priority 3: Automatic per-message detection (Message input language, script & style)
-  const detected = detectMessageLanguageAndStyle(currentMessage);
+  // Priority 4: Default fallback
   return {
     ...detected,
     systemInstruction: buildSystemLanguageInstruction(detected)
@@ -291,13 +323,13 @@ export function buildSystemLanguageInstruction(resolved) {
   instruction += `SYSTEM RULES FOR LANGUAGE RESPONSE:\n`;
 
   if (style === 'Hinglish') {
-    instruction += `- GENERATE RESPONSE IN NATURAL HINGLISH (Romanized Hindi script mixed naturally with English).\n`;
-    instruction += `- Example tone: "Aapki next hearing 28 July ko hai. Is case me aapko yeh evidence prepare karna chahiye..."\n`;
-    instruction += `- DO NOT translate the entire response into formal Devanagari Hindi or plain English.\n`;
+    instruction += `- CRITICAL LANGUAGE MANDATE: The user's input/preference is HINGLISH. You MUST generate your response in natural conversational HINGLISH (Roman Hindi script mixed naturally with English legal terms).\n`;
+    instruction += `- Example tone: "Is case me aapko Section 106 BNS ke tahat bail application High Court ya Sessions Court me file karni hogi. Aapke main legal grounds yeh hone chahiye..."\n`;
+    instruction += `- DO NOT translate the response into Devanagari Hindi or formal pure English. Keep it in natural Romanized Hinglish.\n`;
   } else if (language === 'Marathi') {
-    instruction += `- CRITICAL MULTILINGUAL MANDATE: You MUST generate 100% of your response in MARATHI (Devanagari script).\n`;
+    instruction += `- CRITICAL MULTILINGUAL MANDATE: The user asked/requested in MARATHI. You MUST generate 100% of your response in MARATHI (Devanagari script: मराठी).\n`;
   } else if (language === 'Sanskrit') {
-    instruction += `- CRITICAL MULTILINGUAL MANDATE: You MUST generate 100% of your response in SANSKRIT (Devanagari script).\n`;
+    instruction += `- CRITICAL MULTILINGUAL MANDATE: The user explicitly requested SANSKRIT. You MUST generate 100% of your response and legal explanations in SANSKRIT (Devanagari script: संस्कृतम्).\n`;
   } else if (language === 'Tamil') {
     instruction += `- CRITICAL MULTILINGUAL MANDATE: You MUST generate 100% of your response in TAMIL script.\n`;
   } else if (language === 'Telugu') {
@@ -311,14 +343,15 @@ export function buildSystemLanguageInstruction(resolved) {
   } else if (language === 'Punjabi') {
     instruction += `- CRITICAL MULTILINGUAL MANDATE: You MUST generate 100% of your response in GURMUKHI (PUNJABI) script.\n`;
   } else if (language === 'Hindi' && style === 'Standard') {
-    instruction += `- CRITICAL MULTILINGUAL MANDATE: You MUST generate 100% of your response in HINDI (Devanagari script).\n`;
+    instruction += `- CRITICAL LANGUAGE MANDATE: The user's input/preference is PURE HINDI (Devanagari script). You MUST generate 100% of your response in pure HINDI (Devanagari script: हिन्दी).\n`;
+    instruction += `- Do NOT respond in English or Hinglish. Translate all explanations, headings, grounds, and legal analysis into standard Hindi.\n`;
   } else if (style === 'Bilingual') {
     instruction += `- GENERATE RESPONSE IN BILINGUAL FORMAT (English headings/structure followed by Hindi explanations).\n`;
   } else if (language !== 'English') {
     instruction += `- CRITICAL MULTILINGUAL MANDATE: You MUST generate 100% of your response in ${language.toUpperCase()} in its native script.\n`;
     instruction += `- Do NOT respond in English or Hindi. Translate all headings, explanations, reasons, probabilities, vulnerabilities, and legal reports into ${language}.\n`;
   } else {
-    instruction += `- GENERATE RESPONSE IN CLEAR PROFESSIONAL ENGLISH.\n`;
+    instruction += `- CRITICAL LANGUAGE MANDATE: The user's input/preference is ENGLISH. You MUST generate 100% of your response in clear, professional ENGLISH. Do NOT answer in Hindi or Hinglish.\n`;
   }
 
   instruction += `- ABSOLUTE PROHIBITION ON REFUSAL MESSAGES: NEVER output language restriction or refusal phrases (such as limiting responses to English or Hindi, or declaring inability to explain in ${language}). Fully fulfill the prompt directly in ${language}.\n`;

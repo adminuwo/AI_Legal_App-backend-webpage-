@@ -12,7 +12,7 @@ class UserIntelligenceService {
      * Entry point: Analyze a new interaction
      */
     async processInteraction(userId, message, role) {
-        if (!userId || role !== 'user' || userId === 'admin') return;
+        if (!userId || role !== 'user' || userId === 'admin' || mongoose.connection.readyState !== 1) return;
 
         try {
             // 1. Update/Create raw behavior data
@@ -149,14 +149,16 @@ class UserIntelligenceService {
      * Build the persona-specific injection for the System Prompt
      */
     async getPersonaInjection(userId) {
-        const profile = await UserProfile.findOne({ userId });
-        if (!profile) return "";
+        if (!userId || mongoose.connection.readyState !== 1) return "";
+        try {
+            const profile = await UserProfile.findOne({ userId });
+            if (!profile) return "";
 
-        const onboarding = profile.onboarding || {};
-        const psychology = profile.psychology || {};
-        const intelligence = profile.intelligence || {};
-        
-        let context = `\n### USER PERSONALITY PROFILE (AISA ADAPTIVE SYSTEM):\n`;
+            const onboarding = profile.onboarding || {};
+            const psychology = profile.psychology || {};
+            const intelligence = profile.intelligence || {};
+            
+            let context = `\n### USER PERSONALITY PROFILE (AISA ADAPTIVE SYSTEM):\n`;
         
         if (onboarding.currentWork) context += `- Current Work: ${onboarding.currentWork}\n`;
         if (onboarding.goals?.length > 0) context += `- Goals: ${onboarding.goals.join(', ')}\n`;
@@ -171,8 +173,10 @@ class UserIntelligenceService {
         if (intelligence.complexityPreference === 'Complex') context += `- Provide deep technical details and architecture insights.\n`;
         if (psychology.learningStyle === 'Practical') context += `- Focus on code examples and actionable steps.\n`;
         if (psychology.learningStyle === 'Theoretical') context += `- Explain the "why" and underlying principles.\n`;
-        
-        return context;
+                return context;
+        } catch {
+            return "";
+        }
     }
 }
 

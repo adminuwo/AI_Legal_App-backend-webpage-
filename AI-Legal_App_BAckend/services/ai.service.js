@@ -21,6 +21,8 @@ import { classifyIntent } from './intent/intentClassifier.js';
 import { getLegalPrompt, LEGAL_DISCLAIMER, GLOBAL_RULES } from '../Tools/AI_Legal/legalPrompts.js';
 import { safeParseLLMJson } from '../utils/jsonUtils.js';
 import { performGlobalDatabaseSearch } from "../utils/aiMemorySystem.js";
+import { analyzeFreshness } from './freshnessDetector.js';
+import { executeTargetedLegalSearch, formatGroundingContext } from './legalSearchOrchestrator.js';
 
 
 // Real RAG Storage (MongoDB Atlas)
@@ -105,7 +107,10 @@ export const chat = async (message, activeDocContent = null, options = {}) => {
 
         const isLegalMode = mode === 'LEGAL_TOOLKIT' || (toolName && toolName.startsWith('legal_'));
 
-        logger.info(`[AI-Service] Lang Selection: ${resolvedLang.language} (${resolvedLang.style}/${resolvedLang.script}, Source: ${resolvedLang.source}, Option: ${language})`);
+        // --- CENTRALIZED LEGAL FRESHNESS & SEARCH DECISION ---
+        const freshnessDecision = analyzeFreshness(message, mode, toolName, activeDocContent);
+        const isFreshnessRequired = freshnessDecision.isFreshnessRequired;
+        logger.info(`[AI-Service] Lang: ${resolvedLang.language} | Freshness: ${isFreshnessRequired ? 'REQUIRED (' + freshnessDecision.reason + ')' : 'NOT_REQUIRED'} | SearchType: ${freshnessDecision.searchType}`);
 
         // --- CONVERSATION MEMORY RAG ---
         // Combine history from frontend and retrieved memory from DB if available
@@ -356,7 +361,7 @@ Maintain any text response outside the JSON block.`;
         const lastAssistantMessageObj = [...(combinedHistory || [])].reverse().find(m => (m.role === 'model' || m.role === 'assistant') && (m.content || m.text));
         const lastAssistantContent = lastAssistantMessageObj ? (lastAssistantMessageObj.content || lastAssistantMessageObj.text || '') : null;
 
-        const isTransformationCommand = /\b(explain in|translate|translate into|in hindi|in marathi|in sanskrit|in tamil|in telugu|in kannada|in gujarati|in bengali|in punjabi|in urdu|hindi me|marathi me|sanskrit me|tamil me|kannada me|telugu me|gujarati me|make it shorter|shorter|make it formal|make it simple|simplify|expand|summarize|add more points|add points|add examples|give citations|continue|convert to table|convert into table|convert into points|remove point|advocate-friendly|re-explain|rephrase|and \d+|what about|give grounds|grounds|punishment|meaning|explain this|this|that|it|same|above|previous one|short krdo|formal krdo|simple me|detail me|bnao|krdo|kaise|kya|kyun)\b/i.test(message) || (message.trim().split(/\s+/).length <= 5 && (combinedHistory.length > 0 || !!lastAssistantContent));
+        const isTransformationCommand = /\b(explain in|explain me in|translate|translate into|in hindi|in marathi|in sanskrit|in sandruit|in tamil|in telugu|in kannada|in gujarati|in bengali|in punjabi|in urdu|hindi me|marathi me|sanskrit me|sandruit me|sandruit|tamil me|kannada me|telugu me|gujarati me|make it shorter|shorter|make it formal|make it simple|simplify|expand|summarize|add more points|add points|add examples|give citations|continue|convert to table|convert into table|convert into points|remove point|advocate-friendly|re-explain|rephrase|and \d+|what about|give grounds|grounds|punishment|meaning|explain this|this|that|it|same|above|previous one|short krdo|formal krdo|simple me|detail me|bnao|krdo|kaise|kya|kyun)\b/i.test(message) || (message.trim().split(/\s+/).length <= 5 && (combinedHistory.length > 0 || !!lastAssistantContent));
 
         let followUpContext = "";
         if (isTransformationCommand && lastAssistantContent) {
@@ -426,7 +431,8 @@ STRICT MANDATE FOR THIS TURN:
         // PRIORITY 0: REAL-TIME WEB SEARCH
         if (message.length > 5 && !images?.length && !documents?.length && !activeDocContent?.length) {
             const cacheKey = message.toLowerCase().trim();
-            if (searchCache.has(cacheKey)) {
+            // Stale cache bypass if freshness is explicitly required
+            if (!isFreshnessRequired && searchCache.has(cacheKey)) {
                 const cached = searchCache.get(cacheKey);
                 if (Date.now() - cached.timestamp < CACHE_TTL) {
                     logger.info(`[WebSearch] Cache HIT for: ${message}`);
@@ -437,7 +443,6 @@ STRICT MANDATE FOR THIS TURN:
             if (!finalResponseData.text) {
                 const isForcedSearch = mode === 'web_search' || mode === 'DEEP_SEARCH' || mode === 'SEARCH';
                 // Only perform web search if explicitly requested via mode.
-                // This ensures "normal questions" go to Vertex AI without extra resources.
                 if (isForcedSearch) {
                     logger.info(`[WebSearch] ROUTING TO LIVE SEARCH (Mode: ${mode}) for: ${message}`);
                     let searchResult;
@@ -450,8 +455,10 @@ STRICT MANDATE FOR THIS TURN:
 
                     if (searchResult && (searchResult.summary || searchResult.text)) {
                         const summary = searchResult.summary || searchResult.text;
-                        searchCache.set(cacheKey, { result: { summary, sources: searchResult.sources }, timestamp: Date.now() });
-                        finalResponseData = { text: summary, isRealTime: true, sources: searchResult.sources };
+                        if (!isFreshnessRequired) {
+                            searchCache.set(cacheKey, { result: { summary, sources: searchResult.sources }, timestamp: Date.now() });
+                        }
+                        finalResponseData = { text: summary, isRealTime: true, sources: searchResult.sources, tavilyUsed: true };
                     } else {
                         logger.warn("[WebSearch] Search yielded no results.");
                     }
@@ -486,10 +493,21 @@ STRICT MANDATE FOR THIS TURN:
                 toolName,
                 history: historyToSend,
                 onChunk,
-                userId
+                userId,
+                useSearch: isFreshnessRequired,
+                searchQueryOverride: freshnessDecision.searchQuery,
+                returnSources: true
             });
 
-            finalResponseData = { text: vertexResponse, isRealTime: false };
+            const vertexText = typeof vertexResponse === 'object' ? vertexResponse.text : vertexResponse;
+            const vertexSources = typeof vertexResponse === 'object' ? (vertexResponse.sources || []) : [];
+
+            finalResponseData = { 
+                text: vertexText, 
+                isRealTime: isFreshnessRequired || vertexSources.length > 0,
+                sources: vertexSources,
+                googleGroundingUsed: vertexSources.length > 0
+            };
         } else {
             // PRIORITY 2: Company Knowledge Base (Vertex RAG)
             let ragContext = null;
@@ -547,20 +565,29 @@ STRICT MANDATE FOR THIS TURN:
                     toolName,
                     history: historyToSend,
                     onChunk,
-                    userId
+                    userId,
+                    useSearch: isFreshnessRequired,
+                    searchQueryOverride: freshnessDecision.searchQuery,
+                    returnSources: true
                 });
                 
-                logger.info(`[RAG-Pipeline] ✅ RAG Response Generated Successfully (${ragResponse?.length || 0} chars).`);
+                const ragTextRaw = typeof ragResponse === 'object' ? ragResponse.text : ragResponse;
+                const groundedSources = typeof ragResponse === 'object' ? (ragResponse.sources || []) : [];
+
+                logger.info(`[RAG-Pipeline] ✅ RAG Response Generated Successfully (${ragTextRaw?.length || 0} chars). Grounded: ${groundedSources.length}`);
                 
                 // Prepend [RAG] indicator to the text so the user knows it's from knowledge base (except in legal toolkit mode)
                 const finalRagText = (mode === 'LEGAL_TOOLKIT')
-                    ? ragResponse
-                    : (ragResponse?.startsWith('[RAG]') ? ragResponse : `[RAG] ${ragResponse}`);
+                    ? ragTextRaw
+                    : (ragTextRaw?.startsWith('[RAG]') ? ragTextRaw : `[RAG] ${ragTextRaw}`);
                 
+                const combinedSources = [...groundedSources, ...(mode === 'LEGAL_TOOLKIT' ? [] : (ragContext?.sources || []))];
+
                 finalResponseData = { 
                     text: finalRagText, 
-                    isRealTime: false, 
-                    sources: (mode === 'LEGAL_TOOLKIT') ? [] : (ragContext?.sources || []), 
+                    isRealTime: isFreshnessRequired || groundedSources.length > 0, 
+                    sources: combinedSources, 
+                    googleGroundingUsed: groundedSources.length > 0,
                     mode: 'RAG' 
                 };
             } else {
@@ -569,24 +596,48 @@ STRICT MANDATE FOR THIS TURN:
 
                 const currentModel = model?.toLowerCase();
                 let aiResponse = "";
+                let responseSources = [];
 
                 if (currentModel && (currentModel.includes('gpt') || currentModel.includes('openai'))) {
                     logger.info(`[AI-Service] Routing to OpenAI (${currentModel})`);
-                    // Outer scope langContext is used
 
                     const finalSystemInstruction = toolName === 'legal_contract_analyzer'
                         ? dynamicSystemInstruction
                         : `${dynamicSystemInstruction}\n\n### LANGUAGE RULE: ${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`;
-                    aiResponse = await openaiService.askOpenAI(promptWithMemory, null, {
+                    
+                    let groundedSearchContext = '';
+                    let openAiSources = [];
+                    if (isFreshnessRequired) {
+                        try {
+                            const searchRes = await executeTargetedLegalSearch(freshnessDecision.searchQuery);
+                            openAiSources = searchRes.sources || [];
+                            groundedSearchContext = formatGroundingContext(openAiSources, searchRes.summary);
+                            logger.info(`[AI-Service] OpenAI Grounding: Retrieved ${openAiSources.length} sources`);
+                        } catch (sErr) {
+                            logger.warn(`[AI-Service] OpenAI Grounding failed: ${sErr.message}`);
+                        }
+                    }
+
+                    const openAiRes = await openaiService.askOpenAI(promptWithMemory, null, {
                         systemInstruction: finalSystemInstruction,
                         userName,
-                        userId
+                        userId,
+                        history: historyToSend,
+                        groundedSearchContext,
+                        sources: openAiSources,
+                        returnSources: true
                     });
+                    aiResponse = typeof openAiRes === 'object' ? openAiRes.text : openAiRes;
+                    responseSources = typeof openAiRes === 'object' ? openAiRes.sources : openAiSources;
+                    finalResponseData = {
+                        text: aiResponse,
+                        isRealTime: isFreshnessRequired || responseSources.length > 0,
+                        sources: responseSources,
+                        tavilyUsed: responseSources.length > 0
+                    };
                 } else if (currentModel && (currentModel.includes('groq') || currentModel.includes('llama'))) {
                     logger.info(`[AI-Service] Routing to Groq (${currentModel})`);
                     
-                    // Outer scope langContext is used
-
                     const finalSystemInstruction = toolName === 'legal_contract_analyzer'
                         ? dynamicSystemInstruction
                         : `${dynamicSystemInstruction}\n\n### LANGUAGE RULE: ${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`;
@@ -594,10 +645,12 @@ STRICT MANDATE FOR THIS TURN:
                     aiResponse = await groqService.askGroq(promptWithMemory, null, {
                         systemInstruction: finalSystemInstruction,
                         userName,
-                        userId
+                        userId,
+                        history: historyToSend
                     });
+                    finalResponseData = { text: aiResponse, isRealTime: false, sources: [] };
                 } else {
-                    // Default to Vertex AI (Gemini)
+                    // Default to Vertex AI (Gemini) with Google Search Grounding when freshness is required
                     const lowerMsg = message.toLowerCase().trim();
                     const greetings = ['hi', 'hello', 'hii', 'hey', 'yo', 'namaste', 'greeting'];
                     const isGreeting = greetings.some(g => lowerMsg === g || lowerMsg.startsWith(g + ' '));
@@ -606,15 +659,14 @@ STRICT MANDATE FOR THIS TURN:
                         ? configService.getGreetingSystemInstruction(personaContext)
                         : configService.getGeneralSystemInstruction(personaContext);
 
-                    logger.info(`[AI-Service] Executing Chat (Greeting: ${isGreeting}) for: "${message}"`);
+                    logger.info(`[AI-Service] Executing Chat (Greeting: ${isGreeting} | Freshness: ${isFreshnessRequired}) for: "${message}"`);
 
                     const finalSystemInstruction = toolName === 'legal_contract_analyzer'
                         ? `${dynamicSystemInstruction}\n\n### LANGUAGE INSTRUCTION:\n${langContext}`
                         : `${basePersona}\n\n${dynamicSystemInstruction}\n\n### LANGUAGE INSTRUCTION:\n${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`;
 
-
                     try {
-                        aiResponse = await vertexService.askVertex(promptWithMemory, null, {
+                        const vertexRes = await vertexService.askVertex(promptWithMemory, null, {
                             userName,
                             systemInstruction: finalSystemInstruction,
                             mode: mode || 'GENERAL',
@@ -624,25 +676,58 @@ STRICT MANDATE FOR THIS TURN:
                             toolName,
                             history: historyToSend,
                             onChunk,
-                            userId
+                            userId,
+                            useSearch: isFreshnessRequired,
+                            searchQueryOverride: freshnessDecision.searchQuery,
+                            returnSources: true
                         });
+                        aiResponse = typeof vertexRes === 'object' ? vertexRes.text : vertexRes;
+                        responseSources = typeof vertexRes === 'object' ? (vertexRes.sources || []) : [];
+                        finalResponseData = { 
+                            text: aiResponse, 
+                            isRealTime: isFreshnessRequired || responseSources.length > 0,
+                            sources: responseSources,
+                            googleGroundingUsed: responseSources.length > 0
+                        };
                     } catch (vertexErr) {
                         logger.warn(`[AI-Service] Vertex AI error (${vertexErr.message}). Falling back to OpenAI...`);
                         if (process.env.OPENAI_API_KEY) {
+                            let fallbackSources = [];
+                            let groundedSearchContext = '';
+                            if (isFreshnessRequired) {
+                                try {
+                                    const searchRes = await executeTargetedLegalSearch(freshnessDecision.searchQuery);
+                                    fallbackSources = searchRes.sources || [];
+                                    groundedSearchContext = formatGroundingContext(fallbackSources, searchRes.summary);
+                                    logger.info(`[LEGAL-FRESHNESS] SEARCH_REQUIRED=true | ENGINE=tavily_fallback | SOURCES=${fallbackSources.length} | STATUS=fallback_grounded`);
+                                } catch (sErr) {
+                                    logger.warn(`[AI-Service -> OPENAI FALLBACK] Live search failed: ${sErr.message}`);
+                                }
+                            }
                             const { askOpenAI } = await import('./openai.service.js');
-                            aiResponse = await askOpenAI(promptWithMemory, null, {
+                            const fallbackAiResponse = await askOpenAI(promptWithMemory, null, {
                                 userName,
                                 systemInstruction: finalSystemInstruction,
                                 language: userLanguage,
-                                userId
+                                userId,
+                                history: historyToSend,
+                                groundedSearchContext,
+                                sources: fallbackSources,
+                                returnSources: true
                             });
+                            aiResponse = typeof fallbackAiResponse === 'object' ? fallbackAiResponse.text : fallbackAiResponse;
+                            responseSources = typeof fallbackAiResponse === 'object' ? fallbackAiResponse.sources : fallbackSources;
+                            finalResponseData = {
+                                text: aiResponse,
+                                isRealTime: isFreshnessRequired || responseSources.length > 0,
+                                sources: responseSources,
+                                tavilyUsed: responseSources.length > 0
+                            };
                         } else {
                             throw vertexErr;
                         }
                     }
                 }
-
-                finalResponseData = { text: aiResponse, isRealTime: false };
             }
         }
 
@@ -673,13 +758,10 @@ STRICT MANDATE FOR THIS TURN:
         if (finalResponseData.text && (mode === 'LEGAL_TOOLKIT' || legalInstruction)) {
             let cleanText = finalResponseData.text.trim();
 
-            // 1. Strip standard RAG tags if they somehow got prepended
-            if (cleanText.startsWith('[RAG]')) {
-                cleanText = cleanText.replace(/^\[RAG\]\s*/i, '').trim();
+             // 2. Suppress source citations (empty array) ONLY when freshness is not required and no live search occurred
+            if (!isFreshnessRequired && !finalResponseData.tavilyUsed && !finalResponseData.googleGroundingUsed) {
+                finalResponseData.sources = [];
             }
-
-            // 2. Suppress source citations (empty array) so the UI doesn't show source chips
-            finalResponseData.sources = [];
 
             // 3. Strip redundant disclaimers/hallucinated warnings anywhere in text (case-insensitive)
             // This catches "DISCLAIMER:", "NOTE:", "⚠️", etc. at start or end
@@ -708,7 +790,7 @@ STRICT MANDATE FOR THIS TURN:
                 toolLower.includes('precedent') || 
                 toolLower.includes('my_case') || 
                 toolLower.includes('case_assistant') ||
-                toolLower.includes('argument') ||
+                toolLower.includes('argument') || 
                 toolLower.includes('court_prep') ||
                 toolLower.includes('builder');
 
@@ -719,6 +801,32 @@ STRICT MANDATE FOR THIS TURN:
 
             finalResponseData.text = cleanText;
         }
+
+        // --- Grounding & Freshness Metadata ---
+        const googleGroundingUsed = Boolean(finalResponseData.googleGroundingUsed);
+        const tavilyUsed = Boolean(finalResponseData.tavilyUsed);
+        const ragUsed = Boolean(finalResponseData.mode === 'RAG' || needsRAG);
+        const uploadedDocumentsUsed = Boolean((activeDocContent && activeDocContent.length > 0) || (images && images.length > 0) || (documents && documents.length > 0));
+        const sourceCount = Array.isArray(finalResponseData.sources) ? finalResponseData.sources.length : 0;
+        const targetJurisdiction = freshnessDecision?.jurisdiction || 'India';
+        let groundingStatus = 'not_required';
+        if (isFreshnessRequired) {
+            if (googleGroundingUsed) groundingStatus = 'google_search_grounded';
+            else if (tavilyUsed) groundingStatus = 'targeted_legal_grounded';
+            else groundingStatus = 'search_attempted';
+        }
+
+        finalResponseData.metadata = {
+            model: model || 'gemini-2.5-flash',
+            currentnessRequired: isFreshnessRequired,
+            googleGroundingUsed,
+            tavilyUsed,
+            ragUsed,
+            uploadedDocumentsUsed,
+            sourceCount,
+            targetJurisdiction,
+            groundingStatus
+        };
 
         return finalResponseData;
 

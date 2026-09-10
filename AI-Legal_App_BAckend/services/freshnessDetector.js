@@ -1,0 +1,245 @@
+import logger from '../utils/logger.js';
+
+/**
+ * Freshness & Search Decision Engine for AI LEGAL
+ * 
+ * Determines whether a user query, active legal tool, or legal context requires
+ * real-time information from live authoritative sources (Google Grounding / Tavily).
+ */
+
+// 1. Explicit Temporal Keywords & Phrases
+const TEMPORAL_KEYWORDS = [
+    'latest', 'current', 'recently', 'recent', 'new', 'amended', 'amendment',
+    'notification', 'circular', 'rule', 'rules', 'regulation', 'regulations',
+    '2024', '2025', '2026', 'today', 'this year', 'this month',
+    'latest judgment', 'recent judgment', 'latest precedent', 'recent case law',
+    'latest ruling', 'recent ruling', 'current law', 'law currently in force',
+    'in force', 'enforced', 'applicable today', 'repealed', 'overruled',
+    'stayed', 'stay order', 'guidelines issued', 'latest supreme court',
+    'recent supreme court', 'latest high court', 'recent high court',
+    'status of', 'is still valid', 'is still in force', 'is still applicable',
+    'has been changed', 'has it changed', 'new amendment', 'sub-section added',
+    'struck down', 'unconstitutional', 'constitution bench', 'limitation period'
+];
+
+// 2. Hindi / Hinglish Temporal Equivalents
+const HINDI_TEMPORAL_KEYWORDS = [
+    'naya', 'naye', 'nayi', 'taaza', 'haaliye', 'haal hi me', 'abhi ka',
+    'aaj ka', 'latest', 'badlaav', 'sanshodhan', 'sanshodhit', 'lagu',
+    'kya abhi bhi', 'kya abhi lagu hai', 'khatam ho gaya', 'hata diya',
+    'supreme court ka faisla', 'high court ka faisla', 'faisla', 'nirnay'
+];
+
+// 3. Indian Legal Transition Contexts (Inherently Time-Sensitive)
+const TRANSITION_PATTERNS = [
+    /\b(bns|bnss|bsa|bharatiya nyaya|bharatiya nagarik|bharatiya sakshya)\b/i,
+    /\b(ipc vs bns|crpc vs bnss|evidence act vs bsa)\b/i,
+    /\b(is ipc (still|valid|applicable)|is crpc (still|valid|applicable))\b/i,
+    /\b(section \d+[a-z]?\s*(bns|bnss|bsa))\b/i
+];
+
+// 4. In-Force / Applicability Question Patterns
+const APPLICABILITY_PATTERNS = [
+    /\b(is|are)\s+section\s+\d+.*?\s+(still|currently)?\s*(in force|applicable|valid|active)\b/i,
+    /\bhas\s+(section\s+\d+|the\s+act|the\s+bill).*?\s*(been\s+)?(amended|repealed|struck down|notified|brought into force)\b/i,
+    /\b(what\s+is\s+the\s+current\s+(status|position|law|rule|procedure|limitation))\b/i,
+    /\b(latest|recent)\s+(supreme\s+court|high\s+court|sc|hc)\s+(judgment|judgement|ruling|order|precedent|decision)\b/i,
+    /\b(bail\s+jurisprudence|anticipatory\s+bail)\s+under\s+(bnss|482|483|438|439)\b/i,
+    /\b(limitation\s+period\s+for|time\s+limit\s+to\s+file)\b/i
+];
+
+// 5. Explicit Tool Names that strongly require precedent/statute freshness
+const FRESHNESS_HEAVY_TOOLS = [
+    'legal_research_assistant',
+    'legal_precedents',
+    'legal_law_comparator',
+    'legal_compliance_checker'
+];
+
+/**
+ * Analyzes whether a query warrants real-time web search grounding.
+ * 
+ * @param {string} message - User query text
+ * @param {string} mode - Active execution mode (e.g., 'LEGAL_TOOLKIT', 'NORMAL_CHAT')
+ * @param {string} toolName - Active tool name (e.g., 'legal_research_assistant')
+ * @param {string} activeDocContent - Extracted document content if user uploaded a file
+ * @returns {object} Decision result: { isFreshnessRequired, reason, searchType, searchQuery, targetJurisdiction }
+ */
+export const analyzeFreshness = (message = '', mode = '', toolName = '', activeDocContent = null) => {
+    const raw = String(message || '').trim();
+    const lower = raw.toLowerCase();
+
+    // Fast-path: Greetings and very short filler phrases do not need search
+    const shortFillers = [
+        'hi', 'hello', 'hii', 'hey', 'namaste', 'ok', 'okay', 'thanks', 'thank you',
+        'great', 'bye', 'goodbye', 'action', 'start'
+    ];
+    if (shortFillers.includes(lower) || raw.length < 4) {
+        return {
+            isFreshnessRequired: false,
+            reason: 'SHORT_GREETING_OR_FILLER',
+            searchType: 'NONE',
+            searchQuery: '',
+            targetJurisdiction: 'India'
+        };
+    }
+
+    // 1. Check Explicit Temporal Keywords
+    const matchedTemporal = TEMPORAL_KEYWORDS.find(k => lower.includes(k));
+    if (matchedTemporal) {
+        logger.info(`[FreshnessDetector] Matched temporal keyword: "${matchedTemporal}"`);
+        return {
+            isFreshnessRequired: true,
+            reason: `EXPLICIT_TEMPORAL_KEYWORD (${matchedTemporal})`,
+            searchType: detectSearchType(lower),
+            searchQuery: buildOptimizedSearchQuery(raw),
+            targetJurisdiction: detectJurisdiction(lower)
+        };
+    }
+
+    // 2. Check Hindi / Hinglish Temporal Keywords
+    const matchedHindi = HINDI_TEMPORAL_KEYWORDS.find(k => lower.includes(k));
+    if (matchedHindi) {
+        logger.info(`[FreshnessDetector] Matched Hindi temporal keyword: "${matchedHindi}"`);
+        return {
+            isFreshnessRequired: true,
+            reason: `HINDI_TEMPORAL_KEYWORD (${matchedHindi})`,
+            searchType: detectSearchType(lower),
+            searchQuery: buildOptimizedSearchQuery(raw),
+            targetJurisdiction: detectJurisdiction(lower)
+        };
+    }
+
+    // 3. Check Statutory Applicability & In-Force Patterns
+    for (const pattern of APPLICABILITY_PATTERNS) {
+        if (pattern.test(lower)) {
+            logger.info(`[FreshnessDetector] Matched statutory applicability pattern: ${pattern}`);
+            return {
+                isFreshnessRequired: true,
+                reason: 'STATUTORY_APPLICABILITY_OR_STATUS_QUERY',
+                searchType: 'LEGAL_STATUTE',
+                searchQuery: buildOptimizedSearchQuery(raw),
+                targetJurisdiction: detectJurisdiction(lower)
+            };
+        }
+    }
+
+    // 4. Check Legal Transition Patterns (BNS / BNSS / BSA specific queries)
+    for (const pattern of TRANSITION_PATTERNS) {
+        if (pattern.test(lower)) {
+            logger.info(`[FreshnessDetector] Matched legal transition pattern: ${pattern}`);
+            return {
+                isFreshnessRequired: true,
+                reason: 'LEGAL_TRANSITION_OR_NEW_CRIMINAL_LAWS',
+                searchType: 'LEGAL_STATUTE',
+                searchQuery: buildOptimizedSearchQuery(raw),
+                targetJurisdiction: 'India'
+            };
+        }
+    }
+
+    // 5. Tool-specific check
+    if (toolName && FRESHNESS_HEAVY_TOOLS.includes(toolName)) {
+        // For research assistant or precedents, if asking for case laws or statutes, enable freshness
+        if (/\b(case|judgment|ruling|precedent|citation|order|bench|amendment)\b/i.test(lower)) {
+            logger.info(`[FreshnessDetector] Freshness triggered by tool: ${toolName}`);
+            return {
+                isFreshnessRequired: true,
+                reason: `FRESHNESS_HEAVY_TOOL (${toolName})`,
+                searchType: 'LEGAL_PRECEDENT',
+                searchQuery: buildOptimizedSearchQuery(raw),
+                targetJurisdiction: detectJurisdiction(lower)
+            };
+        }
+    }
+
+    // 6. User Document + Time-Sensitive Legal Question
+    // If the user uploaded a document, but explicitly asks about current applicability or amendments
+    if (activeDocContent && /\b(current|amended|today|applicable|limitation|validity)\b/i.test(lower)) {
+        return {
+            isFreshnessRequired: true,
+            reason: 'USER_DOC_WITH_CURRENT_LAW_QUERY',
+            searchType: 'LEGAL_STATUTE',
+            searchQuery: buildOptimizedSearchQuery(raw),
+            targetJurisdiction: detectJurisdiction(lower)
+        };
+    }
+
+    const result = {
+        isFreshnessRequired: false,
+        needsFreshness: false,
+        confidence: 0.9,
+        reason: 'STATIC_OR_GENERAL_KNOWLEDGE',
+        reasons: ['static_general_knowledge'],
+        searchType: 'NONE',
+        searchQuery: '',
+        targetJurisdiction: 'India'
+    };
+
+    return result;
+};
+
+export const detectLegalFreshnessRequirement = (message, mode, toolName, activeDocContent) => {
+    const res = analyzeFreshness(message, mode, toolName, activeDocContent);
+    return {
+        ...res,
+        needsFreshness: res.isFreshnessRequired,
+        confidence: res.isFreshnessRequired ? 0.95 : 0.85,
+        reasons: [res.reason.toLowerCase()]
+    };
+};
+
+/**
+ * Categorizes the search query into a specific legal domain type
+ */
+function detectSearchType(lower) {
+    if (/\b(judgment|judgement|ruling|precedent|case law|scc|air|bench|appeal|quash|bail)\b/i.test(lower)) {
+        return 'LEGAL_PRECEDENT';
+    }
+    if (/\b(amendment|act|section|notification|gazette|rule|regulation|in force|repealed|bns|bnss|bsa)\b/i.test(lower)) {
+        return 'LEGAL_STATUTE';
+    }
+    return 'GENERAL_LEGAL';
+}
+
+/**
+ * Detects specific High Court or Supreme Court jurisdiction
+ */
+function detectJurisdiction(lower) {
+    if (lower.includes('delhi high court') || lower.includes('delhi hc')) return 'Delhi High Court';
+    if (lower.includes('bombay high court') || lower.includes('bombay hc')) return 'Bombay High Court';
+    if (lower.includes('allahabad high court') || lower.includes('allahabad hc')) return 'Allahabad High Court';
+    if (lower.includes('madras high court') || lower.includes('madras hc')) return 'Madras High Court';
+    if (lower.includes('calcutta high court') || lower.includes('calcutta hc')) return 'Calcutta High Court';
+    if (lower.includes('karnataka high court') || lower.includes('karnataka hc')) return 'Karnataka High Court';
+    if (lower.includes('high court') || lower.includes('hc')) return 'High Court of India';
+    return 'Supreme Court of India / India';
+}
+
+/**
+ * Builds an optimized Google Search / Tavily query calibrated for Indian law.
+ * Appends key authority signals (India Code, Indian Kanoon, Supreme Court) to prioritize primary sources.
+ */
+function buildOptimizedSearchQuery(rawQuery) {
+    const cleaned = rawQuery
+        .replace(/^(please|can you|tell me|explain|what is|kripya|batao|mujhe)\s+/gi, '')
+        .replace(/[?.,!]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const currentYear = new Date().getFullYear(); // e.g. 2026
+
+    // If query already contains year or "Supreme Court", preserve it
+    const hasYear = /\b(202[4-6])\b/.test(cleaned);
+    const hasAuthority = /\b(supreme court|high court|india code|indian kanoon|gazette)\b/i.test(cleaned);
+
+    let queryWithContext = cleaned;
+    if (!hasYear) {
+        queryWithContext += ` ${currentYear}`;
+    }
+    if (!hasAuthority && !/indian\b/i.test(cleaned)) {
+        queryWithContext += ` Indian law`;
+    }
+
+    return queryWithContext.trim();
+}

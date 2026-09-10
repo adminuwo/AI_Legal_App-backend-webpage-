@@ -286,15 +286,17 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
 
     if (sessionId) {
       existingSession = await ChatSession.findOne({ sessionId });
-      if (existingSession) {
-        if (!effectiveLanguage && existingSession.preferredLanguage) {
-          effectiveLanguage = existingSession.preferredLanguage;
-        }
-        if ((!effectiveHistory || !Array.isArray(effectiveHistory) || effectiveHistory.length === 0) && existingSession.messages && existingSession.messages.length > 0) {
-          effectiveHistory = existingSession.messages.map(m => ({
-            role: m.role === 'model' ? 'assistant' : m.role,
+      if (existingSession && existingSession.messages && existingSession.messages.length > 0) {
+        const dbHistory = existingSession.messages
+          .filter(m => m.content && (m.role === 'user' || m.role === 'model' || m.role === 'assistant'))
+          .map(m => ({
+            role: (m.role === 'model' || m.role === 'assistant') ? 'assistant' : 'user',
             content: m.content
           }));
+
+        // If client sent no history or shorter history than DB, hydrate from authoritative DB session
+        if (!effectiveHistory || !Array.isArray(effectiveHistory) || effectiveHistory.length < dbHistory.length) {
+          effectiveHistory = dbHistory;
         }
       }
     }
