@@ -106,6 +106,174 @@ export const chat = async (message, activeDocContent = null, options = {}) => {
         const langContext = resolvedLang.systemInstruction;
         const userLanguage = resolvedLang.language;
 
+        // PRIORITY -1: COMPANY, FOUNDER & PLATFORM IDENTITY QUERY FAST-PATH (UWO FOR COMPANY, AI LEGAL FOR PRODUCT)
+        const trimmedQueryLower = (message || '').trim().toLowerCase().replace(/[?!.,;:'"’]/g, '');
+        const queryWords = trimmedQueryLower.split(/\s+/);
+
+        const isFounderQuery = [
+            'who is the founder of company',
+            'who is the founder of the company',
+            'who is the founder of uwo',
+            'who is founder of company',
+            'who is founder of the company',
+            'who is founder of uwo',
+            'who is founder',
+            'who is the founder',
+            'who founded company',
+            'who founded the company',
+            'who founded uwo',
+            'founder of company',
+            'founder of the company',
+            'founder of uwo',
+            'company founder',
+            'uwo founder',
+            'founder kaun hai',
+            'founder kon hai',
+            'founder name',
+            'founder ke bare me batao',
+            'founder details',
+            'director of company',
+            'director of uwo',
+            'who is the director',
+            'ceo of company',
+            'who is the ceo'
+        ].some(p => trimmedQueryLower === p || trimmedQueryLower.startsWith(p)) ||
+        (trimmedQueryLower.includes('founder') && (
+            trimmedQueryLower.includes('who') ||
+            trimmedQueryLower.includes('kaun') ||
+            trimmedQueryLower.includes('kon') ||
+            trimmedQueryLower.includes('kya') ||
+            trimmedQueryLower.includes('name') ||
+            trimmedQueryLower.includes('naam') ||
+            trimmedQueryLower.includes('company') ||
+            trimmedQueryLower.includes('uwo') ||
+            trimmedQueryLower.includes('batao') ||
+            trimmedQueryLower.includes('bare') ||
+            trimmedQueryLower.includes('baare') ||
+            trimmedQueryLower.includes('document') ||
+            trimmedQueryLower.includes('kyu') ||
+            trimmedQueryLower.includes('kyun') ||
+            trimmedQueryLower.includes('bol') ||
+            trimmedQueryLower.includes('hai to') ||
+            trimmedQueryLower.includes('esxda')
+        ));
+
+        const isCompanyQuery = !isFounderQuery && ([
+            'what is your company name',
+            'whats your company name',
+            'what is the company name',
+            'what company',
+            'company name',
+            'company info',
+            'company information',
+            'company details',
+            'tell me about your company',
+            'tell me about the company',
+            'about your company',
+            'about the company',
+            'company profile',
+            'who owns you',
+            'who is the owner',
+            'which company created you',
+            'which company made you',
+            'which company developed you',
+            'which company',
+            'company ka naam kya hai',
+            'company name kya hai',
+            'company ke bare me batao',
+            'company ke baare mein batao',
+            'company ki jankari',
+            'company info do',
+            'koun si company hai',
+            'kaun si company hai',
+            'kiski company hai',
+            'uwo ke bare me batao',
+            'about uwo',
+            'what is uwo',
+            'who is uwo'
+        ].some(p => trimmedQueryLower === p || trimmedQueryLower.startsWith(p)) ||
+        trimmedQueryLower.includes('comapny ka info') ||
+        trimmedQueryLower.includes('company ka info') ||
+        (trimmedQueryLower.includes('company') && (
+            trimmedQueryLower.includes('info') ||
+            trimmedQueryLower.includes('detail') ||
+            trimmedQueryLower.includes('naam') ||
+            trimmedQueryLower.includes('name') ||
+            trimmedQueryLower.includes('batao') ||
+            trimmedQueryLower.includes('about') ||
+            trimmedQueryLower.includes('profile') ||
+            trimmedQueryLower.includes('kya') ||
+            trimmedQueryLower.includes('which') ||
+            trimmedQueryLower.includes('uwo') ||
+            trimmedQueryLower.includes('koun') ||
+            trimmedQueryLower.includes('kaun')
+        ) && queryWords.length <= 25) ||
+        (trimmedQueryLower.includes('company') && trimmedQueryLower.includes('uwo')));
+
+        const isBotIdentityQuery = !isCompanyQuery && !isFounderQuery && [
+            'who are you',
+            'what is your name',
+            'whats your name',
+            'who created you',
+            'who made you',
+            'who developed you',
+            'what is this app',
+            'what is ai legal',
+            'tum kaun ho',
+            'aap kaun ho',
+            'aapka naam kya hai',
+            'ye kaun sa app hai',
+            'kiska app hai'
+        ].some(p => trimmedQueryLower === p || trimmedQueryLower.startsWith(p));
+
+        const isQueryingSpecificPrivateDocEntity = (activeDocContent?.length > 0 || documents?.length > 0) && (
+            trimmedQueryLower.includes('in this document') ||
+            trimmedQueryLower.includes('is document me') ||
+            trimmedQueryLower.includes('in this contract') ||
+            trimmedQueryLower.includes('in this agreement') ||
+            trimmedQueryLower.includes('according to this agreement')
+        );
+
+        if ((isFounderQuery || isCompanyQuery || isBotIdentityQuery) && !isQueryingSpecificPrivateDocEntity) {
+            const isHindiQuery = userLanguage === 'Hindi' || userLanguage === 'Hinglish' || /\b(hai|ho|kaun|kya|naam|kiska|batao|koun|konsi|baare|bare|jankari|do|ki|ke|kyu|rhe|thodi|m|bhi)\b/i.test(trimmedQueryLower);
+            let responseText = '';
+
+            if (isFounderQuery) {
+                if (isHindiQuery) {
+                    responseText = `**Unified Web Options & Services Pvt. Ltd. (UWO)** ke founder **Gurumukh P. Ahuja** hain.\n\n### 👥 UWO Leadership & Founders:\n- **Gurumukh P. Ahuja**: Founder & Director\n- **Anjali Ahuja**: Co-founder\n- **Company**: Unified Web Options & Services Private Limited (UWO™)\n- **Mukhyalaya (Headquarters)**: Jabalpur, Madhya Pradesh, Bharat (Office: 4th Floor, SG Square, near PNB Bank, Rampur Chowk, Jabalpur, MP - 482008)\n- **Flagship Legal Innovation**: **AI LEGAL™** — UWO dwara develop kiya gaya flagship legal intelligence platform.`;
+                } else {
+                    responseText = `The founder of **Unified Web Options & Services Pvt. Ltd. (UWO)** is **Gurumukh P. Ahuja**.\n\n### 👥 UWO Leadership & Founders:\n- **Founder & Director**: **Gurumukh P. Ahuja**\n- **Co-founder**: **Anjali Ahuja**\n- **Company**: Unified Web Options & Services Private Limited (UWO™)\n- **Headquarters**: Jabalpur, Madhya Pradesh, India (Corporate Office: 4th Floor, SG Square, near PNB Bank, Rampur Chowk, Jabalpur, MP - 482008)\n- **Flagship Legal Innovation**: **AI LEGAL™** — UWO's dedicated legal intelligence platform engineered specifically for advocates, law firms, corporate legal teams, and legal practitioners across India.`;
+                }
+            } else if (isCompanyQuery) {
+                if (isHindiQuery) {
+                    responseText = `Meri company ka naam **Unified Web Options & Services Pvt. Ltd. (UWO)** hai.\n\n### 🏢 Unified Web Options & Services Pvt. Ltd. (UWO) ke baare mein:\n- **Company ka Naam**: Unified Web Options & Services Private Limited (UWO™)\n- **Company Type**: IT-registered Technology va Enterprise AI Software Company\n- **Founders & Leadership**:\n  - **Gurumukh P. Ahuja**: Founder & Director\n  - **Anjali Ahuja**: Co-founder\n- **Sthapit (Founded)**: 2019 / 2020\n- **Mukhyalaya (Headquarters)**: Jabalpur, Madhya Pradesh, Bharat\n- **Office Address**: 4th Floor, SG Square, near PNB Bank, Rampur Chowk, Jabalpur, Madhya Pradesh – 482008\n- **Mukhya Karya va Services**:\n  - **Artificial Intelligence (AI) Solutions**: Domain-specific AI platforms, intelligent legal document analysis, cognitive automation, aur ML models.\n  - **Enterprise Digital Platforms**: Scalable enterprise software, cloud infrastructure, web aur mobile applications.\n  - **Business Automation**: Workflow automation frameworks, CRM systems, aur enterprise productivity tools.\n- **AI LEGAL™ Platform**: AI Legal UWO dwara develop aur operate kiya gaya flagship legal intelligence platform hai jo advocates, law firms, aur legal practitioners ke liye tailored hai.`;
+                } else {
+                    responseText = `My company is **Unified Web Options & Services Pvt. Ltd. (UWO)**.\n\n### 🏢 About Unified Web Options & Services Pvt. Ltd. (UWO)\n- **Legal Name**: Unified Web Options & Services Private Limited (UWO™)\n- **Company Type**: IT-registered Technology & Enterprise AI Software Company\n- **Founders & Leadership**:\n  - **Gurumukh P. Ahuja**: Founder & Director\n  - **Anjali Ahuja**: Co-founder\n- **Founded / Inception**: 2019 / 2020\n- **Headquarters**: Jabalpur, Madhya Pradesh, India\n- **Corporate Office Address**: 4th Floor, SG Square, near PNB Bank, Rampur Chowk, Jabalpur, Madhya Pradesh – 482008\n- **Core Specialization & Capabilities**:\n  - **Artificial Intelligence (AI) & Cognitive Systems**: Specialized enterprise AI platforms, intelligent document processing, natural language understanding, and cognitive automation.\n  - **Enterprise Digital Systems & Cloud Architecture**: High-scale enterprise software, scalable web & mobile platforms, and robust cloud infrastructure.\n  - **Business Automation & CRM**: Enterprise workflow automation frameworks, CRM systems, and productivity platforms.\n- **Flagship Legal Innovation**: **AI LEGAL™** — UWO's dedicated legal intelligence platform engineered specifically for advocates, law firms, corporate legal teams, and legal practitioners across India.`;
+                }
+            } else {
+                // Assistant / App identity query
+                if (isHindiQuery) {
+                    responseText = `Main **AI LEGAL™ Assistant** hoon—Indian law, legal research, case management, aur court document drafting ke liye ek specialized AI legal intelligence platform jo **Unified Web Options & Services Pvt. Ltd. (UWO)** dwara develop kiya gaya hai.`;
+                } else {
+                    responseText = `I am **AI LEGAL™ Assistant**, a specialized legal intelligence platform developed by **Unified Web Options & Services Pvt. Ltd. (UWO)**.\n\nI am engineered to assist advocates, legal practitioners, law firms, law students, and citizens with Indian law, legal research, case management, statutory analysis (BNS, BNSS, BSA, IPC, CrPC), and court-ready drafting.`;
+                }
+            }
+
+            if (onChunk) onChunk(responseText);
+
+            return {
+                text: responseText,
+                isRealTime: false,
+                sources: [],
+                mode: 'CHAT',
+                metadata: {
+                    model: model || 'gemini-2.5-flash',
+                    groundingStatus: 'not_required',
+                    sourceCount: 0
+                }
+            };
+        }
+
         const isLegalMode = mode === 'LEGAL_TOOLKIT' || (toolName && toolName.startsWith('legal_'));
 
         // --- CENTRALIZED JURISDICTION RESOLUTION ---
@@ -267,8 +435,7 @@ Maintain any text response outside the JSON block.`;
    - Courts, Judges, or Jurisdictions
    - Sections, Clauses, or Statutes
    - Evidence or Exhibits
-5. STRICT MISSING DATA FALLBACK: If the user asks for information, a draft notice/reply, a contract clause analysis, a litigation prediction, or strategies that cannot be grounded on or found in the provided case workspace details or uploaded documents, you MUST respond exactly and only with:
-   "This information was not found in the uploaded documents."
+5. CASE RECORD GROUNDING: For case-specific factual details (such as specific FIR numbers, case dates, named witnesses, or party statements in this case file), do not fabricate details that are not in the uploaded case documents or case context. If a case record is missing, explain what detail is missing. For general law, statutory provisions, or platform/company knowledge, answer accurately using your full knowledge base.
 6. NEVER ask the user to repeat details that are already present in the workspace context.`;
             }
         } else {
@@ -444,9 +611,8 @@ STRICT MANDATE FOR THIS TURN:
             }
             return query;
         };
-
         // PRIORITY 0: REAL-TIME WEB SEARCH
-        if (message.length > 5 && !images?.length && !documents?.length && !activeDocContent?.length) {
+        if (!finalResponseData.text && message.length > 5 && !images?.length && !documents?.length && !activeDocContent?.length) {
             const cacheKey = message.toLowerCase().trim();
             // Stale cache bypass if freshness is explicitly required
             if (!isFreshnessRequired && searchCache.has(cacheKey)) {
@@ -490,13 +656,14 @@ STRICT MANDATE FOR THIS TURN:
 
             // --- NEW: Legal Context Merging ---
             let combinedContext = null;
+            let activeRagContext = null;
             if (mode === 'LEGAL_TOOLKIT' && toolName !== 'legal_contract_analyzer') {
                 logger.info(`[LegalToolkit] Merging Case Context and RAG for Priority Rule.`);
                 const ragAnalysis = await vertexService.analyzeRAGRequirements(message).catch(() => ({ needsRAG: true, rewrittenQuery: message }));
                 const legalRewrittenQuery = ragAnalysis.rewrittenQuery || message;
-                const ragContext = await vertexService.retrieveContextFromRag(legalRewrittenQuery, 8, 'LEGAL');
+                activeRagContext = await vertexService.retrieveContextFromRag(legalRewrittenQuery, 8, 'LEGAL');
 
-                combinedContext = `📄 CASE CONTEXT (PRIMARY):\n${activeDocContent || "Refer to attached file contents."}\n\n📚 LEGAL KNOWLEDGE (RAG - REFERENCE):\n${ragContext?.text || "No relevant legal references found."}`;
+                combinedContext = `📄 CASE CONTEXT (PRIMARY):\n${activeDocContent || "Refer to attached file contents."}\n\n📚 LEGAL KNOWLEDGE (RAG - REFERENCE):\n${activeRagContext?.text || "No relevant legal references found."}`;
             }
 
             const promptWithMemory = buildMemoryPrompt(message);
@@ -514,20 +681,25 @@ STRICT MANDATE FOR THIS TURN:
                 useSearch: isFreshnessRequired,
                 searchQueryOverride: freshnessDecision.searchQuery,
                 returnSources: true,
+                language: userLanguage,
+                resolvedLang,
+                originalMessage: message,
                 jurisdiction,
                 country,
                 state,
                 headers
             });
 
-            const vertexText = typeof vertexResponse === 'object' ? vertexResponse.text : vertexResponse;
+            const vertexText = vertexService.cleanAiOutputBrackets(typeof vertexResponse === 'object' ? vertexResponse.text : vertexResponse);
             const vertexSources = typeof vertexResponse === 'object' ? (vertexResponse.sources || []) : [];
+            const mergedSources = [...vertexSources, ...(activeRagContext?.sources || [])];
 
             finalResponseData = { 
                 text: vertexText, 
-                isRealTime: isFreshnessRequired || vertexSources.length > 0,
-                sources: vertexSources,
-                googleGroundingUsed: vertexSources.length > 0
+                isRealTime: isFreshnessRequired || mergedSources.length > 0,
+                sources: mergedSources,
+                googleGroundingUsed: vertexSources.length > 0,
+                mode: activeRagContext?.sources?.length > 0 ? 'RAG' : mode
             };
         } else {
             // PRIORITY 2: Company Knowledge Base (Vertex RAG)
@@ -570,14 +742,25 @@ STRICT MANDATE FOR THIS TURN:
             if (ragContext && ragContext.sources && ragContext.sources.length > 0) {
                 const promptWithMemory = buildMemoryPrompt(message);
                 // Step 4: Answer Generation (Context + Original Question)
-                const ragInstructionWithLink = `${dynamicSystemInstruction}\n\n### WEBSITE CITATION RULE:\nWhenever you provide information about AISA or UWO based on the provided company documents, you MUST mention the official website: https://uwo24.com/`;
+                const ragInstructionWithLink = `${dynamicSystemInstruction}\n\n### STRICT PLATFORM IDENTITY RULE:\nYou are AI LEGAL™ Assistant, developed by Unified Web Options Pvt. Ltd. (UWO). You are strictly an AI legal intelligence assistant. You are NEVER AISA, and you must NEVER identify as AISA or an AI Super Assistant.`;
 
-                // --- NEW: Unified Context Labeling for RAG-Only ---
-                const labeledRagContext = (mode === 'LEGAL_TOOLKIT')
-                    ? `📄 CASE CONTEXT: No specific document uploaded. Relying on legal principles.\n\n📚 LEGAL KNOWLEDGE (RAG):\n${ragContext?.text}`
-                    : ragContext?.text;
+                // --- Unified Structured Grounding & Formatting Directives ---
+                const ragGroundingDirective = `
+### MANDATORY RAG GROUNDING & PROPER FORMAT DIRECTIVES:
+1. FIRST-PRIORITY GROUNDING: The context above contains excerpts fetched directly from the user's uploaded RAG files and platform knowledge base. If the user's question relates to these documents or topics, you MUST FIRST check and prioritize this retrieved information to form your answer.
+2. NATURAL INTEGRATION: When referencing facts from the uploaded documents, integrate references naturally in plain text or bold (e.g. "According to the uploaded document..." or "**Source:** Case Records").
+🚨 ABSOLUTE PROHIBITION: NEVER output square-bracketed citations or tags like "[cite: ...]", "[RAG]", "[Document]", "[Ref: ...]", or "[Sources: ...]" anywhere in your response. The response must be clean, readable markdown without bracketed artifacts.
+3. PROPER STRUCTURE & FORMAT:
+   - Provide a clean, well-structured response using GitHub-style Markdown formatting.
+   - Use headings (##, ###) to logically separate sections.
+   - Use bullet points or numbered lists for key concepts, clauses, sections, arguments, or details.
+   - Bold critical terms, statutory sections, dates, or metrics for readability.
+   - Ensure the answer directly addresses the query in the requested language without unnecessary filler.
+4. SUPPLEMENTARY KNOWLEDGE: If the uploaded file only partially covers the query, ground what is present from the file first, then seamlessly supplement with your specialized assistant knowledge (legal/educational/firm).`;
 
-                logger.info(`[RAG-Pipeline] Generating final answer using RAG context...`);
+                const labeledRagContext = `📚 RETRIEVED KNOWLEDGE BASE & UPLOADED DOCUMENTS (RAG):\n${ragContext?.text}\n\n${ragGroundingDirective}`;
+
+                logger.info(`[RAG-Pipeline] Generating final answer using RAG context... (Target Lang: ${userLanguage})`);
                 const ragResponse = await vertexService.askVertex(promptWithMemory, labeledRagContext, {
                     userName,
                     systemInstruction: `${ragInstructionWithLink}\n\n### LANGUAGE RULE: ${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`,
@@ -589,7 +772,14 @@ STRICT MANDATE FOR THIS TURN:
                     userId,
                     useSearch: isFreshnessRequired,
                     searchQueryOverride: freshnessDecision.searchQuery,
-                    returnSources: true
+                    returnSources: true,
+                    language: userLanguage,
+                    resolvedLang,
+                    originalMessage: message,
+                    jurisdiction,
+                    country,
+                    state,
+                    headers
                 });
                 
                 const ragTextRaw = typeof ragResponse === 'object' ? ragResponse.text : ragResponse;
@@ -597,12 +787,8 @@ STRICT MANDATE FOR THIS TURN:
 
                 logger.info(`[RAG-Pipeline] ✅ RAG Response Generated Successfully (${ragTextRaw?.length || 0} chars). Grounded: ${groundedSources.length}`);
                 
-                // Prepend [RAG] indicator to the text so the user knows it's from knowledge base (except in legal toolkit mode)
-                const finalRagText = (mode === 'LEGAL_TOOLKIT')
-                    ? ragTextRaw
-                    : (ragTextRaw?.startsWith('[RAG]') ? ragTextRaw : `[RAG] ${ragTextRaw}`);
-                
-                const combinedSources = [...groundedSources, ...(mode === 'LEGAL_TOOLKIT' ? [] : (ragContext?.sources || []))];
+                const finalRagText = vertexService.cleanAiOutputBrackets(ragTextRaw);
+                const combinedSources = [...groundedSources, ...(ragContext?.sources || [])];
 
                 finalResponseData = { 
                     text: finalRagText, 
@@ -701,12 +887,15 @@ STRICT MANDATE FOR THIS TURN:
                             useSearch: isFreshnessRequired,
                             searchQueryOverride: freshnessDecision.searchQuery,
                             returnSources: true,
+                            language: userLanguage,
+                            resolvedLang,
+                            originalMessage: message,
                             jurisdiction: resolvedJurisdiction,
                             country: resolvedJurisdiction.country,
                             state: resolvedJurisdiction.state,
                             headers
                         });
-                        aiResponse = typeof vertexRes === 'object' ? vertexRes.text : vertexRes;
+                        aiResponse = vertexService.cleanAiOutputBrackets(typeof vertexRes === 'object' ? vertexRes.text : vertexRes);
                         responseSources = typeof vertexRes === 'object' ? (vertexRes.sources || []) : [];
                         finalResponseData = { 
                             text: aiResponse, 
@@ -783,8 +972,9 @@ STRICT MANDATE FOR THIS TURN:
         if (finalResponseData.text && (mode === 'LEGAL_TOOLKIT' || legalInstruction)) {
             let cleanText = finalResponseData.text.trim();
 
-             // 2. Suppress source citations (empty array) ONLY when freshness is not required and no live search occurred
-            if (!isFreshnessRequired && !finalResponseData.tavilyUsed && !finalResponseData.googleGroundingUsed) {
+             // 2. Suppress web search citations ONLY when freshness is not required, no live search occurred, AND no RAG knowledge was used
+            const hasRagSources = Array.isArray(finalResponseData.sources) && finalResponseData.sources.some(s => s.source_type === 'KNOWLEDGE_BASE' || s.source_type === 'RAG_CORPUS');
+            if (!isFreshnessRequired && !finalResponseData.tavilyUsed && !finalResponseData.googleGroundingUsed && finalResponseData.mode !== 'RAG' && !hasRagSources) {
                 finalResponseData.sources = [];
             }
 
@@ -852,6 +1042,13 @@ STRICT MANDATE FOR THIS TURN:
             targetJurisdiction,
             groundingStatus
         };
+
+        if (finalResponseData.text) {
+            finalResponseData.text = vertexService.cleanAiOutputBrackets(finalResponseData.text);
+        }
+
+        // Enforce zero citation source chips per user directive ("dont give citation source")
+        finalResponseData.sources = [];
 
         return finalResponseData;
 
@@ -1032,3 +1229,5 @@ Title:`;
 export const ragChat = async (message) => {
     return chat(message);
 };
+
+export const cleanAiOutputBrackets = vertexService.cleanAiOutputBrackets;

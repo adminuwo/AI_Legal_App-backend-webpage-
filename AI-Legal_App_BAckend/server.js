@@ -2,10 +2,21 @@ import express, { urlencoded } from "express";
 import cors from "cors";
 import 'dotenv/config';
 import fs from 'fs';
+import path from 'path';
 
-if (process.env.GOOGLE_APPLICATION_CREDENTIALS && !fs.existsSync(process.env.GOOGLE_APPLICATION_CREDENTIALS)) {
-  console.warn(`[server.js] ⚠️ Removing invalid GOOGLE_APPLICATION_CREDENTIALS path: "${process.env.GOOGLE_APPLICATION_CREDENTIALS}"`);
-  delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  const resolved = path.resolve(process.cwd(), process.env.GOOGLE_APPLICATION_CREDENTIALS);
+  if (fs.existsSync(resolved)) {
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = resolved;
+  } else {
+    console.warn(`[server.js] ⚠️ Removing invalid GOOGLE_APPLICATION_CREDENTIALS path: "${process.env.GOOGLE_APPLICATION_CREDENTIALS}"`);
+    delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  }
+} else {
+  const defaultKeyPath = path.resolve(process.cwd(), 'config', 'gcp-key.json');
+  if (fs.existsSync(defaultKeyPath)) {
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = defaultKeyPath;
+  }
 }
 
 import connectDB from "./config/db.js";
@@ -17,7 +28,6 @@ import ssoRoutes from "./routes/ssoRoutes.js";
 import cookieParser from "cookie-parser";
 import emailVerification from "./routes/emailVerification.js"
 import userRoute from './routes/user.js'
-import path from 'path';
 import { fileURLToPath } from 'url';
 import { initSocket } from './utils/socket.js';
 
@@ -236,8 +246,9 @@ app.use((req, res, next) => {
 // app.use(fileUpload()); // Removed to avoid conflict with Multer (New AIBASE)
 
 
-// Serve static frontend files from 'public' directory with no-cache on HTML
+// Serve static frontend files from 'public' directory with no-cache on HTML and dotfiles allowed for .well-known
 app.use(express.static(path.join(__dirname, 'public'), {
+  dotfiles: 'allow',
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.html')) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -248,6 +259,27 @@ app.use(express.static(path.join(__dirname, 'public'), {
 // Serve Standalone AI Legal Pricing Subscription Web Portal
 app.get(['/legal-pricing', '/subscription-checkout'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'pricing', 'index.html'));
+});
+
+// ─── Android Digital Asset Links & Apple App Site Association Verification ─────
+app.get('/.well-known/assetlinks.json', (req, res) => {
+  const filePath = path.join(__dirname, 'public', '.well-known', 'assetlinks.json');
+  if (fs.existsSync(filePath)) {
+    res.setHeader('Content-Type', 'application/json');
+    res.sendFile(filePath);
+  } else {
+    res.status(404).json({ error: 'assetlinks.json not found' });
+  }
+});
+
+app.get('/.well-known/apple-app-site-association', (req, res) => {
+  const filePath = path.join(__dirname, 'public', '.well-known', 'apple-app-site-association');
+  if (fs.existsSync(filePath)) {
+    res.setHeader('Content-Type', 'application/json');
+    res.sendFile(filePath);
+  } else {
+    res.status(404).json({ error: 'apple-app-site-association not found' });
+  }
 });
 
 // ─── Apple Pay Domain Verification ───────────────────────────────────────────

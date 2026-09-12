@@ -225,7 +225,10 @@ export const resolveEffectiveTool = (requestedTool, content = '', document = nul
 
 // --- CORE CHAT ENDPOINT ---
 router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
-  const { content, history, systemInstruction, image, video, document, language, model, mode: reqMode, sessionId, userMsgId, aiMsgId, aspectRatio, modelId: reqModelId, skipSession } = req.body;
+  const { content: rawContent, history, systemInstruction, image, video, document, language, model, mode: reqMode, sessionId, userMsgId, aiMsgId, aspectRatio, modelId: reqModelId, skipSession } = req.body;
+  const content = typeof rawContent === 'string'
+    ? rawContent.replace(/\n*\[MANDATORY JURISDICTION:[^\]]*\][\s\S]*$/i, '').trim()
+    : (rawContent || '');
 
   let mode = reqMode;
   let resolvedToolName = req.body.activeTool || req.body.toolName;
@@ -570,7 +573,7 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
           session.messages.push({
             id: aiMsgId || `be_ai_${Date.now() + 1}`,
             role: 'model',
-            content: fullText || 'Thinking...',
+            content: aiService.cleanAiOutputBrackets(fullText || 'Thinking...'),
             timestamp: Date.now() + 1,
             isRealTime: isWebSearchResponse,
             sources: searchSources,
@@ -817,7 +820,7 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
     session.messages.push({
       id: aiMsgId || `be_ai_${Date.now() + 1}`,
       role: 'model',
-      content: finalResponse.reply || "Thinking...",
+      content: aiService.cleanAiOutputBrackets(finalResponse.reply || "Thinking..."),
       timestamp: Date.now() + 1,
       isRealTime: finalResponse.isRealTime,
       sources: finalResponse.sources,
@@ -1019,12 +1022,26 @@ router.get('/:sessionId', optionalVerifyToken, identifyGuest, async (req, res) =
     }
 
     if (session) {
-      // 🔄 Dynamic Re-signing of expired media URLs
-      // This ensures that images/videos stored with ephemeral 6-hour URLs are refreshed on load
+      // 🔄 Dynamic Re-signing of expired media URLs & bracket sanitization
       let needsSave = false;
       const bucketName = 'aisa_objects';
 
       for (let msg of session.messages) {
+        // Sanitize bracket pollution from existing sessions in database
+        if (msg.role === 'user' && typeof msg.content === 'string') {
+          const cleanUserMsg = msg.content.replace(/\n*\[MANDATORY JURISDICTION:[^\]]*\][\s\S]*$/i, '').trim();
+          if (cleanUserMsg !== msg.content) {
+            msg.content = cleanUserMsg;
+            needsSave = true;
+          }
+        } else if ((msg.role === 'model' || msg.role === 'assistant') && typeof msg.content === 'string') {
+          const cleanAiMsg = aiService.cleanAiOutputBrackets(msg.content);
+          if (cleanAiMsg !== msg.content) {
+            msg.content = cleanAiMsg;
+            needsSave = true;
+          }
+        }
+
         // Refreash Image URLs
         if (msg.imageUrl && msg.imageUrl.includes(bucketName)) {
            // Extract path: everything between 'aisa_objects/' and the '?' (if present) or end of string

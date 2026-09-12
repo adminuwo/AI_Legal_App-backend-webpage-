@@ -30,7 +30,7 @@ export class WorkspaceAIContextService {
         assistantSubtitle: 'Interactive Student Legal Tutor & Concept Helper',
         assistantType: 'tutor',
         avatarIcon: 'school-outline',
-        systemPersona: 'You are AI LEGAL TUTOR, an expert legal educator and tutor dedicated to helping law students master legal concepts, bare acts, case laws, sections, exam preparation, and study doubts. You have ZERO access to private litigation cases or law firm client data.'
+        systemPersona: 'You are AI LEGAL TUTOR, an expert legal educator and tutor dedicated to helping law students master legal concepts, bare acts, case laws, sections, exam preparation, and study doubts. When documents are available in the RAG knowledge base, you must first utilize and cite the uploaded files to explain concepts in a structured, exam-friendly format with clear headings and points. You have ZERO access to private litigation cases or law firm client data.'
       };
     } else if (type === 'law_firm' || type === 'enterprise') {
       return {
@@ -39,7 +39,7 @@ export class WorkspaceAIContextService {
         assistantSubtitle: `Enterprise AI Managing Partner & Law Firm OS${workspaceName ? ' • ' + workspaceName : ''}`,
         assistantType: 'firm_assistant',
         avatarIcon: 'business-outline',
-        systemPersona: `You are AI FIRM ASSISTANT, the enterprise AI Managing Partner for the law firm workspace "${workspaceName || 'Firm Workspace'}". You manage firm cases, advocate assignments, workload, upcoming hearings, team tasks, client communications, and strategic firm intelligence.`
+        systemPersona: `You are AI FIRM ASSISTANT, the enterprise AI Managing Partner for the law firm workspace "${workspaceName || 'Firm Workspace'}". You manage firm cases, advocate assignments, workload, upcoming hearings, team tasks, client communications, and strategic firm intelligence. When documents are available in the RAG knowledge base, you must first fetch and ground your responses on the uploaded firm and legal files in a structured, executive format with source citations.`
       };
     } else {
       return {
@@ -48,7 +48,7 @@ export class WorkspaceAIContextService {
         assistantSubtitle: 'Litigation Co-pilot for Personal Practice',
         assistantType: 'assistant',
         avatarIcon: 'briefcase-outline',
-        systemPersona: 'You are AI LEGAL ASSISTANT, an intelligent litigation co-pilot for personal legal practice. You assist advocates with their personal active cases, client updates, court preparation, evidence analysis, legal research, and daily litigation workflows.'
+        systemPersona: 'You are AI LEGAL ASSISTANT, an intelligent litigation co-pilot for personal legal practice. You assist advocates with their personal active cases, client updates, court preparation, evidence analysis, legal research, and daily litigation workflows. When documents are available in the RAG knowledge base, you must first fetch and ground your advice on the uploaded files with clear legal citations and proper professional formatting.'
       };
     }
   }
@@ -73,7 +73,12 @@ export class WorkspaceAIContextService {
     let contextHeader = `\n=== ${meta.assistantName} CONTEXT (STRICTLY WORKSPACE ISOLATED) ===\n`;
     contextHeader += `Persona: ${meta.systemPersona}\n`;
     contextHeader += `Active Workspace ID: ${workspaceId}\n`;
-    contextHeader += `Active Workspace Type: ${isStudent ? 'STUDENT' : (isLawFirm ? 'LAW FIRM' : 'PERSONAL PRACTICE')}\n\n`;
+    contextHeader += `Active Workspace Type: ${isStudent ? 'STUDENT' : (isLawFirm ? 'LAW FIRM' : 'PERSONAL PRACTICE')}\n`;
+    contextHeader += `### RAG & UPLOADED DOCUMENTS FIRST-PRIORITY DIRECTIVE:
+- When RAG knowledge base documents are provided in the prompt, you MUST FIRST examine and prioritize the uploaded files.
+- Base your answers directly on the retrieved document excerpts.
+- Cite the source document title explicitly (e.g. 📚 **Source: [Document Name]**).
+- Present your answer in proper structured Markdown with headings, bullet points, and highlighted key terms.\n\n`;
 
     // ------------------------------------------------------------------------
     // 1. STUDENT WORKSPACE — AI LEGAL TUTOR
@@ -275,7 +280,7 @@ ISOLATION GUARANTEE: AI Firm Assistant has access to "${firmName}" ONLY. It CANN
     // ------------------------------------------------------------------------
     // 3. ADVOCATE / PERSONAL WORKSPACE — AI LEGAL ASSISTANT
     // ------------------------------------------------------------------------
-    const userDoc = await User.findById(userId).select('email').lean();
+    const userDoc = userId && mongoose.Types.ObjectId.isValid(userId) ? await User.findById(userId).select('email').lean() : null;
     const memberships = await WorkspaceMembership.find({
       $or: [{ userId }, { email: userDoc?.email }]
     }).lean();

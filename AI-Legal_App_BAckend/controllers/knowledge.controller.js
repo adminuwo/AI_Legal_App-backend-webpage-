@@ -17,10 +17,24 @@ import * as ingestionService from '../services/knowledgeIngestion.service.js';
 import { Storage } from '@google-cloud/storage';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 dotenv.config();
 
 const pipeline = util.promisify(stream.pipeline);
+
+const getStorageClient = () => {
+    const storageOptions = {
+        projectId: process.env.GCP_PROJECT_ID || 'ai-mall-484810'
+    };
+    const keyPath = path.resolve(process.cwd(), 'config', 'gcp-key.json');
+    if (fs.existsSync(keyPath)) {
+        storageOptions.keyFilename = keyPath;
+    } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS && fs.existsSync(process.env.GOOGLE_APPLICATION_CREDENTIALS)) {
+        storageOptions.keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    }
+    return new Storage(storageOptions);
+};
 
 const estimateChunks = async (fileBuffer, mimeType) => {
     try {
@@ -79,8 +93,7 @@ export const uploadDocument = async (req, res) => {
 
             logger.info(`Uploading to Google Cloud Storage bucket: ${bucketName}${folderPath ? `, folder: ${folderPath}` : ''}`);
             
-            const storageOptions = process.env.GCP_PROJECT_ID ? { projectId: process.env.GCP_PROJECT_ID } : {};
-            const storageClient = new Storage(storageOptions);
+            const storageClient = getStorageClient();
             const bucket = storageClient.bucket(bucketName);
             
             const gcsFileName = `${folderPath}${Date.now()}-${originalName.replace(/\s+/g, '_')}`;
@@ -250,9 +263,7 @@ export const deleteDocument = async (req, res) => {
         // 1. Delete from GCS
         if (gcsUri) {
             try {
-                const { Storage } = await import('@google-cloud/storage');
-                const storageOptions = process.env.GCP_PROJECT_ID ? { projectId: process.env.GCP_PROJECT_ID } : {};
-                const storageClient = new Storage(storageOptions);
+                const storageClient = getStorageClient();
                 const urlParts = gcsUri.replace('gs://', '').split('/');
                 const bucketName = urlParts[0];
                 const gcsFileName = urlParts.slice(1).join('/');
@@ -302,9 +313,8 @@ export const downloadDocument = async (req, res) => {
 
         logger.info(`Attempting to stream document: ${document.filename} from ${document.gcsUri}`);
 
-        // Initialization using existing Storage import at top-level
-        const storageOptions = process.env.GCP_PROJECT_ID ? { projectId: process.env.GCP_PROJECT_ID } : {};
-        const storageClient = new Storage(storageOptions);
+        // Initialization using getStorageClient
+        const storageClient = getStorageClient();
 
         const urlParts = document.gcsUri.replace('gs://', '').split('/');
         const bucketName = urlParts[0];
@@ -510,9 +520,7 @@ export const deleteKnowledgeSource = async (req, res) => {
         logger.info(`Deleting knowledge source ${source.url} and its ${pages.length} pages.`);
 
         // Delete from GCS and Vertex for each page
-        const { Storage } = await import('@google-cloud/storage');
-        const storageOptions = process.env.GCP_PROJECT_ID ? { projectId: process.env.GCP_PROJECT_ID } : {};
-        const storageClient = new Storage(storageOptions);
+        const storageClient = getStorageClient();
         const vertexService = await import('../services/vertex.service.js');
 
         for (const page of pages) {

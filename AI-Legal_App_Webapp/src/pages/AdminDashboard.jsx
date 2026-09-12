@@ -6,7 +6,8 @@ import {
   MessageSquare, Globe, Settings, Shield, ShieldAlert, Search, RefreshCw, Plus, PlusCircle, 
   Edit2, Edit3, Trash2, Lock, Unlock, CheckCircle2, XCircle, ExternalLink, Key, DollarSign, 
   TrendingUp, Activity, HardDrive, Terminal, Send, Eye, EyeOff, ChevronRight, X, 
-  FileText, Check, RotateCw, Building2, UserCheck, Zap, ArrowLeft, Download, Tag, Wrench, Calendar
+  FileText, Check, RotateCw, Building2, UserCheck, Zap, ArrowLeft, Download, Tag, Wrench, Calendar,
+  Upload, FileUp, Database, FolderOpen
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useRecoilValue } from 'recoil';
@@ -43,7 +44,8 @@ const TABS = [
   { id: 'bugs', label: 'Bugs', icon: Bug },
   { id: 'reports', label: 'Response Reports', icon: MessageSquare },
   { id: 'jurisdiction', label: 'Jurisdiction', icon: Globe },
-  { id: 'settings', label: 'Settings', icon: Settings }
+  { id: 'settings', label: 'Settings', icon: Settings },
+  { id: 'rag-files', label: 'RAG Files', icon: FileText }
 ];
 
 export default function AdminDashboard() {
@@ -107,6 +109,15 @@ export default function AdminDashboard() {
   const [featuresList, setFeaturesList] = useState([]);
   const [bugsList, setBugsList] = useState([]);
   const [complaintsList, setComplaintsList] = useState([]);
+
+  // RAG Knowledge Base Files State
+  const [ragDocuments, setRagDocuments] = useState([]);
+  const [ragLoading, setRagLoading] = useState(false);
+  const [ragUploading, setRagUploading] = useState(false);
+  const [ragSelectedFile, setRagSelectedFile] = useState(null);
+  const [ragCategory, setRagCategory] = useState('General');
+  const [ragSearchQuery, setRagSearchQuery] = useState('');
+  const ragFileInputRef = useRef(null);
 
   // Enterprise Add-on Requests State & Sync
   const [addonRequestsList, setAddonRequestsList] = useState(() => {
@@ -1385,6 +1396,89 @@ export default function AdminDashboard() {
       setDeleteConfig({ isOpen: false, type: '', id: '', name: '' });
     }
   };
+
+  // --- RAG FILES HANDLERS ---
+  const fetchRagDocuments = async () => {
+    setRagLoading(true);
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      const res = await axios.get(`${API}/knowledge/documents`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data?.success && Array.isArray(res.data?.data)) {
+        setRagDocuments(res.data.data);
+      } else if (Array.isArray(res.data)) {
+        setRagDocuments(res.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch RAG documents:', err);
+      toast.error('Failed to load RAG documents');
+    } finally {
+      setRagLoading(false);
+    }
+  };
+
+  const handleRagFileUpload = async (e) => {
+    if (e) e.preventDefault();
+    if (!ragSelectedFile) {
+      toast.error('Please select a file to upload first.');
+      return;
+    }
+
+    setRagUploading(true);
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('file', ragSelectedFile);
+      formData.append('category', ragCategory || 'General');
+
+      const res = await axios.post(`${API}/knowledge/upload`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (res.data?.success) {
+        toast.success(`"${ragSelectedFile.name}" uploaded and queued for indexing!`);
+        setRagSelectedFile(null);
+        if (ragFileInputRef.current) ragFileInputRef.current.value = '';
+        fetchRagDocuments();
+      } else {
+        toast.error(res.data?.message || 'Failed to upload document');
+      }
+    } catch (err) {
+      console.error('RAG file upload error:', err);
+      toast.error(err.response?.data?.message || 'Failed to upload RAG document');
+    } finally {
+      setRagUploading(false);
+    }
+  };
+
+  const handleRagDelete = async (docId, filename) => {
+    if (!window.confirm(`Are you sure you want to delete "${filename}" from the RAG knowledge repository?`)) return;
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      const res = await axios.delete(`${API}/knowledge/${docId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data?.success) {
+        toast.success(`"${filename}" removed successfully.`);
+        setRagDocuments(prev => prev.filter(d => d._id !== docId));
+      } else {
+        toast.error(res.data?.message || 'Failed to delete');
+      }
+    } catch (err) {
+      console.error('RAG delete error:', err);
+      toast.error('Failed to delete document');
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'rag-files') {
+      fetchRagDocuments();
+    }
+  }, [activeTab]);
 
   if (!isAdmin) {
     return (
@@ -3278,7 +3372,7 @@ export default function AdminDashboard() {
               </form>
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'settings' ? (
           /* TAB 11: SETTINGS & SECURITY */
           <div className="space-y-4 sm:space-y-6">
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 sm:space-y-6">
@@ -3359,7 +3453,296 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-        )}
+        ) : activeTab === 'rag-files' ? (
+          /* TAB 12: RAG FILES & DOCUMENT INGESTION */
+          <div className="space-y-5 sm:space-y-6">
+            {/* Header / Overview Card */}
+            <div className="bg-gradient-to-r from-amber-500/10 via-[#C8A34D]/10 to-transparent dark:from-amber-500/15 dark:via-[#C8A34D]/10 dark:to-transparent rounded-2xl sm:rounded-3xl p-5 border border-[#C8A34D]/30 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 border border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D] shadow-xs shrink-0">
+                  <Database className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] bg-[#C8A34D]/10 px-2 py-0.5 rounded-md border border-[#C8A34D]/20">
+                      RAG Knowledge Engine
+                    </span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-wide text-slate-400">
+                      Vector Indexing & Embedding
+                    </span>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1">
+                    RAG Document Repository
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+                    Upload statutory acts, case precedents, and legal documents for AI semantic retrieval across Web & Mobile.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={fetchRagDocuments}
+                  disabled={ragLoading}
+                  className="px-3.5 py-2 bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 text-[#C8A34D] ${ragLoading ? 'animate-spin' : ''}`} />
+                  <span>Refresh</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Metrics Bar */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              <div className="p-4 bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-slate-400">Total Documents</p>
+                  <p className="text-xl font-black text-slate-900 dark:text-white">{ragDocuments.length}</p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-slate-400">Total Ingested Chunks</p>
+                  <p className="text-xl font-black text-slate-900 dark:text-white">
+                    {ragDocuments.reduce((acc, doc) => acc + (doc.totalChunks || 0), 0)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                  <HardDrive className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-slate-400">Indexed Storage</p>
+                  <p className="text-xl font-black text-slate-900 dark:text-white">
+                    {(() => {
+                      const totalBytes = ragDocuments.reduce((acc, doc) => acc + (doc.size || 0), 0);
+                      if (totalBytes > 1024 * 1024) return `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`;
+                      return `${(totalBytes / 1024).toFixed(1)} KB`;
+                    })()}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Document Upload Card */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
+              <div>
+                <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileUp className="w-4 h-4 text-[#C8A34D]" />
+                  <span>Upload Document to Knowledge Base</span>
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
+                  Files are automatically parsed, chunked, and ingested into the vector search pipeline.
+                </p>
+              </div>
+
+              <form onSubmit={handleRagFileUpload} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {/* Category Selection */}
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1.5">
+                      Knowledge Category
+                    </label>
+                    <select
+                      value={ragCategory}
+                      onChange={e => setRagCategory(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 focus:outline-hidden focus:border-[#C8A34D]"
+                    >
+                      <option value="General">General Legal</option>
+                      <option value="Statutes">Statutes & Acts (BNS / BNSS / BSA)</option>
+                      <option value="Judgments">Case Judgments & Precedents</option>
+                      <option value="Drafts">Draft Templates & Agreements</option>
+                      <option value="PRODUCT_GUIDE">Product Guide & Features</option>
+                    </select>
+                  </div>
+
+                  {/* File Selector */}
+                  <div className="sm:col-span-2">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1.5">
+                      Select Document (.pdf, .docx, .txt, .csv, .json, .md)
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        ref={ragFileInputRef}
+                        type="file"
+                        accept=".pdf,.docx,.doc,.txt,.csv,.json,.md"
+                        onChange={e => {
+                          if (e.target.files && e.target.files[0]) {
+                            setRagSelectedFile(e.target.files[0]);
+                          }
+                        }}
+                        className="hidden"
+                        id="rag-file-input"
+                      />
+                      <label
+                        htmlFor="rag-file-input"
+                        className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 hover:bg-slate-100 dark:hover:bg-zinc-800/80 border border-dashed border-slate-300 dark:border-zinc-700 rounded-xl text-xs font-medium text-slate-600 dark:text-zinc-300 cursor-pointer flex items-center justify-between transition-colors truncate"
+                      >
+                        <span className="truncate">
+                          {ragSelectedFile ? `📄 ${ragSelectedFile.name} (${(ragSelectedFile.size / 1024).toFixed(1)} KB)` : 'Click to select or drop document here...'}
+                        </span>
+                        <Upload className="w-4 h-4 text-[#C8A34D] shrink-0 ml-2" />
+                      </label>
+
+                      {ragSelectedFile && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setRagSelectedFile(null);
+                            if (ragFileInputRef.current) ragFileInputRef.current.value = '';
+                          }}
+                          className="p-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-all cursor-pointer"
+                          title="Remove file"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    disabled={!ragSelectedFile || ragUploading}
+                    className="w-full sm:w-auto px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {ragUploading ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Uploading & Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload Document to RAG</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Document List Table */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden">
+              <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                    <FolderOpen className="w-4 h-4 text-[#C8A34D]" />
+                    <span>Ingested Knowledge Documents ({ragDocuments.length})</span>
+                  </h4>
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
+                    Browse all documents stored in the vector database and GCS bucket.
+                  </p>
+                </div>
+
+                <div className="relative w-full sm:w-64">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search documents..."
+                    value={ragSearchQuery}
+                    onChange={e => setRagSearchQuery(e.target.value)}
+                    className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs text-slate-800 dark:text-zinc-200 placeholder-slate-400 focus:outline-hidden focus:border-[#C8A34D]"
+                  />
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50/80 dark:bg-zinc-900/60 border-b border-slate-100 dark:border-zinc-800 text-[10px] font-black uppercase text-slate-400">
+                      <th className="py-3 px-4">Document Name</th>
+                      <th className="py-3 px-4">Category</th>
+                      <th className="py-3 px-4">Size</th>
+                      <th className="py-3 px-4">Chunks</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4">Date</th>
+                      <th className="py-3 px-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/80">
+                    {ragDocuments
+                      .filter(doc => (doc.filename || '').toLowerCase().includes(ragSearchQuery.toLowerCase()))
+                      .map((doc, idx) => (
+                        <tr key={doc._id || idx} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/40 transition-colors">
+                          <td className="py-3 px-4 font-bold text-slate-900 dark:text-white flex items-center gap-2 max-w-xs truncate">
+                            <FileText className="w-4 h-4 text-[#C8A34D] shrink-0" />
+                            <span className="truncate" title={doc.filename}>
+                              {(() => {
+                                let s = doc.filename || 'Document';
+                                try {
+                                  s = decodeURIComponent(s);
+                                } catch {}
+                                return s
+                                  .replace(/%20/g, ' ')
+                                  .replace(/%26/g, '&')
+                                  .replace(/%E2%84%A2/gi, '™')
+                                  .replace(/%2C/gi, ',')
+                                  .replace(/%28/gi, '(')
+                                  .replace(/%29/gi, ')');
+                              })()}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700">
+                              {doc.category || 'General'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-slate-500 font-medium">
+                            {doc.size ? `${(doc.size / 1024).toFixed(1)} KB` : '—'}
+                          </td>
+                          <td className="py-3 px-4 font-bold text-[#C8A34D]">
+                            {doc.totalChunks || 1}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${
+                              doc.status === 'Active' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                              doc.status === 'Error' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+                              'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                            }`}>
+                              {doc.status || 'Active'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-slate-400 text-[11px]">
+                            {doc.uploadDate ? new Date(doc.uploadDate).toLocaleDateString() : '—'}
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <button
+                              onClick={() => handleRagDelete(doc._id, doc.filename)}
+                              className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                              title="Delete Document"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+
+                    {ragDocuments.length === 0 && !ragLoading && (
+                      <tr>
+                        <td colSpan={7} className="py-10 text-center text-slate-400 text-xs">
+                          <Database className="w-8 h-8 text-slate-300 dark:text-zinc-600 mx-auto mb-2" />
+                          <p className="font-bold">No RAG documents uploaded yet</p>
+                          <p className="text-[11px] text-slate-400 mt-1">Upload your first document above to enable AI vector retrieval.</p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </main>
 
       {/* Edit Role Modal */}

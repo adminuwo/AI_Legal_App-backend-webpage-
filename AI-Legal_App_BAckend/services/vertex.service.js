@@ -13,6 +13,41 @@ import { existsSync } from 'fs';
 import { resolveResponseLanguage } from '../utils/languageResolver.js';
 import { executeTargetedLegalSearch, formatGroundingContext } from './legalSearchOrchestrator.js';
 
+export const cleanAiOutputBrackets = (text) => {
+    if (!text || typeof text !== 'string') return text;
+    return text
+        .replace(/\[cite:\s*[^\]]*\]/gi, '')
+        .replace(/\[RAG(?::\s*[^\]]*)?\]/gi, '')
+        .replace(/\[Ref(?::\s*[^\]]*)?\]/gi, '')
+        .replace(/\[Document(?::\s*[^\]]*)?\]/gi, '')
+        .replace(/\[Sources?:\s*[^\]]*\]/gi, '')
+        // Clean out any AISA identity slips or marketing plugs in AI Legal app
+        .replace(/\bI am AISA\b/gi, 'I am AI LEGAL™ Assistant')
+        .replace(/\bI'm AISA\b/gi, "I'm AI LEGAL™ Assistant")
+        .replace(/\bAISA, an AI Super Assistant\b/gi, 'AI LEGAL™ Assistant')
+        .replace(/\ban AI Super Assistant\b/gi, 'an AI Legal Assistant')
+        .replace(/\bAI Super Assistant\b/gi, 'AI Legal Assistant')
+        .replace(/\bAISA™\b/g, 'AI LEGAL™')
+        .replace(/\bAISA\b/g, 'AI LEGAL™')
+        .replace(/For more information, you can visit:\s*https?:\/\/uwo24\.com\/?/gi, '')
+        .replace(/https?:\/\/uwo24\.com\/?/gi, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+};
+
+export const extractCleanUserMessage = (promptText) => {
+    if (!promptText || typeof promptText !== 'string') return '';
+    const userQMatch = promptText.match(/(?:USER QUESTION|User Query|USER PROMPT|Current Query):\s*([\s\S]+?)(?:\n\n###|\n\npreferred_response_language|$)/i);
+    if (userQMatch && userQMatch[1]) {
+        return userQMatch[1].trim();
+    }
+    let cleaned = promptText.replace(/### RELEVANT PAST CONVERSATION MEMORY:[\s\S]*?(?:USER QUESTION:|Current Query:|$)/i, '');
+    cleaned = cleaned.replace(/### UNIVERSAL MULTILINGUAL RESPONSE SYSTEM[\s\S]*?\n\n/i, '');
+    cleaned = cleaned.replace(/=== UNIVERSAL MULTILINGUAL RESPONSE SYSTEM ===[\s\S]*?\n\n/i, '');
+    cleaned = cleaned.replace(/\n*\[MANDATORY JURISDICTION:[^\]]*\][\s\S]*$/i, '');
+    return cleaned.trim() || promptText;
+};
+
 export const getGlobalLanguageInstruction = (language, messageText = '') => {
     const resolved = resolveResponseLanguage({
         currentMessage: messageText,
@@ -56,7 +91,7 @@ const findOrCreateCorpus = async () => {
 
     try {
         const projectId = process.env.GCP_PROJECT_ID;
-        const location = 'us-central1';
+        const location = process.env.GCP_LOCATION || 'asia-south1';
 
         if (!projectId) {
             logger.error("[Vertex RAG] GCP_PROJECT_ID not set in environment.");
@@ -118,7 +153,7 @@ export const retrieveContextFromRag = async (query, topK = 8, category = 'LEGAL'
         }
 
         const projectId = process.env.GCP_PROJECT_ID;
-        const location = process.env.GCP_LOCATION || 'us-central1';
+        const location = process.env.GCP_LOCATION || 'asia-south1';
 
         if (!projectId) {
             logger.error("[Vertex RAG] Retrieval failed: GCP_PROJECT_ID not set in environment.");
@@ -177,7 +212,31 @@ export const retrieveContextFromRag = async (query, topK = 8, category = 'LEGAL'
 
         for (const context of validContexts) {
             const gcsUri = context.sourceUri;
-            const doc = gcsUri ? await Knowledge.findOne({ gcsUri }) : null;
+            let doc = null;
+            if (gcsUri) {
+                try {
+                    const mongooseModule = await import('mongoose');
+                    const mongoose = mongooseModule.default || mongooseModule;
+                    if (mongoose.connection && mongoose.connection.readyState === 1) {
+                        const rawName = gcsUri.split('/').pop();
+                        let decodedName = rawName;
+                        try { decodedName = decodeURIComponent(rawName); } catch (e) {}
+                        const cleanName = decodedName.replace(/^\d+[-_]/, '');
+
+                        doc = await Knowledge.findOne({
+                            $or: [
+                                { gcsUri: gcsUri },
+                                { gcsUri: decodeURIComponent(gcsUri) },
+                                { filename: rawName },
+                                { filename: decodedName },
+                                { filename: cleanName }
+                            ]
+                        }).maxTimeMS(3000).lean();
+                    }
+                } catch (dbErr) {
+                    logger.warn(`[Vertex RAG] DB lookup warning: ${dbErr.message}`);
+                }
+            }
 
             console.log(`[RAG DEBUG] Chunk Source: ${gcsUri || 'N/A'} | DB Doc: ${doc ? 'FOUND' : 'NOT_IN_DB'} | DB Category: ${doc?.category || 'NONE'} | Requested: ${category}`);
 
@@ -189,43 +248,74 @@ export const retrieveContextFromRag = async (query, topK = 8, category = 'LEGAL'
                 }
             }
 
-            // Enforce Scope Restriction/Isolation for PRODUCT_GUIDE
-            if (category === 'PRODUCT_GUIDE') {
+            // Enforce Scope Restriction: Only restrict if explicitly requested as PRODUCT_GUIDE_ONLY
+            if (category === 'PRODUCT_GUIDE_ONLY') {
                 if (!doc || doc.category !== 'PRODUCT_GUIDE') {
-                    continue;
-                }
-            } else {
-                if (doc && doc.category === 'PRODUCT_GUIDE') {
                     continue;
                 }
             }
 
             if (!context.text || context.text.trim().length === 0) continue;
 
-            // Build source info from doc if found, otherwise use sensible defaults
-            let sourceName = doc?.filename || (gcsUri ? gcsUri.split('/').pop() : 'Knowledge Resource');
+            // In AI Legal app, skip pure promotional marketing decks, but NEVER discard company leadership, team, or founder documents
+            const lowerUri = (gcsUri || '').toLowerCase();
+            const lowerDocName = (doc?.filename || '').toLowerCase();
+            const chunkSnippet = (context.text || '').toLowerCase();
+
+            const isCompanyOrFounderDoc = chunkSnippet.includes('founder') || 
+                chunkSnippet.includes('director') || 
+                chunkSnippet.includes('gurumukh') || 
+                chunkSnippet.includes('ahuja') || 
+                chunkSnippet.includes('leadership') ||
+                chunkSnippet.includes('unified web options') ||
+                chunkSnippet.includes('uwo');
+
+            if (!isCompanyOrFounderDoc && (
+                lowerUri.includes('aisa_full_rag_pack') ||
+                lowerDocName.includes('aisa_full_rag_pack') ||
+                chunkSnippet.includes('meet aisa, your ai') ||
+                chunkSnippet.includes('i am aisa, an ai super assistant')
+            )) {
+                console.log(`[RAG FILTER] Skipping non-legal AISA marketing chunk: ${gcsUri || doc?.filename || 'snippet'}`);
+                continue;
+            }
+
+            // Build clean, human-readable document name
+            let rawFilename = doc?.filename || (gcsUri ? gcsUri.split('/').pop() : 'Knowledge Resource');
+            try { rawFilename = decodeURIComponent(rawFilename); } catch (e) {}
+            let cleanTitle = rawFilename.replace(/^\d+[-_]/, '');
+
+            // Provide user-friendly title for raw website-knowledge scrapings
+            if (/^[a-f0-9]{6,16}\.txt$/i.test(cleanTitle) && gcsUri && gcsUri.includes('/website-knowledge/')) {
+                const hostMatch = gcsUri.match(/\/website-knowledge\/([^/]+)\//);
+                cleanTitle = hostMatch && hostMatch[1] ? `${hostMatch[1]} Knowledge Base` : 'Website Knowledge Base';
+            }
+
             let sourceUrl = doc?.sourceUrl || '';
+            let sourceName = cleanTitle;
 
             if (sourceUrl) {
                 try {
                     const urlObj = new URL(sourceUrl);
                     sourceName = urlObj.hostname.replace('www.', '');
                 } catch (e) {
-                    sourceName = doc?.filename || "Knowledge Resource";
+                    sourceName = cleanTitle;
                 }
             }
 
+            // Sanitize chunk content to scrub any old AISA branding slips while keeping facts intact
+            const sanitizedText = cleanAiOutputBrackets(context.text);
+
             sources.push({
                 title: sourceName,
-                url: sourceUrl || 'https://uwo24.com/',
-                snippet: context.text ? context.text.substring(0, 150) + '...' : '',
+                url: sourceUrl || (doc?.cloudinaryUrl || ''),
+                snippet: sanitizedText ? sanitizedText.substring(0, 180) + '...' : '',
                 document_title: sourceName,
                 source_type: doc ? 'KNOWLEDGE_BASE' : 'RAG_CORPUS',
                 chunk_id: `chunk_${Date.now()}_${Math.random()}`
             });
 
-            const citation = sourceUrl ? `[Ref: ${sourceName}]` : `[Knowledge Base]`;
-            retrievedTexts.push(`${citation}\n${context.text}`);
+            retrievedTexts.push(`### 📄 Source Document: ${sourceName}\n${sanitizedText}`);
         }
 
         if (retrievedTexts.length === 0) {
@@ -233,7 +323,7 @@ export const retrieveContextFromRag = async (query, topK = 8, category = 'LEGAL'
             return null;
         }
 
-        // Deduplicate sources aggressively by Title (since URLs might be internal GCS paths)
+        // Deduplicate sources by Title
         const uniqueSources = [];
         const seenTitles = new Set();
         for (const source of sources) {
@@ -245,11 +335,11 @@ export const retrieveContextFromRag = async (query, topK = 8, category = 'LEGAL'
 
         if (uniqueSources.length === 0) {
             uniqueSources.push({
-                title: "Unified Web Options",
-                url: "https://uwo24.com/",
-                snippet: "Official information about AISA and UWO services.",
-                document_title: "Unified Web Options",
-                source_type: "URL",
+                title: "AI Legal Knowledge Base",
+                url: "",
+                snippet: "Official information from legal knowledge base.",
+                document_title: "AI Legal Knowledge Base",
+                source_type: "KNOWLEDGE_BASE",
                 chunk_id: `default_${Date.now()}`
             });
         }
@@ -258,8 +348,7 @@ export const retrieveContextFromRag = async (query, topK = 8, category = 'LEGAL'
         const ragContext = template.replace('{retrieved_text}', retrievedTexts.join('\n\n'));
 
         logger.info(`[Vertex RAG] Chunks: ${validContexts.length} | Unique Sources: ${uniqueSources.length}`);
-        // Return max 3 sources to keep the UI clean as requested by the user
-        return { text: ragContext, sources: uniqueSources.slice(0, 3) };
+        return { text: ragContext, sources: uniqueSources.slice(0, 5) };
 
     } catch (error) {
         logger.error(`[Vertex RAG] Retrieval Error: ${error.response?.data?.error?.message || error.message}`);
@@ -310,36 +399,29 @@ export const analyzeRAGRequirements = async (query) => {
  */
 export const detectRAGNeed = async (query) => {
     try {
-        const lower = query.toLowerCase().trim();
+        const lower = (query || "").toLowerCase().trim();
 
         // 1. Fast-path NO: Casual greetings and very short inputs
         const pureFillers = [
-            'hi', 'hello', 'hii', 'hey', 'thanks', 'thank you', 'okay', 'ok',
+            'hi', 'hello', 'hii', 'hey', 'heyy', 'thanks', 'thank you', 'okay', 'ok',
             'great', 'awesome', 'happy to help', 'see you', 'bye', 'goodbye',
             'hope this helps', 'no problem', 'you are welcome', 'got it',
-            'sure', 'alright', 'noted', 'understood'
+            'sure', 'alright', 'noted', 'understood', 'good morning', 'good evening',
+            'good night', 'namaste', 'kem cho'
         ];
 
-        if (pureFillers.some(f => lower === f) || query.length < 3) {
+        if (pureFillers.some(f => lower === f) || query.trim().length < 3) {
             return false;
         }
 
-        // 2. STRICT KEYWORD MATCHING: Only trigger RAG for AISA, AI MALL, UWO, and specific features
-        const ragKeywords = ['aisa', 'ai mall', 'uwo', 'feature', 'pricing', 'plan', 'mall', 'refund', 'policy', 'capabilities'];
-        const hasRagKeyword = ragKeywords.some(k => lower.includes(k));
-        
-        if (hasRagKeyword) {
-            logger.info(`[RAG-Detector] Keyword match triggered RAG for: "${query}"`);
-            return true;
-        }
-
-        // 3. DEFAULT: Use Normal Chat for everything else
-        return false;
+        // Prioritize checking uploaded RAG files for any substantive question
+        logger.info(`[RAG-Detector] Prioritizing RAG retrieval for query: "${query}"`);
+        return true;
     } catch (error) {
         logger.error(`[RAG-Detector] Error: ${error.message}`);
         return false;
     }
-}
+};
 
 /**
  * Internal helper for basic text generation - creates a fresh lightweight model
@@ -538,10 +620,15 @@ export const askVertex = async (prompt, context = null, options = {}) => {
         const store = langStorage.getStore();
         let selectedLang = options.language || (store && typeof store === 'object' ? store.language : store);
 
-        const resolvedLang = resolveResponseLanguage({
-            currentMessage: prompt,
-            selectedLanguage: selectedLang
-        });
+        let resolvedLang = options.resolvedLang;
+        if (!resolvedLang) {
+            const rawUserMsg = options.originalMessage || options.currentMessage || options.message;
+            const messageForLangDetect = rawUserMsg ? rawUserMsg : extractCleanUserMessage(prompt);
+            resolvedLang = resolveResponseLanguage({
+                currentMessage: messageForLangDetect,
+                selectedLanguage: selectedLang
+            });
+        }
 
         let targetLanguage = resolvedLang.language;
         const globalLanguageInstruction = resolvedLang.systemInstruction;
@@ -896,6 +983,8 @@ export const askVertex = async (prompt, context = null, options = {}) => {
             // 4. JSON Parsing Attempt (If mode expects JSON)
             if (isJsonMode) {
                 fullText = fullText.replace(/```json\s*|\s*```/g, '').trim();
+            } else {
+                fullText = cleanAiOutputBrackets(fullText);
             }
 
             logger.info(`[VERTEX] Streaming completed successfully (${fullText.length} chars).`);
@@ -922,6 +1011,8 @@ export const askVertex = async (prompt, context = null, options = {}) => {
         // 4. JSON Parsing Attempt (If mode expects JSON)
         if (isJsonMode) {
             text = text.replace(/```json\s*|\s*```/g, '').trim();
+        } else {
+            text = cleanAiOutputBrackets(text);
         }
 
         // 5. Extract Search Grounding Sources
