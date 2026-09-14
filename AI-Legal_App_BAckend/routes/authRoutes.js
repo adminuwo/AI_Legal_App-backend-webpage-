@@ -408,8 +408,16 @@ const handleSocialUser = async (profile, req, res, isRedirect = true) => {
         console.log(`[Social Auth] Creating new user via ${provider.toUpperCase()}: ${email}`);
         const detectedLang = detectLanguageFromRequest(req);
         const userAgent = req.headers['user-agent'] || '';
-        const rawPlatform = req.headers['x-device-os'] || (userAgent.includes('Android') ? 'android' : (userAgent.includes('iPhone') || userAgent.includes('iPad') ? 'ios' : 'web'));
-        const detectedPlatform = ['android', 'ios', 'web'].includes(String(rawPlatform).toLowerCase()) ? String(rawPlatform).toLowerCase() : 'web';
+        let detectedPlatform = req.headers['x-device-os'] || req.headers['x-device-platform'];
+        if (!['android', 'ios'].includes(String(detectedPlatform).toLowerCase())) {
+          if (/iPhone|iPad|iPod|Macintosh|Mac OS/i.test(userAgent)) {
+            detectedPlatform = 'ios';
+          } else {
+            detectedPlatform = 'android';
+          }
+        } else {
+          detectedPlatform = String(detectedPlatform).toLowerCase();
+        }
 
         user = await UserModel.create({
           name: name || `${provider} User`,

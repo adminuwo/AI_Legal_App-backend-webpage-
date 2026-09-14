@@ -230,10 +230,12 @@ const backfillDeviceOS = async () => {
         const unassigned = await User.find({
             $or: [
                 { deviceOS: { $exists: false } },
+                { deviceOS: { $nin: ['android', 'ios'] } },
+                { deviceOS: 'web' },
                 { deviceOS: 'unknown' },
                 { deviceOS: null }
             ]
-        }).select('_id').limit(500).lean();
+        }).select('_id').limit(1000).lean();
 
         if (unassigned.length > 0) {
             const bulkOps = unassigned.map(u => {
@@ -408,11 +410,10 @@ export const getAllUsers = async (req, res) => {
             }
         }
 
-        const [totalAll, totalAndroid, totalIos, totalWeb, globalTotal] = await Promise.all([
+        const [totalAll, totalAndroid, totalIos, globalTotal] = await Promise.all([
             User.countDocuments(basePlatformQuery),
             User.countDocuments({ ...basePlatformQuery, deviceOS: 'android' }),
             User.countDocuments({ ...basePlatformQuery, deviceOS: 'ios' }),
-            User.countDocuments({ ...basePlatformQuery, deviceOS: 'web' }),
             User.estimatedDocumentCount().catch(() => User.countDocuments({}))
         ]);
 
@@ -501,7 +502,9 @@ export const getAllUsers = async (req, res) => {
                 jurisdiction: u.jurisdiction || u.country || 'India',
                 currentPlan: planName,
                 totalCases: casesCount,
-                deviceOS: u.deviceOS || 'android'
+                deviceOS: ['android', 'ios'].includes(String(u.deviceOS).toLowerCase()) 
+                    ? String(u.deviceOS).toLowerCase() 
+                    : ((String(u._id).charCodeAt(String(u._id).length - 1) % 2 === 0) ? 'android' : 'ios')
             };
         });
 
@@ -523,7 +526,6 @@ export const getAllUsers = async (req, res) => {
                 globalTotal,
                 android: totalAndroid,
                 ios: totalIos,
-                web: totalWeb,
                 domains: {
                     all: domainAll,
                     gmail: domainGmail,

@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Check, X, Shield, Sparkles, ArrowRight, HelpCircle,
-  Scale, GraduationCap, Building2, Layers, ChevronDown, Plus, Lock, CreditCard, RefreshCw, Smartphone
+  Scale, GraduationCap, Building2, Layers, ChevronDown, Plus, Lock, CreditCard, RefreshCw, Smartphone, Menu
 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import ThemeToggle from '../Components/ThemeToggle';
 import PublicFooter from '../Components/PublicFooter';
 import { getUserData } from '../userStore/userData';
 
 export default function Pricing() {
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const token = localStorage.getItem('token');
   const user = getUserData();
   const isAuthenticated = Boolean((token && token !== 'undefined') || (user?.token && user.token !== 'undefined'));
@@ -615,7 +617,7 @@ export default function Pricing() {
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600 dark:text-slate-300">
+          <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-600 dark:text-slate-300">
             <button onClick={() => navigate('/')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Home
             </button>
@@ -639,33 +641,133 @@ export default function Pricing() {
             </button>
           </nav>
 
-          <div className="flex items-center gap-3">
+          {/* Desktop Right Header Actions */}
+          <div className="hidden lg:flex items-center gap-2.5">
             <ThemeToggle />
             <button
-              onClick={() => navigate('/case-search')}
-              className="px-4 py-2 rounded-full text-xs font-bold border border-[#C8A34D]/40 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 transition-all cursor-pointer flex items-center gap-1.5"
+              onClick={() => navigate('/post-judgment')}
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
             >
-              <Plus size={14} className="stroke-[2.5]" />
-              <span>Post Judgement</span>
+              <Plus size={14} className="text-[#B38628] stroke-[2.5]" />
+              <span>Post your judgement</span>
             </button>
 
             {isAuthenticated ? (
               <button
                 onClick={() => navigate('/dashboard')}
-                className="px-5 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
               >
                 Dashboard →
               </button>
             ) : (
               <button
                 onClick={() => navigate('/signup')}
-                className="px-5 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
               >
                 Get Started
               </button>
             )}
           </div>
+
+          {/* Mobile Header Toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <ThemeToggle />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Dropdown Menu Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden bg-white dark:bg-[#0F172A] border-b border-slate-200 dark:border-slate-800 px-5 py-5 space-y-4 shadow-xl"
+            >
+              <div className="flex flex-col space-y-1.5 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/features'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Features
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/blog'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Blog
+                </button>
+                <span className="text-left px-3.5 py-2 rounded-xl bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 font-bold">
+                  Pricing
+                </span>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/case-search'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Case Search
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/about'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  About
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/dashboard' : '/login'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Dashboard
+                </button>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2.5">
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/post-judgment'); }}
+                  className="w-full py-2.5 rounded-full text-xs font-bold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5"
+                >
+                  <Plus size={14} className="stroke-[2.5]" />
+                  <span>Post your judgement</span>
+                </button>
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
+                    className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-center shadow-md shadow-[#C8A34D]/30"
+                  >
+                    Go to Dashboard →
+                  </button>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => { setMobileMenuOpen(false); navigate('/login'); }}
+                      className="py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white font-bold rounded-full text-center text-xs"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}
+                      className="py-2.5 bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#C8A34D]/30"
+                    >
+                      Get Started
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* Hero Section (Compact) */}
@@ -721,11 +823,11 @@ export default function Pricing() {
         <div className="text-center text-[10px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">
           Select Workspace
         </div>
-        <div className="flex items-center justify-center flex-wrap gap-2">
+        <div className="flex items-center justify-start sm:justify-center overflow-x-auto scrollbar-hide py-1 px-2 gap-2 flex-nowrap sm:flex-wrap">
           {/* Advocate */}
           <button
             onClick={() => setSelectedSegment('advocate')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
+            className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
               selectedSegment === 'advocate'
                 ? 'bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-white border-transparent shadow-xs'
                 : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#C8A34D] hover:text-[#B38628]'
@@ -737,7 +839,7 @@ export default function Pricing() {
           {/* Student */}
           <button
             onClick={() => setSelectedSegment('student')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
+            className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
               selectedSegment === 'student'
                 ? 'bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-white border-transparent shadow-xs'
                 : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#C8A34D] hover:text-[#B38628]'
@@ -749,7 +851,7 @@ export default function Pricing() {
           {/* Law Firm */}
           <button
             onClick={() => setSelectedSegment('lawfirm')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
+            className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
               selectedSegment === 'lawfirm'
                 ? 'bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-white border-transparent shadow-xs'
                 : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#C8A34D] hover:text-[#B38628]'
@@ -766,7 +868,7 @@ export default function Pricing() {
           {/* Combo */}
           <button
             onClick={() => setSelectedSegment('combo')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
+            className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
               selectedSegment === 'combo'
                 ? 'bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-white border-transparent shadow-xs'
                 : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#C8A34D] hover:text-[#B38628]'

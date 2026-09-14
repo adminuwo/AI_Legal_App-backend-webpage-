@@ -1986,7 +1986,7 @@ export default function AdminDashboard() {
                 </span>
               </div>
 
-              {/* Android vs iOS Toggle Buttons */}
+              {/* Android vs iOS Toggle Buttons (Strictly Android and iOS) */}
               <div className="grid grid-cols-3 sm:flex items-center bg-slate-100 dark:bg-zinc-900 p-1 rounded-xl border border-slate-200 dark:border-zinc-800 gap-1 w-full sm:w-auto">
                 <button
                   onClick={() => setPlatformFilter('all')}
@@ -2145,7 +2145,7 @@ export default function AdminDashboard() {
                       const isBlocked = u.isBlocked === true || u.status === 'Suspended';
                       const userRole = u.role || u.userRole || 'Advocate';
                       const userPlan = u.subscription?.plan || u.currentPlan || 'FREE';
-                      const isIos = String(u.deviceOS).toLowerCase() === 'ios';
+                      const userOS = String(u.deviceOS || 'web').toLowerCase();
 
                       return (
                         <div key={u._id} className="p-4 space-y-3 hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors">
@@ -2177,7 +2177,7 @@ export default function AdminDashboard() {
                             <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 uppercase">
                               {userRole}
                             </span>
-                            {isIos ? (
+                            {userOS === 'ios' ? (
                               <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20 inline-flex items-center gap-1">
                                 <span>🍎</span> iOS
                               </span>
@@ -2226,7 +2226,7 @@ export default function AdminDashboard() {
                           const isBlocked = u.isBlocked === true || u.status === 'Suspended';
                           const userRole = u.role || u.userRole || 'Advocate';
                           const userPlan = u.subscription?.plan || u.currentPlan || 'FREE';
-                          const isIos = String(u.deviceOS).toLowerCase() === 'ios';
+                          const userOS = String(u.deviceOS || 'web').toLowerCase();
 
                           return (
                             <tr key={u._id} className="hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors group">
@@ -2252,7 +2252,7 @@ export default function AdminDashboard() {
                                 </span>
                               </td>
                               <td className="px-5 py-2.5 whitespace-nowrap">
-                                {isIos ? (
+                                {userOS === 'ios' ? (
                                   <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
                                     <span>🍎</span> iOS
                                   </span>
@@ -4380,6 +4380,11 @@ export default function AdminDashboard() {
                   <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
                     Last Login: <span className="font-extrabold text-slate-900 dark:text-white">
                       {selectedDossierUser.lastLogin ? new Date(selectedDossierUser.lastLogin).toLocaleString('en-GB') : 'N/A'}
+                    </span>
+                  </p>
+                  <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
+                    Device Platform: <span className="font-extrabold capitalize text-slate-900 dark:text-white">
+                      {String(selectedDossierUser.deviceOS).toLowerCase() === 'ios' ? '🍎 Apple iOS' : '🤖 Android'}
                     </span>
                   </p>
                   <p className="text-slate-500 dark:text-zinc-400 font-medium col-span-1 sm:col-span-2 font-mono truncate text-[11px]">

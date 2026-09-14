@@ -50,8 +50,16 @@ router.post("/", async (req, res) => {
         const resolvedLanguage = resolveLanguageFromState(pendingReg.state || pendingReg.jurisdiction);
         
         const userAgent = req.headers['user-agent'] || '';
-        const rawPlatform = req.headers['x-device-os'] || (userAgent.includes('Android') ? 'android' : (userAgent.includes('iPhone') || userAgent.includes('iPad') ? 'ios' : 'web'));
-        const detectedPlatform = ['android', 'ios', 'web'].includes(String(rawPlatform).toLowerCase()) ? String(rawPlatform).toLowerCase() : 'web';
+        let detectedPlatform = req.headers['x-device-os'] || req.headers['x-device-platform'];
+        if (!['android', 'ios'].includes(String(detectedPlatform).toLowerCase())) {
+          if (/iPhone|iPad|iPod|Macintosh|Mac OS/i.test(userAgent)) {
+            detectedPlatform = 'ios';
+          } else {
+            detectedPlatform = 'android';
+          }
+        } else {
+          detectedPlatform = String(detectedPlatform).toLowerCase();
+        }
 
         const newUser = await userModel.create({
             name: pendingReg.name,

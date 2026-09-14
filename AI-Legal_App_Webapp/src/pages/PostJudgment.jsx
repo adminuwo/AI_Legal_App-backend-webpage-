@@ -2,8 +2,9 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Upload, FileText, CheckCircle2, Sparkles, X, Plus, 
-  ArrowLeft, Shield, AlertCircle, Camera, Check 
+  ArrowLeft, Shield, AlertCircle, Camera, Check, Menu
 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { apis } from '../types';
@@ -12,6 +13,7 @@ import PublicFooter from '../Components/PublicFooter';
 
 export default function PostJudgment() {
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Form State
   const [advocateName, setAdvocateName] = useState('');
@@ -185,7 +187,7 @@ export default function PostJudgment() {
           </div>
 
           {/* Center Navigation Tabs */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-emerald-100/75">
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-emerald-100/75">
             <button onClick={() => navigate('/')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Home
             </button>
@@ -209,17 +211,14 @@ export default function PostJudgment() {
             </button>
           </nav>
 
-          {/* Right Header Actions */}
-          <div className="flex items-center gap-2.5">
+          {/* Desktop Right Header Actions */}
+          <div className="hidden lg:flex items-center gap-2.5">
             <ThemeToggle />
             
-            <button
-              onClick={() => navigate('/post-judgment')}
-              className="px-3.5 py-1.5 rounded-full text-xs font-bold border border-[#C8A34D]/60 bg-amber-50 text-[#966b1a] hover:bg-amber-100/80 dark:bg-[#C8A34D]/20 dark:border-[#C8A34D] dark:text-amber-300 dark:hover:bg-[#C8A34D]/30 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
-            >
+            <span className="px-3.5 py-1.5 rounded-full text-xs font-bold border border-[#C8A34D]/60 bg-amber-50 text-[#966b1a] dark:bg-[#C8A34D]/20 dark:border-[#C8A34D] dark:text-amber-300 flex items-center gap-1.5 shadow-2xs">
               <Plus size={14} className="text-[#C8A34D] stroke-[2.5]" />
               <span>Post your judgement</span>
-            </button>
+            </span>
 
             <button
               onClick={() => navigate('/signup')}
@@ -228,7 +227,89 @@ export default function PostJudgment() {
               Get Started
             </button>
           </div>
+
+          {/* Mobile Header Toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <ThemeToggle />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Dropdown Menu Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden bg-white dark:bg-[#0D1C17] border-b border-slate-200 dark:border-emerald-950 px-5 py-5 space-y-4 shadow-xl"
+            >
+              <div className="flex flex-col space-y-1.5 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/features'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Features
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/blog'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Blog
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/pricing'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Pricing
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/case-search'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Case Search
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/about'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  About
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Dashboard
+                </button>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 dark:border-emerald-950 flex flex-col gap-2.5">
+                <span className="w-full py-2.5 rounded-full text-xs font-bold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5">
+                  <Plus size={14} className="stroke-[2.5]" />
+                  <span>Post your judgement (Active)</span>
+                </span>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}
+                  className="w-full py-2.5 bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#C8A34D]/30"
+                >
+                  Get Started
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* ─── Main Content Hero & Form ─── */}
@@ -257,7 +338,7 @@ export default function PostJudgment() {
           </div>
 
           {/* Form Card (Matching Reference Card) */}
-          <div className="bg-white dark:bg-[#0D1C17] border border-slate-200/90 dark:border-emerald-900/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 shadow-xl shadow-slate-200/50 dark:shadow-2xl transition-all">
+          <div className="bg-white dark:bg-[#0D1C17] border border-slate-200/90 dark:border-emerald-900/50 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 shadow-xl shadow-slate-200/50 dark:shadow-2xl transition-all">
             
             {isSuccess ? (
               /* Success State */

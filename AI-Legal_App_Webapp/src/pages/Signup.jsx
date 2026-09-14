@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { 
   Mail, Key, User, ArrowLeft, AlertCircle, Eye, EyeOff, Globe, MapPin, 
-  ChevronDown, Phone, Zap, Plus, Sparkles, Scale, CheckCircle2 
+  ChevronDown, Phone, Zap, Plus, Sparkles, Scale, CheckCircle2, Menu, X
 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { AppRoute, apis } from '../types';
 import axios from 'axios';
 import { setUserData, userData as userDataAtom } from '../userStore/userData';
@@ -31,6 +32,7 @@ const INDIAN_EXAMPLES = [
 const Signup = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useLanguage();
   const setUserRecoil = useSetRecoilState(userDataAtom);
 
@@ -262,7 +264,7 @@ const Signup = () => {
           </div>
 
           {/* Center Navigation Tabs */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-slate-300">
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-slate-300">
             <button onClick={() => navigate('/')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Home
             </button>
@@ -286,8 +288,8 @@ const Signup = () => {
             </button>
           </nav>
 
-          {/* Right Header Actions */}
-          <div className="flex items-center gap-2.5">
+          {/* Desktop Right Header Actions */}
+          <div className="hidden lg:flex items-center gap-2.5">
             <ThemeToggle />
             <button
               onClick={() => navigate('/post-judgment')}
@@ -301,7 +303,92 @@ const Signup = () => {
               Get Started
             </span>
           </div>
+
+          {/* Mobile Header Toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <ThemeToggle />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Dropdown Menu Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden bg-white dark:bg-[#111625] border-b border-slate-200 dark:border-zinc-800 px-5 py-5 space-y-4 shadow-xl"
+            >
+              <div className="flex flex-col space-y-1.5 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/features'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Features
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/blog'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Blog
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/pricing'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Pricing
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/case-search'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Case Search
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/about'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  About
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
+                  className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
+                >
+                  Dashboard
+                </button>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex flex-col gap-2.5">
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/post-judgment'); }}
+                  className="w-full py-2.5 rounded-full text-xs font-bold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5"
+                >
+                  <Plus size={14} className="stroke-[2.5]" />
+                  <span>Post your judgement</span>
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/login'); }}
+                  className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white font-bold rounded-full text-center text-xs"
+                >
+                  Sign In Instead
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* Main Centered Content Area with 2-Column Card */}

@@ -268,8 +268,8 @@ export default function LegalPrecedentsWorkspace() {
             </button>
           </nav>
 
-          {/* Right Header Actions */}
-          <div className="flex items-center gap-2.5">
+          {/* Desktop Right Header Actions */}
+          <div className="hidden lg:flex items-center gap-2.5">
             <ThemeToggle />
 
             {/* Post Judgement Shortcut */}
@@ -305,16 +305,19 @@ export default function LegalPrecedentsWorkspace() {
                 Get Started
               </button>
             )}
+          </div>
 
-            {/* Mobile Hamburger Toggle */}
+          {/* Mobile Header Toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer border border-slate-200 dark:border-slate-800"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
-
         </div>
 
         {/* Mobile Dropdown Nav Menu */}

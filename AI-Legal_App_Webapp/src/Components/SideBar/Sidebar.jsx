@@ -394,13 +394,24 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
                 <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-8 h-8 object-contain drop-shadow-xs" />
                 <span className="text-xl font-black tracking-tight text-[#111827] dark:text-white">AI LEGAL<sup className="text-[10px] font-bold text-[#111827] dark:text-white ml-0.5 align-super">TM</sup><span className="text-[#C8A34D]">.</span></span>
               </div>
-              <button
-                onClick={toggleCollapse}
-                title="Collapse Sidebar"
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#C8A34D] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={onClose}
+                  title="Close Sidebar"
+                  className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#C8A34D] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
+                  aria-label="Close sidebar"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={toggleCollapse}
+                  title="Collapse Sidebar"
+                  className="hidden lg:flex w-8 h-8 rounded-lg items-center justify-center text-slate-400 hover:text-[#C8A34D] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
+                  aria-label="Collapse sidebar"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              </div>
             </>
           ) : (
             <div className="flex items-center justify-center w-full">
