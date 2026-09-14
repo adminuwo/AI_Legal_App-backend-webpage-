@@ -5,6 +5,7 @@ import { PRIVACY_POLICY_DEFAULTS } from '../Tools/AI_Legal/constants/legalDefaul
 import { Database, Lock, Shield, Eye, UserCheck, FileText, ArrowLeft, Scale, CheckCircle2, Cpu } from 'lucide-react';
 import { apiService } from '../services/apiService';
 import { name, logo } from '../constants';
+import PublicFooter from '../Components/PublicFooter';
 
 const PrivacyPolicy = () => {
     const navigate = useNavigate();
@@ -349,13 +350,9 @@ const PrivacyPolicy = () => {
             </main>
 
             {/* Footer */}
-            <footer className="mt-20 py-12 border-t border-slate-200 bg-white">
-                <div className="max-w-5xl mx-auto px-4 text-center">
-                    <p className="text-sm text-slate-500 font-medium">
-                        © {new Date().getFullYear()} {name}™. All rights reserved.
-                    </p>
-                </div>
-            </footer>
+            <div className="mt-20">
+                <PublicFooter />
+            </div>
         </div>
     );
 };

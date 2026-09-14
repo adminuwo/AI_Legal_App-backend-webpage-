@@ -6,22 +6,27 @@ import logger from '../../../utils/logger.js';
 import { generatePrecedentPDF } from '../services/pdf.service.js';
 import { jurisdictionManager } from '../../../services/jurisdictionManager.js';
 
-import { verifyToken } from '../../../middleware/authorization.js';
+import { verifyToken, optionalVerifyToken } from '../../../middleware/authorization.js';
 import { verifyFeatureAccess } from '../../../middleware/subscriptionCheck.middleware.js';
 
 const router = express.Router();
 
 /**
  * @route POST /api/precedents/search
- * @desc Find legal precedents based on query or case context
+ * @desc Find legal precedents based on query or case context (Publicly accessible with optional token)
  */
-router.post('/search', verifyToken, verifyFeatureAccess('legal_precedent'), async (req, res) => {
+router.post('/search', optionalVerifyToken, async (req, res, next) => {
+    if (req.user) {
+        return verifyFeatureAccess('legal_precedent')(req, res, next);
+    }
+    next();
+}, async (req, res) => {
     const startTime = Date.now();
     try {
         const { query, projectId, language, jurisdiction } = req.body;
         
         let caseContext = null;
-        if (projectId) {
+        if (projectId && req.user) {
             caseContext = await Project.findOne({
                 _id: projectId,
                 $or: [
@@ -44,8 +49,8 @@ router.post('/search', verifyToken, verifyFeatureAccess('legal_precedent'), asyn
             query: `${query || ''} ${caseContext?.title || ''} ${caseContext?.court || ''}`,
             headers: req.headers,
             explicitJurisdiction: (explicitJurisdiction.country || explicitJurisdiction.state) ? explicitJurisdiction : null,
-            userId: req.user.id,
-            userProfile: req.user
+            userId: req.user?.id || 'public_visitor',
+            userProfile: req.user || null
         });
 
         const results = await findPrecedents(query, caseContext, language, resolvedJurisdiction);

@@ -469,3 +469,106 @@ export const sendShareLinkEmail = async (targetEmail, shareLink, sessionTitle, s
     }
 };
 
+// Send Public Contact Query Email to admin@uwo24.com
+export const sendPublicContactQueryEmail = async (queryData) => {
+    const { firstName, lastName, email, contactNo, pinCode, country, description } = queryData;
+    const fullName = `${firstName || ''} ${lastName || ''}`.trim() || 'Prospective Advocate';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@uwo24.com';
+    const emailSubject = `⚖️ New Query Received from ${fullName} (${country || 'India'})`;
+
+    const htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
+            <div style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); padding: 24px; border-radius: 12px; text-align: center; border-bottom: 3px solid #E5A93C;">
+                <h2 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.5px;">AI LEGAL™</h2>
+                <p style="color: #E5A93C; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">New Public Legal Inquiry & Query</p>
+            </div>
+            
+            <div style="padding: 24px 8px 10px 8px;">
+                <p style="color: #475569; font-size: 14px; margin-top: 0;">
+                    A prospective user / legal professional has submitted an inquiry via the <strong>AI LEGAL™</strong> homepage.
+                </p>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-top: 16px; background: #F8FAFC; border-radius: 8px; overflow: hidden;">
+                    <tr style="border-bottom: 1px solid #E2E8F0;">
+                        <td style="padding: 12px 16px; font-size: 13px; color: #64748B; font-weight: 600; width: 35%;">Full Name:</td>
+                        <td style="padding: 12px 16px; font-size: 14px; color: #0F172A; font-weight: 700;">${fullName}</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #E2E8F0;">
+                        <td style="padding: 12px 16px; font-size: 13px; color: #64748B; font-weight: 600;">Email Address:</td>
+                        <td style="padding: 12px 16px; font-size: 14px; color: #2563EB; font-weight: 600;"><a href="mailto:${email}" style="color: #2563EB; text-decoration: none;">${email}</a></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #E2E8F0;">
+                        <td style="padding: 12px 16px; font-size: 13px; color: #64748B; font-weight: 600;">Contact Number:</td>
+                        <td style="padding: 12px 16px; font-size: 14px; color: #0F172A; font-weight: 600;">${contactNo || 'Not Provided'}</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #E2E8F0;">
+                        <td style="padding: 12px 16px; font-size: 13px; color: #64748B; font-weight: 600;">Country:</td>
+                        <td style="padding: 12px 16px; font-size: 14px; color: #0F172A; font-weight: 600;">${country || 'India'}</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #E2E8F0;">
+                        <td style="padding: 12px 16px; font-size: 13px; color: #64748B; font-weight: 600;">PIN Code:</td>
+                        <td style="padding: 12px 16px; font-size: 14px; color: #0F172A; font-weight: 600;">${pinCode || 'Not Provided'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px 16px; font-size: 13px; color: #64748B; font-weight: 600;">Submitted At:</td>
+                        <td style="padding: 12px 16px; font-size: 12px; color: #64748B;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} (IST)</td>
+                    </tr>
+                </table>
+                
+                <div style="margin-top: 20px; padding: 16px; background: #FFFDF9; border: 1px solid #FDE68A; border-radius: 8px;">
+                    <h4 style="margin: 0 0 8px 0; color: #92400E; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Query / Message:</h4>
+                    <p style="margin: 0; color: #1E293B; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${description || 'No specific message provided. User requested a direct callback / inquiry.'}</p>
+                </div>
+                
+                <div style="margin-top: 24px; text-align: center;">
+                    <a href="mailto:${email}?subject=Re:%20Inquiry%20regarding%20AI%20LEGAL%E2%84%A2%20Workspace" style="display: inline-block; background: #E5A93C; color: #0F172A; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 13px;">Reply Directly to ${firstName || fullName}</a>
+                </div>
+            </div>
+            
+            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #E2E8F0; text-align: center; color: #94A3B8; font-size: 11px;">
+                AI LEGAL™ Automated Dispatch • Forwarded to admin@uwo24.com
+            </div>
+        </div>
+    `;
+
+    // 1. Try Resend first
+    try {
+        if (process.env.RESEND_API_KEY) {
+            const { resend } = await import('../utils/Email.config.js');
+            if (resend && resend.emails && typeof resend.emails.send === 'function') {
+                const resendResult = await resend.emails.send({
+                    from: `AI LEGAL™ Queries <${process.env.EMAIL || 'verification@ai-mall.in'}>`,
+                    to: [adminEmail],
+                    subject: emailSubject,
+                    html: htmlContent
+                });
+                console.log('[PUBLIC QUERY] Email dispatched via Resend:', resendResult);
+                return { success: true, provider: 'resend' };
+            }
+        }
+    } catch (resendErr) {
+        console.warn('[PUBLIC QUERY] Resend attempt warning:', resendErr.message);
+    }
+
+    // 2. Fallback to Nodemailer transporter
+    const transporter = createTransporter();
+    if (transporter) {
+        try {
+            const mailOptions = {
+                from: `AI LEGAL™ <${EMAIL_CONFIG.user}>`,
+                to: adminEmail,
+                subject: emailSubject,
+                html: htmlContent
+            };
+            const info = await transporter.sendMail(mailOptions);
+            console.log('[PUBLIC QUERY] Email dispatched via Nodemailer:', info?.messageId);
+            return { success: true, provider: 'nodemailer' };
+        } catch (nodemailerErr) {
+            console.error('[PUBLIC QUERY] Nodemailer failed:', nodemailerErr);
+            throw nodemailerErr;
+        }
+    }
+
+    return { success: true, message: 'Logged query without live transporter' };
+};
+

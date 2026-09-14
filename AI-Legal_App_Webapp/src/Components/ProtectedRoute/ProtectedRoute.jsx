@@ -1,22 +1,36 @@
 import { Navigate, useLocation } from 'react-router-dom';
+import { getUserData } from '../../userStore/userData';
 
 /**
  * ProtectedRoute Component
  * Wraps around routes that require authentication.
- * Redirects to login if user is not authenticated.
+ * Redirects to login if user is not authenticated, preserving the intended destination.
  */
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
-  // Check if user is authenticated
+  // Check if user is authenticated via token or valid user object
   const isAuthenticated = () => {
     try {
-      const user = localStorage.getItem('user');
-      if (!user) return false;
+      const token = localStorage.getItem('token');
+      if (token && token !== 'undefined' && token !== 'null') {
+        return true;
+      }
 
-      const userData = JSON.parse(user);
-      // Check if user object has required fields
-      return userData && userData.email;
+      const userToken = getUserData()?.token;
+      if (userToken && userToken !== 'undefined' && userToken !== 'null') {
+        return true;
+      }
+
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const userData = JSON.parse(userStr);
+        if (userData && (userData.token || userData.email || userData.id || userData._id)) {
+          return true;
+        }
+      }
+
+      return false;
     } catch (error) {
       console.error('Error checking authentication:', error);
       return false;
@@ -25,7 +39,8 @@ const ProtectedRoute = ({ children }) => {
 
   if (!isAuthenticated()) {
     // Redirect to login page, preserving the intended destination
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const destination = location.pathname + location.search + location.hash;
+    return <Navigate to="/login" state={{ from: destination }} replace />;
   }
 
   return children;

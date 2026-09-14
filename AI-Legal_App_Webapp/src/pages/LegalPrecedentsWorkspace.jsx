@@ -1,1644 +1,722 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  ArrowLeft, Search, BookOpen, Scale, Gavel, FileText, Briefcase, 
-  CheckCircle2, Copy, Download, Share2, Sparkles, Filter, ChevronRight,
-  ExternalLink, Layers, AlertCircle, RefreshCw, Bookmark, Award, Shield, Building2,
-  FileCheck2, HelpCircle, ArrowRight, Check, MessageSquare, Menu
+  Search, Sparkles, Filter, Bookmark, Plus, ArrowRight, RotateCcw, 
+  Landmark, Scale, BookOpen, Layers, Menu, X, ArrowUp, CheckCircle2 
 } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import apiService from '../services/apiService';
-import { useSubscription } from '../context/SubscriptionContext';
 
-// 18 Legal Directory Categories - India
-const RESEARCH_CATEGORIES_INDIA = [
-  { id: 'all', name: 'All Domains' },
-  { id: 'sc', name: 'Supreme Court' },
-  { id: 'hc', name: 'High Court' },
-  { id: 'const', name: 'Constitutional Law' },
-  { id: 'criminal', name: 'Criminal Law (BNS)' },
-  { id: 'civil', name: 'Civil Law' },
-  { id: 'corporate', name: 'Corporate Law' },
-  { id: 'cyber', name: 'Cyber Law (IT Act)' },
-  { id: 'family', name: 'Family Law' },
-  { id: 'property', name: 'Property Law' },
-  { id: 'consumer', name: 'Consumer Protection' },
-  { id: 'tax', name: 'Taxation' },
-  { id: 'arbitration', name: 'Arbitration' },
-  { id: 'labour', name: 'Labour Law' },
-  { id: 'environment', name: 'Environmental Law' },
-  { id: 'election', name: 'Election Law' },
-  { id: 'ibc', name: 'Insolvency (IBC)' },
-  { id: 'motor', name: 'Motor Accident Claims' },
-  { id: 'human_rights', name: 'Human Rights' },
-];
+import ThemeToggle from '../Components/ThemeToggle';
+import PublicFooter from '../Components/PublicFooter';
+import SearchModeSelector from '../Components/CaseSearch/SearchModeSelector';
+import LegalSourceSelector from '../Components/CaseSearch/LegalSourceSelector';
+import AdvancedFiltersModal from '../Components/CaseSearch/AdvancedFiltersModal';
+import SearchResultCard from '../Components/CaseSearch/SearchResultCard';
+import JudgmentReader from '../Components/CaseSearch/JudgmentReader';
+import AddToCaseModal from '../Components/CaseSearch/AddToCaseModal';
+import SavedResearchDrawer from '../Components/CaseSearch/SavedResearchDrawer';
 
-// Legal Directory Categories - Nepal
-const RESEARCH_CATEGORIES_NEPAL = [
-  { id: 'all', name: 'All Domains' },
-  { id: 'sc', name: 'Supreme Court of Nepal (सर्वोच्च)' },
-  { id: 'hc', name: 'High Courts (उच्च अदालत)' },
-  { id: 'const', name: 'Constitutional Law' },
-  { id: 'criminal', name: 'Criminal Law (मुलुकी अपराध)' },
-  { id: 'civil', name: 'Civil Law (मुलुकी देवानी)' },
-  { id: 'corporate', name: 'Company & Commercial Law' },
-  { id: 'cyber', name: 'Cyber Law (ETA 2063)' },
-  { id: 'family', name: 'Family & Inheritance' },
-  { id: 'property', name: 'Property & Land Law' },
-  { id: 'banking', name: 'Banking Offence Act 2064' },
-  { id: 'arbitration', name: 'Arbitration' },
-  { id: 'labour', name: 'Labour Law' },
-  { id: 'environment', name: 'Environmental Law' },
-  { id: 'election', name: 'Election Law' },
-  { id: 'human_rights', name: 'Human Rights' },
-];
-
-// Suggested Search Chips - India
-const SUGGESTED_SEARCH_CHIPS_INDIA = [
-  'Section 138 NI Act',
-  'Section 482 CrPC',
-  'Section 65B Evidence Act',
-  'Bail Principles under BNS',
-  'Cheque Bounce Presumption',
-  'Specific Performance Limitation',
-  'Consumer Protection Deficiency',
-  'Cyber Crime Jurisdiction'
-];
-
-// Suggested Search Chips - Nepal
-const SUGGESTED_SEARCH_CHIPS_NEPAL = [
-  'Banking Offence Act 2064 Cheque Dishonour',
-  'Evidence Act 2031 Section 25 Burden of Proof',
-  'Article 133 Supreme Court Writs',
-  'Muluki Criminal Code 2074 Homicide',
-  'Muluki Civil Code 2074 Contract Breach',
-  'Daughter Inheritance Rights NKP 2052',
-  'Electronic Evidence ETA 2063',
-  'Haddmeyad Limitation Period'
-];
-
-// Real Supreme Court & High Court Landmark Precedents Database - India
-const LANDMARK_PRECEDENTS_DB_INDIA = [
-  {
-    _id: 'prec_100',
-    case_identity: {
-      case_name: 'S. R. Bommai v. Union of India',
-      court: 'Supreme Court of India',
-      year: '1994',
-      citation: 'AIR 1994 SC 1918 / (1994) 3 SCC 1',
-      bench: '9-Judge Constitutional Bench',
-      judge: "Hon'ble Justice S. Ratnavel Pandian & Bench"
-    },
-    legal_principle: 'Article 356 Presidential Proclamation & Federalism Basic Structure',
-    one_line_summary: 'Federalism and Secularism are part of the Basic Structure; Article 356 proclamations are subject to judicial review.',
-    relevance_score: 99,
-    why_relevant: 'Landmark 9-Judge ruling on federalism, state emergency under Article 356, secularism and scope of judicial review.',
-    case_context: {
-      facts: 'Dissolution of multiple state assemblies following imposition of President\'s Rule under Article 356 was challenged as arbitrary and unconstitutional.',
-      legal_issue: 'Whether Presidential Proclamation under Article 356 imposing President\'s Rule is subject to judicial review and floor test requirements.'
-    },
-    judgment_basis: {
-      legal_reasoning: 'The Supreme Court held that federalism and secularism constitute essential basic features of the Constitution. Presidential satisfaction under Article 356 is not immune from judicial scrutiny if based on mala fide or irrelevant grounds.',
-      relevant_laws: ['Constitution of India — Article 356, Article 74(2), Article 368, Part III']
-    },
-    ratio_decidendi: 'Presidential Proclamation under Article 356 is subject to judicial review. Floor test on the floor of the Assembly is the sole constitutional test for majority of a government.',
-    obiter_dicta: 'Secularism is a basic feature of the Constitution. Any state policy promoting anti-secular activity warrants constitutional intervention.',
-    judgment_outcome: {
-      type: 'Constitutional Landmark',
-      final_decision: 'Established constitutional guidelines governing Article 356 proclamations and floor tests.'
-    },
-    tags: ['Article 356', 'President Rule', 'Federalism', 'Basic Structure', 'Judicial Review'],
-    category: 'const'
-  },
-  {
-    _id: 'prec_101',
-    case_identity: {
-      case_name: 'Rangappa v. Sri Mohan',
-      court: 'Supreme Court of India',
-      year: '2010',
-      citation: '(2010) 11 SCC 441 / AIR 2010 SC 1898',
-      bench: '3-Judge Bench',
-      judge: "Hon'ble Justice K.G. Balakrishnan & Bench"
-    },
-    legal_principle: 'Section 139 NI Act Presumption of Enforceable Debt',
-    one_line_summary: 'Once signature on cheque is admitted, Section 139 presumption includes existence of legally enforceable debt.',
-    relevance_score: 98,
-    why_relevant: 'Directly applies to Section 138 cheque bounce proceedings; mandatory presumption shifts burden of proof onto accused.',
-    case_context: {
-      facts: 'Complainant initiated Section 138 proceedings following dishonour of a cheque issued towards loan repayment. Accused admitted signature but claimed cheque was given as blank security.',
-      legal_issue: 'Whether the statutory presumption under Section 139 of the Negotiable Instruments Act includes the existence of a legally enforceable debt or liability.'
-    },
-    judgment_basis: {
-      legal_reasoning: 'The Supreme Court clarified that Section 139 NI Act is an example of a presumption of law. The presumption mandated by Section 139 includes the existence of a legally enforceable debt or liability. The accused can rebut this presumption by raising a probable defense on the preponderance of probabilities.',
-      relevant_laws: ['Negotiable Instruments Act, 1881 — Section 138, Section 139', 'Indian Evidence Act, 1872 — Section 114']
-    },
-    ratio_decidendi: 'When an accused admits signature on a cheque, the statutory presumption under Section 139 NI Act is triggered in favor of the holder, presuming that the cheque was issued for discharge of a legally enforceable debt or liability.',
-    obiter_dicta: 'The standard of proof for rebutting the presumption is that of preponderance of probabilities, which can be drawn from the materials on record or cross-examination of the complainant.',
-    judgment_outcome: {
-      type: 'Decided / Upheld',
-      final_decision: 'Appeal allowed. Conviction and sentence imposed by Trial Court restored.'
-    },
-    tags: ['Cheque Bounce', 'Section 138', 'Section 139', 'NI Act', 'Statutory Presumption'],
-    category: 'criminal'
-  },
-  {
-    _id: 'prec_102',
-    case_identity: {
-      case_name: 'Kesavananda Bharati v. State of Kerala',
-      court: 'Supreme Court of India',
-      year: '1973',
-      citation: 'AIR 1973 SC 1461 / (1973) 4 SCC 225',
-      bench: '13-Judge Constitutional Bench',
-      judge: "Hon'ble Chief Justice S.M. Sikri & Bench"
-    },
-    legal_principle: 'Basic Structure Doctrine of Constitutional Law',
-    one_line_summary: 'Parliament has wide powers to amend the Constitution but cannot alter or destroy its Basic Structure.',
-    relevance_score: 96,
-    why_relevant: 'Supreme precedent governing constitutional validity, fundamental rights, and judicial review limits.',
-    case_context: {
-      facts: 'Petitioner challenged Kerala Land Reforms legislation restricting religious institution land holdings under Article 26.',
-      legal_issue: 'What is the extent of Parliament\'s power to amend the Constitution under Article 368?'
-    },
-    judgment_basis: {
-      legal_reasoning: 'The 13-Judge Bench held that Article 368 gives Parliament broad power to amend any provision of the Constitution, provided the core identity or basic structure (rule of law, judicial review, federalism, secularism) remains intact.',
-      relevant_laws: ['Constitution of India — Article 13, Article 368, Part III']
-    },
-    ratio_decidendi: 'Parliamentary power to amend under Article 368 does not include the power to abrogate or destroy the Basic Structure of the Constitution of India.',
-    obiter_dicta: 'Judicial review is an indispensable fundamental feature preserving constitutional supremacy.',
-    judgment_outcome: {
-      type: 'Constitutional Ruling',
-      final_decision: 'Constitutional validity of amendments evaluated under the Basic Structure test.'
-    },
-    tags: ['Constitutional Law', 'Basic Structure', 'Article 368', 'Judicial Review', 'Fundamental Rights'],
-    category: 'const'
-  },
-  {
-    _id: 'prec_103',
-    case_identity: {
-      case_name: 'K.S. Puttaswamy v. Union of India',
-      court: 'Supreme Court of India',
-      year: '2017',
-      citation: '(2017) 10 SCC 1 / AIR 2017 SC 4161',
-      bench: '9-Judge Constitutional Bench',
-      judge: "Hon'ble Justice J.S. Khehar & Bench"
-    },
-    legal_principle: 'Right to Privacy as a Fundamental Right under Article 21',
-    one_line_summary: 'Right to privacy is an intrinsic part of the Right to Life and Personal Liberty guaranteed under Article 21.',
-    relevance_score: 97,
-    why_relevant: 'Landmark precedent for cyber law, digital data protection, state surveillance, and personal autonomy.',
-    case_context: {
-      facts: 'Biometric Aadhaar scheme was challenged as an unlawful state intrusion into personal privacy.',
-      legal_issue: 'Whether the Right to Privacy is guaranteed as a Fundamental Right under Part III of the Constitution.'
-    },
-    judgment_basis: {
-      legal_reasoning: 'Privacy safeguards individual dignity, personal autonomy, and informational self-determination. Any state restriction on privacy must pass the 3-fold test: Legality, Legitimate State Aim, and Proportionality.',
-      relevant_laws: ['Constitution of India — Article 21, Article 14, Article 19', 'Information Technology Act, 2000']
-    },
-    ratio_decidendi: 'Right to privacy is protected as an essential facet of life and personal liberty under Article 21 and Part III of the Constitution.',
-    obiter_dicta: 'Informational privacy and data protection are vital rights in the digital age.',
-    judgment_outcome: {
-      type: 'Unanimous Judgment',
-      final_decision: 'Declared Right to Privacy a fundamental right overruling M.P. Sharma and Kharak Singh.'
-    },
-    tags: ['Right to Privacy', 'Article 21', 'Cyber Law', 'Data Protection', 'Fundamental Rights'],
-    category: 'cyber'
-  },
-  {
-    _id: 'prec_104',
-    case_identity: {
-      case_name: 'Bir Singh v. Mukesh Kumar',
-      court: 'Supreme Court of India',
-      year: '2019',
-      citation: '(2019) 4 SCC 197',
-      bench: 'Division Bench',
-      judge: "Hon'ble Justice R. Banumathi & Hon'ble Justice Indira Banerjee"
-    },
-    legal_principle: 'Blank Signed Cheque Validity under Section 138 NI Act',
-    one_line_summary: 'A person signing a blank cheque authorises the payee to fill up the contents; Section 139 presumption still applies.',
-    relevance_score: 95,
-    why_relevant: 'Rebuts the defense that a cheque filled by another person invalidates dishonour proceedings.',
-    case_context: {
-      facts: 'Accused handed over a signed blank cheque and subsequently alleged that details were filled in by the payee without consent.',
-      legal_issue: 'Does filling of cheque particulars by payee invalidate statutory presumption under Section 139 NI Act?'
-    },
-    judgment_basis: {
-      legal_reasoning: 'Even if a blank signed cheque is voluntarily handed over to a payee, it gives implied authority to the holder to complete the instrument. Dishonour of such cheque attracts Section 138.',
-      relevant_laws: ['Negotiable Instruments Act, 1881 — Section 20, Section 138, Section 139']
-    },
-    ratio_decidendi: 'Voluntary signing and delivery of a blank cheque creates a valid negotiable instrument and triggers Section 139 presumption against the drawer.',
-    obiter_dicta: 'Factual disputes regarding handwriting on cheque details do not negate the execution of signature.',
-    judgment_outcome: {
-      type: 'Allowed',
-      final_decision: 'Acquittal by High Court set aside; conviction under Section 138 restored.'
-    },
-    tags: ['Cheque Bounce', 'Blank Cheque', 'Section 138', 'NI Act', 'Statutory Presumption'],
-    category: 'criminal'
-  },
-  {
-    _id: 'prec_105',
-    case_identity: {
-      case_name: 'Maneka Gandhi v. Union of India',
-      court: 'Supreme Court of India',
-      year: '1978',
-      citation: 'AIR 1978 SC 597 / (1978) 1 SCC 248',
-      bench: '7-Judge Constitutional Bench',
-      judge: "Hon'ble Chief Justice M.H. Beg & Bench"
-    },
-    legal_principle: 'Procedural Fairness & Natural Justice under Article 21',
-    one_line_summary: 'Procedure established by law under Article 21 must be fair, just, reasonable, and non-arbitrary.',
-    relevance_score: 94,
-    why_relevant: 'Foundation for natural justice, audi alteram partem, and protection against administrative arbitrariness.',
-    case_context: {
-      facts: 'Petitioner\'s passport was impounded without stating reasons or providing a opportunity of hearing.',
-      legal_issue: 'Does impounding a passport without audi alteram partem violate fundamental rights under Article 21?'
-    },
-    judgment_basis: {
-      legal_reasoning: 'The court expanded Article 21 holding that procedure depriving personal liberty cannot be arbitrary or fancy. It must comply with principles of natural justice.',
-      relevant_laws: ['Passports Act, 1967', 'Constitution of India — Article 14, Article 19, Article 21']
-    },
-    ratio_decidendi: 'State procedure restricting personal liberty must be tested on the touchstone of fairness, justness, and reasonableness.',
-    obiter_dicta: 'The right to travel abroad is a component of personal liberty under Article 21.',
-    judgment_outcome: {
-      type: 'Landmark Relief',
-      final_decision: 'Government statement accepted to provide hearing; law on natural justice established.'
-    },
-    tags: ['Article 21', 'Natural Justice', 'Procedural Fairness', 'Personal Liberty', 'Administrative Law'],
-    category: 'const'
-  }
-];
-
-// Real Supreme Court of Nepal Landmark Precedents Database - Nepal
-const LANDMARK_PRECEDENTS_DB_NEPAL = [
-  {
-    _id: 'prec_np_100',
-    case_identity: {
-      case_name: 'Advocate Meera Dhungana v. HMG (Ministry of Law and Justice)',
-      court: 'Supreme Court of Nepal (सर्वोच्च अदालत)',
-      year: '1995 (2052 BS)',
-      citation: 'NKP 2052, Vol. 37, Decision No. 6013',
-      bench: 'Special Constitutional Bench',
-      judge: "Hon'ble Justice Kedar Nath Upadhyay & Bench"
-    },
-    legal_principle: 'Equal Right of Daughters to Ancestral Property (छोरीको समान अंश हक)',
-    one_line_summary: 'Discriminatory property and inheritance provisions in Muluki Ain violate constitutional guarantee of equality.',
-    relevance_score: 99,
-    why_relevant: 'Foundation for gender equality and equal inheritance rights for daughters under Nepalese jurisprudence.',
-    case_context: {
-      facts: 'Writ petition filed under public interest litigation challenging discriminatory provisions of Chapter on Partition (अंशबण्डाको महल) of Muluki Ain.',
-      legal_issue: 'Whether statutory denial of equal ancestral property rights to daughters violates constitutional equality.'
-    },
-    judgment_basis: {
-      legal_reasoning: 'The Supreme Court held that unequal property rights based on gender contravene fundamental constitutional guarantees of non-discrimination and directive principles.',
-      relevant_laws: ['Constitution of Nepal 2047 — Article 11', 'Constitution of Nepal 2072 — Article 18 & 38', 'Muluki Civil Code 2074']
-    },
-    ratio_decidendi: 'Gender-based discrimination in ancestral property partition is contrary to constitutional equality; legislation must grant daughters equal rights.',
-    obiter_dicta: 'Social traditions cannot be used as an excuse to perpetuate discrimination against women.',
-    judgment_outcome: {
-      type: 'Constitutional Directive',
-      final_decision: 'Issued directive order to Parliament to enact legislation ensuring equal inheritance rights for daughters.'
-    },
-    tags: ['Property Rights', 'Daughter Inheritance', 'Gender Equality', 'NKP 2052', 'Muluki Code'],
-    category: 'property'
-  },
-  {
-    _id: 'prec_np_101',
-    case_identity: {
-      case_name: 'Ramesh Maharjan v. State of Nepal (Banking Offence Cheque Dishonour)',
-      court: 'Supreme Court of Nepal (सर्वोच्च अदालत)',
-      year: '2019 (2076 BS)',
-      citation: 'NKP 2076, Vol. 61, Decision No. 10260',
-      bench: 'Full Bench (३ सदस्यीय पूर्ण इजलास)',
-      judge: "Hon'ble Justice Deepak Kumar Karki & Bench"
-    },
-    legal_principle: 'Criminal Liability for Cheque Dishonour under Banking Offence Act 2064',
-    one_line_summary: 'Knowingly issuing a cheque without sufficient account balance constitutes a cognizable criminal banking offence under Banking Offence and Punishment Act 2064.',
-    relevance_score: 98,
-    why_relevant: 'Core binding authority establishing maintainability of criminal prosecution under Banking Offence Act 2064 vs civil remedy under Negotiable Instruments Act 2034.',
-    case_context: {
-      facts: 'Respondent issued multiple business cheques knowing funds were inadequate, resulting in bank bounce. Argued claim was purely civil under Negotiable Instruments Act 2034.',
-      legal_issue: 'Whether cheque dishonour can be prosecuted criminally under Section 3(c) & Section 15 of Banking Offence and Punishment Act 2064.'
-    },
-    judgment_basis: {
-      legal_reasoning: 'The Full Bench established that when an individual knowingly issues a cheque without maintaining sufficient funds in their bank account, it constitutes an offence under Section 3(c) of the Banking Offence and Punishment Act 2064, and criminal prosecution with forfeiture and imprisonment is fully maintainable.',
-      relevant_laws: ['Banking Offence and Punishment Act 2064 — Section 3(c), Section 15', 'Negotiable Instruments Act 2034', 'Evidence Act 2031 — Section 25']
-    },
-    ratio_decidendi: 'Issuance of a cheque with knowledge of insufficient balance is a criminal banking offence under Act 2064, not merely a civil default.',
-    obiter_dicta: 'Protecting the integrity and credibility of the banking and negotiable instruments system is a state priority.',
-    judgment_outcome: {
-      type: 'Upheld / Conviction Affirmed',
-      final_decision: 'Criminal prosecution under Banking Offence Act 2064 upheld with fine and statutory sentence.'
-    },
-    tags: ['Banking Offence', 'Cheque Dishonour', 'Act 2064', 'Negotiable Instruments', 'NKP 2076'],
-    category: 'criminal'
-  },
-  {
-    _id: 'prec_np_102',
-    case_identity: {
-      case_name: 'Santosh Bhandari v. Prime Minister KP Sharma Oli',
-      court: 'Supreme Court of Nepal (सर्वोच्च अदालत)',
-      year: '2021 (2077 BS)',
-      citation: 'NKP 2077, Decision No. 10602',
-      bench: '5-Judge Constitutional Bench (संवैधानिक इजलास)',
-      judge: "Hon'ble Chief Justice Cholendra Shumsher JB Rana & Bench"
-    },
-    legal_principle: 'Constitutional Validity of Dissolution of the House of Representatives under Article 76',
-    one_line_summary: 'The Prime Minister cannot dissolve the House of Representatives while options for forming an alternative government remain viable under Article 76.',
-    relevance_score: 97,
-    why_relevant: 'Leading constitutional precedent on parliamentary supremacy, separation of powers, and judicial review of executive acts.',
-    case_context: {
-      facts: 'Prime Minister recommended dissolution of House of Representatives under Article 76(1) and 76(7); President approved.',
-      legal_issue: 'Does the Constitution of Nepal 2072 grant the Prime Minister inherent discretion to dissolve Parliament?'
-    },
-    judgment_basis: {
-      legal_reasoning: 'The Constitutional Bench held that the 2072 Constitution limits prime ministerial dissolution powers. The House can only be dissolved when all avenues under Article 76 (1), (2), (3), and (5) fail to form a government.',
-      relevant_laws: ['Constitution of Nepal 2072 — Article 76, Article 85, Article 133']
-    },
-    ratio_decidendi: 'Dissolution of Parliament without exhausting all constitutional government formation procedures under Article 76 is void ab initio.',
-    obiter_dicta: 'Constitutional stability and parliamentary accountability are paramount constitutional principles.',
-    judgment_outcome: {
-      type: 'Constitutional Reinstatement',
-      final_decision: 'Dissolution order quashed; House of Representatives reinstated.'
-    },
-    tags: ['Constitutional Law', 'Article 76', 'Dissolution of Parliament', 'Judicial Review', 'NKP 2077'],
-    category: 'const'
-  },
-  {
-    _id: 'prec_np_103',
-    case_identity: {
-      case_name: 'Sunil Babu Pant and Others v. Government of Nepal',
-      court: 'Supreme Court of Nepal (सर्वोच्च अदालत)',
-      year: '2008 (2065 BS)',
-      citation: 'NKP 2065, Vol. 50, Decision No. 7958',
-      bench: 'Division Bench',
-      judge: "Hon'ble Justice Balaram KC & Hon'ble Justice Pawan Kumar Ojha"
-    },
-    legal_principle: 'Fundamental Rights & Legal Recognition of Gender Identity (Third Gender)',
-    one_line_summary: 'State must recognize gender identity based on self-identification and ensure fundamental rights for third gender individuals.',
-    relevance_score: 96,
-    why_relevant: 'Pioneering human rights ruling recognizing transgender and non-binary individuals on citizenship and official records.',
-    case_context: {
-      facts: 'PIL petition filed for legal recognition and equal protection of sexual and gender minorities.',
-      legal_issue: 'Whether state refusal to recognize gender identity violates fundamental constitutional rights.'
-    },
-    judgment_basis: {
-      legal_reasoning: 'The court held that gender identity is an inherent facet of human dignity and personal autonomy protected under constitutional fundamental rights.',
-      relevant_laws: ['Constitution of Nepal — Article 12, Article 18', 'Yogyakarta Principles']
-    },
-    ratio_decidendi: 'Every individual has the right to live with dignity according to their self-identified gender identity without discrimination.',
-    obiter_dicta: 'The state has an affirmative duty to repeal discriminatory penal provisions and recognize the third gender.',
-    judgment_outcome: {
-      type: 'Landmark Directive',
-      final_decision: 'Ordered issuance of citizenship certificates with third gender category (अन्य) and non-discrimination protections.'
-    },
-    tags: ['Gender Identity', 'Third Gender', 'Human Rights', 'Fundamental Rights', 'NKP 2065'],
-    category: 'human_rights'
-  },
-  {
-    _id: 'prec_np_104',
-    case_identity: {
-      case_name: 'Prakash Mani Sharma v. Prime Minister and Council of Ministers',
-      court: 'Supreme Court of Nepal (सर्वोच्च अदालत)',
-      year: '2008 (2065 BS)',
-      citation: 'NKP 2065, Decision No. 8017',
-      bench: 'Special Division Bench',
-      judge: "Hon'ble Justice Top Bahadur Magar & Bench"
-    },
-    legal_principle: 'Public Trust Doctrine & Right to Clean Environment (Article 30)',
-    one_line_summary: 'Natural water resources and public rivers are held in trust by the State for citizens; arbitrary pollution breaches fundamental right to clean environment.',
-    relevance_score: 95,
-    why_relevant: 'Primary authority for environmental public interest litigation, Bagmati river conservation, and intergenerational equity.',
-    case_context: {
-      facts: 'Unchecked discharge of industrial effluent and sewage into the holy Bagmati river challenged under PIL.',
-      legal_issue: 'Does state failure to protect natural river basins violate fundamental rights and public trust obligations?'
-    },
-    judgment_basis: {
-      legal_reasoning: 'The Supreme Court adopted the Public Trust Doctrine holding that rivers, air, and forests are communal assets which the state must preserve for present and future generations.',
-      relevant_laws: ['Constitution of Nepal — Article 30', 'Environment Protection Act 2076']
-    },
-    ratio_decidendi: 'Right to a clean and healthy environment is a fundamental right enforceable against state inaction under Article 30 and 133.',
-    obiter_dicta: 'The doctrine of public trust imposes an affirmative duty on government authorities to prevent ecological degradation.',
-    judgment_outcome: {
-      type: 'Continuing Mandamus',
-      final_decision: 'Comprehensive environmental compliance directives issued to municipal and federal authorities.'
-    },
-    tags: ['Environmental Law', 'Article 30', 'Public Trust Doctrine', 'Bagmati River', 'NKP 2065'],
-    category: 'environment'
-  },
-  {
-    _id: 'prec_np_105',
-    case_identity: {
-      case_name: 'Advocate Sarmila Parajuli v. Government of Nepal',
-      court: 'Supreme Court of Nepal (सर्वोच्च अदालत)',
-      year: '2004 (2061 BS)',
-      citation: 'NKP 2061, Decision No. 7412',
-      bench: 'Division Bench',
-      judge: "Hon'ble Justice Min Bahadur Rayamajhi & Bench"
-    },
-    legal_principle: 'Admissibility of Electronic Evidence & Telecommunication Logs under Evidence Act 2031',
-    one_line_summary: 'Electronic records, telecommunication CDRs, and digital logs are admissible documentary evidence when certified with forensic integrity.',
-    relevance_score: 94,
-    why_relevant: 'Governs digital evidence admissibility, cyber forensic verification, and statutory compliance under Evidence Act 2031 & ETA 2063.',
-    case_context: {
-      facts: 'Prosecution relied on telecommunication call records and digital messages; defense challenged admissibility as uncorroborated secondary material.',
-      legal_issue: 'What evidentiary standards govern electronic and digital communications in Nepalese court trials?'
-    },
-    judgment_basis: {
-      legal_reasoning: 'The Supreme Court held that electronic and digital communications constitute documentary evidence under Section 2(e) of Evidence Act 2031 and must be admitted upon establishing chain of custody and forensic authenticity.',
-      relevant_laws: ['Evidence Act 2031 — Section 2, Section 25, Section 54', 'Electronic Transactions Act 2063 — Section 56']
-    },
-    ratio_decidendi: 'Digital records and electronic data logs are admissible as primary documentary evidence when verified by competent forensic authority.',
-    obiter_dicta: 'Modern judicial process must adapt to technological advancements in evidence discovery.',
-    judgment_outcome: {
-      type: 'Precedent Established',
-      final_decision: 'Electronic evidence admitted; trial courts instructed on digital record verification.'
-    },
-    tags: ['Electronic Evidence', 'Evidence Act 2031', 'ETA 2063', 'Cyber Law', 'Digital Forensics'],
-    category: 'cyber'
-  }
-];
+import caseSearchService from '../services/caseSearchService';
+import { POPULAR_SEARCH_CHIPS, INDIAN_COURTS } from '../data/indianCourtsData';
+import { getUserData } from '../userStore/userData';
 
 export default function LegalPrecedentsWorkspace() {
   const navigate = useNavigate();
-  const { deductToolUsage } = useSubscription();
-  const [searchParams] = useSearchParams();
-  const initialCaseId = searchParams.get('caseId');
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchState = location.state;
 
-  // Detect active legal jurisdiction (Nepal vs India)
-  const isNepal = (() => {
-    try {
-      const rawUser = localStorage.getItem('user');
-      if (rawUser) {
-        const u = JSON.parse(rawUser);
-        if (u?.legalJurisdiction?.countryCode === 'NP' || u?.legalJurisdiction?.country === 'Nepal') {
-          return true;
-        }
-      }
-    } catch (e) {}
-    return false;
-  })();
+  // Authentication status
+  const token = localStorage.getItem('token');
+  const user = getUserData();
+  const isAuthenticated = Boolean((token && token !== 'undefined') || (user?.token && user.token !== 'undefined'));
 
-  const RESEARCH_CATEGORIES = isNepal ? RESEARCH_CATEGORIES_NEPAL : RESEARCH_CATEGORIES_INDIA;
-  const SUGGESTED_SEARCH_CHIPS = isNepal ? SUGGESTED_SEARCH_CHIPS_NEPAL : SUGGESTED_SEARCH_CHIPS_INDIA;
-  const LANDMARK_PRECEDENTS_DB = isNepal ? LANDMARK_PRECEDENTS_DB_NEPAL : LANDMARK_PRECEDENTS_DB_INDIA;
-
-  // Mode: 'CURRENT' (Current Case Mode) or 'MANUAL' (Manual Search Mode)
-  const [researchMode, setResearchMode] = useState('CURRENT');
+  // Search Core State
+  const [searchQuery, setSearchQuery] = useState(searchState?.searchQuery || searchParams.get('q') || '');
+  const [activeMode, setActiveMode] = useState(searchState?.activeMode || 'AI'); // 'AI' | 'CASE' | 'CITATION' | 'ACT' | 'PARTY' | 'JUDGE'
+  const [activeSource, setActiveSource] = useState(searchState?.activeSource || 'ALL'); // 'ALL' | 'SC' | 'HC' | 'ACTS'
+  const [selectedHighCourt, setSelectedHighCourt] = useState(searchState?.selectedHighCourt || 'all');
   
-  // Case context state
-  const [advocateCases, setAdvocateCases] = useState([]);
-  const [selectedCase, setSelectedCase] = useState(null);
-  const [isLoadingCases, setIsLoadingCases] = useState(false);
+  // Advanced Filters State
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState(searchState?.filters || {
+    court: 'all',
+    year: 'all',
+    caseType: 'All Types',
+    act: '',
+    section: '',
+    judge: '',
+    citation: '',
+    party: ''
+  });
 
-  // Manual search state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  
-  // Search results & loading
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
+  // Sorting
+  const [sortBy, setSortBy] = useState(searchState?.sortBy || 'relevance'); // 'relevance' | 'newest' | 'oldest' | 'court'
+
+  // Results & Loading State
+  const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
-  // Precedent detail workspace state
-  const [selectedPrecedent, setSelectedPrecedent] = useState(null);
-  const [copiedField, setCopiedField] = useState(null);
+  // Active Judgment Reader
+  const [selectedJudgment, setSelectedJudgment] = useState(null);
 
-  // 6 AI Operations State inside Precedent Detail View
-  const [activeAiOp, setActiveAiOp] = useState(null); // 'simple' | 'summary' | 'compare' | 'stronger' | 'conflict' | 'oral'
-  const [aiOpResult, setAiOpResult] = useState('');
-  const [isAiOpLoading, setIsAiOpLoading] = useState(false);
+  // Modals & Drawers
+  const [isAddToCaseOpen, setIsAddToCaseOpen] = useState(false);
+  const [judgmentToAdd, setJudgmentToAdd] = useState(null);
+  const [isSavedDrawerOpen, setIsSavedDrawerOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Fetch Advocate Cases on mount
+  // Bookmarks tracked in state for reactive updates
+  const [bookmarkedIds, setBookmarkedIds] = useState([]);
+
+  // Sync bookmarks list on mount
   useEffect(() => {
-    fetchAdvocateCases();
+    const list = caseSearchService.getSavedJudgments();
+    setBookmarkedIds(list.map(j => j.id));
   }, []);
 
-  const fetchAdvocateCases = async () => {
-    setIsLoadingCases(true);
-    try {
-      const data = await apiService.getProjects();
-      const casesList = Array.isArray(data) ? data : (data?.projects || data?.cases || []);
-      if (casesList.length > 0) {
-        setAdvocateCases(casesList);
-        const matched = initialCaseId ? casesList.find(c => c._id === initialCaseId) : casesList[0];
-        setSelectedCase(matched || casesList[0]);
-      } else {
-        const defaultList = isNepal ? [
-          { _id: 'case_101', name: 'Nepal SBI Bank Ltd. vs Apex Industries Pvt. Ltd.', caseType: 'Banking Offence Act 2064 (Cheque Dishonour)', courtName: 'Kathmandu District Court', clientName: 'Apex Industries', caseNumber: '081-CR-104' },
-          { _id: 'case_102', name: 'Himalayan Trading Corp vs Everest Infrastructure', caseType: 'Commercial Contract & Specific Performance', courtName: 'High Court Patan', clientName: 'Himalayan Trading', caseNumber: '080-CP-208' }
-        ] : [
-          { _id: 'case_101', name: 'State vs Raj Malhotra & Ors.', caseType: 'Cheque Bounce (Sec 138 NI Act)', courtName: 'Patiala House Courts, New Delhi', clientName: 'Raj Malhotra', caseNumber: 'CC/4521/2025' },
-          { _id: 'case_102', name: 'M/S TechCorp vs Global Logistics Ltd.', caseType: 'Commercial Arbitration Breach', courtName: 'Delhi High Court', clientName: 'M/S TechCorp', caseNumber: 'ARB/882/2025' }
-        ];
-        setAdvocateCases(defaultList);
-        setSelectedCase(defaultList[0]);
-      }
-    } catch (err) {
-      console.warn('Error loading advocate cases:', err);
-    } finally {
-      setIsLoadingCases(false);
+  // Set document title for SEO
+  useEffect(() => {
+    document.title = 'AI Legal™ Case Search — Indian Judgments & Legal Research';
+  }, []);
+
+  // Handle protected actions (e.g. Dashboard)
+  const handleProtectedAction = (destination) => {
+    if (isAuthenticated) {
+      navigate(destination);
+    } else {
+      navigate('/login', { state: { from: destination } });
     }
   };
 
-  // Perform Precedents Search
-  const handlePerformSearch = async (overrideQuery = null, categoryFilter = null) => {
-    try { deductToolUsage('legal_precedent'); } catch(e) {}
-    const q = (overrideQuery !== null ? overrideQuery : searchQuery).trim();
-    const cat = categoryFilter !== null ? categoryFilter : selectedCategory;
-
-    if (researchMode === 'MANUAL' && !q && cat === 'all') {
-      toast.error('Please enter a search query, select a category or citation.');
-      return;
-    }
+  // Perform Search Action
+  const executeSearch = async (overrideQuery = null, overrideSource = null, overrideCourt = null) => {
+    const queryToUse = overrideQuery !== null ? overrideQuery : searchQuery;
+    const sourceToUse = overrideSource !== null ? overrideSource : activeSource;
+    const courtToUse = overrideCourt !== null ? overrideCourt : selectedHighCourt;
 
     setIsSearching(true);
     setHasSearched(true);
-    setSelectedPrecedent(null);
+    setSelectedJudgment(null);
 
     try {
-      const targetProjectId = researchMode === 'CURRENT' ? selectedCase?._id : null;
-      const effectiveQuery = researchMode === 'CURRENT' 
-        ? `${selectedCase?.name || selectedCase?.title || ''} ${selectedCase?.caseType || ''}`
-        : q;
+      const searchRes = await caseSearchService.searchJudgments({
+        query: queryToUse,
+        mode: activeMode,
+        source: sourceToUse,
+        selectedCourt: courtToUse,
+        filters
+      });
 
-      const res = await apiService.searchPrecedents(effectiveQuery, targetProjectId, 'English');
-      const precedentList = res?.precedents || res?.data?.precedents || res || [];
-
-      if (Array.isArray(precedentList) && precedentList.length > 0) {
-        setSearchResults(precedentList);
-        toast.success(`Retrieved ${precedentList.length} legal precedents.`);
-      } else {
-        const queryLower = effectiveQuery.toLowerCase();
-        const filtered = LANDMARK_PRECEDENTS_DB.filter(p => {
-          const name = (p.case_identity?.case_name || '').toLowerCase();
-          const principle = (p.legal_principle || '').toLowerCase();
-          const ratio = (p.ratio_decidendi || '').toLowerCase();
-          const tags = (p.tags || []).join(' ').toLowerCase();
-          const pCat = p.category || 'all';
-
-          const matchesCat = cat === 'all' || pCat === cat;
-          const matchesQuery = name.includes(queryLower) || principle.includes(queryLower) || ratio.includes(queryLower) || tags.includes(queryLower) || queryLower === '' || researchMode === 'CURRENT';
-          return matchesCat && matchesQuery;
-        });
-        setSearchResults(filtered.length > 0 ? filtered : LANDMARK_PRECEDENTS_DB);
-        toast.success(`Found ${filtered.length > 0 ? filtered.length : LANDMARK_PRECEDENTS_DB.length} landmark precedents.`);
+      setResults(searchRes);
+      if (searchRes.length > 0) {
+        toast.success(`Found ${searchRes.length} relevant judgments & precedents.`);
       }
-    } catch (err) {
-      console.warn('Backend precedents search error, using landmark database:', err);
-      setSearchResults(LANDMARK_PRECEDENTS_DB);
-      toast.success('Retrieved landmark Supreme Court & High Court precedents.');
+    } catch (e) {
+      console.error('Search failed:', e);
+      toast.error('Search encountered an issue. Showing indexed landmark authorities.');
     } finally {
       setIsSearching(false);
     }
   };
 
-  // Auto-search on mode switch to CURRENT if case selected
+  // Initial load if query in URL or returning from judgment detail
   useEffect(() => {
-    if (researchMode === 'CURRENT' && selectedCase && !hasSearched) {
-      handlePerformSearch();
-    }
-  }, [researchMode, selectedCase]);
-
-  // Copy citation helper
-  const handleCopyCitation = (precedent) => {
-    const citation = precedent.case_identity?.citation || precedent.citation || 'AIR 2024 SC';
-    const caseName = precedent.case_identity?.case_name || precedent.case_name || 'Legal Matter';
-    const fullCitation = `${caseName}, ${citation}`;
-    navigator.clipboard.writeText(fullCitation);
-    setCopiedField('citation');
-    toast.success('Citation copied to clipboard!');
-    setTimeout(() => setCopiedField(null), 2000);
-  };
-
-  // Copy ratio decidendi helper
-  const handleCopyRatio = (precedent) => {
-    const ratio = precedent.ratio_decidendi || precedent.legal_principle || 'No ratio text.';
-    const caseName = precedent.case_identity?.case_name || precedent.case_name || 'Legal Matter';
-    const formattedText = `[RATIO DECIDENDI — ${caseName}]\n"${ratio}"`;
-    navigator.clipboard.writeText(formattedText);
-    setCopiedField('ratio');
-    toast.success('Ratio Decidendi copied to clipboard!');
-    setTimeout(() => setCopiedField(null), 2000);
-  };
-
-  // Save to Case helper
-  const handleSaveToCase = async (precedent) => {
-    const caseName = precedent.case_identity?.case_name || precedent.case_name || 'Precedent';
-    const targetCaseName = selectedCase ? (selectedCase.name || selectedCase.title) : 'Active Case';
-    
-    try {
-      const savedList = JSON.parse(localStorage.getItem('ai_legal_saved_precedents') || '[]');
-      const newItem = {
-        id: precedent._id || Date.now(),
-        caseName,
-        court: precedent.case_identity?.court || precedent.court,
-        citation: precedent.case_identity?.citation || precedent.citation,
-        ratio: precedent.ratio_decidendi || precedent.legal_principle,
-        savedTo: targetCaseName,
-        savedToCaseId: selectedCase?._id,
-        savedAt: new Date().toLocaleString()
-      };
-      savedList.unshift(newItem);
-      localStorage.setItem('ai_legal_saved_precedents', JSON.stringify(savedList));
-
-      if (selectedCase?._id) {
-        try {
-          await apiService.updateProject(selectedCase._id, {
-            savedPrecedent: newItem
-          });
-        } catch (e) {}
+    if (searchState?.initialQuery) {
+      setSearchQuery(searchState.initialQuery);
+      executeSearch(searchState.initialQuery);
+    } else if (searchState?.searchQuery) {
+      executeSearch(searchState.searchQuery, searchState.activeSource, searchState.selectedHighCourt);
+    } else {
+      const initialQ = searchParams.get('q');
+      if (initialQ && !hasSearched) {
+        executeSearch(initialQ);
       }
-      toast.success(`Precedent "${caseName}" saved to case "${targetCaseName}" dossier!`);
-    } catch (e) {
-      toast.success(`Precedent saved to ${targetCaseName}!`);
+    }
+  }, [searchParams, location.state]);
+
+  // Handle Filter Change
+  const handleChangeFilter = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      court: 'all',
+      year: 'all',
+      caseType: 'All Types',
+      act: '',
+      section: '',
+      judge: '',
+      citation: '',
+      party: ''
+    });
+    toast.success('Filters reset to default');
+  };
+
+  // Handle Bookmark Toggle
+  const handleToggleBookmark = (judgment) => {
+    const { isBookmarked } = caseSearchService.toggleBookmark(judgment);
+    if (isBookmarked) {
+      setBookmarkedIds(prev => [...prev, judgment.id]);
+      toast.success('Judgment saved to your bookmarks! 🔖');
+    } else {
+      setBookmarkedIds(prev => prev.filter(id => id !== judgment.id));
+      toast('Removed from saved bookmarks');
     }
   };
 
-  // Comprehensive Export PDF helper (100% Detail Inclusion & Bulletproof Popup/Iframe Print)
-  const handleExportPDF = async (precedent) => {
-    toast.loading('Generating Precedent PDF Dossier...', { id: 'pdf_toast' });
-
-    const caseName = precedent.case_identity?.case_name || precedent.case_name || 'Legal Precedent';
-    const court = precedent.case_identity?.court || precedent.court || 'Supreme Court of India';
-    const citation = precedent.case_identity?.citation || precedent.citation || 'Citation N/A';
-    const year = precedent.case_identity?.year || precedent.year || '2024';
-    const bench = precedent.case_identity?.bench || 'Division Bench';
-    const ratio = precedent.ratio_decidendi || precedent.legal_principle || 'Ratio Decidendi available in full judgment report.';
-    const principle = precedent.legal_principle || precedent.one_line_summary || 'Core Legal Principle.';
-    const facts = precedent.case_context?.facts || precedent.facts || 'Factual details recorded in official law reports.';
-    const issues = precedent.case_context?.legal_issue || precedent.legal_issues || 'Questions of law and statutory interpretation.';
-    const reasoning = precedent.judgment_basis?.legal_reasoning || precedent.reasoning || 'Detailed judicial reasoning recorded.';
-    const outcome = precedent.judgment_outcome?.final_decision || precedent.judgment_outcome?.type || 'Decided / Upheld';
-    const tags = (precedent.tags || ['NI Act', 'Sec 138', 'Evidence Act']).join(', ');
-
-    // 1. Try Backend PDF Endpoint first
-    try {
-      const blobData = await apiService.generatePrecedentPDF(precedent);
-      if (blobData && blobData.size > 0) {
-        const url = window.URL.createObjectURL(new Blob([blobData], { type: 'application/pdf' }));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `${caseName.replace(/\s+/g, '_')}_Dossier.pdf`);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        toast.success('Precedent PDF downloaded!', { id: 'pdf_toast' });
-        return;
-      }
-    } catch (err) {
-      console.warn('Backend PDF endpoint fallback to client print dossier:', err);
-    }
-    
-    toast.dismiss('pdf_toast');
-
-    // 2. Build Rich Executive HTML Printable Dossier
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>${caseName} — Comprehensive Legal Precedent Dossier</title>
-          <style>
-            @page { size: A4; margin: 18mm 20mm 20mm 25mm; }
-            body { font-family: 'Times New Roman', Times, serif; font-size: 10.5pt; line-height: 1.5; color: #111; margin: 0; padding: 0; }
-            .header-banner { text-align: center; border-bottom: 2.5px solid #C8A34D; padding-bottom: 8px; margin-bottom: 14px; }
-            .header-banner h1 { font-size: 16pt; font-weight: bold; text-transform: uppercase; margin: 0; color: #111; letter-spacing: 0.5px; }
-            .header-banner p { font-size: 9pt; font-family: Arial, sans-serif; color: #555; margin: 3px 0 0 0; text-transform: uppercase; letter-spacing: 1px; }
-            .meta-table { width: 100%; border: 1px solid #111; border-collapse: collapse; margin-bottom: 16px; font-size: 10pt; }
-            .meta-table td { border: 1px solid #444; padding: 6px 9px; vertical-align: top; }
-            .meta-table td strong { font-family: Arial, sans-serif; font-size: 8.5pt; text-transform: uppercase; color: #444; display: block; margin-bottom: 2px; }
-            .section-title { font-size: 11pt; font-family: Arial, sans-serif; font-weight: bold; text-transform: uppercase; background: #f4f4f4; border-left: 4px solid #C8A34D; padding: 4px 8px; margin-top: 14px; margin-bottom: 6px; letter-spacing: 0.5px; }
-            .ratio-box { border: 2px solid #C8A34D; background: #faf8f2; padding: 10px 12px; font-size: 11pt; font-style: italic; font-weight: bold; margin-bottom: 12px; text-align: justify; }
-            .content-box { font-size: 10pt; text-align: justify; white-space: pre-wrap; margin-bottom: 10px; line-height: 1.5; }
-            .speech-box { background: #111; color: #fff; padding: 10px 12px; font-size: 10pt; font-style: italic; margin-top: 6px; margin-bottom: 12px; border-left: 4px solid #C8A34D; }
-            .speech-box strong { color: #C8A34D; font-style: normal; }
-          </style>
-        </head>
-        <body>
-          <div class="header-banner">
-            <h1>AI Legal — Precedent Intelligence Dossier</h1>
-            <p>Confidential Courtroom Advocacy Work Product • Supreme Court & High Courts Research</p>
-          </div>
-
-          <table class="meta-table">
-            <tr>
-              <td width="50%"><strong>Full Case Title</strong>${caseName}</td>
-              <td width="50%"><strong>Court / Forum</strong>${court}</td>
-            </tr>
-            <tr>
-              <td><strong>Year & Bench Strength</strong>${year} • ${bench}</td>
-              <td><strong>Official Law Report Citation</strong>${citation}</td>
-            </tr>
-            <tr>
-              <td><strong>AI Match Score</strong>${precedent.relevance_score || 96}% AI Factual & Legal Match</td>
-              <td><strong>Final Judgment Outcome</strong>${outcome}</td>
-            </tr>
-          </table>
-
-          <div class="section-title">1. One-Line Legal Principle</div>
-          <div class="content-box"><strong>${principle}</strong></div>
-
-          <div class="section-title">2. Ratio Decidendi (Core Binding Holding)</div>
-          <div class="ratio-box">
-            "${ratio}"
-          </div>
-
-          <div class="section-title">3. Material Facts & Context</div>
-          <div class="content-box">${facts}</div>
-
-          <div class="section-title">4. Questions of Law (Legal Issues)</div>
-          <div class="content-box">${issues}</div>
-
-          <div class="section-title">5. Judicial Reasoning & Obiter Dicta</div>
-          <div class="content-box">${reasoning}</div>
-
-          <div class="section-title">6. Applicable Statutory Provisions & Tags</div>
-          <div class="content-box"><strong>Statutory Provisions:</strong> ${tags}</div>
-
-          <div class="section-title">7. Courtroom Oral Submissions Speech Script</div>
-          <div class="speech-box">
-            ${isNepal
-              ? `"Shreeman, as per the binding ratio of the Hon'ble Supreme Court of Nepal in <strong>\${caseName}</strong>, once the transaction and liability are evidenced under the relevant provisions of Nepal Law, statutory liability stands established. The burden of contrary proof rests squarely upon the respondent."`
-              : `"My Lord, as per the binding 3-Judge Bench ruling of the Hon'ble Supreme Court in <strong>\${caseName}</strong>, once execution of signature on the cheque is admitted by the accused, Section 139 NI Act mandates a statutory presumption of enforceable debt. The burden rests entirely on the respondent."`}
-          </div>
-
-          <div style="margin-top: 40px; display: flex; justify-content: space-between; font-family: Arial, sans-serif; font-size: 9pt;">
-            <div>
-              <p>Generated by: AI LEGAL Workspace Engine</p>
-              <p>Date & Time: ${new Date().toLocaleString()}</p>
-            </div>
-            <div style="text-align: right; border-top: 1px solid #000; width: 200px; padding-top: 4px;">
-              <p>Advocate / Bar Registration Signature</p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-
-    // 3. Try Popup Window safely with non-null checks
-    try {
-      const printWindow = window.open('', '_blank');
-      if (printWindow && printWindow.document) {
-        printWindow.document.open();
-        printWindow.document.write(htmlContent);
-        printWindow.document.close();
-        setTimeout(() => {
-          try {
-            printWindow.print();
-          } catch (pe) {}
-        }, 400);
-        toast.success('Precedent PDF print dossier generated!');
-        return;
-      }
-    } catch (winErr) {
-      console.warn('Popup window blocked, using invisible iframe fallback:', winErr);
-    }
-
-    // 4. Bulletproof Fallback: Invisible iframe technique (100% immune to popup blockers)
-    try {
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'fixed';
-      iframe.style.right = '0';
-      iframe.style.bottom = '0';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
-      iframe.style.border = '0';
-      document.body.appendChild(iframe);
-
-      const doc = iframe.contentWindow?.document || iframe.contentDocument;
-      if (doc) {
-        doc.open();
-        doc.write(htmlContent);
-        doc.close();
-        setTimeout(() => {
-          try {
-            iframe.contentWindow?.focus();
-            iframe.contentWindow?.print();
-          } catch (pe) {}
-          setTimeout(() => {
-            try {
-              document.body.removeChild(iframe);
-            } catch (e) {}
-          }, 2000);
-        }, 400);
-        toast.success('Precedent PDF print dossier generated!');
-      }
-    } catch (iframeErr) {
-      console.error('Print iframe creation error:', iframeErr);
-      toast.error('Unable to open print window. Please allow popups for this site.');
-    }
-  };
-
-  // Trigger 6 AI Operations
-  const handleTriggerAiOp = async (opType, precedent) => {
-    setActiveAiOp(opType);
-    setIsAiOpLoading(true);
-    setAiOpResult('');
-
-    const caseName = precedent.case_identity?.case_name || precedent.case_name || 'Legal Precedent';
-    const ratio = precedent.ratio_decidendi || precedent.legal_principle || '';
-
-    // Operation 6: Export to Draft Maker workflow
-    if (opType === 'draft') {
-      try {
-        localStorage.setItem('@aisa_pending_precedent_draft', JSON.stringify({
-          case_name: caseName,
-          citation: precedent.case_identity?.citation || precedent.citation,
-          ratio: ratio,
-          facts: precedent.case_context?.facts || precedent.facts
-        }));
-      } catch (e) {}
-      toast.success('Precedent citation block exported to Draft Maker!');
-      navigate('/dashboard/tools/draft-maker');
-      setIsAiOpLoading(false);
+  // Handle Add To Case
+  const handleOpenAddToCase = (judgment) => {
+    if (!isAuthenticated) {
+      toast('Please sign in to attach judgments to your Case Workspace.', { icon: '🔒' });
+      navigate('/login', { state: { from: '/case-search' } });
       return;
     }
-
-    try {
-      const res = await apiService.analyzePrecedent(opType, precedent, selectedCase?._id, 'English');
-      if (res && (res.analysis || res.result)) {
-        setAiOpResult(res.analysis || res.result);
-      } else {
-        // Multi-functional mobile-parity fallback AI summaries
-        if (opType === 'simple') {
-          setAiOpResult(isNepal
-            ? `### ⚖️ Simple Words Breakdown — ${caseName}\n\n**Core Meaning:** In simple terms, this ruling from the Supreme Court of Nepal establishes binding principles on statutory liability, burden of proof under the Evidence Act 2031, and procedural compliance under Nepalese law.`
-            : `### ⚖️ Simple Words Breakdown — ${caseName}\n\n**Core Meaning:** In simple terms, this ruling confirms that when a cheque is signed and given, the court automatically presumes a valid debt exists. The drawer must produce concrete evidence to prove otherwise.`
-          );
-        } else if (opType === 'summary') {
-          setAiOpResult(`### 📝 Structured Dossier Summary — ${caseName}\n\n* **Court**: ${precedent.case_identity?.court || (isNepal ? 'Supreme Court of Nepal' : 'Supreme Court of India')}\n* **Facts**: ${precedent.case_context?.facts || precedent.facts}\n* **Legal Issues**: ${precedent.case_context?.legal_issue || precedent.legal_issues}\n* **Ratio Decidendi**: ${ratio}\n* **Final Decision**: ${precedent.judgment_outcome?.final_decision || 'Appeal Allowed / Order Recorded.'}`);
-        } else if (opType === 'compare') {
-          setAiOpResult(isNepal
-            ? `### 🔄 AI Case Comparison Matrix\n\n* **Matching Jurisdiction**: Governed under Nepal law (Evidence Act 2031 & Muluki Codes 2074).\n* **Statutory Alignment**: Directly supports petitioner's position in ${selectedCase ? selectedCase.name : 'active case'}.\n* **Strength**: High binding authority from Supreme Court of Nepal (सर्वोच्च अदालत).`
-            : `### 🔄 AI Case Comparison Matrix\n\n* **Matching Facts**: Both matters involve commercial dishonour and statutory notice served under Section 138.\n* **Applicable Presumption**: Section 139 presumption directly supports petitioner in ${selectedCase ? selectedCase.name : 'active case'}.\n* **Strength**: High applicability (96% factual alignment).`
-          );
-        } else if (opType === 'stronger') {
-          setAiOpResult(isNepal
-            ? `### 👑 Higher Bench & Stronger Precedents\n\n1. **Santosh Bhandari v. PM KP Sharma Oli (5-Judge Constitutional Bench, NKP 2077)** — Supreme Constitutional Precedent.\n2. **Ramesh Maharjan v. State of Nepal (Full Bench, NKP 2076)** — Leading Full Bench authority on financial disputes and offences.`
-            : `### 👑 Higher Bench & Stronger Precedents\n\n1. **Kesavananda Bharati v. State of Kerala (13-Judge Bench)** — Supreme Constitutional Authority.\n2. **Bir Singh v. Mukesh Kumar (2019 4 SCC 197)** — Direct 2-Judge Supreme Court ruling on blank signed cheques.`
-          );
-        } else if (opType === 'conflict') {
-          setAiOpResult(isNepal
-            ? `### ⚡ Conflicting / Distinguished Rulings\n\n1. **Past Division Bench Rulings under Repealed Muluki Ain 2020** — Note: Superseded by Muluki Civil and Criminal Codes 2074 and subsequent Full Bench rulings.`
-            : `### ⚡ Conflicting / Distinguished Rulings\n\n1. **Krishna Janardhan Bhat v. Dattatraya G. Hegde** — Note: Overruled by 3-Judge Bench in Rangappa v. Sri Mohan regarding burden of proof on debt presumption.`
-          );
-        } else if (opType === 'oral') {
-          setAiOpResult(isNepal
-            ? `### 📣 Courtroom Oral Submissions Script\n\n"Shreeman, as per the authoritative ratio of the Hon'ble Supreme Court of Nepal in *${caseName}*, under the Evidence Act 2031 and relevant provisions of Nepal Law, the statutory liability and documentary evidence stand unrebutted on record."`
-            : `### 📣 Courtroom Oral Submissions Script\n\n"My Lord, as per the binding 3-Judge Bench ruling of the Hon'ble Supreme Court in *${caseName}*, once execution of signature on the cheque is admitted by the accused, Section 139 NI Act mandates a statutory presumption of enforceable debt. The burden rests entirely on the respondent."`
-          );
-        }
-      }
-    } catch (err) {
-      console.warn('AI Operation error, using standard analysis:', err);
-      setAiOpResult(`AI Analysis complete for ${caseName}.`);
-    } finally {
-      setIsAiOpLoading(false);
-    }
+    setJudgmentToAdd(judgment);
+    setIsAddToCaseOpen(true);
   };
 
+  // Filter & Sort Results
+  const sortedResults = useMemo(() => {
+    let list = [...results];
+    if (sortBy === 'relevance') {
+      list.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
+    } else if (sortBy === 'newest') {
+      list.sort((a, b) => parseInt(b.year || 0) - parseInt(a.year || 0));
+    } else if (sortBy === 'oldest') {
+      list.sort((a, b) => parseInt(a.year || 0) - parseInt(b.year || 0));
+    } else if (sortBy === 'court') {
+      list.sort((a, b) => (a.court || '').localeCompare(b.court || ''));
+    }
+    return list;
+  }, [results, sortBy]);
+
+  // Active filters count
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.court !== 'all') count++;
+    if (filters.year !== 'all') count++;
+    if (filters.caseType !== 'All Types') count++;
+    if (filters.act) count++;
+    if (filters.section) count++;
+    if (filters.judge) count++;
+    if (filters.citation) count++;
+    if (filters.party) count++;
+    return count;
+  }, [filters]);
+
+  // When a judgment is selected, navigate to the dedicated /judgment/:id route
+  useEffect(() => {
+    if (selectedJudgment) {
+      navigate(`/judgment/${selectedJudgment.slug || selectedJudgment.id}`, {
+        state: {
+          searchQuery,
+          activeMode,
+          activeSource,
+          selectedHighCourt,
+          filters,
+          sortBy
+        }
+      });
+      setSelectedJudgment(null);
+    }
+  }, [selectedJudgment]);
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F17] text-slate-900 dark:text-white flex flex-col font-sans">
-      {/* APP WORKSPACE HEADER - 1 SINGLE ROW ON MOBILE & DESKTOP */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#111622]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/80 px-2.5 sm:px-8 py-2 sm:py-3.5 flex flex-row items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
-          <button 
-            onClick={() => {
-              if (selectedPrecedent) {
-                setSelectedPrecedent(null);
-              } else {
-                navigate('/dashboard/tools');
-              }
-            }}
-            className="p-1.5 sm:p-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer border border-slate-200 dark:border-slate-800 shrink-0"
-            title={selectedPrecedent ? "Back to Precedents Search Results" : "Back to AI Tools Suite"}
-          >
-            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#111111] border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D] shadow-md shrink-0">
-            <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+    <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#C8A34D]/25 selection:text-[#111111]">
+      
+      {/* ─── PUBLIC TOP HEADER NAVBAR (Consistent across all pages) ─── */}
+      <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+          
+          {/* Logo */}
+          <div onClick={() => navigate('/')} className="flex items-center gap-2.5 cursor-pointer select-none">
+            <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-9 h-9 object-contain" />
+            <span className="text-lg font-black tracking-tight text-[#0F172A] dark:text-white flex items-center">
+              AI LEGAL<span className="text-[10px] text-[#C8A34D] font-extrabold ml-0.5">TM</span>
+            </span>
           </div>
 
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <h1 className="text-xs sm:text-lg font-black tracking-tight text-slate-900 dark:text-white truncate">
-                Legal Precedents
-              </h1>
-              <span className="text-[9px] sm:text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 uppercase shrink-0 hidden md:inline-block">
-                SC & High Courts
-              </span>
-            </div>
-            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 hidden md:block">
-              Research Supreme Court & High Court judgments with relevant citations, ratio decidendi and precedent analysis.
-            </p>
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-slate-300">
+            <button onClick={() => navigate('/')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
+              Home
+            </button>
+            <button onClick={() => navigate('/features')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
+              Features
+            </button>
+            <button onClick={() => navigate('/blog')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
+              Blog
+            </button>
+            <button onClick={() => navigate('/pricing')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
+              Pricing
+            </button>
+            
+            {/* Active Case Search Pill */}
+            <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
+              Case Search
+            </span>
+
+            <button onClick={() => navigate('/about')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
+              About
+            </button>
+            <button onClick={() => handleProtectedAction('/dashboard')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
+              Dashboard
+            </button>
+          </nav>
+
+          {/* Right Header Actions */}
+          <div className="flex items-center gap-2.5">
+            <ThemeToggle />
+
+            {/* Post Judgement Shortcut */}
+            <button
+              onClick={() => navigate('/post-judgment')}
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+            >
+              <Plus size={14} className="text-[#B38628] stroke-[2.5]" />
+              <span>Post your judgement</span>
+            </button>
+
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                >
+                  Dashboard →
+                </button>
+                <div 
+                  onClick={() => navigate('/dashboard/settings')}
+                  className="w-7.5 h-7.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-[#C8A34D]/40 text-[#B38628] dark:text-amber-400 font-bold text-xs flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
+                  title={user?.name || 'Profile'}
+                >
+                  {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => navigate('/signup')}
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+              >
+                Get Started
+              </button>
+            )}
+
+            {/* Mobile Hamburger Toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
+
         </div>
-      </header>
 
-      {/* MAIN CONTENT AREA */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6 min-w-0 overflow-x-hidden">
-        
-        {/* PRECEDENT DETAIL VIEW WORKSPACE */}
-        {selectedPrecedent ? (
-          <motion.div 
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
-          >
-            {/* Top Detail Header Banner */}
-            <div className="bg-white dark:bg-[#111622] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] text-[10px] font-mono font-bold uppercase">
-                      {selectedPrecedent.case_identity?.court || selectedPrecedent.court || 'Supreme Court of India'}
-                    </span>
-                    <span className="text-xs font-mono font-bold text-slate-400">
-                      {selectedPrecedent.case_identity?.year || selectedPrecedent.year || '2024'}
-                    </span>
-                  </div>
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                    {selectedPrecedent.case_identity?.case_name || selectedPrecedent.case_name || 'Landmark Legal Precedent'}
-                  </h2>
-                  <p className="text-xs font-mono text-[#C8A34D]">
-                    Citation: {selectedPrecedent.case_identity?.citation || selectedPrecedent.citation || 'AIR 2024 SC 101'}
-                  </p>
-                </div>
-
-                {/* Precedent Action Buttons */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <button
-                    onClick={() => handleCopyCitation(selectedPrecedent)}
-                    className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 text-xs font-bold flex items-center gap-1.5 cursor-pointer hover:border-[#C8A34D] transition-all"
-                  >
-                    <Copy className="w-4 h-4 text-[#C8A34D]" />
-                    {copiedField === 'citation' ? 'Citation Copied!' : 'Copy Citation'}
-                  </button>
-
-                  <button
-                    onClick={() => handleCopyRatio(selectedPrecedent)}
-                    className="px-3.5 py-2 rounded-xl bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/40 text-xs font-bold flex items-center gap-1.5 cursor-pointer hover:bg-[#C8A34D] hover:text-[#111111] transition-all"
-                  >
-                    <Gavel className="w-4 h-4" />
-                    {copiedField === 'ratio' ? 'Ratio Copied!' : 'Copy Ratio'}
-                  </button>
-
-                  <button
-                    onClick={() => handleSaveToCase(selectedPrecedent)}
-                    className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 text-xs font-bold flex items-center gap-1.5 cursor-pointer hover:border-[#C8A34D] transition-all"
-                  >
-                    <Bookmark className="w-4 h-4 text-[#C8A34D]" />
-                    Save to Case
-                  </button>
-
-                  <button
-                    onClick={() => handleExportPDF(selectedPrecedent)}
-                    className="px-4 py-2 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md shadow-[#C8A34D]/20 hover:bg-[#b8933d] transition-all"
-                  >
-                    <Download className="w-4 h-4" /> Export Precedent PDF
-                  </button>
-                </div>
-              </div>
-
-              {/* PRECEDENT AI INTELLIGENCE SUITE */}
-              <div className="space-y-2 pt-1 max-w-full">
-                <span className="text-[11px] font-bold text-[#C8A34D] uppercase tracking-wider block">
-                  Precedent AI Intelligence Suite:
-                </span>
-                <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none max-w-full pb-1">
-                  {[
-                    { id: 'simple', label: 'Simple Words', icon: HelpCircle },
-                    { id: 'summary', label: 'Full Summary', icon: FileText },
-                    { id: 'compare', label: 'Compare Case', icon: RefreshCw },
-                    { id: 'stronger', label: 'Stronger Rulings', icon: Award },
-                    { id: 'conflict', label: 'Conflicting Cases', icon: AlertCircle },
-                    { id: 'oral', label: 'Oral Submissions', icon: MessageSquare },
-                    { id: 'draft', label: 'Export to Draft Maker', icon: ArrowRight },
-                  ].map(op => {
-                    const Icon = op.icon;
-                    const isActive = activeAiOp === op.id;
-                    return (
-                      <button
-                        key={op.id}
-                        onClick={() => handleTriggerAiOp(op.id, selectedPrecedent)}
-                        className={`px-2.5 sm:px-3 py-1.5 rounded-xl border text-[11px] sm:text-xs font-extrabold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                          isActive
-                            ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-sm'
-                            : 'bg-slate-50 dark:bg-[#1A2333] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]'
-                        }`}
-                      >
-                        <Icon className="w-3.5 h-3.5" />
-                        <span>{op.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* RICH AI OP RESULT DISPLAY BOX */}
-              {isAiOpLoading ? (
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-[#C8A34D]/40 shadow-sm flex items-center gap-3 text-xs text-[#C8A34D]">
-                  <RefreshCw className="w-5 h-5 animate-spin text-[#C8A34D]" />
-                  <div>
-                    <h4 className="font-extrabold text-slate-900 dark:text-white">Analyzing Precedent Intelligence...</h4>
-                    <p className="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">Extracting legal principles, ratio decidendi, and courtroom submission strategy.</p>
-                  </div>
-                </div>
-              ) : aiOpResult ? (
-                <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border-2 border-[#C8A34D] text-xs text-slate-800 dark:text-slate-200 space-y-4 shadow-lg relative overflow-hidden">
-                  {/* Top Bar */}
-                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#C8A34D]" />
-                      <h4 className="font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-xs">
-                        {activeAiOp === 'simple' && 'Plain Language Legal Breakdown'}
-                        {activeAiOp === 'summary' && 'Structured Dossier Summary'}
-                        {activeAiOp === 'compare' && 'AI Case Comparison Matrix'}
-                        {activeAiOp === 'stronger' && 'Higher Bench & Stronger Authorities'}
-                        {activeAiOp === 'conflict' && 'Conflicting & Overruled Judgments'}
-                        {activeAiOp === 'oral' && 'Courtroom Oral Submissions Script'}
-                      </h4>
-                    </div>
-                    <button 
-                      onClick={() => setAiOpResult('')} 
-                      className="p-1 rounded-lg bg-slate-100 dark:bg-[#1A2333] text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-colors"
-                      title="Close Output"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  {/* Render Op-specific Rich Content */}
-                  {activeAiOp === 'simple' && (
-                    <div className="space-y-3 font-sans">
-                      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-1">
-                        <span className="text-[11px] font-extrabold uppercase text-[#C8A34D] block">Core Legal Layman Meaning:</span>
-                        <p className="text-sm font-bold leading-relaxed text-slate-900 dark:text-white">
-                          In simple terms, this ruling confirms that when a cheque signature is admitted, the court automatically presumes a valid debt exists. The drawer must produce concrete evidence to prove otherwise.
-                        </p>
-                      </div>
-                      <div className="flex items-center justify-between pt-1">
-                        <span className="text-xs font-semibold text-slate-500">Preserves binding legal ratio in simplified terms.</span>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(`Simple Breakdown: ${selectedPrecedent.case_identity?.case_name} confirms statutory debt presumption upon signature admission.`);
-                            toast.success('Simple explanation copied!');
-                          }}
-                          className="px-3 py-1.5 rounded-xl bg-[#C8A34D]/15 text-[#C8A34D] text-xs font-bold hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer flex items-center gap-1"
-                        >
-                          <Copy className="w-3.5 h-3.5" /> Copy Simple Text
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeAiOp === 'summary' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-sans">
-                      <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-1">
-                        <span className="text-[10px] font-extrabold uppercase text-slate-400 block">📌 Factual Matrix:</span>
-                        <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-300">
-                          {selectedPrecedent.case_context?.facts || selectedPrecedent.facts || 'Factual details recorded in official law reports.'}
-                        </p>
-                      </div>
-                      <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-1">
-                        <span className="text-[10px] font-extrabold uppercase text-slate-400 block">⚖️ Questions of Law:</span>
-                        <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-300 font-mono">
-                          {selectedPrecedent.case_context?.legal_issue || selectedPrecedent.legal_issues || 'Applicability of statutory provisions and evidentiary standards.'}
-                        </p>
-                      </div>
-                      <div className="p-3.5 rounded-2xl bg-[#C8A34D]/10 border border-[#C8A34D]/30 space-y-1 md:col-span-2">
-                        <span className="text-[10px] font-extrabold uppercase text-[#C8A34D] block">📜 Binding Ratio Decidendi:</span>
-                        <p className="text-xs font-bold leading-relaxed text-slate-900 dark:text-white font-serif">
-                          "{selectedPrecedent.ratio_decidendi || selectedPrecedent.legal_principle}"
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeAiOp === 'compare' && (
-                    <div className="space-y-3 font-sans">
-                      <div className="flex items-center justify-between p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold">
-                        <span>Factual & Statutory Alignment:</span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500 text-white text-[11px]">96% AI Match</span>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-1">
-                          <span className="text-[10px] font-extrabold uppercase text-emerald-500 block">✅ Key Similarities:</span>
-                          <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-300">
-                            Both matters involve commercial dishonour and statutory notice served under Section 138.
-                          </p>
-                        </div>
-                        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-1">
-                          <span className="text-[10px] font-extrabold uppercase text-[#C8A34D] block">💡 Strategic Utility in Active Case:</span>
-                          <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-300">
-                            Section 139 mandatory presumption directly supports petitioner in {selectedCase ? selectedCase.name : 'active case file'}.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeAiOp === 'stronger' && (
-                    <div className="space-y-2 font-sans">
-                      <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <h5 className="font-extrabold text-slate-900 dark:text-white text-xs">Kesavananda Bharati v. State of Kerala</h5>
-                          <span className="px-2 py-0.5 rounded bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-mono font-bold">13-Judge Bench</span>
-                        </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">AIR 1973 SC 1461 • Supreme Constitutional Authority on Basic Structure & Judicial Review.</p>
-                      </div>
-                      <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <h5 className="font-extrabold text-slate-900 dark:text-white text-xs">Bir Singh v. Mukesh Kumar</h5>
-                          <span className="px-2 py-0.5 rounded bg-slate-200 dark:bg-[#1E293B] text-slate-600 dark:text-slate-300 text-[10px] font-mono font-bold">2019 4 SCC 197</span>
-                        </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">Direct 2-Judge Supreme Court ruling governing blank signed cheques under Section 138.</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeAiOp === 'conflict' && (
-                    <div className="space-y-3 font-sans">
-                      <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-extrabold text-xs uppercase">Overruled Authority Alert:</span>
-                          <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-500 text-[10px] font-mono font-bold">OVERRULED</span>
-                        </div>
-                        <h5 className="font-bold text-slate-900 dark:text-white text-xs">Krishna Janardhan Bhat v. Dattatraya G. Hegde (2008)</h5>
-                        <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
-                          Note: The observation in Krishna Janardhan Bhat regarding standard of proof on debt presumption was explicitly overruled by the 3-Judge Constitutional Bench in Rangappa v. Sri Mohan (2010 11 SCC 441).
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeAiOp === 'oral' && (
-                    <div className="space-y-3 font-sans">
-                      <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] text-slate-900 dark:text-white border-2 border-[#C8A34D] space-y-2 relative shadow-sm">
-                        <span className="text-[10px] font-mono font-bold text-[#C8A34D] uppercase tracking-wider block">
-                          Courtroom Speech Script (My Lord Submission):
-                        </span>
-                        <p className="text-xs sm:text-sm font-serif italic leading-relaxed text-slate-800 dark:text-slate-100">
-                          "My Lord, as per the binding 3-Judge Bench ruling of the Hon'ble Supreme Court in <strong className="text-[#C8A34D] font-sans not-italic font-black">{selectedPrecedent.case_identity?.case_name || selectedPrecedent.case_name}</strong>, once execution of signature on the cheque is admitted by the accused, Section 139 NI Act mandates a statutory presumption of enforceable debt. The burden rests entirely on the respondent."
-                        </p>
-                      </div>
-                      <div className="flex items-center justify-end">
-                        <button
-                          onClick={() => {
-                            const script = `My Lord, as per the binding ruling of the Hon'ble Supreme Court in ${selectedPrecedent.case_identity?.case_name || selectedPrecedent.case_name}, once execution of signature on the cheque is admitted by the accused, Section 139 NI Act mandates a statutory presumption of enforceable debt.`;
-                            navigator.clipboard.writeText(script);
-                            toast.success('Courtroom speech script copied to clipboard!');
-                          }}
-                          className="px-4 py-2 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 hover:bg-[#b8933d] transition-all cursor-pointer shadow-md"
-                        >
-                          <Copy className="w-4 h-4" /> Copy Oral Speech Script
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : null}
-            </div>
-
-            {/* Structured Precedent Dossier Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left 2 Columns: Main Legal Analysis */}
-              <div className="lg:col-span-2 space-y-6">
-                
-                {/* RATIO DECIDENDI BOX (HIGHLIGHTED) */}
-                <div className="bg-white dark:bg-[#111622] p-6 rounded-3xl border-2 border-[#C8A34D] shadow-lg relative overflow-hidden space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Gavel className="w-5 h-5 text-[#C8A34D]" />
-                      <h3 className="text-sm font-extrabold uppercase tracking-wider text-[#C8A34D]">
-                        Ratio Decidendi (Core Holding)
-                      </h3>
-                    </div>
-                    <button
-                      onClick={() => handleCopyRatio(selectedPrecedent)}
-                      className="p-1.5 rounded-lg bg-[#C8A34D]/20 text-[#C8A34D] hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer flex items-center gap-1 text-xs font-bold"
-                    >
-                      <Copy className="w-3.5 h-3.5" /> Copy Ratio
-                    </button>
-                  </div>
-                  <p className="text-sm leading-relaxed font-serif text-slate-900 dark:text-white bg-slate-50 dark:bg-[#1A2333] p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
-                    "{selectedPrecedent.ratio_decidendi || selectedPrecedent.legal_principle}"
-                  </p>
-                </div>
-
-                {/* ONE-LINE LEGAL PRINCIPLE */}
-                <div className="bg-white dark:bg-[#111622] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-2">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
-                    Legal Principle
-                  </h3>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">
-                    {selectedPrecedent.legal_principle || selectedPrecedent.one_line_summary}
-                  </p>
-                </div>
-
-                {/* MATERIAL FACTS OF THE CASE */}
-                <div className="bg-white dark:bg-[#111622] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
-                    Material Facts & Context
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {selectedPrecedent.case_context?.facts || selectedPrecedent.facts || 'Factual details recorded in official law reports.'}
-                  </p>
-                </div>
-
-                {/* QUESTIONS OF LAW CONSIDERED */}
-                <div className="bg-white dark:bg-[#111622] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
-                    Questions of Law
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-mono">
-                    {selectedPrecedent.case_context?.legal_issue || selectedPrecedent.legal_issues || 'Applicability of statutory provisions and evidentiary standards.'}
-                  </p>
-                </div>
-
-                {/* JUDICIAL REASONING & OBITER DICTA */}
-                <div className="bg-white dark:bg-[#111622] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
-                    Judicial Reasoning & Obiter Dicta
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {selectedPrecedent.judgment_basis?.legal_reasoning || selectedPrecedent.reasoning || 'The Bench examined evidentiary presumptions and natural justice rules.'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Right Column: Precedent Metadata & Citations */}
-              <div className="space-y-6">
-                {/* Bench & Metadata */}
-                <div className="bg-white dark:bg-[#111622] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
-                    Precedent Metadata
-                  </h3>
-                  
-                  <div className="space-y-3 text-xs">
-                    <div>
-                      <span className="text-slate-400 block font-semibold">Full Case Title:</span>
-                      <span className="font-bold text-slate-900 dark:text-white">
-                        {selectedPrecedent.case_identity?.case_name || selectedPrecedent.case_name}
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 block font-semibold">Court & Forum:</span>
-                      <span className="font-bold text-slate-900 dark:text-white">
-                        {selectedPrecedent.case_identity?.court || selectedPrecedent.court}
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 block font-semibold">Year & Bench Strength:</span>
-                      <span className="font-bold text-slate-900 dark:text-white">
-                        {selectedPrecedent.case_identity?.year || selectedPrecedent.year} • {selectedPrecedent.case_identity?.bench || 'Division Bench'}
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 block font-semibold">AI Match Score:</span>
-                      <span className="inline-block mt-0.5 px-2.5 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] font-extrabold text-[11px]">
-                        {selectedPrecedent.relevance_score || 96}% AI Relevance Score
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 block font-semibold">Final Judgment Outcome:</span>
-                      <span className="inline-block mt-0.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 font-bold uppercase text-[10px]">
-                        {selectedPrecedent.judgment_outcome?.type || 'Binding Rulings / Upheld'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* APPLICABLE ACTS & SECTIONS */}
-                <div className="bg-white dark:bg-[#111622] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
-                    Applicable Acts & Sections
-                  </h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    {(selectedPrecedent.tags || ['Sec 138 NI Act', 'Sec 139 NI Act', 'Evidence Act']).map((tag, idx) => (
-                      <span key={idx} className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-700 dark:text-slate-300">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* LAW REPORT CITATIONS */}
-                <div className="bg-white dark:bg-[#111622] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
-                    Law Report Citations
-                  </h3>
-                  <div className="space-y-2 text-xs">
-                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                      <span className="font-mono text-slate-500">Law Report Citation:</span>
-                      <span className="font-bold text-[#C8A34D] font-mono">
-                        {selectedPrecedent.case_identity?.citation || selectedPrecedent.citation || 'AIR 2024 SC'}
-                      </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      ) : (
-          /* MODE SELECTION & PRECEDENTS SEARCH WORKSPACE */
-          <div className="space-y-4 sm:space-y-6 max-w-5xl mx-auto w-full min-w-0">
-            {/* RESEARCH MODE SELECTION TOGGLE */}
-            <div className="bg-white dark:bg-[#111622] p-2 rounded-2xl border border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-2 shadow-xs max-w-full overflow-hidden">
+        {/* Mobile Dropdown Nav Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-[#0B0F19] px-4 py-3 space-y-2">
+            <button onClick={() => { setMobileMenuOpen(false); navigate('/'); }} className="w-full text-left py-2 text-xs font-bold">Home</button>
+            <button onClick={() => { setMobileMenuOpen(false); navigate('/features'); }} className="w-full text-left py-2 text-xs font-bold">Features</button>
+            <button onClick={() => { setMobileMenuOpen(false); navigate('/blog'); }} className="w-full text-left py-2 text-xs font-bold">Blog</button>
+            <button onClick={() => { setMobileMenuOpen(false); navigate('/pricing'); }} className="w-full text-left py-2 text-xs font-bold">Pricing</button>
+            <button onClick={() => { setMobileMenuOpen(false); }} className="w-full text-left py-2 text-xs font-bold text-[#B38628]">Case Search (Active)</button>
+            <button onClick={() => { setMobileMenuOpen(false); navigate('/about'); }} className="w-full text-left py-2 text-xs font-bold">About</button>
+            <button onClick={() => { setMobileMenuOpen(false); handleProtectedAction('/dashboard'); }} className="w-full text-left py-2 text-xs font-bold">Dashboard</button>
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
               <button
-                onClick={() => setResearchMode('CURRENT')}
-                className={`p-3.5 sm:p-4 rounded-xl transition-all cursor-pointer text-left flex items-start gap-3 border min-w-0 ${
-                  researchMode === 'CURRENT'
-                    ? 'bg-[#C8A34D]/10 border-[#C8A34D] text-slate-900 dark:text-white shadow-sm ring-1 ring-[#C8A34D]/40'
-                    : 'bg-white dark:bg-[#111622] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/40 text-slate-600 dark:text-slate-400'
-                }`}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/post-judgment');
+                }}
+                className="w-full py-2.5 rounded-full text-xs font-bold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] flex items-center justify-center gap-1.5"
               >
-                <div className={`p-2 sm:p-2.5 rounded-xl shrink-0 ${researchMode === 'CURRENT' ? 'bg-[#C8A34D] text-[#111111]' : 'bg-slate-100 dark:bg-[#1A2333] text-slate-500'}`}>
-                  <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-xs sm:text-sm font-extrabold truncate">Current Case</h3>
-                    {researchMode === 'CURRENT' && <span className="w-2 h-2 rounded-full bg-[#C8A34D] shrink-0" />}
-                  </div>
-                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">Research precedents relevant to the currently selected case context.</p>
-                </div>
+                <Plus size={14} className="stroke-[2.5]" />
+                <span>Post your judgement</span>
               </button>
-
-              <button
-                onClick={() => setResearchMode('MANUAL')}
-                className={`p-3.5 sm:p-4 rounded-xl transition-all cursor-pointer text-left flex items-start gap-3 border min-w-0 ${
-                  researchMode === 'MANUAL'
-                    ? 'bg-[#C8A34D]/10 border-[#C8A34D] text-slate-900 dark:text-white shadow-sm ring-1 ring-[#C8A34D]/40'
-                    : 'bg-white dark:bg-[#111622] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/40 text-slate-600 dark:text-slate-400'
-                }`}
-              >
-                <div className={`p-2 sm:p-2.5 rounded-xl shrink-0 ${researchMode === 'MANUAL' ? 'bg-[#C8A34D] text-[#111111]' : 'bg-slate-100 dark:bg-[#1A2333] text-slate-500'}`}>
-                  <Search className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-xs sm:text-sm font-extrabold truncate">Manual Search</h3>
-                    {researchMode === 'MANUAL' && <span className="w-2 h-2 rounded-full bg-[#C8A34D] shrink-0" />}
-                  </div>
-                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">Search legal precedents using legal issue, section, case name or citation.</p>
-                </div>
-              </button>
+              {isAuthenticated ? (
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
+                  className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-center"
+                >
+                  Dashboard →
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}
+                  className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-center"
+                >
+                  Get Started
+                </button>
+              )}
             </div>
-
-            {/* CURRENT CASE MODE CONTEXT BOX */}
-            {researchMode === 'CURRENT' && (
-              <div className="bg-white dark:bg-[#111622] p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3 sm:space-y-4 shadow-xs max-w-full overflow-hidden">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">Active Case Context</h3>
-                    <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">Precedents will be customized for this authorized case file.</p>
-                  </div>
-
-                  {advocateCases.length > 1 && (
-                    <select
-                      value={selectedCase?._id || ''}
-                      onChange={(e) => {
-                        const found = advocateCases.find(c => c._id === e.target.value);
-                        setSelectedCase(found);
-                      }}
-                      className="w-full sm:w-auto px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
-                    >
-                      {advocateCases.map(c => (
-                        <option key={c._id} value={c._id}>
-                          {c.name || c.caseName || c.title || 'Legal Matter'}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-
-                {selectedCase ? (
-                  <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 max-w-full overflow-hidden">
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] uppercase">
-                        {selectedCase.caseType || selectedCase.category || 'Active Matter'}
-                      </span>
-                      <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">
-                        {selectedCase.name || selectedCase.caseName || selectedCase.title || 'State vs Raj Malhotra & Ors.'}
-                      </h4>
-                      <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">
-                        {selectedCase.courtName || selectedCase.court || 'Patiala House Courts, New Delhi'} • Client: {selectedCase.clientName || selectedCase.client || 'Raj Malhotra'}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => handlePerformSearch()}
-                      disabled={isSearching}
-                      className="w-full sm:w-auto px-4 sm:px-5 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center justify-center gap-2 cursor-pointer shadow-md hover:bg-[#b8933d] transition-all shrink-0"
-                    >
-                      {isSearching ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                      Find Relevant Precedents
-                    </button>
-                  </div>
-                ) : (
-                  <div className="p-4 sm:p-6 text-center space-y-3 bg-slate-50 dark:bg-[#1A2333] rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
-                    <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-amber-500 mx-auto" />
-                    <div>
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-white">No active case available</h4>
-                      <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1">Open or select a case to research precedents using case context.</p>
-                    </div>
-                    <button
-                      onClick={() => setResearchMode('MANUAL')}
-                      className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-[#1E293B] text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer"
-                    >
-                      Switch to Manual Search
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* MANUAL SEARCH INPUT AREA */}
-            {researchMode === 'MANUAL' && (
-              <div className="bg-white dark:bg-[#111622] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
-                <div className="space-y-1">
-                  <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">Search Supreme Court & High Court Precedents</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Enter a legal issue, statutory section, landmark case name or official law report citation.</p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <div className="relative flex-1 w-full">
-                    <Search className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
-                    <input
-                      type="text"
-                      placeholder="Search judgments, legal issues, sections, case names or citations..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') handlePerformSearch(); }}
-                      className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
-                    />
-                  </div>
-
-                  <button
-                    onClick={() => handlePerformSearch()}
-                    disabled={isSearching}
-                    className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center justify-center gap-2 cursor-pointer shadow-md hover:bg-[#b8933d] transition-all shrink-0"
-                  >
-                    {isSearching ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                    Search Precedents
-                  </button>
-                </div>
-
-                {/* 18 LEGAL DIRECTORY CATEGORIES BAR */}
-                <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                    Legal Research Categories:
-                  </span>
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-                    {RESEARCH_CATEGORIES.map(cat => {
-                      const isCatSelected = selectedCategory === cat.id;
-                      return (
-                        <button
-                          key={cat.id}
-                          onClick={() => {
-                            setSelectedCategory(cat.id);
-                            handlePerformSearch(null, cat.id);
-                          }}
-                          className={`px-3.5 py-1.5 rounded-xl border text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-                            isCatSelected
-                              ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-sm'
-                              : 'bg-slate-50 dark:bg-[#1A2333] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]'
-                          }`}
-                        >
-                          {cat.name}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Suggested Chips */}
-                <div className="space-y-2 pt-1">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Suggested Legal Queries:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {SUGGESTED_SEARCH_CHIPS.map((chip, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          setSearchQuery(chip);
-                          handlePerformSearch(chip);
-                        }}
-                        className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-600 dark:text-slate-300 text-xs font-medium hover:border-[#C8A34D] hover:text-[#C8A34D] border border-slate-200 dark:border-slate-800 transition-all cursor-pointer"
-                      >
-                        {chip}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SEARCH LOADING STATE */}
-            {isSearching && (
-              <div className="py-12 bg-white dark:bg-[#111622] rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-3">
-                <RefreshCw className="w-8 h-8 text-[#C8A34D] animate-spin mx-auto" />
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">Searching Legal Precedents</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">AI LEGAL is finding relevant Supreme Court and High Court judgments.</p>
-                </div>
-              </div>
-            )}
-
-            {/* SEARCH RESULTS LIST */}
-            {!isSearching && hasSearched && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
-                    Precedent Results ({searchResults.length} Judgments)
-                  </h3>
-                </div>
-
-                {searchResults.length === 0 ? (
-                  <div className="py-12 bg-white dark:bg-[#111622] rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-2">
-                    <AlertCircle className="w-8 h-8 text-amber-500 mx-auto" />
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">No relevant precedents found</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Try modifying your legal search query or selecting a different case mode.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {searchResults.map((precedent) => {
-                      const caseName = precedent.case_identity?.case_name || precedent.case_name || 'Landmark Precedent';
-                      const court = precedent.case_identity?.court || precedent.court || 'Supreme Court of India';
-                      const year = precedent.case_identity?.year || precedent.year || '2024';
-                      const citation = precedent.case_identity?.citation || precedent.citation || 'Citation Available';
-                      const principle = precedent.legal_principle || precedent.one_line_summary || 'Legal principle ratio recorded.';
-                      const ratio = precedent.ratio_decidendi || 'Ratio Decidendi available in full judgment workspace.';
-
-                      return (
-                        <motion.div
-                          key={precedent._id || precedent.case_name}
-                          whileHover={{ y: -2 }}
-                          className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/60 transition-all shadow-xs space-y-3 cursor-pointer"
-                          onClick={() => setSelectedPrecedent(precedent)}
-                        >
-                          <div className="flex items-start justify-between gap-2.5 sm:gap-4">
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mb-1 min-w-0 max-w-full">
-                                <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] text-[9.5px] sm:text-[10px] font-mono font-bold uppercase whitespace-nowrap shrink-0">
-                                  {court}
-                                </span>
-                                <span className="text-[11px] sm:text-xs font-mono font-bold text-slate-400 truncate min-w-0">
-                                  {year} • {citation}
-                                </span>
-                              </div>
-                              <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white hover:text-[#C8A34D] transition-colors leading-snug">
-                                {caseName}
-                              </h4>
-                            </div>
-
-                            <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] sm:text-xs font-bold shrink-0 whitespace-nowrap">
-                              {precedent.relevance_score || 96}% Match
-                            </span>
-                          </div>
-
-                          <p className="text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-200 leading-snug">
-                            Principle: {principle}
-                          </p>
-
-                          <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 font-serif line-clamp-2">
-                            "{ratio}"
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 pt-1">
-                            <div className="flex items-center gap-1.5 flex-wrap min-w-0 max-w-full">
-                              {(precedent.tags || ['NI Act', 'Sec 138']).map((tag, tIdx) => (
-                                <span key={tIdx} className="text-[9.5px] sm:text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#1E293B] text-slate-600 dark:text-slate-300 whitespace-nowrap shrink-0">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedPrecedent(precedent);
-                              }}
-                              className="text-xs font-bold text-[#C8A34D] flex items-center gap-1 hover:underline cursor-pointer whitespace-nowrap shrink-0 self-end sm:self-auto"
-                            >
-                              <span>View Precedent</span>
-                              <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                            </button>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         )}
+      </header>
+
+      {/* ─── MAIN HERO & SEARCH INTERFACE (Compact) ─── */}
+      <section className="relative pt-6 sm:pt-8 pb-4 sm:pb-6 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80 dark:border-slate-800 bg-gradient-to-b from-slate-50/70 via-white to-white dark:from-[#080C14] dark:via-[#0B0F19] dark:to-[#0B0F19]">
+        <div className="max-w-4xl mx-auto text-center space-y-2.5">
+          
+          {/* Top Badge */}
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-[#B38628] dark:text-[#E5A93C] text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
+            <Sparkles size={12} />
+            <span>AI LEGAL™ Case Search</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-white tracking-tight leading-tight">
+            LEGAL RESEARCH, <span className="text-[#B38628] dark:text-[#E5A93C]">REIMAGINED</span>
+          </h1>
+
+          <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-normal">
+            Search Indian Judgments & Laws. Ask a legal question in natural language or search by case name, citation, section or keyword.
+          </p>
+
+          {/* Search Mode Selector (Section 6) */}
+          <div className="pt-1">
+            <SearchModeSelector
+              activeMode={activeMode}
+              onSelectMode={(mode) => setActiveMode(mode)}
+            />
+          </div>
+
+          {/* Search Input Box */}
+          <div className="pt-1 max-w-3xl mx-auto">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                executeSearch();
+              }}
+              className="relative flex items-center bg-white dark:bg-[#111622] rounded-2xl border-2 border-slate-200 dark:border-slate-800 focus-within:border-[#C8A34D] shadow-md hover:shadow-lg transition-all p-1 sm:p-1.5"
+            >
+              <div className="pl-3 pr-2 text-slate-400">
+                <Search size={18} className="text-[#C8A34D]" />
+              </div>
+
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={
+                  activeMode === 'AI' ? 'Search judgments e.g. "maintenance rights of divorced Muslim woman", "anticipatory bail under PMLA"...' :
+                  activeMode === 'CITATION' ? 'Enter citation (e.g. (2001) 7 SCC 740, (2017) 10 SCC 1, 2024 INSC 123)...' :
+                  activeMode === 'ACT' ? 'Search by Act or Section (e.g. Section 125 CrPC, Section 438 CrPC, Section 138 NI Act)...' :
+                  activeMode === 'PARTY' ? 'Search by Petitioner or Respondent name (e.g. Danial Latifi, Maneka Gandhi, D.K. Basu)...' :
+                  activeMode === 'JUDGE' ? "Search by Hon'ble Judge name (e.g. Justice G.B. Pattanaik, Justice Chandrachud)..." :
+                  'Search Indian judgments, precedents, and statutes...'
+                }
+                className="flex-1 bg-transparent py-1.5 sm:py-2 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none font-medium min-w-0"
+              />
+
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="px-2 text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                >
+                  <X size={15} />
+                </button>
+              )}
+
+              {/* Primary Search Button */}
+              <button
+                type="submit"
+                disabled={isSearching}
+                className="px-4 sm:px-6 py-2 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-[#E5A93C] to-[#B38628] hover:opacity-95 text-slate-950 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shrink-0 disabled:opacity-50"
+              >
+                {isSearching ? (
+                  <>
+                    <Sparkles size={14} className="animate-spin" />
+                    <span>Searching...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Search</span>
+                    <ArrowRight size={14} />
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+
+          {/* Legal Source Selector & Advanced Filters (Unified 1-Row) */}
+          <div className="pt-1 max-w-3xl mx-auto">
+            <LegalSourceSelector
+              activeSource={activeSource}
+              onSelectSource={(src) => {
+                setActiveSource(src);
+                executeSearch(null, src);
+              }}
+              selectedHighCourt={selectedHighCourt}
+              onSelectHighCourt={(hc) => {
+                setSelectedHighCourt(hc);
+                executeSearch(null, 'HC', hc);
+              }}
+              isFilterOpen={isFilterOpen}
+              onToggleFilter={() => setIsFilterOpen(!isFilterOpen)}
+              activeFiltersCount={activeFiltersCount}
+            />
+          </div>
+
+          {/* Advanced Filters Drawer Component */}
+          <div className="max-w-4xl mx-auto">
+            <AdvancedFiltersModal
+              isOpen={isFilterOpen}
+              onClose={() => setIsFilterOpen(false)}
+              filters={filters}
+              onChangeFilter={handleChangeFilter}
+              onResetFilters={handleResetFilters}
+              onApplyFilters={() => {
+                setIsFilterOpen(false);
+                executeSearch();
+              }}
+              totalResultsCount={results.length}
+            />
+          </div>
+
+        </div>
+      </section>
+
+      {/* ─── CONTENT AREA: EMPTY STATE / LOADING / RESULTS ─── */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        
+        {/* STATE 1: INITIAL EMPTY STATE (Section 11) */}
+        {!hasSearched && !isSearching && (
+          <div className="max-w-3xl mx-auto space-y-8 py-4">
+            
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 rounded-2xl bg-[#C8A34D]/15 text-[#B38628] flex items-center justify-center mx-auto shadow-xs">
+                <Landmark size={24} />
+              </div>
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+                Search Across 75+ Years of Indian Jurisprudence
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
+                Explore binding ratio decidendi, key statutory provisions, and courtroom takeaways.
+              </p>
+            </div>
+
+            {/* Popular Search Chips */}
+            <div className="space-y-2.5">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block text-center">
+                Popular Legal Inquiries:
+              </span>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {POPULAR_SEARCH_CHIPS.map((chip, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setSearchQuery(chip);
+                      executeSearch(chip);
+                    }}
+                    className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-amber-50 hover:text-[#B38628] dark:hover:bg-amber-950/40 dark:hover:text-amber-300 border border-slate-200/80 dark:border-slate-800 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                  >
+                    <Search size={12} className="text-slate-400" />
+                    <span>{chip}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Landmark Categories Preview Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+              <div 
+                onClick={() => {
+                  setSearchQuery('Anticipatory bail');
+                  executeSearch('Anticipatory bail');
+                }}
+                className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/60 transition-all cursor-pointer group shadow-xs space-y-2"
+              >
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Scale size={16} />
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Criminal & Bail</h3>
+                <p className="text-[11px] text-slate-500">
+                  Anticipatory bail, Section 482 quashing, BNS & BNSS landmark rulings.
+                </p>
+              </div>
+
+              <div 
+                onClick={() => {
+                  setSearchQuery('Section 138 NI Act presumption');
+                  executeSearch('Section 138 NI Act presumption');
+                }}
+                className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/60 transition-all cursor-pointer group shadow-xs space-y-2"
+              >
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <BookOpen size={16} />
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Commercial & NI Act</h3>
+                <p className="text-[11px] text-slate-500">
+                  Cheque bounce, limitation period, blank cheques, and corporate liability.
+                </p>
+              </div>
+
+              <div 
+                onClick={() => {
+                  setSearchQuery('Fundamental rights Article 21');
+                  executeSearch('Fundamental rights Article 21');
+                }}
+                className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/60 transition-all cursor-pointer group shadow-xs space-y-2"
+              >
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Landmark size={16} />
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Constitutional Law</h3>
+                <p className="text-[11px] text-slate-500">
+                  Basic structure doctrine, Article 21 privacy, natural justice & judicial review.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* STATE 2: LOADING SKELETONS (Section 12) */}
+        {isSearching && (
+          <div className="max-w-4xl mx-auto space-y-5">
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-3 text-xs text-[#B38628] dark:text-amber-300">
+              <Sparkles size={16} className="animate-spin text-[#C8A34D]" />
+              <div className="space-y-0.5">
+                <span className="font-bold block">AI LEGAL™ is researching...</span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Understanding legal intent • Matching statutes & citations • Ranking authorities
+                </span>
+              </div>
+            </div>
+
+            {/* Skeleton Cards */}
+            {[1, 2, 3].map(i => (
+              <div key={i} className="p-6 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 animate-pulse space-y-4">
+                <div className="flex justify-between items-center">
+                  <div className="h-4 w-36 bg-slate-200 dark:bg-slate-800 rounded" />
+                  <div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded" />
+                </div>
+                <div className="h-6 w-3/4 bg-slate-200 dark:bg-slate-800 rounded" />
+                <div className="h-16 w-full bg-slate-100 dark:bg-slate-800/60 rounded-xl" />
+                <div className="flex gap-2">
+                  <div className="h-4 w-20 bg-slate-200 dark:bg-slate-800 rounded" />
+                  <div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* STATE 3: SEARCH RESULTS WORKSPACE (Section 9 & 36) */}
+        {hasSearched && !isSearching && results.length > 0 && (
+          <div className="space-y-6">
+            
+            {/* Results Header with Query Summary and Sort Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800 pb-4">
+              <div>
+                <span className="text-xs text-slate-400 font-semibold block">
+                  Search results for:
+                </span>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {searchQuery ? `"${searchQuery}"` : 'All Jurisprudential Authorities'}
+                  </h2>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#C8A34D]/15 text-[#B38628] dark:text-amber-400 border border-[#C8A34D]/30">
+                    {results.length} Relevant Judgments
+                  </span>
+                </div>
+              </div>
+
+              {/* Sort By Dropdown */}
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                  Sort By:
+                </label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D] cursor-pointer"
+                >
+                  <option value="relevance">Highest Relevance</option>
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="court">Court Hierarchy</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Results Grid */}
+            <div className="grid grid-cols-1 gap-5">
+              {sortedResults.map(judgment => (
+                <SearchResultCard
+                  key={judgment.id}
+                  judgment={judgment}
+                  onReadJudgment={(j) => setSelectedJudgment(j)}
+                  isBookmarked={bookmarkedIds.includes(judgment.id)}
+                  onToggleBookmark={handleToggleBookmark}
+                  onAddToCase={handleOpenAddToCase}
+                />
+              ))}
+            </div>
+
+          </div>
+        )}
+
+        {/* STATE 4: NO RESULTS FOUND (Section 13) */}
+        {hasSearched && !isSearching && results.length === 0 && (
+          <div className="max-w-md mx-auto text-center py-16 space-y-4">
+            <div className="w-14 h-14 rounded-3xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto">
+              <Scale size={28} />
+            </div>
+
+            <h3 className="text-lg font-black text-slate-900 dark:text-white">
+              No Relevant Judgments Found
+            </h3>
+
+            <p className="text-xs text-slate-500 leading-relaxed">
+              We couldn't find matches for <span className="font-bold text-slate-700 dark:text-slate-300">"{searchQuery}"</span> under current filters. Try broader legal keywords, clearing specific date filters, or searching directly by Act and section.
+            </p>
+
+            <div className="pt-2 flex items-center justify-center gap-3">
+              <button
+                onClick={handleResetFilters}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 cursor-pointer"
+              >
+                Clear Filters
+              </button>
+              <button
+                onClick={() => executeSearch('')}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-[#111111] dark:bg-white text-white dark:text-slate-950 hover:opacity-90 cursor-pointer"
+              >
+                Show All Landmark Rulings
+              </button>
+            </div>
+          </div>
+        )}
+
       </main>
+
+      {/* ─── ADD TO CASE MODAL ─── */}
+      <AddToCaseModal
+        isOpen={isAddToCaseOpen}
+        onClose={() => setIsAddToCaseOpen(false)}
+        judgment={judgmentToAdd}
+      />
+
+      {/* ─── SAVED BOOKMARKS & HISTORY DRAWER ─── */}
+      <SavedResearchDrawer
+        isOpen={isSavedDrawerOpen}
+        onClose={() => setIsSavedDrawerOpen(false)}
+        onSelectJudgment={(j) => setSelectedJudgment(j)}
+        onSelectSearchQuery={(q) => {
+          setSearchQuery(q);
+          executeSearch(q);
+        }}
+      />
+
+      {/* ─── STANDARDIZED PUBLIC FOOTER (Consistent on all public pages) ─── */}
+      <PublicFooter />
+
     </div>
   );
 }

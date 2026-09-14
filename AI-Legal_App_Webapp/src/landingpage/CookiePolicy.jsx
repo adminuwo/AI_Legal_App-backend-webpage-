@@ -5,6 +5,7 @@ import { COOKIE_POLICY_DEFAULTS } from '../Tools/AI_Legal/constants/legalDefault
 import { Cookie, Settings2, Smartphone, BarChart3, Shield, FileText, ArrowLeft } from 'lucide-react';
 import { apiService } from '../services/apiService';
 import { name } from '../constants';
+import PublicFooter from '../Components/PublicFooter';
 
 const CookiePolicy = () => {
     const navigate = useNavigate();
@@ -170,13 +171,9 @@ const CookiePolicy = () => {
             </main>
 
             {/* Footer */}
-            <footer className="mt-20 py-8 border-t border-border bg-white/50 dark:bg-slate-900/50">
-                <div className="max-w-5xl mx-auto px-4 text-center">
-                    <p className="text-sm text-subtext">
-                        © {new Date().getFullYear()} {name}™. All rights reserved.
-                    </p>
-                </div>
-            </footer>
+            <div className="mt-20">
+                <PublicFooter />
+            </div>
         </div>
     );
 };

@@ -77,6 +77,8 @@ import studentNoteRoutes from './routes/studentNoteRoutes.js';
 import appUpdateRoutes from './routes/appUpdateRoutes.js';
 import enterpriseRoutes from './routes/enterpriseRoutes.js';
 import jurisdictionRoutes from './routes/jurisdictionRoutes.js';
+import judgmentSubmissionRoutes from './routes/judgmentSubmissionRoutes.js';
+import blogPostRoutes from './routes/blogPostRoutes.js';
 
 import { startPlanExpiryService } from './services/planExpiryService.js';
 import { langMiddleware } from './middleware/langContext.js';
@@ -256,6 +258,9 @@ app.use(express.static(path.join(__dirname, 'public'), {
   }
 }));
 
+// Serve uploaded user judgments and assets
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+
 // Serve Standalone AI Legal Pricing Subscription Web Portal
 app.get(['/legal-pricing', '/subscription-checkout'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'pricing', 'index.html'));
@@ -372,8 +377,11 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/admin/settings', adminSettingsRoutes);
 app.use('/api/admin/feature-requests', featureRequestRoutes);
 app.use('/api/admin/bug-reports', bugReportRoutes);
+app.use('/api/admin/judgment-submissions', judgmentSubmissionRoutes);
 
 // Public / User access submissions
+app.use('/api/judgment-submissions', judgmentSubmissionRoutes);
+app.use('/api/blogs', blogPostRoutes);
 app.use('/api/app-update', appUpdateRoutes);
 app.use('/api/feature-requests', featureRequestRoutes);
 app.use('/api/bug-reports', bugReportRoutes);

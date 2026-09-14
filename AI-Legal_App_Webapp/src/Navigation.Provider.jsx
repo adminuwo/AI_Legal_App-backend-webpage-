@@ -60,6 +60,7 @@ const KnowledgeHubWorkspace = lazy(() => import('./pages/Workspace/KnowledgeHubW
 const DraftMakerWorkspace = lazy(() => import('./pages/DraftMakerWorkspace'));
 const ArgumentBuilderWorkspace = lazy(() => import('./pages/ArgumentBuilderWorkspace'));
 const LegalPrecedentsWorkspace = lazy(() => import('./pages/LegalPrecedentsWorkspace'));
+const JudgmentDetailWorkspace = lazy(() => import('./pages/JudgmentDetailWorkspace'));
 const EvidenceAnalystWorkspace = lazy(() => import('./pages/EvidenceAnalystWorkspace'));
 const ContractAnalyzerWorkspace = lazy(() => import('./pages/ContractAnalyzerWorkspace'));
 const CasePredictorWorkspace = lazy(() => import('./pages/CasePredictorWorkspace'));
@@ -84,6 +85,13 @@ const EnterpriseAnnouncements = lazy(() => import('./pages/Enterprise/Enterprise
 const EnterpriseAddons = lazy(() => import('./pages/Enterprise/EnterpriseAddons'));
 const EnterpriseReports = lazy(() => import('./pages/Enterprise/EnterpriseReports'));
 const EnterpriseSettings = lazy(() => import('./pages/Enterprise/EnterpriseSettings'));
+
+const PublicFeatures = lazy(() => import('./pages/PublicFeatures'));
+const PublicLegalResearch = lazy(() => import('./pages/PublicLegalResearch'));
+const PublicBlog = lazy(() => import('./pages/PublicBlog'));
+const InHouseBlogPublisher = lazy(() => import('./pages/InHouseBlogPublisher'));
+const PublicAbout = lazy(() => import('./pages/PublicAbout'));
+const PostJudgment = lazy(() => import('./pages/PostJudgment'));
 
 const isAuthenticated = () => {
   const tokenStr = localStorage.getItem('token');
@@ -114,12 +122,12 @@ const HomeRedirect = () => {
 // ------------------------------
 // Guest Route Component
 // ------------------------------
-// Protects login/signup pages - redirects authenticated users to chat
+// Protects login/signup pages - redirects authenticated users to /dashboard
 const GuestRoute = ({ children }) => {
   const hasToken = isAuthenticated();
 
   if (hasToken) {
-    return <Navigate to="/dashboard/chat/new" replace state={{ forceGlobal: true }} />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Otherwise, allow access to login/signup page
@@ -447,7 +455,7 @@ const NavigateProvider = () => {
         <CreditUpsellPopup />
         <Routes>
         {/* Public Routes */}
-        <Route path={AppRoute.LANDING} element={<HomeRedirect />} />
+        <Route path={AppRoute.LANDING} element={<Landing />} />
         <Route path="/splash" element={<SplashScreen />} />
         <Route path="/onboarding" element={<GuestRoute><Onboarding /></GuestRoute>} />
         <Route path={AppRoute.LOGIN} element={<GuestRoute><Login /></GuestRoute>} />
@@ -464,6 +472,62 @@ const NavigateProvider = () => {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/legal-pricing" element={<LegalPricingPortal />} />
         <Route path="/subscription-checkout" element={<LegalPricingPortal />} />
+        <Route path="/features" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Features...</div>}>
+            <PublicFeatures />
+          </Suspense>
+        } />
+        <Route path="/legal-research" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Legal Research...</div>}>
+            <PublicLegalResearch />
+          </Suspense>
+        } />
+        <Route path="/blog/publish" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Editorial Studio...</div>}>
+            <InHouseBlogPublisher />
+          </Suspense>
+        } />
+        <Route path="/publish-blog" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Editorial Studio...</div>}>
+            <InHouseBlogPublisher />
+          </Suspense>
+        } />
+        <Route path="/blog" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Legal Journal...</div>}>
+            <PublicBlog />
+          </Suspense>
+        } />
+        <Route path="/blog/:slug" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Article...</div>}>
+            <PublicBlog />
+          </Suspense>
+        } />
+        <Route path="/about" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading About AI LEGAL™...</div>}>
+            <PublicAbout />
+          </Suspense>
+        } />
+        <Route path="/judgment" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Case Search...</div>}>
+            <LegalPrecedentsWorkspace />
+          </Suspense>
+        } />
+        <Route path="/case-search" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Case Search...</div>}>
+            <LegalPrecedentsWorkspace />
+          </Suspense>
+        } />
+        <Route path="/judgment/:id" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Judgment Workspace...</div>}>
+            <JudgmentDetailWorkspace />
+          </Suspense>
+        } />
+        <Route path="/post-judgment" element={
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-[#07130F] text-[#C8A34D] font-bold">Loading Post Judgement...</div>}>
+            <PostJudgment />
+          </Suspense>
+        } />
+        <Route path="/submit-judgment" element={<Navigate to="/post-judgment" replace />} />
         <Route path="/enterprise" element={<EnterprisePage />} />
         <Route path="/enterprise/setup" element={
           <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Enterprise Setup...</div>}>
@@ -496,7 +560,7 @@ const NavigateProvider = () => {
         {/* Dashboard (Protected) */}
         <Route
           path={AppRoute.DASHBOARD}
-          element={<DashboardLayout />}
+          element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}
         >
           <Route index element={<HomeDashboard />} />
           <Route path="home" element={<HomeDashboard />} />
@@ -557,6 +621,16 @@ const NavigateProvider = () => {
             </Suspense>
           } />
           <Route path="legal-precedents" element={<Navigate to="/dashboard/tools/legal-precedents" replace />} />
+          <Route path="case-search" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Case Search...</div>}>
+              <LegalPrecedentsWorkspace />
+            </Suspense>
+          } />
+          <Route path="judgment/:id" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Judgment Workspace...</div>}>
+              <JudgmentDetailWorkspace />
+            </Suspense>
+          } />
           <Route path="tools/evidence-analyst" element={
             <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Evidence Analyst...</div>}>
               <EvidenceAnalystWorkspace />

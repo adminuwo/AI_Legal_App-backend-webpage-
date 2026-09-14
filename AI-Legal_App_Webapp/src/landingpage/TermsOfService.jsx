@@ -5,6 +5,7 @@ import { TERMS_OF_SERVICE_DEFAULTS } from '../Tools/AI_Legal/constants/legalDefa
 import { FileText, Scale, DollarSign, Shield, AlertCircle, UserX, ArrowLeft } from 'lucide-react';
 import { apiService } from '../services/apiService';
 import { name } from '../constants';
+import PublicFooter from '../Components/PublicFooter';
 
 const TermsOfService = () => {
     const navigate = useNavigate();
@@ -187,13 +188,9 @@ const TermsOfService = () => {
             </main>
 
             {/* Footer */}
-            <footer className="mt-20 py-12 border-t border-slate-200 bg-white">
-                <div className="max-w-5xl mx-auto px-4 text-center">
-                    <p className="text-sm text-slate-500 font-medium">
-                        © {new Date().getFullYear()} {name}™. All rights reserved.
-                    </p>
-                </div>
-            </footer>
+            <div className="mt-20">
+                <PublicFooter />
+            </div>
         </div>
     );
 };
