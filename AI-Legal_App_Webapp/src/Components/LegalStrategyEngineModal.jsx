@@ -73,18 +73,18 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#C8A34D]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
+          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#B88B2A]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
         >
           {/* Header */}
-          <div className="px-8 py-5 bg-[#111111] border-b border-[#C8A34D]/30 flex items-center justify-between shrink-0 text-white">
+          <div className="px-8 py-5 bg-[#111111] border-b border-[#B88B2A]/30 flex items-center justify-between shrink-0 text-white">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D]">
+              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A]">
                 <Compass className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-xl font-extrabold tracking-tight flex items-center gap-2">
                   <span>Legal Strategy Engine</span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 uppercase">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 uppercase">
                     Tactical Litigation Suite
                   </span>
                 </h2>
@@ -111,9 +111,9 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
                 onClick={() => { if (step.num < currentStep) setCurrentStep(step.num); }}
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-xl cursor-pointer transition-all ${
                   currentStep === step.num
-                    ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md shadow-[#C8A34D]/20'
+                    ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md shadow-[#B88B2A]/20'
                     : currentStep > step.num
-                    ? 'text-[#C8A34D]'
+                    ? 'text-[#B88B2A]'
                     : 'text-slate-500'
                 }`}
               >
@@ -141,7 +141,7 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
                       rows={4}
                       value={manualFacts}
                       onChange={(e) => setManualFacts(e.target.value)}
-                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-sans text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-sans text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                       placeholder="Type case facts, claims, or dispute background..."
                     />
                   </div>
@@ -149,8 +149,8 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
                   {/* Upload */}
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Upload Court Pleadings & Orders</label>
-                    <label className="border-2 border-dashed border-[#C8A34D]/40 hover:border-[#C8A34D] bg-slate-50 dark:bg-[#111111] p-8 rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all">
-                      <Upload className="w-8 h-8 text-[#C8A34D] mb-2" />
+                    <label className="border-2 border-dashed border-[#B88B2A]/40 hover:border-[#B88B2A] bg-slate-50 dark:bg-[#111111] p-8 rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all">
+                      <Upload className="w-8 h-8 text-[#B88B2A] mb-2" />
                       <span className="text-xs font-bold text-slate-900 dark:text-white">Click to upload plaints, petitions or orders</span>
                       <span className="text-[10px] text-slate-400 mt-1">PDF, DOCX supported</span>
                       <input type="file" multiple onChange={handleFileUpload} className="hidden" />
@@ -164,19 +164,19 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
             {currentStep === 2 && (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-6 my-12">
                 <div className="relative w-24 h-24 flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border-4 border-[#C8A34D]/20 animate-ping" />
-                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#C8A34D] flex items-center justify-center text-[#C8A34D]">
+                  <div className="absolute inset-0 rounded-full border-4 border-[#B88B2A]/20 animate-ping" />
+                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#B88B2A] flex items-center justify-center text-[#B88B2A]">
                     <Sparkles className="w-8 h-8 animate-spin" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <h3 className="text-xl font-black text-slate-900 dark:text-white">Compiling 6 Strategic Intelligence Pillars</h3>
-                  <p className="text-xs font-mono text-[#C8A34D]">{progressStatus}</p>
+                  <p className="text-xs font-mono text-[#B88B2A]">{progressStatus}</p>
                 </div>
 
                 <div className="w-full max-w-md bg-slate-200 dark:bg-[#222222] h-2 rounded-full overflow-hidden">
-                  <div className="bg-[#C8A34D] h-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
+                  <div className="bg-[#B88B2A] h-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
                 </div>
               </div>
             )}
@@ -190,10 +190,10 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
                   <div className="p-5 rounded-3xl bg-white dark:bg-[#181818] border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-md">
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 uppercase">Case Readiness Rating</span>
-                      <h4 className="text-2xl font-black text-[#C8A34D] mt-0.5">80% Readiness</h4>
+                      <h4 className="text-2xl font-black text-[#B88B2A] mt-0.5">80% Readiness</h4>
                       <span className="text-[9px] text-emerald-400 font-semibold">Pleadings Verified</span>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D]">
+                    <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-[#B88B2A]/30 flex items-center justify-center text-[#B88B2A]">
                       <Compass className="w-6 h-6" />
                     </div>
                   </div>
@@ -238,7 +238,7 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
                       onClick={() => setActiveTab(tab.id)}
                       className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                         activeTab === tab.id
-                          ? 'bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/40 font-black shadow-md'
+                          ? 'bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/40 font-black shadow-md'
                           : 'bg-white dark:bg-[#181818] text-slate-400 hover:text-white border border-slate-200 dark:border-slate-800'
                       }`}
                     >
@@ -251,7 +251,7 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
                 <div className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
                   {activeTab === 'overview' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Executive Strategy Synthesis</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Executive Strategy Synthesis</h4>
                       <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
                         Complainant has established a strong statutory foundation under Section 138 NI Act following cheque dishonour. Rebuttal strategy focuses on overcoming potential security cheque claims using binding SC precedent.
                       </div>
@@ -260,9 +260,9 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
 
                   {activeTab === 'opponent' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Opposing Counsel Strategy & Counter-Rebuttals</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Opposing Counsel Strategy & Counter-Rebuttals</h4>
                       <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs space-y-2">
-                        <span className="font-bold text-[#C8A34D] block">Anticipated Opponent Defense: Security Cheque Plea</span>
+                        <span className="font-bold text-[#B88B2A] block">Anticipated Opponent Defense: Security Cheque Plea</span>
                         <p className="text-slate-300">Opponent will claim cheque was handed over as an advance security deposit.</p>
                         <p className="text-emerald-400 font-semibold">Counter-Rebuttal: Cite Rangappa v. Sri Mohan (2010 SC) establishing Sec 139 presumption covers security cheques.</p>
                       </div>
@@ -271,7 +271,7 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
 
                   {activeTab === 'evidence' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Evidentiary Strength & Missing Proof Alerts</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Evidentiary Strength & Missing Proof Alerts</h4>
                       <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs space-y-2">
                         <span className="font-bold text-emerald-400 flex items-center gap-1">✔ Original Cheque Ex P-1 (High Evidentiary Value)</span>
                         <span className="font-bold text-amber-400 flex items-center gap-1">⚠️ Missing Section 65B BSA Affidavit for WhatsApp screenshots</span>
@@ -281,17 +281,17 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
 
                   {activeTab === 'arguments' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Statutory Provisions & Binding Precedents</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Statutory Provisions & Binding Precedents</h4>
                       <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs space-y-1">
-                        <p className="font-bold text-[#C8A34D]">• Section 138 / Section 139 Negotiable Instruments Act 1881</p>
-                        <p className="font-bold text-[#C8A34D]">• Rangappa v. Sri Mohan (2010 11 SCC 441)</p>
+                        <p className="font-bold text-[#B88B2A]">• Section 138 / Section 139 Negotiable Instruments Act 1881</p>
+                        <p className="font-bold text-[#B88B2A]">• Rangappa v. Sri Mohan (2010 11 SCC 441)</p>
                       </div>
                     </div>
                   )}
 
                   {activeTab === 'risk' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Risk Management & Exposure Mitigation Matrix</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Risk Management & Exposure Mitigation Matrix</h4>
                       <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs space-y-1">
                         <p className="font-bold text-rose-400">Risk: Delay in postal tracking service confirmation</p>
                         <p className="text-slate-300">Mitigation: Obtain certified tracking log report from Postmaster under Sec 114 Evidence Act.</p>
@@ -301,13 +301,13 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
 
                   {activeTab === 'roadmap' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">6-Phase Tactical Litigation Roadmap</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">6-Phase Tactical Litigation Roadmap</h4>
                       <div className="space-y-2">
                         {ROADMAP_PHASES.map((r, i) => (
                           <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3">
                             <div>
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/30">
+                                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/30">
                                   {r.step}
                                 </span>
                                 <span className="text-xs font-bold text-slate-900 dark:text-white">{r.title}</span>
@@ -315,7 +315,7 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
                               <p className="text-xs text-slate-500 dark:text-slate-400">{r.desc}</p>
                             </div>
                             <span className={`text-[9px] font-mono font-bold px-2 py-1 rounded-lg shrink-0 ${
-                              r.status === 'Complete' ? 'bg-emerald-500/20 text-emerald-400' : r.status === 'Active' ? 'bg-[#C8A34D]/20 text-[#C8A34D]' : 'bg-slate-800 text-slate-400'
+                              r.status === 'Complete' ? 'bg-emerald-500/20 text-emerald-400' : r.status === 'Active' ? 'bg-[#B88B2A]/20 text-[#B88B2A]' : 'bg-slate-800 text-slate-400'
                             }`}>
                               {r.status}
                             </span>
@@ -330,11 +330,11 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
           </div>
 
           {/* Footer Action Bar */}
-          <div className="px-8 py-4 bg-[#111111] border-t border-[#C8A34D]/30 flex items-center justify-between shrink-0">
+          <div className="px-8 py-4 bg-[#111111] border-t border-[#B88B2A]/30 flex items-center justify-between shrink-0">
             {currentStep === 1 && (
               <button 
                 onClick={startStrategyCompilation}
-                className="ml-auto px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                className="ml-auto px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
               >
                 <Sparkles className="w-4 h-4" /> Compile Legal Strategy
               </button>
@@ -351,7 +351,7 @@ export default function LegalStrategyEngineModal({ isOpen, onClose }) {
 
                 <button 
                   onClick={handleExportBrief}
-                  className="px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                  className="px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
                 >
                   <Download className="w-4 h-4" /> Export Strategy Brief (PDF)
                 </button>

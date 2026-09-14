@@ -25,7 +25,7 @@ export default function ContextualAuthModal({ isOpen, onClose, actionName = 'sav
         className="bg-white dark:bg-[#0E1422] border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-5"
       >
         <div className="flex items-center justify-between">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center border border-[#C8A34D]/30">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center border border-[#B88B2A]/30">
             <Lock size={22} />
           </div>
           <button
@@ -48,7 +48,7 @@ export default function ContextualAuthModal({ isOpen, onClose, actionName = 'sav
         <div className="space-y-2.5 pt-2">
           <button
             onClick={handleLogin}
-            className="w-full py-2.5 px-4 rounded-xl bg-[#C8A34D] hover:bg-[#B38628] text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+            className="w-full py-2.5 px-4 rounded-xl bg-[#B88B2A] hover:bg-[#B38628] text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
           >
             <LogIn size={14} />
             <span>Sign In to AI LEGAL™</span>

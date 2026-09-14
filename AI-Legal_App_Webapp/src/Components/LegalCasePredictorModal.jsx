@@ -99,18 +99,18 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#C8A34D]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
+          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#B88B2A]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
         >
           {/* Header */}
-          <div className="px-8 py-5 bg-[#111111] border-b border-[#C8A34D]/30 flex items-center justify-between shrink-0 text-white">
+          <div className="px-8 py-5 bg-[#111111] border-b border-[#B88B2A]/30 flex items-center justify-between shrink-0 text-white">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D]">
+              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A]">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-xl font-extrabold tracking-tight flex items-center gap-2">
                   <span>Case Outcome Predictor & Analytics</span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 uppercase">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 uppercase">
                     Judicial AI Prediction Engine
                   </span>
                 </h2>
@@ -137,9 +137,9 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
                 onClick={() => { if (step.num < currentStep) setCurrentStep(step.num); }}
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-xl cursor-pointer transition-all ${
                   currentStep === step.num
-                    ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md shadow-[#C8A34D]/20'
+                    ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md shadow-[#B88B2A]/20'
                     : currentStep > step.num
-                    ? 'text-[#C8A34D]'
+                    ? 'text-[#B88B2A]'
                     : 'text-slate-500'
                 }`}
               >
@@ -167,7 +167,7 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
                       <select
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#C8A34D] focus:outline-none"
+                        className="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#B88B2A] focus:outline-none"
                       >
                         {CASE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
@@ -190,8 +190,8 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
                   {/* Upload */}
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Upload Pleadings & Exhibits</label>
-                    <label className="border-2 border-dashed border-[#C8A34D]/40 hover:border-[#C8A34D] bg-slate-50 dark:bg-[#111111] p-8 rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all">
-                      <Upload className="w-8 h-8 text-[#C8A34D] mb-2" />
+                    <label className="border-2 border-dashed border-[#B88B2A]/40 hover:border-[#B88B2A] bg-slate-50 dark:bg-[#111111] p-8 rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all">
+                      <Upload className="w-8 h-8 text-[#B88B2A] mb-2" />
                       <span className="text-xs font-bold text-slate-900 dark:text-white">Click to upload plaint, written statement or exhibits</span>
                       <span className="text-[10px] text-slate-400 mt-1">PDF, DOCX supported</span>
                       <input type="file" multiple onChange={handleFileUpload} className="hidden" />
@@ -205,19 +205,19 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
             {currentStep === 2 && (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-6 my-12">
                 <div className="relative w-24 h-24 flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border-4 border-[#C8A34D]/20 animate-ping" />
-                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#C8A34D] flex items-center justify-center text-[#C8A34D]">
+                  <div className="absolute inset-0 rounded-full border-4 border-[#B88B2A]/20 animate-ping" />
+                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#B88B2A] flex items-center justify-center text-[#B88B2A]">
                     <Sparkles className="w-8 h-8 animate-spin" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <h3 className="text-xl font-black text-slate-900 dark:text-white">Executing 10-Step Outcome Prediction Engine</h3>
-                  <p className="text-xs font-mono text-[#C8A34D]">{progressStatus}</p>
+                  <p className="text-xs font-mono text-[#B88B2A]">{progressStatus}</p>
                 </div>
 
                 <div className="w-full max-w-md bg-slate-200 dark:bg-[#222222] h-2 rounded-full overflow-hidden">
-                  <div className="bg-[#C8A34D] h-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
+                  <div className="bg-[#B88B2A] h-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
                 </div>
               </div>
             )}
@@ -231,10 +231,10 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
                   <div className="p-5 rounded-3xl bg-white dark:bg-[#181818] border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-md">
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 uppercase">Win Probability</span>
-                      <h4 className="text-2xl font-black text-[#C8A34D] mt-0.5">84%</h4>
+                      <h4 className="text-2xl font-black text-[#B88B2A] mt-0.5">84%</h4>
                       <span className="text-[9px] text-emerald-400 font-semibold">High Chance of Decree</span>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D]">
+                    <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-[#B88B2A]/30 flex items-center justify-center text-[#B88B2A]">
                       <Trophy className="w-6 h-6" />
                     </div>
                   </div>
@@ -244,7 +244,7 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 uppercase">Settlement Likelihood</span>
                       <h4 className="text-2xl font-black text-white mt-0.5">72%</h4>
-                      <span className="text-[9px] text-[#C8A34D] font-semibold">Out of Court Leverage</span>
+                      <span className="text-[9px] text-[#B88B2A] font-semibold">Out of Court Leverage</span>
                     </div>
                     <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-slate-800 flex items-center justify-center text-white">
                       <GitFork className="w-6 h-6" />
@@ -278,7 +278,7 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
                       onClick={() => setActiveTab(tab.id)}
                       className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                         activeTab === tab.id
-                          ? 'bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/40 font-black shadow-md'
+                          ? 'bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/40 font-black shadow-md'
                           : 'bg-white dark:bg-[#181818] text-slate-400 hover:text-white border border-slate-200 dark:border-slate-800'
                       }`}
                     >
@@ -291,14 +291,14 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
                 <div className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
                   {activeTab === 'winning' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Primary Win Drivers & Statutory Presumptions</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Primary Win Drivers & Statutory Presumptions</h4>
                       {WINNING_FACTORS.map((f, i) => (
                         <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3">
                           <div>
                             <span className="text-xs font-bold text-slate-900 dark:text-white block">{f.title}</span>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{f.desc}</p>
                           </div>
-                          <span className="text-[9px] font-mono font-bold px-2 py-1 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 shrink-0">
+                          <span className="text-[9px] font-mono font-bold px-2 py-1 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 shrink-0">
                             {f.confidence} Confidence
                           </span>
                         </div>
@@ -308,7 +308,7 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
 
                   {activeTab === 'vulnerabilities' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Case Vulnerabilities & Mitigations</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Case Vulnerabilities & Mitigations</h4>
                       {VULNERABILITIES.map((v, i) => (
                         <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 space-y-2">
                           <div className="flex items-center justify-between">
@@ -326,14 +326,14 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
 
                   {activeTab === 'scenarios' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Trial What-If Branching Scenarios</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Trial What-If Branching Scenarios</h4>
                       {TRIAL_SCENARIOS.map((s, i) => (
                         <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3">
                           <div>
                             <span className="text-xs font-bold text-slate-900 dark:text-white block">{s.name}</span>
                             <p className="text-xs text-slate-400 mt-1">{s.desc}</p>
                           </div>
-                          <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-xl bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/30 shrink-0">
+                          <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-xl bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/30 shrink-0">
                             {s.winChance}
                           </span>
                         </div>
@@ -343,7 +343,7 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
 
                   {activeTab === 'bench' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Judicial Bench Stance & Magistrate Inquiries</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Judicial Bench Stance & Magistrate Inquiries</h4>
                       {JUDICIAL_INSIGHTS.map((j, i) => (
                         <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs space-y-1">
                           <span className="font-bold text-slate-900 dark:text-white block">{j.topic}</span>
@@ -355,7 +355,7 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
 
                   {activeTab === 'precedents' && (
                     <div className="space-y-3">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Binding Supreme Court Precedent Matches</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Binding Supreme Court Precedent Matches</h4>
                       {PRECEDENT_MATCHES.map((p, i) => (
                         <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 space-y-2">
                           <div className="flex items-center justify-between">
@@ -375,11 +375,11 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
           </div>
 
           {/* Footer Action Bar */}
-          <div className="px-8 py-4 bg-[#111111] border-t border-[#C8A34D]/30 flex items-center justify-between shrink-0">
+          <div className="px-8 py-4 bg-[#111111] border-t border-[#B88B2A]/30 flex items-center justify-between shrink-0">
             {currentStep === 1 && (
               <button 
                 onClick={startPredictionModel}
-                className="ml-auto px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                className="ml-auto px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
               >
                 <Sparkles className="w-4 h-4" /> Run Outcome Prediction Model
               </button>
@@ -396,7 +396,7 @@ export default function LegalCasePredictorModal({ isOpen, onClose }) {
 
                 <button 
                   onClick={handleExportBrief}
-                  className="px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                  className="px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
                 >
                   <Download className="w-4 h-4" /> Export Prediction Brief (PDF)
                 </button>

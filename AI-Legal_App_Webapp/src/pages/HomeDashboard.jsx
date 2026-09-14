@@ -522,11 +522,11 @@ export default function HomeDashboard() {
                   Welcome, Advocate {userName}
                 </h1>
                 {isSyncing && (
-                  <RefreshCw size={14} className="text-[#C8A34D] animate-spin shrink-0" />
+                  <RefreshCw size={14} className="text-[#B88B2A] animate-spin shrink-0" />
                 )}
               </div>
               <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 mt-1">
-                <Calendar className="w-3.5 h-3.5 text-[#C8A34D] shrink-0" />
+                <Calendar className="w-3.5 h-3.5 text-[#B88B2A] shrink-0" />
                 <span>{formatDate(currentTime)}</span>
               </p>
             </div>
@@ -534,11 +534,11 @@ export default function HomeDashboard() {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setIsNotifOpen(true)}
-                className="relative flex items-center gap-2 p-2 sm:px-4 sm:py-2.5 bg-[#C8A34D]/15 hover:bg-[#C8A34D]/25 border border-[#C8A34D]/40 text-[#B48A35] dark:text-[#C8A34D] font-black rounded-xl text-xs sm:text-sm shadow-xs transition-all active:scale-95 cursor-pointer"
+                className="relative flex items-center gap-2 p-2 sm:px-4 sm:py-2.5 bg-[#B88B2A]/15 hover:bg-[#B88B2A]/25 border border-[#B88B2A]/40 text-[#8B6517] dark:text-[#E2B755] font-black rounded-xl text-xs sm:text-sm shadow-xs transition-all active:scale-95 cursor-pointer"
                 title="View Updates & System Notifications"
               >
                 <div className="relative">
-                  <Bell className="w-4.5 h-4.5 sm:w-4.5 sm:h-4.5 text-[#C8A34D]" />
+                  <Bell className="w-4.5 h-4.5 sm:w-4.5 sm:h-4.5 text-[#B88B2A]" />
                   {unreadNotifCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white dark:ring-[#0F172A] animate-pulse" />
                   )}
@@ -557,14 +557,14 @@ export default function HomeDashboard() {
 
           {/* Pending Workspace Invitation Banner */}
           {pendingInvite && (
-            <div className="mb-8 p-5 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#C8A34D]/40 text-[#0F172A] dark:text-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="mb-8 p-5 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#B88B2A]/40 text-[#0F172A] dark:text-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-bold uppercase tracking-wider">
-                  <Users className="w-3.5 h-3.5 text-[#C8A34D]" />
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] text-[10px] font-bold uppercase tracking-wider">
+                  <Users className="w-3.5 h-3.5 text-[#B88B2A]" />
                   <span>Pending Firm Invitation</span>
                 </div>
                 <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
-                  Invited to join <strong className="text-[#C8A34D]">{pendingInvite.firmName || pendingInvite.workspaceName || 'Law Firm Workspace'}</strong>
+                  Invited to join <strong className="text-[#B88B2A]">{pendingInvite.firmName || pendingInvite.workspaceName || 'Law Firm Workspace'}</strong>
                 </h3>
                 <p className="text-xs text-slate-600 dark:text-slate-300">
                   Role Designation: <span className="font-semibold text-[#0F172A] dark:text-white">{pendingInvite.role || 'Associate Advocate'}</span>
@@ -574,7 +574,7 @@ export default function HomeDashboard() {
               <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
                 <button
                   onClick={() => handleAcceptInvite(pendingInvite._id || pendingInvite.id, pendingInvite.workspaceId)}
-                  className="flex-1 sm:flex-none px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs rounded-xl shadow-md transition-all cursor-pointer"
+                  className="flex-1 sm:flex-none px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs rounded-xl shadow-md transition-all cursor-pointer"
                 >
                   Accept Invitation
                 </button>
@@ -601,12 +601,12 @@ export default function HomeDashboard() {
             <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">Today&apos;s Overview</h2>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {[
-                { label: "Active Cases", value: totalActiveCases, icon: Briefcase, status: "Active", color: "text-[#C8A34D] bg-[#C8A34D]/10 border border-[#C8A34D]/25" },
+                { label: "Active Cases", value: totalActiveCases, icon: Briefcase, status: "Active", color: "text-[#B88B2A] bg-[#B88B2A]/10 border border-[#B88B2A]/25" },
                 { label: "Today's Hearings", value: totalTodaysHearingsCount, icon: Gavel, status: totalTodaysHearingsCount > 0 ? "TODAY" : "0 Today", color: totalTodaysHearingsCount > 0 ? "text-rose-500 bg-rose-50 border border-rose-200" : "text-slate-400 bg-slate-100 dark:bg-slate-800" },
                 { label: "Pending Drafts", value: totalPendingDrafts, icon: FileText, status: "Pending", color: "text-amber-500 bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:border-amber-900/40" },
                 { label: "Pending Research", value: totalPendingResearch, icon: Search, status: "Up to Date", color: "text-emerald-500 bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900/40" }
               ].map((stat, i) => (
-                <div key={i} className="p-3.5 sm:p-6 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] shadow-xs hover:border-[#C8A34D] hover:shadow-md transition-all flex flex-col justify-between">
+                <div key={i} className="p-3.5 sm:p-6 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] shadow-xs hover:border-[#B88B2A] hover:shadow-md transition-all flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-2 sm:mb-3">
                     <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sm:tracking-widest truncate">{stat.label}</span>
                     <div className={`p-1.5 sm:p-2 rounded-xl ${stat.color} shrink-0`}>
@@ -633,13 +633,13 @@ export default function HomeDashboard() {
                   <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Continue Working</h2>
                   <div 
                     onClick={() => handleOpenWorkspace(continueWorkingCase._id)}
-                    className="p-3.5 sm:p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#C8A34D] transition-all shadow-xs cursor-pointer relative group overflow-hidden"
+                    className="p-3.5 sm:p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#B88B2A] transition-all shadow-xs cursor-pointer relative group overflow-hidden"
                   >
-                    <div className="absolute right-4 top-4 text-slate-400 group-hover:text-[#C8A34D] transition-colors">
+                    <div className="absolute right-4 top-4 text-slate-400 group-hover:text-[#B88B2A] transition-colors">
                       <ArrowUpRight size={16} />
                     </div>
-                    <span className="px-2.5 py-0.5 bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25 text-[9px] font-mono font-bold uppercase tracking-wider rounded-full">Last Updated Case</span>
-                    <h3 className="text-base sm:text-xl font-black text-[#111111] dark:text-white mt-1.5 group-hover:text-[#C8A34D] transition-colors truncate">{continueWorkingCase.name}</h3>
+                    <span className="px-2.5 py-0.5 bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25 text-[9px] font-mono font-bold uppercase tracking-wider rounded-full">Last Updated Case</span>
+                    <h3 className="text-base sm:text-xl font-black text-[#111111] dark:text-white mt-1.5 group-hover:text-[#B88B2A] transition-colors truncate">{continueWorkingCase.name}</h3>
                     <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5 max-w-md truncate">{continueWorkingCase.summary || 'No summary configured yet.'}</p>
                     
                     <div className="flex items-center gap-3 mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-500 font-semibold overflow-x-auto no-scrollbar">
@@ -656,11 +656,11 @@ export default function HomeDashboard() {
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <span className="text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider truncate">Subscription Quotas</span>
-                    <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 shrink-0">{badge}</span>
+                    <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 shrink-0">{badge}</span>
                   </div>
                   <button
                     onClick={() => triggerUpgradeModal({ title: 'Manage Subscription', message: 'Upgrade your plan to unlock higher limits.' })}
-                    className="text-[11px] sm:text-xs font-bold text-[#C8A34D] hover:underline cursor-pointer shrink-0"
+                    className="text-[11px] sm:text-xs font-bold text-[#B88B2A] hover:underline cursor-pointer shrink-0"
                   >
                     Upgrade →
                   </button>
@@ -696,26 +696,26 @@ export default function HomeDashboard() {
                       setNewCaseForm({ name: '', clientName: '', opponentName: '', caseType: '', courtName: '', summary: '', priority: 'Medium' });
                       setIsNewCaseModalOpen(true);
                     }}
-                    className="p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#C8A34D] hover:shadow-md transition-all flex items-center gap-4 group cursor-pointer text-left"
+                    className="p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#B88B2A] hover:shadow-md transition-all flex items-center gap-4 group cursor-pointer text-left"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform shrink-0">
                       +
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-sm text-[#111111] dark:text-white group-hover:text-[#C8A34D] transition-colors">New Case</h4>
+                      <h4 className="font-extrabold text-sm text-[#111111] dark:text-white group-hover:text-[#B88B2A] transition-colors">New Case</h4>
                       <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Initialize litigation folder & AI docket</p>
                     </div>
                   </button>
 
                   <button 
                     onClick={() => navigate('/dashboard/guide')}
-                    className="p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#C8A34D] hover:shadow-md transition-all flex items-center gap-4 group cursor-pointer text-left"
+                    className="p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#B88B2A] hover:shadow-md transition-all flex items-center gap-4 group cursor-pointer text-left"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform shrink-0">
                       ✨
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-sm text-[#111111] dark:text-white group-hover:text-[#C8A34D] transition-colors">Product Guide</h4>
+                      <h4 className="font-extrabold text-sm text-[#111111] dark:text-white group-hover:text-[#B88B2A] transition-colors">Product Guide</h4>
                       <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Interactive AI feature walkthrough</p>
                     </div>
                   </button>
@@ -725,7 +725,7 @@ export default function HomeDashboard() {
               {/* 4. AI Legal Knowledge Hub Card */}
               <div className="p-4 sm:p-6 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] shadow-xs space-y-3.5">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25 shrink-0">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25 shrink-0">
                     <BookOpen className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
                   </div>
                   <div>
@@ -735,7 +735,7 @@ export default function HomeDashboard() {
                 </div>
 
                 <div className="relative">
-                  <Search className="w-4 h-4 text-[#C8A34D] absolute left-3.5 top-3.5" />
+                  <Search className="w-4 h-4 text-[#B88B2A] absolute left-3.5 top-3.5" />
                   <input 
                     type="text"
                     placeholder="Ask any legal question..."
@@ -744,7 +744,7 @@ export default function HomeDashboard() {
                         navigate(`/dashboard/tools/knowledge-hub?q=${encodeURIComponent(e.target.value)}`);
                       }
                     }}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white transition-all"
                   />
                 </div>
 
@@ -755,7 +755,7 @@ export default function HomeDashboard() {
                       <button 
                         key={idx}
                         onClick={() => navigate(`/dashboard/tools/knowledge-hub?q=${encodeURIComponent(chip)}`)}
-                        className="px-2.5 py-1 bg-slate-50 dark:bg-[#0F172A] hover:bg-[#111111] dark:hover:bg-[#333333] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D] text-[#111111] dark:text-white hover:text-[#C8A34D] rounded-lg text-xs font-bold transition-all cursor-pointer shrink-0 whitespace-nowrap"
+                        className="px-2.5 py-1 bg-slate-50 dark:bg-[#0F172A] hover:bg-[#111111] dark:hover:bg-[#333333] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A] text-[#111111] dark:text-white hover:text-[#B88B2A] rounded-lg text-xs font-bold transition-all cursor-pointer shrink-0 whitespace-nowrap"
                       >
                         {chip}
                       </button>
@@ -766,7 +766,7 @@ export default function HomeDashboard() {
                 <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
                   <button 
                     onClick={() => navigate('/dashboard/tools/knowledge-hub')}
-                    className="text-xs font-bold text-[#C8A34D] hover:text-[#b08d3b] flex items-center gap-1.5 cursor-pointer"
+                    className="text-xs font-bold text-[#B88B2A] hover:text-[#b08d3b] flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>Open Knowledge Hub</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -776,7 +776,7 @@ export default function HomeDashboard() {
 
               {/* 5. New User Product Guide Banner (Dismissable) */}
               {isBannerVisible && (
-                <div className="p-6 border border-[#C8A34D]/30 rounded-2xl bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white relative shadow-xs">
+                <div className="p-6 border border-[#B88B2A]/30 rounded-2xl bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white relative shadow-xs">
                   <button 
                     onClick={() => setIsBannerVisible(false)}
                     className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
@@ -784,7 +784,7 @@ export default function HomeDashboard() {
                     <X size={16} />
                   </button>
                   <div className="flex items-center gap-2 mb-1">
-                    <Sparkles className="w-4 h-4 text-[#C8A34D]" />
+                    <Sparkles className="w-4 h-4 text-[#B88B2A]" />
                     <h3 className="text-sm font-extrabold text-[#0F172A] dark:text-white">New to AI LEGAL<sup className="text-[9px] font-bold text-[#0F172A] dark:text-white ml-0.5">TM</sup>?</h3>
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-300 font-semibold mb-3">Meet your AI Product Guide.</p>
@@ -795,7 +795,7 @@ export default function HomeDashboard() {
                   </ul>
                   <button 
                     onClick={() => navigate('/dashboard/guide')}
-                    className="px-4 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] text-xs font-black rounded-xl shadow-xs transition-all cursor-pointer"
+                    className="px-4 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] text-xs font-black rounded-xl shadow-xs transition-all cursor-pointer"
                   >
                     Open Product Guide &rarr;
                   </button>
@@ -868,7 +868,7 @@ export default function HomeDashboard() {
                         value={editingCase.name}
                         onChange={e => setEditingCase({ ...editingCase, name: e.target.value })}
                         required
-                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] focus:ring-1 focus:ring-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] focus:ring-1 focus:ring-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                       />
                     </div>
 
@@ -879,7 +879,7 @@ export default function HomeDashboard() {
                           type="text" 
                           value={editingCase.clientName || ''}
                           onChange={e => setEditingCase({ ...editingCase, clientName: e.target.value })}
-                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                         />
                       </div>
                       <div className="space-y-1">
@@ -888,7 +888,7 @@ export default function HomeDashboard() {
                           type="text" 
                           value={editingCase.opponentName || ''}
                           onChange={e => setEditingCase({ ...editingCase, opponentName: e.target.value })}
-                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                         />
                       </div>
                     </div>
@@ -900,7 +900,7 @@ export default function HomeDashboard() {
                           type="text" 
                           value={editingCase.caseType || ''}
                           onChange={e => setEditingCase({ ...editingCase, caseType: e.target.value })}
-                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                         />
                       </div>
                       <div className="space-y-1">
@@ -909,7 +909,7 @@ export default function HomeDashboard() {
                           type="text" 
                           value={editingCase.courtName || ''}
                           onChange={e => setEditingCase({ ...editingCase, courtName: e.target.value })}
-                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                          className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                         />
                       </div>
                     </div>
@@ -919,7 +919,7 @@ export default function HomeDashboard() {
                       <select 
                         value={editingCase.priority || 'Medium'}
                         onChange={e => setEditingCase({ ...editingCase, priority: e.target.value })}
-                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] bg-white dark:bg-[#111111] text-[#111111] dark:text-white"
+                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] bg-white dark:bg-[#111111] text-[#111111] dark:text-white"
                       >
                         <option value="Low">Low Priority</option>
                         <option value="Medium">Medium Priority</option>
@@ -933,13 +933,13 @@ export default function HomeDashboard() {
                         value={editingCase.summary || ''}
                         onChange={e => setEditingCase({ ...editingCase, summary: e.target.value })}
                         rows={3}
-                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] resize-none text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] resize-none text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                       />
                     </div>
 
                     <button 
                       type="submit"
-                      className="w-full bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl py-3 text-xs uppercase tracking-wider transition-colors mt-2 cursor-pointer shadow-md"
+                      className="w-full bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl py-3 text-xs uppercase tracking-wider transition-colors mt-2 cursor-pointer shadow-md"
                     >
                       Save Changes
                     </button>
@@ -992,7 +992,7 @@ export default function HomeDashboard() {
                   <div className="pt-4 border-t border-slate-100 flex justify-end">
                     <button 
                       onClick={() => setIsProductGuideOpen(false)}
-                      className="px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
+                      className="px-5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
                     >
                       Got it! Close Guide
                     </button>

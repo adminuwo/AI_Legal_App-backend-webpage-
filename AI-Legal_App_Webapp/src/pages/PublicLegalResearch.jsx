@@ -165,14 +165,14 @@ export default function PublicLegalResearch() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#C8A34D]/25 selection:text-[#111111]">
+    <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#B88B2A]/25 selection:text-[#111111]">
       {/* Top Header */}
       <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           <div onClick={() => navigate('/')} className="flex items-center gap-2.5 cursor-pointer select-none">
             <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-9 h-9 object-contain" />
             <span className="text-lg font-black tracking-tight text-[#0F172A] dark:text-white flex items-center">
-              AI LEGAL<span className="text-[10px] text-[#C8A34D] font-extrabold ml-0.5">TM</span>
+              AI LEGAL<span className="text-[10px] text-[#B88B2A] font-extrabold ml-0.5">TM</span>
             </span>
           </div>
 
@@ -189,7 +189,7 @@ export default function PublicLegalResearch() {
             <button onClick={() => navigate('/pricing')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Pricing
             </button>
-            <span className="px-4 py-1.5 rounded-full text-sm font-bold bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
+            <span className="px-4 py-1.5 rounded-full text-sm font-bold bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
               Case Search
             </span>
             <button onClick={() => navigate('/about')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
@@ -205,7 +205,7 @@ export default function PublicLegalResearch() {
             {isAuthenticated ? (
               <button
                 onClick={() => navigate('/dashboard')}
-                className="px-4 py-2 rounded-full text-xs font-black text-[#111111] bg-gradient-to-b from-[#D4AF37] to-[#C8A34D] hover:brightness-105 shadow-xs transition-all cursor-pointer"
+                className="px-4 py-2 rounded-full text-xs font-black text-[#111111] bg-gradient-to-b from-[#D4AF37] to-[#B88B2A] hover:brightness-105 shadow-xs transition-all cursor-pointer"
               >
                 Dashboard →
               </button>
@@ -213,13 +213,13 @@ export default function PublicLegalResearch() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigate('/login')}
-                  className="px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-[#C8A34D] transition-colors"
+                  className="px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-[#B88B2A] transition-colors"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => navigate('/signup')}
-                  className="px-4 py-2 rounded-full text-xs font-black text-[#111111] bg-gradient-to-b from-[#D4AF37] to-[#C8A34D] hover:brightness-105 shadow-xs transition-all cursor-pointer"
+                  className="px-4 py-2 rounded-full text-xs font-black text-[#111111] bg-gradient-to-b from-[#D4AF37] to-[#B88B2A] hover:brightness-105 shadow-xs transition-all cursor-pointer"
                 >
                   Get Started
                 </button>
@@ -232,11 +232,11 @@ export default function PublicLegalResearch() {
       {/* Hero & Search Sandbox */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-b from-slate-50 via-white to-white dark:from-[#070A12] dark:via-[#0B0F19] dark:to-[#0B0F19]">
         <div className="max-w-5xl mx-auto text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-[#C8A34D] text-xs font-extrabold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-[#B88B2A] text-xs font-extrabold uppercase tracking-wider">
             <BookOpen size={13} /> 3.8 Crore+ Judgments & Bare Acts Indexed
           </div>
           <h1 className="text-3xl sm:text-5xl font-black text-[#0F172A] dark:text-white tracking-tight">
-            Search Indian Law. <span className="text-[#C8A34D]">Understand the Reasoning.</span>
+            Search Indian Law. <span className="text-[#B88B2A]">Understand the Reasoning.</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Search propositions across the Supreme Court, all 25 High Courts, Bare Acts (BNS, BNSS, BSA, IPC, CrPC, Evidence Act, NI Act, Contract Act, IBC), and tribunals.
@@ -244,8 +244,8 @@ export default function PublicLegalResearch() {
 
           {/* Interactive Search Bar */}
           <div className="pt-4 max-w-3xl mx-auto">
-            <div className="relative flex items-center bg-white dark:bg-[#1E293B] border-2 border-slate-300 dark:border-slate-700 focus-within:border-[#C8A34D] rounded-2xl shadow-sm transition-all overflow-hidden p-1.5">
-              <div className="pl-3 text-[#C8A34D]">
+            <div className="relative flex items-center bg-white dark:bg-[#1E293B] border-2 border-slate-300 dark:border-slate-700 focus-within:border-[#B88B2A] rounded-2xl shadow-sm transition-all overflow-hidden p-1.5">
+              <div className="pl-3 text-[#B88B2A]">
                 <Search size={20} />
               </div>
               <input
@@ -278,7 +278,7 @@ export default function PublicLegalResearch() {
                 <button
                   key={i}
                   onClick={() => setSearchQuery(query)}
-                  className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#C8A34D]/15 hover:text-[#C8A34D] text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#B88B2A]/15 hover:text-[#B88B2A] text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
                 >
                   {query}
                 </button>
@@ -293,7 +293,7 @@ export default function PublicLegalResearch() {
         {/* Filters Row */}
         <div className="p-4 bg-slate-50 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-2xl mb-8 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 text-slate-500 font-bold">
-            <Filter size={15} className="text-[#C8A34D]" />
+            <Filter size={15} className="text-[#B88B2A]" />
             <span>Filters:</span>
           </div>
 
@@ -303,7 +303,7 @@ export default function PublicLegalResearch() {
               value={courtFilter}
               onChange={(e) => setCourtFilter(e.target.value)}
               aria-label="Filter by Court"
-              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold focus:outline-none focus:border-[#C8A34D]"
+              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold focus:outline-none focus:border-[#B88B2A]"
             >
               <option value="All">All Courts</option>
               <option value="Supreme Court">Supreme Court of India</option>
@@ -315,7 +315,7 @@ export default function PublicLegalResearch() {
               value={statuteFilter}
               onChange={(e) => setStatuteFilter(e.target.value)}
               aria-label="Filter by Statute"
-              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold focus:outline-none focus:border-[#C8A34D]"
+              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold focus:outline-none focus:border-[#B88B2A]"
             >
               <option value="All">All Statutes (BNS, BNSS, BSA, IPC...)</option>
               <option value="BNSS">BNSS / CrPC</option>
@@ -331,7 +331,7 @@ export default function PublicLegalResearch() {
               value={benchFilter}
               onChange={(e) => setBenchFilter(e.target.value)}
               aria-label="Filter by Bench"
-              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold focus:outline-none focus:border-[#C8A34D]"
+              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold focus:outline-none focus:border-[#B88B2A]"
             >
               <option value="All">All Bench Strengths</option>
               <option value="3-Judge Bench">3-Judge Bench</option>
@@ -344,7 +344,7 @@ export default function PublicLegalResearch() {
               value={yearFilter}
               onChange={(e) => setYearFilter(e.target.value)}
               aria-label="Filter by Year"
-              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold focus:outline-none focus:border-[#C8A34D]"
+              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold focus:outline-none focus:border-[#B88B2A]"
             >
               <option value="All">All Years</option>
               <option value="2022">2022</option>
@@ -373,7 +373,7 @@ export default function PublicLegalResearch() {
                   setBenchFilter('All');
                   setYearFilter('All');
                 }}
-                className="text-xs text-[#C8A34D] font-bold underline"
+                className="text-xs text-[#B88B2A] font-bold underline"
               >
                 Reset all filters
               </button>
@@ -382,12 +382,12 @@ export default function PublicLegalResearch() {
             filteredCases.map(item => (
               <div
                 key={item.id}
-                className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/60 shadow-xs hover:shadow-sm transition-all space-y-4"
+                className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A]/60 shadow-xs hover:shadow-sm transition-all space-y-4"
               >
                 {/* Header Meta */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                   <div>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D]">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A]">
                       {item.court} • {item.statute}
                     </span>
                     <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
@@ -426,7 +426,7 @@ export default function PublicLegalResearch() {
                   <ul className="space-y-1 text-xs text-slate-600 dark:text-slate-400">
                     {item.propositions.map((p, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <span className="text-[#C8A34D] font-bold">▪</span>
+                        <span className="text-[#B88B2A] font-bold">▪</span>
                         <span>{p}</span>
                       </li>
                     ))}
@@ -438,7 +438,7 @@ export default function PublicLegalResearch() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleCopyRatio(item)}
-                      className="px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#C8A34D]/15 hover:text-[#C8A34D] text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#B88B2A]/15 hover:text-[#B88B2A] text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       {copiedId === item.id ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
                       <span>{copiedId === item.id ? 'Copied' : 'Copy Ratio'}</span>
@@ -446,7 +446,7 @@ export default function PublicLegalResearch() {
 
                     <button
                       onClick={() => handleActionClick('Add to Case Timeline', item)}
-                      className="px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#C8A34D]/15 hover:text-[#C8A34D] text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#B88B2A]/15 hover:text-[#B88B2A] text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <Plus size={13} />
                       <span>Add to Case Timeline</span>
@@ -454,7 +454,7 @@ export default function PublicLegalResearch() {
 
                     <button
                       onClick={() => handleActionClick('Insert in Draft Petition', item)}
-                      className="px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#C8A34D]/15 hover:text-[#C8A34D] text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#B88B2A]/15 hover:text-[#B88B2A] text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <FileSignature size={13} />
                       <span>Insert in Draft Petition</span>
@@ -466,7 +466,7 @@ export default function PublicLegalResearch() {
                       if (isAuthenticated) navigate('/dashboard/tools/legal-precedents');
                       else navigate('/login', { state: { from: '/dashboard/tools/legal-precedents' } });
                     }}
-                    className="text-xs font-bold text-[#C8A34D] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-bold text-[#B88B2A] hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <span>Full Shepardize Report</span>
                     <ArrowRight size={12} />

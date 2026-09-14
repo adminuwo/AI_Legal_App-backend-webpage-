@@ -224,14 +224,14 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
             isDisabled
               ? 'opacity-40 grayscale cursor-not-allowed text-slate-400'
               : isLinkActive
-              ? 'bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/40 font-extrabold shadow-xs'
+              ? 'bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/40 font-extrabold shadow-xs'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           {item.useLogoIcon ? (
             <img src="/logo/logo_gold_emblem.png" className="w-6 h-6 object-contain shrink-0" alt="AI LEGAL™ - Verified Judicial Intelligence Emblem" />
           ) : (
-            <item.icon className={`w-5 h-5 ${isLinkActive ? 'text-[#C8A34D]' : 'text-slate-400 dark:text-slate-400'}`} />
+            <item.icon className={`w-5 h-5 ${isLinkActive ? 'text-[#B88B2A]' : 'text-slate-400 dark:text-slate-400'}`} />
           )}
         </button>
       );
@@ -256,12 +256,12 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
           isDisabled
             ? 'opacity-40 grayscale cursor-not-allowed text-slate-400'
             : isLinkActive
-            ? 'bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 font-extrabold shadow-xs'
+            ? 'bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 font-extrabold shadow-xs'
             : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-semibold'
         }`}
       >
         <div className="flex items-center gap-3">
-          <item.icon className={`w-4 h-4 ${isLinkActive ? 'text-[#C8A34D]' : 'text-slate-400'}`} />
+          <item.icon className={`w-4 h-4 ${isLinkActive ? 'text-[#B88B2A]' : 'text-slate-400'}`} />
           <span className="text-sm">
             {typeof item.name === 'string' && /AI Legal/i.test(item.name) ? (
               <>
@@ -302,17 +302,17 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
         {/* User Identity Header */}
         <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-[#1E293B]">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="w-10 h-10 rounded-full bg-[#C8A34D]/10 flex items-center justify-center shrink-0 overflow-hidden border border-[#C8A34D]/25">
+            <div className="w-10 h-10 rounded-full bg-[#B88B2A]/10 flex items-center justify-center shrink-0 overflow-hidden border border-[#B88B2A]/25">
               {user.avatar ? (
                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = ''; }} />
               ) : (
-                <span className="text-[#C8A34D] font-bold text-sm">{user.name?.charAt(0) || 'A'}</span>
+                <span className="text-[#B88B2A] font-bold text-sm">{user.name?.charAt(0) || 'A'}</span>
               )}
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-extrabold text-slate-800 dark:text-white truncate leading-tight capitalize">{user.name || 'Advocate Profile'}</p>
               <p className="text-[11px] font-semibold text-slate-400 truncate mt-0.5">{user.email || 'Advocate Account'}</p>
-              <span className="inline-block mt-1 px-2 py-0.5 rounded bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20 text-[9px] font-bold uppercase tracking-wider">
+              <span className="inline-block mt-1 px-2 py-0.5 rounded bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20 text-[9px] font-bold uppercase tracking-wider">
                 {isSuperAdminUser ? 'SUPER ADMIN' : isAdminUser ? 'ADMIN' : selectedRole === 'student' ? 'Law Student' : selectedRole === 'law_firm' ? 'Law Firm Associate' : 'Advocate / Practitioner'}
               </span>
             </div>
@@ -357,7 +357,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 ${isItemDanger ? 'text-rose-400' : 'text-[#C8A34D]'}`} />
+                  <Icon className={`w-4 h-4 ${isItemDanger ? 'text-rose-400' : 'text-[#B88B2A]'}`} />
                   <span>{item.name}</span>
                 </div>
                 {!isItemDanger && (
@@ -392,13 +392,13 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
             <>
               <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/dashboard')}>
                 <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-8 h-8 object-contain drop-shadow-xs" />
-                <span className="text-xl font-black tracking-tight text-[#111827] dark:text-white">AI LEGAL<sup className="text-[10px] font-bold text-[#111827] dark:text-white ml-0.5 align-super">TM</sup><span className="text-[#C8A34D]">.</span></span>
+                <span className="text-xl font-black tracking-tight text-[#111827] dark:text-white">AI LEGAL<sup className="text-[10px] font-bold text-[#111827] dark:text-white ml-0.5 align-super">TM</sup><span className="text-[#B88B2A]">.</span></span>
               </div>
               <div className="flex items-center gap-1">
                 <button
                   onClick={onClose}
                   title="Close Sidebar"
-                  className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#C8A34D] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
+                  className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#B88B2A] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
                   aria-label="Close sidebar"
                 >
                   <X className="w-5 h-5" />
@@ -406,7 +406,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
                 <button
                   onClick={toggleCollapse}
                   title="Collapse Sidebar"
-                  className="hidden lg:flex w-8 h-8 rounded-lg items-center justify-center text-slate-400 hover:text-[#C8A34D] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
+                  className="hidden lg:flex w-8 h-8 rounded-lg items-center justify-center text-slate-400 hover:text-[#B88B2A] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
                   aria-label="Collapse sidebar"
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -418,10 +418,10 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
               <button
                 onClick={toggleCollapse}
                 title="Expand Sidebar"
-                className="w-12 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-[#C8A34D]/20 border border-slate-200 dark:border-slate-700 hover:border-[#C8A34D]/50 flex items-center justify-center gap-1 text-slate-700 dark:text-slate-200 hover:text-[#C8A34D] transition-all cursor-pointer shadow-xs"
+                className="w-12 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-[#B88B2A]/20 border border-slate-200 dark:border-slate-700 hover:border-[#B88B2A]/50 flex items-center justify-center gap-1 text-slate-700 dark:text-slate-200 hover:text-[#B88B2A] transition-all cursor-pointer shadow-xs"
               >
                 <img src="/logo/logo_transparent.png" className="w-5 h-5 object-contain" alt="AI LEGAL Logo" />
-                <ChevronRight className="w-3.5 h-3.5 text-[#C8A34D]" strokeWidth={3} />
+                <ChevronRight className="w-3.5 h-3.5 text-[#B88B2A]" strokeWidth={3} />
               </button>
             </div>
           )}
@@ -468,17 +468,17 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
               aria-haspopup="true"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-[#C8A34D]/10 flex items-center justify-center shrink-0 overflow-hidden border border-[#C8A34D]/25">
+                <div className="w-9 h-9 rounded-full bg-[#B88B2A]/10 flex items-center justify-center shrink-0 overflow-hidden border border-[#B88B2A]/25">
                   {user.avatar ? (
                     <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = ''; }} />
                   ) : (
-                    <span className="text-[#C8A34D] font-bold text-sm">{user.name?.charAt(0) || 'A'}</span>
+                    <span className="text-[#B88B2A] font-bold text-sm">{user.name?.charAt(0) || 'A'}</span>
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <p className="text-sm font-bold text-[#111827] dark:text-white truncate leading-tight capitalize">{user.name}</p>
-                    <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 shrink-0">
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 shrink-0">
                       {isSuperAdminUser ? 'SUPER ADMIN' : isAdminUser ? 'ADMIN' : badge === 'SUPER ADMIN' ? 'Free' : badge}
                     </span>
                   </div>
@@ -491,14 +491,14 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
             <button
               onClick={() => setShowDropdown(prev => !prev)}
               title={user.name || "Advocate Account"}
-              className="w-11 h-11 rounded-xl bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 border border-[#C8A34D]/30 flex items-center justify-center overflow-hidden transition-all cursor-pointer relative"
+              className="w-11 h-11 rounded-xl bg-[#B88B2A]/10 hover:bg-[#B88B2A]/20 border border-[#B88B2A]/30 flex items-center justify-center overflow-hidden transition-all cursor-pointer relative"
             >
               {user.avatar ? (
                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = ''; }} />
               ) : (
-                <span className="text-[#C8A34D] font-black text-sm">{user.name?.charAt(0) || 'A'}</span>
+                <span className="text-[#B88B2A] font-black text-sm">{user.name?.charAt(0) || 'A'}</span>
               )}
-              <span className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full bg-[#C8A34D] ring-2 ring-white dark:ring-[#0F172A]" />
+              <span className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full bg-[#B88B2A] ring-2 ring-white dark:ring-[#0F172A]" />
             </button>
           )}
         </div>

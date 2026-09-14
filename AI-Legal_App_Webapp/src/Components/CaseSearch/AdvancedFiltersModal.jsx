@@ -29,7 +29,7 @@ export default function AdvancedFiltersModal({
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[#C8A34D]/15 text-[#B38628] flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-[#B88B2A]/15 text-[#B38628] flex items-center justify-center">
                   <Filter size={14} />
                 </div>
                 <div>
@@ -63,7 +63,7 @@ export default function AdvancedFiltersModal({
                   <select
                     value={filters.court || 'all'}
                     onChange={(e) => onChangeFilter('court', e.target.value)}
-                    className="w-full appearance-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full appearance-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                   >
                     <option value="all">All Courts</option>
                     <option value="sc">Supreme Court of India</option>
@@ -86,7 +86,7 @@ export default function AdvancedFiltersModal({
                   <select
                     value={filters.year || 'all'}
                     onChange={(e) => onChangeFilter('year', e.target.value)}
-                    className="w-full appearance-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full appearance-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                   >
                     <option value="all">Any Year</option>
                     {years.filter(y => y !== 'all').map(y => (
@@ -108,7 +108,7 @@ export default function AdvancedFiltersModal({
                   <select
                     value={filters.caseType || 'All Types'}
                     onChange={(e) => onChangeFilter('caseType', e.target.value)}
-                    className="w-full appearance-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full appearance-none bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                   >
                     {CASE_TYPES.map(ct => (
                       <option key={ct} value={ct}>
@@ -130,7 +130,7 @@ export default function AdvancedFiltersModal({
                   placeholder="e.g. NI Act, CrPC, BNSS..."
                   value={filters.act || ''}
                   onChange={(e) => onChangeFilter('act', e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -144,7 +144,7 @@ export default function AdvancedFiltersModal({
                   placeholder="e.g. Section 138, 438..."
                   value={filters.section || ''}
                   onChange={(e) => onChangeFilter('section', e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -158,7 +158,7 @@ export default function AdvancedFiltersModal({
                   placeholder="e.g. Chandrachud, Nariman..."
                   value={filters.judge || ''}
                   onChange={(e) => onChangeFilter('judge', e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -172,7 +172,7 @@ export default function AdvancedFiltersModal({
                   placeholder="e.g. 2024 INSC 123, (2010) 11 SCC..."
                   value={filters.citation || ''}
                   onChange={(e) => onChangeFilter('citation', e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -186,7 +186,7 @@ export default function AdvancedFiltersModal({
                   placeholder="Petitioner or Respondent..."
                   value={filters.party || ''}
                   onChange={(e) => onChangeFilter('party', e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 

@@ -98,7 +98,7 @@ const EnterpriseUsageCredits = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <CreditCard className="text-[#C8A34D]" size={26} /> AI Usage, Credit & Budget Management
+            <CreditCard className="text-[#B88B2A]" size={26} /> AI Usage, Credit & Budget Management
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Set institutional monthly budget limits, student tier AI quotas, automated cycle resets, and budget alert thresholds.
@@ -110,12 +110,12 @@ const EnterpriseUsageCredits = () => {
             onClick={() => setShowTopUpModal(true)}
             className="px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-800 text-white text-xs font-bold hover:bg-slate-800 transition-all flex items-center gap-1.5 shadow-md cursor-pointer border border-slate-700"
           >
-            <Plus size={15} className="text-[#C8A34D]" /> Quick Credit Top-Up
+            <Plus size={15} className="text-[#B88B2A]" /> Quick Credit Top-Up
           </button>
 
           <button
             onClick={handleSaveBudget}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer"
           >
             <Save size={16} /> Save Budget & Quota Rules
           </button>
@@ -126,7 +126,7 @@ const EnterpriseUsageCredits = () => {
       <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-5 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <span className="text-[10px] font-extrabold text-[#C8A34D] uppercase tracking-wider">Active Institutional Monthly Allocation</span>
+            <span className="text-[10px] font-extrabold text-[#B88B2A] uppercase tracking-wider">Active Institutional Monthly Allocation</span>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-black text-slate-900 dark:text-white">
                 ₹{usedAmount.toLocaleString()}
@@ -159,7 +159,7 @@ const EnterpriseUsageCredits = () => {
               className={`h-full rounded-full transition-all duration-500 ${
                 percentageUsed >= 90
                   ? 'bg-gradient-to-r from-amber-500 to-rose-500'
-                  : 'bg-gradient-to-r from-[#C8A34D] to-[#B08D3E]'
+                  : 'bg-gradient-to-r from-[#B88B2A] to-[#B08D3E]'
               }`}
               style={{ width: `${percentageUsed}%` }}
             />
@@ -214,7 +214,7 @@ const EnterpriseUsageCredits = () => {
         <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <Zap size={18} className="text-[#C8A34D]" /> Tiered Student AI Quotas
+              <Zap size={18} className="text-[#B88B2A]" /> Tiered Student AI Quotas
             </h3>
             <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
               Auto-Refreshes Monthly
@@ -226,7 +226,7 @@ const EnterpriseUsageCredits = () => {
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <Users size={14} className="text-[#C8A34D]" /> 1st Year Students (Foundational Quota)
+                  <Users size={14} className="text-[#B88B2A]" /> 1st Year Students (Foundational Quota)
                 </span>
                 <span className="text-[10px] text-slate-400 font-bold">Semesters 1 & 2</span>
               </div>
@@ -265,7 +265,7 @@ const EnterpriseUsageCredits = () => {
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <Users size={14} className="text-[#C8A34D]" /> 2nd & 3rd Year Students (Intermediate Quota)
+                  <Users size={14} className="text-[#B88B2A]" /> 2nd & 3rd Year Students (Intermediate Quota)
                 </span>
                 <span className="text-[10px] text-slate-400 font-bold">Semesters 3 to 6</span>
               </div>
@@ -304,7 +304,7 @@ const EnterpriseUsageCredits = () => {
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <Users size={14} className="text-[#C8A34D]" /> Final Year Students (Advanced Practice Quota)
+                  <Users size={14} className="text-[#B88B2A]" /> Final Year Students (Advanced Practice Quota)
                 </span>
                 <span className="text-[10px] text-slate-400 font-bold">Semesters 7 to 10 & LLM</span>
               </div>
@@ -346,7 +346,7 @@ const EnterpriseUsageCredits = () => {
           {/* Budget Threshold Alerts */}
           <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
             <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <AlertCircle size={18} className="text-[#C8A34D]" /> Budget Threshold Alert Rules
+              <AlertCircle size={18} className="text-[#B88B2A]" /> Budget Threshold Alert Rules
             </h3>
             <p className="text-xs text-slate-500">
               Enterprise Admins receive instant in-app and email notifications when consumption hits configured budget milestones.
@@ -359,7 +359,7 @@ const EnterpriseUsageCredits = () => {
                   onClick={() => handleToggleAlert(threshold)}
                   className={`flex items-center justify-between p-3.5 rounded-2xl border text-xs cursor-pointer select-none transition-all ${
                     alerts[threshold]
-                      ? 'bg-slate-50 dark:bg-slate-950 border-[#C8A34D]/40'
+                      ? 'bg-slate-50 dark:bg-slate-950 border-[#B88B2A]/40'
                       : 'bg-slate-50/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 opacity-60'
                   }`}
                 >
@@ -379,7 +379,7 @@ const EnterpriseUsageCredits = () => {
           {/* AI Usage Consumption Breakdown Chart */}
           <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
             <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <BarChart2 size={18} className="text-[#C8A34D]" /> Institutional AI Spending Breakdown
+              <BarChart2 size={18} className="text-[#B88B2A]" /> Institutional AI Spending Breakdown
             </h3>
 
             <div className="space-y-3 text-xs font-semibold">
@@ -389,7 +389,7 @@ const EnterpriseUsageCredits = () => {
                   <span className="font-bold text-slate-900 dark:text-white">42% (₹7,728)</span>
                 </div>
                 <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                  <div className="bg-[#C8A34D] h-full rounded-full w-[42%]" />
+                  <div className="bg-[#B88B2A] h-full rounded-full w-[42%]" />
                 </div>
               </div>
 
@@ -433,7 +433,7 @@ const EnterpriseUsageCredits = () => {
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Plus size={20} className="text-[#C8A34D]" /> Institutional Credit Top-Up
+                <Plus size={20} className="text-[#B88B2A]" /> Institutional Credit Top-Up
               </h3>
               <button onClick={() => setShowTopUpModal(false)} className="text-slate-400 hover:text-slate-600">
                 ✕
@@ -447,7 +447,7 @@ const EnterpriseUsageCredits = () => {
                   type="number"
                   value={topUpAmount}
                   onChange={e => setTopUpAmount(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-bold text-base text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-bold text-base text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -476,7 +476,7 @@ const EnterpriseUsageCredits = () => {
                 </button>
                 <button
                   onClick={handleAddTopUp}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md cursor-pointer"
                 >
                   Confirm Top-Up
                 </button>

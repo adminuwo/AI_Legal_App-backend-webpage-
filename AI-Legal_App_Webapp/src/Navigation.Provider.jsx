@@ -304,7 +304,7 @@ const DashboardLayout = () => {
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsSidebarOpen(true)}
-                className="lg:hidden w-9 h-9 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-[#C8A34D] cursor-pointer shadow-2xs"
+                className="lg:hidden w-9 h-9 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-[#B88B2A] cursor-pointer shadow-2xs"
                 aria-label="Open Navigation Menu"
               >
                 <Menu className="w-5 h-5 stroke-[2.5]" />
@@ -312,7 +312,7 @@ const DashboardLayout = () => {
 
               <div className="lg:hidden flex items-center gap-2">
                 <img src="/logo/logo_transparent.png" alt="AI LEGAL" className="w-5 h-5 object-contain" />
-                <span className="font-black text-xs tracking-tight text-[#111111] dark:text-white">AI LEGAL<sup className="text-[9px] font-bold text-[#111111] dark:text-white ml-0.5">TM</sup><span className="text-[#C8A34D]">.</span></span>
+                <span className="font-black text-xs tracking-tight text-[#111111] dark:text-white">AI LEGAL<sup className="text-[9px] font-bold text-[#111111] dark:text-white ml-0.5">TM</sup><span className="text-[#B88B2A]">.</span></span>
               </div>
             </div>
           </div>
@@ -473,70 +473,70 @@ const NavigateProvider = () => {
         <Route path="/legal-pricing" element={<LegalPricingPortal />} />
         <Route path="/subscription-checkout" element={<LegalPricingPortal />} />
         <Route path="/features" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Features...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Features...</div>}>
             <PublicFeatures />
           </Suspense>
         } />
         <Route path="/legal-research" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Legal Research...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Legal Research...</div>}>
             <PublicLegalResearch />
           </Suspense>
         } />
         <Route path="/blog/publish" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Editorial Studio...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Editorial Studio...</div>}>
             <InHouseBlogPublisher />
           </Suspense>
         } />
         <Route path="/publish-blog" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Editorial Studio...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Editorial Studio...</div>}>
             <InHouseBlogPublisher />
           </Suspense>
         } />
         <Route path="/blog" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Legal Journal...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Legal Journal...</div>}>
             <PublicBlog />
           </Suspense>
         } />
         <Route path="/blog/:slug" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Article...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Article...</div>}>
             <PublicBlog />
           </Suspense>
         } />
         <Route path="/about" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading About AI LEGAL™...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading About AI LEGAL™...</div>}>
             <PublicAbout />
           </Suspense>
         } />
         <Route path="/judgment" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Case Search...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Case Search...</div>}>
             <LegalPrecedentsWorkspace />
           </Suspense>
         } />
         <Route path="/case-search" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Case Search...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Case Search...</div>}>
             <LegalPrecedentsWorkspace />
           </Suspense>
         } />
         <Route path="/judgment/:id" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Judgment Workspace...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Judgment Workspace...</div>}>
             <JudgmentDetailWorkspace />
           </Suspense>
         } />
         <Route path="/post-judgment" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-[#07130F] text-[#C8A34D] font-bold">Loading Post Judgement...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-[#07130F] text-[#B88B2A] font-bold">Loading Post Judgement...</div>}>
             <PostJudgment />
           </Suspense>
         } />
         <Route path="/submit-judgment" element={<Navigate to="/post-judgment" replace />} />
         <Route path="/enterprise" element={<EnterprisePage />} />
         <Route path="/enterprise/setup" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Enterprise Setup...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Enterprise Setup...</div>}>
             <EnterpriseSetupPage />
           </Suspense>
         } />
 
         <Route path="/dashboard/enterprise" element={
-          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#C8A34D] font-bold">Loading Enterprise Dashboard...</div>}>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Enterprise Dashboard...</div>}>
             <EnterpriseDashboardLayout />
           </Suspense>
         }>

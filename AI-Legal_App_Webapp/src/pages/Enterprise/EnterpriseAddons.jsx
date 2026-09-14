@@ -202,7 +202,7 @@ const EnterpriseAddons = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <PlusCircle className="text-[#C8A34D]" size={24} /> Institutional Add-on Modules
+            <PlusCircle className="text-[#B88B2A]" size={24} /> Institutional Add-on Modules
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Request Advanced Advocate & Law Firm AI toolkits. Once Super Admin approves, features unlock automatically for your students.
@@ -211,16 +211,16 @@ const EnterpriseAddons = () => {
 
         <button
           onClick={() => setShowCustomModal(true)}
-          className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-black shadow-md hover:brightness-110 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+          className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-black shadow-md hover:brightness-110 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
         >
           <Lightbulb size={15} /> Propose Custom Feature
         </button>
       </div>
 
       {/* Info Banner */}
-      <div className="p-3 rounded-2xl bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between gap-3 shadow-2xs">
+      <div className="p-3 rounded-2xl bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between gap-3 shadow-2xs">
         <div className="flex items-center gap-2">
-          <ShieldCheck size={18} className="text-[#C8A34D] shrink-0" />
+          <ShieldCheck size={18} className="text-[#B88B2A] shrink-0" />
           <span>
             <strong>💡 Simple Approval Workflow:</strong> Click <strong>"Request Activation"</strong> to send an instant message to Super Admin. Once Super Admin allows, the feature activates live on both Web and Mobile apps!
           </span>
@@ -237,7 +237,7 @@ const EnterpriseAddons = () => {
                 ? 'border-emerald-500/40 bg-emerald-500/5'
                 : item.status === 'Requested'
                 ? 'border-amber-500/40 bg-amber-500/5 ring-1 ring-amber-500/20'
-                : 'border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/50'
+                : 'border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/50'
             }`}
           >
             <div className="space-y-2.5">
@@ -257,7 +257,7 @@ const EnterpriseAddons = () => {
               </div>
 
               <div>
-                <span className="text-[9px] font-extrabold text-[#C8A34D] uppercase tracking-wider block">{item.category}</span>
+                <span className="text-[9px] font-extrabold text-[#B88B2A] uppercase tracking-wider block">{item.category}</span>
                 <h3 className="text-sm font-black text-slate-900 dark:text-white leading-snug">{item.name}</h3>
               </div>
 
@@ -285,7 +285,7 @@ const EnterpriseAddons = () => {
               ) : (
                 <button
                   onClick={() => setSelectedAddon(item)}
-                  className="w-full py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-black shadow-xs hover:brightness-110 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-black shadow-xs hover:brightness-110 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Sparkles size={14} /> Request Activation for Institution →
                 </button>
@@ -299,13 +299,13 @@ const EnterpriseAddons = () => {
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-2xl">💡</span>
-              <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30">
+              <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30">
                 PROPOSE NEW TOOL
               </span>
             </div>
 
             <div>
-              <span className="text-[9px] font-extrabold text-[#C8A34D] uppercase tracking-wider block">CUSTOM UNIVERSITY DEVELOPMENT</span>
+              <span className="text-[9px] font-extrabold text-[#B88B2A] uppercase tracking-wider block">CUSTOM UNIVERSITY DEVELOPMENT</span>
               <h3 className="text-sm font-black text-white leading-snug">Need a Custom AI Tool?</h3>
             </div>
 
@@ -317,7 +317,7 @@ const EnterpriseAddons = () => {
           <div className="pt-3 border-t border-slate-800">
             <button
               onClick={() => setShowCustomModal(true)}
-              className="w-full py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-black shadow-xs hover:brightness-110 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-black shadow-xs hover:brightness-110 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Lightbulb size={14} /> Submit Custom Proposal →
             </button>
@@ -331,7 +331,7 @@ const EnterpriseAddons = () => {
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Sparkles size={18} className="text-[#C8A34D]" /> Request {selectedAddon.name}
+                <Sparkles size={18} className="text-[#B88B2A]" /> Request {selectedAddon.name}
               </h3>
               <button onClick={() => setSelectedAddon(null)} className="text-slate-400 hover:text-slate-600">
                 <X size={18} />
@@ -349,7 +349,7 @@ const EnterpriseAddons = () => {
                 value={requestNotes}
                 onChange={e => setRequestNotes(e.target.value)}
                 placeholder="e.g. Please activate Evidence Analyst for our BA LLB Final Year moot court preparation..."
-                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#C8A34D]"
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#B88B2A]"
               />
             </div>
 
@@ -362,7 +362,7 @@ const EnterpriseAddons = () => {
               </button>
               <button
                 onClick={handleRequestAddon}
-                className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md cursor-pointer"
               >
                 Send Request to Super Admin
               </button>
@@ -377,7 +377,7 @@ const EnterpriseAddons = () => {
           <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Lightbulb size={20} className="text-[#C8A34D]" /> Propose Custom AI Tool
+                <Lightbulb size={20} className="text-[#B88B2A]" /> Propose Custom AI Tool
               </h3>
               <button onClick={() => setShowCustomModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={18} />
@@ -393,7 +393,7 @@ const EnterpriseAddons = () => {
                   value={customForm.title}
                   onChange={e => setCustomForm({ ...customForm, title: e.target.value })}
                   placeholder="e.g. Bare Act Audio Explainer & Moot Evaluation System"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-bold focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-bold focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -405,7 +405,7 @@ const EnterpriseAddons = () => {
                   value={customForm.description}
                   onChange={e => setCustomForm({ ...customForm, description: e.target.value })}
                   placeholder="Describe the feature requirements for your law university..."
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -419,7 +419,7 @@ const EnterpriseAddons = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md cursor-pointer"
                 >
                   <Send size={14} /> Send Proposal to Admin
                 </button>

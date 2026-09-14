@@ -323,19 +323,19 @@ const Login = () => {
   });
 
   return (
-    <div className="min-h-screen w-screen flex flex-col bg-[#F4F6FA] dark:bg-[#070A12] text-[#111827] dark:text-slate-100 font-sans selection:bg-[#C8A34D]/25 selection:text-[#111111] transition-colors duration-300">
+    <div className="min-h-screen w-screen flex flex-col bg-[#F4F6FA] dark:bg-[#070A12] text-[#111827] dark:text-slate-100 font-sans selection:bg-[#B88B2A]/25 selection:text-[#111111] transition-colors duration-300">
       {/* Top Header Navigation Tabs — Matching CLAW Reference */}
       <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors shadow-xs shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           
           {/* Brand Logo & Name */}
           <div onClick={() => navigate('/')} className="flex items-center gap-2.5 cursor-pointer select-none group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#C8A34D] to-[#B38628] flex items-center justify-center shadow-md shadow-[#C8A34D]/30 p-1">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#B88B2A] to-[#B38628] flex items-center justify-center shadow-md shadow-[#B88B2A]/30 p-1">
               <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
               <span className="text-lg sm:text-xl font-extrabold tracking-tight text-[#111827] dark:text-white flex items-center">
-                AI Legal<span className="text-[10px] text-[#B38628] dark:text-[#C8A34D] font-extrabold ml-0.5">™</span>
+                AI Legal<span className="text-[10px] text-[#B38628] dark:text-[#B88B2A] font-extrabold ml-0.5">™</span>
               </span>
             </div>
           </div>
@@ -360,7 +360,7 @@ const Login = () => {
             <button onClick={() => navigate('/about')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               About
             </button>
-            <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
+            <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
               Dashboard
             </span>
           </nav>
@@ -370,7 +370,7 @@ const Login = () => {
             <ThemeToggle />
             <button
               onClick={() => navigate('/post-judgment')}
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
             >
               <Plus size={14} className="text-[#B38628] stroke-[2.5]" />
               <span>Post your judgement</span>
@@ -378,7 +378,7 @@ const Login = () => {
 
             <button
               onClick={() => navigate('/signup')}
-              className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+              className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
             >
               Get Started
             </button>
@@ -448,14 +448,14 @@ const Login = () => {
               <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex flex-col gap-2.5">
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate('/post-judgment'); }}
-                  className="w-full py-2.5 rounded-full text-xs font-bold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 rounded-full text-xs font-bold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5"
                 >
                   <Plus size={14} className="stroke-[2.5]" />
                   <span>Post your judgement</span>
                 </button>
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}
-                  className="w-full py-2.5 bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#C8A34D]/30"
+                  className="w-full py-2.5 bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#B88B2A]/30"
                 >
                   Create New Account
                 </button>
@@ -486,7 +486,7 @@ const Login = () => {
           {/* Top Floating Badge */}
           <div className="relative z-10">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0B0F19]/80 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-amber-300 shadow-xl">
-              <Sparkles className="w-3 h-3 text-[#C8A34D]" />
+              <Sparkles className="w-3 h-3 text-[#B88B2A]" />
               <span>Advocate Aarohi • AI Legal Intelligence</span>
             </div>
           </div>
@@ -506,7 +506,7 @@ const Login = () => {
             </div>
 
             {/* Vertical Accent Label */}
-            <div className="border-l-3 border-[#C8A34D] pl-2.5 py-0.5">
+            <div className="border-l-3 border-[#B88B2A] pl-2.5 py-0.5">
               <h3 className="text-sm font-black tracking-wider text-white uppercase drop-shadow-sm">
                 AI LEGAL<span className="text-amber-400 text-[9px] ml-0.5 align-super">TM</span> WORKSPACE
               </h3>
@@ -522,7 +522,7 @@ const Login = () => {
           
           {/* Header Brand Emblem & Greeting */}
           <div className="flex flex-col items-center text-center mb-3.5">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#C8A34D]/20 via-amber-500/10 to-[#B38628]/20 border border-[#C8A34D]/35 flex items-center justify-center p-1.5 mb-2 shadow-xs">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#B88B2A]/20 via-amber-500/10 to-[#B38628]/20 border border-[#B88B2A]/35 flex items-center justify-center p-1.5 mb-2 shadow-xs">
               <img 
                 src="/logo/logo_transparent.png" 
                 alt="AI LEGAL™" 
@@ -559,7 +559,7 @@ const Login = () => {
                     onClick={() => setAccountType(type.id)}
                     className={`py-1.5 px-2 rounded-xl flex items-center justify-center gap-1.5 text-[11px] font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-2 border-[#C8A34D] bg-[#C8A34D]/15 text-[#966d1b] dark:text-[#F1C40F] shadow-xs'
+                        ? 'border-2 border-[#B88B2A] bg-[#B88B2A]/15 text-[#966d1b] dark:text-[#F1C40F] shadow-xs'
                         : 'border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-zinc-700 bg-slate-50/60 dark:bg-zinc-900/40'
                     }`}
                   >
@@ -594,7 +594,7 @@ const Login = () => {
                         ? 'e.g. partner@lexchambers.com' 
                         : 'e.g. student@nlu.ac.in'
                   }
-                  className="w-full bg-slate-50/50 dark:bg-[#0E121E] border border-slate-200 dark:border-zinc-800 rounded-xl py-2 pl-9.5 pr-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:border-[#C8A34D] focus:ring-2 focus:ring-[#C8A34D]/20 transition-all"
+                  className="w-full bg-slate-50/50 dark:bg-[#0E121E] border border-slate-200 dark:border-zinc-800 rounded-xl py-2 pl-9.5 pr-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:border-[#B88B2A] focus:ring-2 focus:ring-[#B88B2A]/20 transition-all"
                   required
                 />
               </div>
@@ -616,7 +616,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-slate-50/50 dark:bg-[#0E121E] border border-slate-200 dark:border-zinc-800 rounded-xl py-2 pl-9.5 pr-10 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:border-[#C8A34D] focus:ring-2 focus:ring-[#C8A34D]/20 transition-all"
+                  className="w-full bg-slate-50/50 dark:bg-[#0E121E] border border-slate-200 dark:border-zinc-800 rounded-xl py-2 pl-9.5 pr-10 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:border-[#B88B2A] focus:ring-2 focus:ring-[#B88B2A]/20 transition-all"
                   required
                 />
                 <button
@@ -632,7 +632,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-gradient-to-r from-[#C8A34D] via-[#D4AF37] to-[#B38628] hover:opacity-95 text-slate-950 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-[#C8A34D]/25 mt-1 cursor-pointer uppercase tracking-wider text-xs"
+              className="w-full py-2.5 bg-gradient-to-r from-[#B88B2A] via-[#D4AF37] to-[#B38628] hover:opacity-95 text-slate-950 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-[#B88B2A]/25 mt-1 cursor-pointer uppercase tracking-wider text-xs"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
@@ -657,7 +657,7 @@ const Login = () => {
             <button
               type="button"
               onClick={() => setShowUwoModal(true)}
-              className="flex items-center justify-center gap-1.5 w-full py-2 bg-[#C8A34D]/10 border border-[#C8A34D]/35 hover:bg-[#C8A34D]/20 rounded-xl font-bold text-[#B38628] dark:text-[#D4AF37] transition-all shadow-2xs text-[11px] cursor-pointer"
+              className="flex items-center justify-center gap-1.5 w-full py-2 bg-[#B88B2A]/10 border border-[#B88B2A]/35 hover:bg-[#B88B2A]/20 rounded-xl font-bold text-[#B38628] dark:text-[#D4AF37] transition-all shadow-2xs text-[11px] cursor-pointer"
             >
               <Zap className="w-3 h-3 fill-[#D4AF37]" />
               <span>UWO SSO</span>
@@ -671,7 +671,7 @@ const Login = () => {
               className="flex items-center justify-center gap-1.5 w-full py-2 bg-white dark:bg-[#0E121E] border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800/60 rounded-xl font-medium text-slate-800 dark:text-zinc-100 transition-all shadow-2xs disabled:opacity-50 text-[11px] cursor-pointer"
             >
               {googleLoading ? (
-                <div className="w-3 h-3 border-2 border-slate-200 border-t-[#C8A34D] rounded-full animate-spin" />
+                <div className="w-3 h-3 border-2 border-slate-200 border-t-[#B88B2A] rounded-full animate-spin" />
               ) : (
                 <>
                   <svg className="w-3 h-3" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -726,7 +726,7 @@ const Login = () => {
         {socialVerifying && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-sm">
             <div className="flex flex-col items-center">
-              <div className="w-12 h-12 border-4 border-slate-200 border-t-[#C8A34D] rounded-full animate-spin mb-4" />
+              <div className="w-12 h-12 border-4 border-slate-200 border-t-[#B88B2A] rounded-full animate-spin mb-4" />
               <p className="text-slate-900 dark:text-white font-medium text-sm">Verifying Secure Login...</p>
             </div>
           </motion.div>

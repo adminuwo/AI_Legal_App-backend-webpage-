@@ -200,7 +200,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                 {/* Header */}
                 <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between sticky top-0 z-10 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-md">
                     <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#C8A34D]/15 rounded-xl flex items-center justify-center text-[#C8A34D] border border-[#C8A34D]/30 relative shrink-0">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#B88B2A]/15 rounded-xl flex items-center justify-center text-[#B88B2A] border border-[#B88B2A]/30 relative shrink-0">
                             <Bell className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
                             {unreadCount > 0 && (
                                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white dark:ring-[#0F172A] animate-pulse" />
@@ -210,7 +210,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                                 <h2 className="text-base sm:text-lg font-black tracking-tight text-[#0F172A] dark:text-white truncate">Notifications</h2>
                                 {unreadCount > 0 && (
-                                    <span className="px-2 py-0.5 rounded-full bg-[#C8A34D] text-[#111111] text-[9px] sm:text-[10px] font-black shrink-0">
+                                    <span className="px-2 py-0.5 rounded-full bg-[#B88B2A] text-[#111111] text-[9px] sm:text-[10px] font-black shrink-0">
                                         {unreadCount} New
                                     </span>
                                 )}
@@ -225,10 +225,10 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                         <button 
                             onClick={fetchLiveCaseAlerts} 
                             disabled={isRefreshing}
-                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-400 hover:text-[#C8A34D]"
+                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-400 hover:text-[#B88B2A]"
                             title="Refresh Real-Time Notifications"
                         >
-                            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#C8A34D]' : ''}`} />
+                            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#B88B2A]' : ''}`} />
                         </button>
                         <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-white">
                             <X className="w-5 h-5" />
@@ -245,7 +245,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                             placeholder="Filter notifications..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                            className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                         />
                     </div>
 
@@ -256,8 +256,8 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer whitespace-nowrap ${
                                     activeTab === tab
-                                        ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
-                                        : 'bg-white dark:bg-[#0F172A] text-slate-600 dark:text-slate-400 hover:text-[#C8A34D] border border-slate-200 dark:border-slate-800'
+                                        ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
+                                        : 'bg-white dark:bg-[#0F172A] text-slate-600 dark:text-slate-400 hover:text-[#B88B2A] border border-slate-200 dark:border-slate-800'
                                 }`}
                             >
                                 {tab}
@@ -280,14 +280,14 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                                     className={`p-3.5 sm:p-4 rounded-2xl border transition-all relative group ${
                                         notif.isRead 
                                             ? 'bg-white/60 dark:bg-[#1E293B]/40 border-slate-200/80 dark:border-slate-800/80 opacity-75' 
-                                            : 'bg-white dark:bg-[#1E293B] border-[#C8A34D]/40 shadow-xs ring-1 ring-[#C8A34D]/20'
+                                            : 'bg-white dark:bg-[#1E293B] border-[#B88B2A]/40 shadow-xs ring-1 ring-[#B88B2A]/20'
                                     }`}
                                 >
                                     <div className="flex items-start gap-2.5 sm:gap-3">
                                         <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                                             notif.type === 'success' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
                                             notif.type === 'alert' || notif.type === 'error' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' : 
-                                            'bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30'
+                                            'bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30'
                                         }`}>
                                             {notif.category === 'Hearings' ? <Gavel className="w-4 h-4 sm:w-4.5 sm:h-4.5" /> :
                                              notif.type === 'success' ? <CheckCircle className="w-4 h-4 sm:w-4.5 sm:h-4.5" /> :
@@ -301,7 +301,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                                                     {(notif.title || '').replace(/AISA/gi, 'AI LEGAL™')}
                                                 </h4>
                                                 {!notif.isRead && (
-                                                    <span className="w-2 h-2 bg-[#C8A34D] rounded-full shrink-0 animate-pulse" />
+                                                    <span className="w-2 h-2 bg-[#B88B2A] rounded-full shrink-0 animate-pulse" />
                                                 )}
                                             </div>
                                             <p className={`text-[11px] sm:text-xs leading-relaxed ${notif.isRead ? 'text-slate-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-300 font-medium'}`}>
@@ -310,12 +310,12 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                                             
                                             <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60 flex-wrap gap-1">
                                                 <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                                                    <Clock className="w-3 h-3 text-[#C8A34D]" />
+                                                    <Clock className="w-3 h-3 text-[#B88B2A]" />
                                                     {new Date(notif.time || Date.now()).toLocaleDateString([], { month: 'short', day: 'numeric' })} · {new Date(notif.time || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
 
                                                 {notif.isRealtime && (
-                                                    <span className="text-[9px] font-black text-[#C8A34D] bg-[#C8A34D]/10 px-1.5 py-0.5 rounded-md border border-[#C8A34D]/20 uppercase shrink-0">
+                                                    <span className="text-[9px] font-black text-[#B88B2A] bg-[#B88B2A]/10 px-1.5 py-0.5 rounded-md border border-[#B88B2A]/20 uppercase shrink-0">
                                                         Realtime
                                                     </span>
                                                 )}
@@ -332,7 +332,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                                                 className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                                                     notif.isRead 
                                                         ? 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' 
-                                                        : 'text-[#C8A34D] hover:bg-[#C8A34D]/15'
+                                                        : 'text-[#B88B2A] hover:bg-[#B88B2A]/15'
                                                 }`}
                                                 title={notif.isRead ? 'Marked as Read' : 'Mark as Read'}
                                             >
@@ -359,8 +359,8 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 className="py-16 sm:py-20 text-center px-4 sm:px-6"
                             >
-                                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#C8A34D]/10 rounded-2xl flex items-center justify-center mx-auto mb-3.5 border border-[#C8A34D]/30 relative">
-                                    <Bell className="w-7 h-7 sm:w-8 sm:h-8 text-[#C8A34D]" />
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#B88B2A]/10 rounded-2xl flex items-center justify-center mx-auto mb-3.5 border border-[#B88B2A]/30 relative">
+                                    <Bell className="w-7 h-7 sm:w-8 sm:h-8 text-[#B88B2A]" />
                                 </div>
                                 <h3 className="font-extrabold text-sm sm:text-base text-[#0F172A] dark:text-white">Your inbox is clear</h3>
                                 <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed font-medium">
@@ -377,7 +377,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllRead}
-                                className="flex-1 py-2 sm:py-2.5 px-2.5 sm:px-3 text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#111111] bg-[#C8A34D] hover:bg-[#b08d3b] rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                className="flex-1 py-2 sm:py-2.5 px-2.5 sm:px-3 text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#111111] bg-[#B88B2A] hover:bg-[#b08d3b] rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                             >
                                 <CheckCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                 Mark All Read

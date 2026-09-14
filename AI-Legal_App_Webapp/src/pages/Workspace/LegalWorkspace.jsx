@@ -7708,7 +7708,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                   setCurrentCaseSessionId('new');
                   toast.success("Started a new conversation for this case!");
                 }}
-                className="px-3 py-1.5 bg-[#111111] hover:bg-[#222222] text-[#C8A34D] border border-[#C8A34D]/40 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95"
+                className="px-3 py-1.5 bg-[#111111] hover:bg-[#222222] text-[#B88B2A] border border-[#B88B2A]/40 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95"
                 title="Start New Chat"
               >
                 <Plus size={12} /> New Chat
@@ -7738,13 +7738,13 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
         ) : (
           <div className="px-5 py-4 border-b border-[#E5E7EB] bg-white flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
-              <Sparkles size={14} className="text-[#C8A34D]" />
+              <Sparkles size={14} className="text-[#B88B2A]" />
               <span className="text-xs font-black text-slate-900 tracking-wider uppercase">Case Assistant</span>
             </div>
             <button
               type="button"
               onClick={() => setIsAiPanelFullscreen(true)}
-              className="p-1.5 text-slate-400 hover:text-[#C8A34D] rounded-lg hover:bg-slate-50 transition-all flex items-center justify-center cursor-pointer"
+              className="p-1.5 text-slate-400 hover:text-[#B88B2A] rounded-lg hover:bg-slate-50 transition-all flex items-center justify-center cursor-pointer"
               title="Expand to Fullscreen"
             >
               <Maximize2 size={15} />
@@ -7765,7 +7765,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
             <div className={`flex flex-col h-full justify-center py-4 ${isAiPanelFullscreen ? 'w-full max-w-full lg:max-w-[1000px] xl:max-w-[1100px] 2xl:max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8' : ''
               }`}>
               <div className="flex flex-col items-center text-center max-w-sm mx-auto px-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 mb-4 shadow-xs flex items-center justify-center">
+                <div className="w-12 h-12 rounded-2xl bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 mb-4 shadow-xs flex items-center justify-center">
                   <Brain size={24} />
                 </div>
                 <h4 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Case-Aware AI Assistant</h4>
@@ -7925,14 +7925,14 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                 h2: ({ node, ...props }) => <h2 className="text-lg font-extrabold text-slate-900 tracking-tight mt-5 mb-2.5" {...props} />,
                                 h3: ({ node, ...props }) => <h3 className="text-md font-bold text-slate-800 mt-4 mb-2" {...props} />,
                                 p: ({ node, ...props }) => <p className="text-slate-700 leading-relaxed mb-4" {...props} />,
-                                ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-2 text-slate-700 dark:text-zinc-300 marker:text-[#C8A34D]" {...props} />,
-                                ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-2 text-slate-700 dark:text-zinc-300 marker:text-[#C8A34D] font-semibold" {...props} />,
+                                ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-2 text-slate-700 dark:text-zinc-300 marker:text-[#B88B2A]" {...props} />,
+                                ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-2 text-slate-700 dark:text-zinc-300 marker:text-[#B88B2A] font-semibold" {...props} />,
                                 li: ({ node, ...props }) => <li className="pl-1 text-slate-700 dark:text-zinc-300 font-normal" {...props} />,
                                 strong: ({ node, ...props }) => <strong className="font-extrabold text-slate-900 dark:text-zinc-100" {...props} />,
-                                blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-[#C8A34D] bg-[#C8A34D]/10 dark:bg-[#C8A34D]/15 pl-4 py-2 pr-2 rounded-r-xl my-4 text-slate-800 dark:text-zinc-200 italic" {...props} />,
+                                blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-[#B88B2A] bg-[#B88B2A]/10 dark:bg-[#B88B2A]/15 pl-4 py-2 pr-2 rounded-r-xl my-4 text-slate-800 dark:text-zinc-200 italic" {...props} />,
                                 code: ({ node, inline, className, children, ...props }) => {
                                   return (
-                                    <code className="bg-[#C8A34D]/10 text-[#C8A34D] dark:text-[#E2C275] px-1.5 py-0.5 rounded-md font-mono text-xs border border-[#C8A34D]/20" {...props}>
+                                    <code className="bg-[#B88B2A]/10 text-[#B88B2A] dark:text-[#E2C275] px-1.5 py-0.5 rounded-md font-mono text-xs border border-[#B88B2A]/20" {...props}>
                                       {children}
                                     </code>
                                   );
@@ -7956,7 +7956,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                 copyText(msg.content);
                                 toast.success("Copied to clipboard!");
                               }}
-                              className="flex items-center gap-1 hover:text-[#C8A34D] transition-colors cursor-pointer"
+                              className="flex items-center gap-1 hover:text-[#B88B2A] transition-colors cursor-pointer"
                               title="Copy response"
                             >
                               <Copy size={11} />
@@ -7966,7 +7966,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                             <button
                               type="button"
                               onClick={() => handleSaveToNotes(msg.content)}
-                              className="flex items-center gap-1 hover:text-[#C8A34D] transition-colors cursor-pointer"
+                              className="flex items-center gap-1 hover:text-[#B88B2A] transition-colors cursor-pointer"
                               title="Save to Case Notes"
                             >
                               <FileText size={11} />
@@ -7976,7 +7976,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                             <button
                               type="button"
                               onClick={() => handleSaveToTimeline(msg.content)}
-                              className="flex items-center gap-1 hover:text-[#C8A34D] transition-colors cursor-pointer"
+                              className="flex items-center gap-1 hover:text-[#B88B2A] transition-colors cursor-pointer"
                               title="Save to Timeline"
                             >
                               <History size={11} />
@@ -7985,7 +7985,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                             <span className="h-3 w-px bg-slate-200" />
                             <button
                               type="button"
-                              className="hover:text-[#C8A34D] transition-colors cursor-pointer"
+                              className="hover:text-[#B88B2A] transition-colors cursor-pointer"
                               title="Thumbs up"
                             >
                               <ThumbsUp size={11} />
@@ -8093,7 +8093,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                             }
                           }}
                           className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left text-xs font-bold transition-all cursor-pointer ${isActive
-                              ? 'bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/40'
+                              ? 'bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/40'
                               : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-zinc-800/50'
                             }`}
                         >
@@ -8101,7 +8101,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                             <span>{tool.icon}</span>
                             <span className="truncate">{tool.name}</span>
                           </div>
-                          {isActive && <span className="text-[10px] text-[#C8A34D]">✓</span>}
+                          {isActive && <span className="text-[10px] text-[#B88B2A]">✓</span>}
                         </button>
                       );
                     })}
@@ -8119,8 +8119,8 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                       <img src={preview.url} alt="Preview" className="w-full h-full object-cover rounded-xl" />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center p-1 bg-slate-50/50">
-                        <FileText className="w-5 h-5 text-[#C8A34D]" />
-                        <span className="text-[6px] font-black uppercase text-[#C8A34D] truncate px-0.5 w-full text-center">
+                        <FileText className="w-5 h-5 text-[#B88B2A]" />
+                        <span className="text-[6px] font-black uppercase text-[#B88B2A] truncate px-0.5 w-full text-center">
                           {preview.name || 'FILE'}
                         </span>
                       </div>
@@ -8144,14 +8144,14 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                 handleSendMessage(e);
               }}
               className={`flex items-center gap-2 border border-slate-200 dark:border-slate-800 rounded-2xl transition-all duration-200 ${isAiPanelFullscreen
-                  ? 'bg-slate-50 dark:bg-[#111111] hover:bg-slate-100/40 px-4 py-3 focus-within:border-[#C8A34D] focus-within:ring-1 focus-within:ring-[#C8A34D] shadow-sm'
-                  : 'bg-slate-50 dark:bg-[#111111] hover:bg-slate-100/60 px-3.5 py-2 focus-within:border-[#C8A34D] focus-within:ring-1 focus-within:ring-[#C8A34D]'
+                  ? 'bg-slate-50 dark:bg-[#111111] hover:bg-slate-100/40 px-4 py-3 focus-within:border-[#B88B2A] focus-within:ring-1 focus-within:ring-[#B88B2A] shadow-sm'
+                  : 'bg-slate-50 dark:bg-[#111111] hover:bg-slate-100/60 px-3.5 py-2 focus-within:border-[#B88B2A] focus-within:ring-1 focus-within:ring-[#B88B2A]'
                 }`}
             >
               <button
                 type="button"
                 onClick={() => uploadInputRef.current?.click()}
-                className="p-1.5 text-slate-400 hover:text-[#C8A34D] rounded-lg hover:bg-slate-200/50 transition-colors cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-[#B88B2A] rounded-lg hover:bg-slate-200/50 transition-colors cursor-pointer"
                 title="Attach File"
               >
                 <Paperclip size={14} />
@@ -8162,8 +8162,8 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                 type="button"
                 onClick={() => setIsToolSelectorOpen(prev => !prev)}
                 className={`p-1.5 rounded-lg transition-colors flex items-center justify-center cursor-pointer ${isToolSelectorOpen
-                    ? 'text-[#C8A34D] bg-[#111111]'
-                    : 'text-slate-400 hover:text-[#C8A34D] hover:bg-slate-200/50'
+                    ? 'text-[#B88B2A] bg-[#111111]'
+                    : 'text-slate-400 hover:text-[#B88B2A] hover:bg-slate-200/50'
                   }`}
                 title="AI Tools"
               >
@@ -8183,7 +8183,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                 onClick={handleVoiceInput}
                 className={`p-1.5 rounded-lg transition-colors flex items-center justify-center shrink-0 cursor-pointer ${isListening
                     ? 'text-red-500 bg-red-50 animate-pulse'
-                    : 'text-slate-400 hover:text-[#C8A34D] hover:bg-slate-200/50'
+                    : 'text-slate-400 hover:text-[#B88B2A] hover:bg-slate-200/50'
                   }`}
                 title={isListening ? "Listening... Click to Stop" : "Voice Input"}
               >
@@ -8192,7 +8192,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
               <button
                 type="submit"
                 disabled={(!inputValue.trim() && filePreviews.length === 0) || isLoading}
-                className={`bg-[#C8A34D] hover:bg-[#b08d3b] disabled:bg-slate-200 text-[#111111] font-black rounded-xl transition-colors shrink-0 flex items-center justify-center disabled:cursor-not-allowed shadow-md cursor-pointer ${isAiPanelFullscreen ? 'p-2.5' : 'p-1.5'
+                className={`bg-[#B88B2A] hover:bg-[#b08d3b] disabled:bg-slate-200 text-[#111111] font-black rounded-xl transition-colors shrink-0 flex items-center justify-center disabled:cursor-not-allowed shadow-md cursor-pointer ${isAiPanelFullscreen ? 'p-2.5' : 'p-1.5'
                   }`}
               >
                 <Send size={isAiPanelFullscreen ? 14 : 12} />
@@ -9021,7 +9021,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                     const chatLock = getSessionLock(activeSessionId);
                     chatLock.locked = false;
                   }}
-                  className="w-[32px] h-[32px] sm:w-[34px] sm:h-[34px] rounded-full text-[#111111] bg-[#C8A34D] hover:bg-[#b08d3b] flex items-center justify-center shadow-md hover:scale-105 transition-all cursor-pointer shrink-0"
+                  className="w-[32px] h-[32px] sm:w-[34px] sm:h-[34px] rounded-full text-[#111111] bg-[#B88B2A] hover:bg-[#b08d3b] flex items-center justify-center shadow-md hover:scale-105 transition-all cursor-pointer shrink-0"
                   title="Stop generating"
                 >
                   <div className="w-[10px] h-[10px] sm:w-[12px] sm:h-[12px] bg-[#111111] rounded-xs" />
@@ -9038,7 +9038,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     title={t('send')}
-                    className={`w-[30px] h-[30px] sm:w-[34px] sm:h-[34px] rounded-full flex items-center justify-center transition-all shadow-md relative overflow-visible z-20 text-[#111111] bg-[#C8A34D] hover:bg-[#b08d3b] disabled:bg-slate-200 disabled:text-slate-400`}
+                    className={`w-[30px] h-[30px] sm:w-[34px] sm:h-[34px] rounded-full flex items-center justify-center transition-all shadow-md relative overflow-visible z-20 text-[#111111] bg-[#B88B2A] hover:bg-[#b08d3b] disabled:bg-slate-200 disabled:text-slate-400`}
                   >
                     <AnimatePresence>
                       {ripples.map(id => (
@@ -10372,9 +10372,9 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                               key={index}
                                               type="button"
                                               onClick={() => handleSuggestionClick(cleanItem)}
-                                              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-zinc-800/90 text-slate-700 dark:text-zinc-200 hover:text-[#C8A34D] dark:hover:text-[#C8A34D] hover:bg-[#C8A34D]/10 dark:hover:bg-[#C8A34D]/20 border border-slate-200/80 dark:border-zinc-700/60 hover:border-[#C8A34D]/40 transition-all shadow-2xs cursor-pointer text-left flex items-center gap-2 group/chip"
+                                              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-zinc-800/90 text-slate-700 dark:text-zinc-200 hover:text-[#B88B2A] dark:hover:text-[#B88B2A] hover:bg-[#B88B2A]/10 dark:hover:bg-[#B88B2A]/20 border border-slate-200/80 dark:border-zinc-700/60 hover:border-[#B88B2A]/40 transition-all shadow-2xs cursor-pointer text-left flex items-center gap-2 group/chip"
                                             >
-                                              <span className="text-[#C8A34D] font-bold group-hover/chip:scale-110 transition-transform">💡</span>
+                                              <span className="text-[#B88B2A] font-bold group-hover/chip:scale-110 transition-transform">💡</span>
                                               <span>{cleanItem}</span>
                                             </button>
                                           );
@@ -10412,7 +10412,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                       const isGeneralCopilot = !activeToolId || !['legal_draft_maker', 'legal_research', 'legal_contract_analyzer', 'legal_evidence_checker', 'legal_argument_builder', 'legal_case_predictor', 'legal_strategy_engine', 'legal_research_assistant'].includes(activeToolId);
 
                       // Define a mapping of tool colors for glow effects (Warm Gold Rolex Theme)
-                      const activeColor = 'from-[#C8A34D]/20 to-[#C8A34D]/10 text-[#C8A34D] border-[#C8A34D]/30';
+                      const activeColor = 'from-[#B88B2A]/20 to-[#B88B2A]/10 text-[#B88B2A] border-[#B88B2A]/30';
 
                       return (
                         <>
@@ -10424,7 +10424,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                 className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 rounded-xl text-xs font-bold transition-all shadow-xs border border-slate-200/60 dark:border-zinc-700/40 hover:bg-slate-50 dark:hover:bg-zinc-800/80 cursor-pointer"
                                 title="Open AI History"
                               >
-                                <History className="w-4 h-4 text-[#C8A34D]" />
+                                <History className="w-4 h-4 text-[#B88B2A]" />
                                 <span>History</span>
                               </button>
                             </div>
@@ -10450,7 +10450,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                   whileHover={{ scale: 1.05, rotate: 2 }}
                                   className="w-14 h-14 sm:w-16 sm:h-16 bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center border border-slate-200/90 dark:border-zinc-700 shadow-sm relative overflow-hidden p-2"
                                 >
-                                  <IconComponent className="w-8 h-8 sm:w-10 sm:h-10 text-[#C8A34D] relative z-10" strokeWidth={2.2} />
+                                  <IconComponent className="w-8 h-8 sm:w-10 sm:h-10 text-[#B88B2A] relative z-10" strokeWidth={2.2} />
                                 </motion.div>
                               )}
 
@@ -10502,8 +10502,8 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                                 }
                                               }}
                                               className={`min-h-[34px] sm:h-[34px] py-1.5 px-3.5 rounded-full text-[11px] sm:text-[13px] font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 shadow-2xs hover:shadow-xs cursor-pointer select-none border max-w-full text-center leading-tight ${isSurprise
-                                                  ? "bg-[#C8A34D]/15 text-[#C8A34D] border-[#C8A34D]/40 hover:bg-[#C8A34D]/25 font-bold"
-                                                  : "bg-white dark:bg-zinc-800/50 text-slate-700 dark:text-zinc-200 border-slate-200/80 dark:border-zinc-700 hover:border-[#C8A34D]/50 hover:text-[#C8A34D] hover:bg-[#C8A34D]/5"
+                                                  ? "bg-[#B88B2A]/15 text-[#B88B2A] border-[#B88B2A]/40 hover:bg-[#B88B2A]/25 font-bold"
+                                                  : "bg-white dark:bg-zinc-800/50 text-slate-700 dark:text-zinc-200 border-slate-200/80 dark:border-zinc-700 hover:border-[#B88B2A]/50 hover:text-[#B88B2A] hover:bg-[#B88B2A]/5"
                                                 }`}
                                             >
                                               <span className="truncate max-w-full">{action.label}</span>
@@ -10519,7 +10519,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                             whileHover={{ scale: 1.03, y: -0.5 }}
                                             whileTap={{ scale: 0.97 }}
                                             onClick={() => setIsSuggestionsExpanded(!isSuggestionsExpanded)}
-                                            className="min-h-[34px] sm:h-[34px] py-1.5 px-3.5 rounded-full text-[11px] sm:text-[13px] font-bold shadow-2xs hover:shadow-xs cursor-pointer select-none border border-[#C8A34D]/40 bg-[#C8A34D]/15 text-[#C8A34D] hover:bg-[#C8A34D]/25 transition-all duration-200 flex items-center justify-center"
+                                            className="min-h-[34px] sm:h-[34px] py-1.5 px-3.5 rounded-full text-[11px] sm:text-[13px] font-bold shadow-2xs hover:shadow-xs cursor-pointer select-none border border-[#B88B2A]/40 bg-[#B88B2A]/15 text-[#B88B2A] hover:bg-[#B88B2A]/25 transition-all duration-200 flex items-center justify-center"
                                           >
                                             {isSuggestionsExpanded ? "Less -" : "More +"}
                                           </motion.button>
@@ -10589,7 +10589,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                           <button
                             type="button"
                             onClick={() => setIsHistoryOpen(true)}
-                            className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-[#C8A34D] hover:bg-[#C8A34D]/10 rounded-lg transition-colors border border-[#C8A34D]/30 cursor-pointer"
+                            className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-[#B88B2A] hover:bg-[#B88B2A]/10 rounded-lg transition-colors border border-[#B88B2A]/30 cursor-pointer"
                             title="Open AI History"
                           >
                             <History className="w-3.5 h-3.5" />
@@ -10611,7 +10611,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                 toast.success("Started a new conversation for this case!");
                               }
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-lg text-xs transition-all shadow-sm cursor-pointer shrink-0"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-lg text-xs transition-all shadow-sm cursor-pointer shrink-0"
                           >
                             <Plus className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">New Chat</span>

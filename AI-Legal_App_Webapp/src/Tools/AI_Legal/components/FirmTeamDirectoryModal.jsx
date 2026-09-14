@@ -119,7 +119,7 @@ export const FirmTeamDirectoryModal = ({
               </button>
               <div>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                  <Users className="w-6 h-6 text-[#C8A34D]" />
+                  <Users className="w-6 h-6 text-[#B88B2A]" />
                   <span>Firm Team Directory</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
@@ -134,7 +134,7 @@ export const FirmTeamDirectoryModal = ({
                   onClose();
                   if (onOpenInviteModal) onOpenInviteModal();
                 }}
-                className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-slate-950 font-black rounded-xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer uppercase tracking-wider"
+                className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-slate-950 font-black rounded-xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer uppercase tracking-wider"
               >
                 <UserPlus className="w-4 h-4" />
                 <span>Invite Member</span>
@@ -158,7 +158,7 @@ export const FirmTeamDirectoryModal = ({
                   onClick={() => setActiveTab('all')}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 ${
                     activeTab === 'all'
-                      ? 'bg-white dark:bg-[#1E293B] text-[#C8A34D] shadow-xs'
+                      ? 'bg-white dark:bg-[#1E293B] text-[#B88B2A] shadow-xs'
                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
                   }`}
                 >
@@ -199,7 +199,7 @@ export const FirmTeamDirectoryModal = ({
                   placeholder="Search name, email, role..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl text-xs font-semibold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl text-xs font-semibold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -208,7 +208,7 @@ export const FirmTeamDirectoryModal = ({
                 onClick={fetchData}
                 disabled={isLoading}
                 title="Refresh Directory"
-                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-[#C8A34D] transition-colors cursor-pointer disabled:opacity-50 shrink-0 self-end sm:self-auto"
+                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-[#B88B2A] transition-colors cursor-pointer disabled:opacity-50 shrink-0 self-end sm:self-auto"
               >
                 <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
               </button>
@@ -219,12 +219,12 @@ export const FirmTeamDirectoryModal = ({
           <div className="overflow-y-auto custom-scrollbar flex-1 pr-1 space-y-3">
             {isLoading ? (
               <div className="py-16 text-center text-slate-400 font-semibold text-xs space-y-2">
-                <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#C8A34D]" />
+                <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#B88B2A]" />
                 <p>Loading directory data from server...</p>
               </div>
             ) : filteredList.length === 0 ? (
               <div className="py-16 text-center text-slate-400 font-semibold text-xs space-y-2 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
-                <Users className="w-10 h-10 mx-auto opacity-40 text-[#C8A34D]" />
+                <Users className="w-10 h-10 mx-auto opacity-40 text-[#B88B2A]" />
                 <p className="text-slate-700 dark:text-slate-300 font-bold text-sm">No members found</p>
                 <p className="text-slate-400 max-w-xs mx-auto">
                   {searchQuery ? 'No results matched your search query.' : 'No team members or pending invites found in this category.'}
@@ -235,7 +235,7 @@ export const FirmTeamDirectoryModal = ({
                       onClose();
                       if (onOpenInviteModal) onOpenInviteModal();
                     }}
-                    className="mt-2 px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-slate-950 font-black rounded-xl text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-xs uppercase tracking-wider"
+                    className="mt-2 px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-slate-950 font-black rounded-xl text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-xs uppercase tracking-wider"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
                     <span>Send New Invitation</span>
@@ -275,7 +275,7 @@ export const FirmTeamDirectoryModal = ({
                       className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
                         isInvite 
                           ? 'border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10'
-                          : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 hover:border-[#C8A34D]/50'
+                          : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 hover:border-[#B88B2A]/50'
                       }`}
                     >
                       <div className="flex items-center gap-3.5 min-w-0">
@@ -283,7 +283,7 @@ export const FirmTeamDirectoryModal = ({
                         <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 border ${
                           isInvite 
                             ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30'
-                            : 'bg-[#C8A34D]/20 text-[#C8A34D] border-[#C8A34D]/40'
+                            : 'bg-[#B88B2A]/20 text-[#B88B2A] border-[#B88B2A]/40'
                         }`}>
                           {name.charAt(0).toUpperCase()}
                         </div>
@@ -318,13 +318,13 @@ export const FirmTeamDirectoryModal = ({
                           <div className="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-300 font-medium flex-wrap">
                             {email && (
                               <span className="flex items-center gap-1">
-                                <Mail className="w-3.5 h-3.5 text-[#C8A34D] shrink-0" />
+                                <Mail className="w-3.5 h-3.5 text-[#B88B2A] shrink-0" />
                                 <span className="truncate">{email}</span>
                               </span>
                             )}
                             {phone && (
                               <span className="flex items-center gap-1">
-                                <Phone className="w-3.5 h-3.5 text-[#C8A34D] shrink-0" />
+                                <Phone className="w-3.5 h-3.5 text-[#B88B2A] shrink-0" />
                                 <span>{phone}</span>
                               </span>
                             )}
@@ -333,7 +333,7 @@ export const FirmTeamDirectoryModal = ({
                           {/* Role & Department */}
                           <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 font-semibold flex-wrap">
                             <span className="flex items-center gap-1 text-slate-700 dark:text-slate-200">
-                              <Briefcase className="w-3 h-3 text-[#C8A34D]" />
+                              <Briefcase className="w-3 h-3 text-[#B88B2A]" />
                               <span>{role}</span>
                             </span>
                             <span>•</span>

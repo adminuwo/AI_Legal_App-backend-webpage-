@@ -226,7 +226,7 @@ export default function LegalPrecedentsWorkspace() {
   }, [selectedJudgment]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#C8A34D]/25 selection:text-[#111111]">
+    <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#B88B2A]/25 selection:text-[#111111]">
       
       {/* ─── PUBLIC TOP HEADER NAVBAR (Consistent across all pages) ─── */}
       <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800">
@@ -236,7 +236,7 @@ export default function LegalPrecedentsWorkspace() {
           <div onClick={() => navigate('/')} className="flex items-center gap-2.5 cursor-pointer select-none">
             <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-9 h-9 object-contain" />
             <span className="text-lg font-black tracking-tight text-[#0F172A] dark:text-white flex items-center">
-              AI LEGAL<span className="text-[10px] text-[#C8A34D] font-extrabold ml-0.5">TM</span>
+              AI LEGAL<span className="text-[10px] text-[#B88B2A] font-extrabold ml-0.5">TM</span>
             </span>
           </div>
 
@@ -256,7 +256,7 @@ export default function LegalPrecedentsWorkspace() {
             </button>
             
             {/* Active Case Search Pill */}
-            <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
+            <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
               Case Search
             </span>
 
@@ -275,7 +275,7 @@ export default function LegalPrecedentsWorkspace() {
             {/* Post Judgement Shortcut */}
             <button
               onClick={() => navigate('/post-judgment')}
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
             >
               <Plus size={14} className="text-[#B38628] stroke-[2.5]" />
               <span>Post your judgement</span>
@@ -285,13 +285,13 @@ export default function LegalPrecedentsWorkspace() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigate('/dashboard')}
-                  className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                  className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
                 >
                   Dashboard →
                 </button>
                 <div 
                   onClick={() => navigate('/dashboard/settings')}
-                  className="w-7.5 h-7.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-[#C8A34D]/40 text-[#B38628] dark:text-amber-400 font-bold text-xs flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
+                  className="w-7.5 h-7.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-[#B88B2A]/40 text-[#B38628] dark:text-amber-400 font-bold text-xs flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
                   title={user?.name || 'Profile'}
                 >
                   {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
@@ -300,7 +300,7 @@ export default function LegalPrecedentsWorkspace() {
             ) : (
               <button
                 onClick={() => navigate('/signup')}
-                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
               >
                 Get Started
               </button>
@@ -336,7 +336,7 @@ export default function LegalPrecedentsWorkspace() {
                   setMobileMenuOpen(false);
                   navigate('/post-judgment');
                 }}
-                className="w-full py-2.5 rounded-full text-xs font-bold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-full text-xs font-bold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] flex items-center justify-center gap-1.5"
               >
                 <Plus size={14} className="stroke-[2.5]" />
                 <span>Post your judgement</span>
@@ -344,14 +344,14 @@ export default function LegalPrecedentsWorkspace() {
               {isAuthenticated ? (
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
-                  className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-center"
+                  className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] text-center"
                 >
                   Dashboard →
                 </button>
               ) : (
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}
-                  className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-center"
+                  className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] text-center"
                 >
                   Get Started
                 </button>
@@ -366,7 +366,7 @@ export default function LegalPrecedentsWorkspace() {
         <div className="max-w-4xl mx-auto text-center space-y-2.5">
           
           {/* Top Badge */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-[#B38628] dark:text-[#E5A93C] text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-[#B38628] dark:text-[#E5A93C] text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
             <Sparkles size={12} />
             <span>AI LEGAL™ Case Search</span>
           </div>
@@ -394,10 +394,10 @@ export default function LegalPrecedentsWorkspace() {
                 e.preventDefault();
                 executeSearch();
               }}
-              className="relative flex items-center bg-white dark:bg-[#111622] rounded-2xl border-2 border-slate-200 dark:border-slate-800 focus-within:border-[#C8A34D] shadow-md hover:shadow-lg transition-all p-1 sm:p-1.5"
+              className="relative flex items-center bg-white dark:bg-[#111622] rounded-2xl border-2 border-slate-200 dark:border-slate-800 focus-within:border-[#B88B2A] shadow-md hover:shadow-lg transition-all p-1 sm:p-1.5"
             >
               <div className="pl-3 pr-2 text-slate-400">
-                <Search size={18} className="text-[#C8A34D]" />
+                <Search size={18} className="text-[#B88B2A]" />
               </div>
 
               <input
@@ -492,7 +492,7 @@ export default function LegalPrecedentsWorkspace() {
           <div className="max-w-3xl mx-auto space-y-8 py-4">
             
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-2xl bg-[#C8A34D]/15 text-[#B38628] flex items-center justify-center mx-auto shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-[#B88B2A]/15 text-[#B38628] flex items-center justify-center mx-auto shadow-xs">
                 <Landmark size={24} />
               </div>
               <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
@@ -532,9 +532,9 @@ export default function LegalPrecedentsWorkspace() {
                   setSearchQuery('Anticipatory bail');
                   executeSearch('Anticipatory bail');
                 }}
-                className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/60 transition-all cursor-pointer group shadow-xs space-y-2"
+                className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A]/60 transition-all cursor-pointer group shadow-xs space-y-2"
               >
-                <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center group-hover:scale-105 transition-transform">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center group-hover:scale-105 transition-transform">
                   <Scale size={16} />
                 </div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">Criminal & Bail</h3>
@@ -548,9 +548,9 @@ export default function LegalPrecedentsWorkspace() {
                   setSearchQuery('Section 138 NI Act presumption');
                   executeSearch('Section 138 NI Act presumption');
                 }}
-                className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/60 transition-all cursor-pointer group shadow-xs space-y-2"
+                className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A]/60 transition-all cursor-pointer group shadow-xs space-y-2"
               >
-                <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center group-hover:scale-105 transition-transform">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center group-hover:scale-105 transition-transform">
                   <BookOpen size={16} />
                 </div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">Commercial & NI Act</h3>
@@ -564,9 +564,9 @@ export default function LegalPrecedentsWorkspace() {
                   setSearchQuery('Fundamental rights Article 21');
                   executeSearch('Fundamental rights Article 21');
                 }}
-                className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/60 transition-all cursor-pointer group shadow-xs space-y-2"
+                className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A]/60 transition-all cursor-pointer group shadow-xs space-y-2"
               >
-                <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center group-hover:scale-105 transition-transform">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center group-hover:scale-105 transition-transform">
                   <Landmark size={16} />
                 </div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">Constitutional Law</h3>
@@ -583,7 +583,7 @@ export default function LegalPrecedentsWorkspace() {
         {isSearching && (
           <div className="max-w-4xl mx-auto space-y-5">
             <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-3 text-xs text-[#B38628] dark:text-amber-300">
-              <Sparkles size={16} className="animate-spin text-[#C8A34D]" />
+              <Sparkles size={16} className="animate-spin text-[#B88B2A]" />
               <div className="space-y-0.5">
                 <span className="font-bold block">AI LEGAL™ is researching...</span>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -624,7 +624,7 @@ export default function LegalPrecedentsWorkspace() {
                   <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
                     {searchQuery ? `"${searchQuery}"` : 'All Jurisprudential Authorities'}
                   </h2>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#C8A34D]/15 text-[#B38628] dark:text-amber-400 border border-[#C8A34D]/30">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#B88B2A]/15 text-[#B38628] dark:text-amber-400 border border-[#B88B2A]/30">
                     {results.length} Relevant Judgments
                   </span>
                 </div>
@@ -638,7 +638,7 @@ export default function LegalPrecedentsWorkspace() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D] cursor-pointer"
+                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A] cursor-pointer"
                 >
                   <option value="relevance">Highest Relevance</option>
                   <option value="newest">Newest First</option>

@@ -206,7 +206,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
             {/* 1. Member Information Card */}
             <div className="p-4.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-4">
               <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black text-sm">
-                <UserPlus className="w-5 h-5 text-[#C8A34D]" />
+                <UserPlus className="w-5 h-5 text-[#B88B2A]" />
                 <span>1. Member Information</span>
               </div>
 
@@ -220,7 +220,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
                   placeholder="e.g. Adv. Amit Kumar"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
-                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                 />
               </div>
 
@@ -234,7 +234,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
                     placeholder="advocate@firm.com"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -246,7 +246,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
                     placeholder="+91 98765 43210"
                     value={mobile}
                     onChange={e => setMobile(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
               </div>
@@ -261,7 +261,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
                     placeholder="D/1234/2020"
                     value={barCouncilNo}
                     onChange={e => setBarCouncilNo(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -271,7 +271,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
                   <select
                     value={stateBarCouncil}
                     onChange={e => setStateBarCouncil(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                   >
                     <option value="Delhi Bar Council">Delhi Bar Council</option>
                     <option value="Maharashtra & Goa Bar Council">Maharashtra & Goa Bar Council</option>
@@ -286,7 +286,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
             {/* 2. Role & Department Card */}
             <div className="p-4.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-4">
               <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black text-sm">
-                <Briefcase className="w-5 h-5 text-[#C8A34D]" />
+                <Briefcase className="w-5 h-5 text-[#B88B2A]" />
                 <span>2. Role & Department</span>
               </div>
 
@@ -297,7 +297,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
                 <select
                   value={role}
                   onChange={e => setRole(e.target.value)}
-                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                 >
                   {Object.keys(ROLES_INFO).map(r => (
                     <option key={r} value={r}>{r}</option>
@@ -315,7 +315,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
                 <select
                   value={department}
                   onChange={e => setDepartment(e.target.value)}
-                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                 >
                   {DEPARTMENTS_LIST.map(dept => (
                     <option key={dept} value={dept}>{dept}</option>
@@ -327,7 +327,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
             {/* 3. Default Permission Level Card */}
             <div className="p-4.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-4">
               <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black text-sm">
-                <ShieldCheck className="w-5 h-5 text-[#C8A34D]" />
+                <ShieldCheck className="w-5 h-5 text-[#B88B2A]" />
                 <span>3. Default Permission Level</span>
               </div>
 
@@ -335,14 +335,14 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
                 <select
                   value={permission}
                   onChange={e => setPermission(e.target.value)}
-                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                 >
                   {Object.keys(PERMISSIONS_INFO).map(p => (
                     <option key={p} value={p}>{p}</option>
                   ))}
                 </select>
                 
-                <div className="p-3 rounded-xl bg-amber-500/10 border border-[#C8A34D]/30 mt-2 text-xs font-medium text-[#C8A34D]">
+                <div className="p-3 rounded-xl bg-amber-500/10 border border-[#B88B2A]/30 mt-2 text-xs font-medium text-[#B88B2A]">
                   {PERMISSIONS_INFO[permission]}
                 </div>
               </div>
@@ -352,10 +352,10 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
             <div className="p-4.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black text-sm">
-                  <Layers className="w-5 h-5 text-[#C8A34D]" />
+                  <Layers className="w-5 h-5 text-[#B88B2A]" />
                   <span>4. Workspace Module Access</span>
                 </div>
-                <span className="px-2 py-0.5 rounded-md bg-amber-500/15 text-[#C8A34D] text-[10px] font-black border border-[#C8A34D]/30">
+                <span className="px-2 py-0.5 rounded-md bg-amber-500/15 text-[#B88B2A] text-[10px] font-black border border-[#B88B2A]/30">
                   {selectedModules.length} Modules Selected
                 </span>
               </div>
@@ -370,12 +370,12 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
                       onClick={() => toggleModule(mod)}
                       className={`px-3 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-2 border ${
                         isSelected
-                          ? 'bg-amber-500/10 text-[#C8A34D] border-[#C8A34D] shadow-xs'
+                          ? 'bg-amber-500/10 text-[#B88B2A] border-[#B88B2A] shadow-xs'
                           : 'bg-slate-100 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 border-slate-200/80 dark:border-slate-700 hover:border-slate-300'
                       }`}
                     >
                       {isSelected ? (
-                        <CheckSquare className="w-4 h-4 text-[#C8A34D] shrink-0" />
+                        <CheckSquare className="w-4 h-4 text-[#B88B2A] shrink-0" />
                       ) : (
                         <Square className="w-4 h-4 text-slate-400 shrink-0" />
                       )}
@@ -389,11 +389,11 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
             {/* 5. Invitation Delivery Card */}
             <div className="p-4.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-3">
               <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black text-sm">
-                <Sparkles className="w-5 h-5 text-[#C8A34D]" />
+                <Sparkles className="w-5 h-5 text-[#B88B2A]" />
                 <span>5. Invitation Delivery</span>
               </div>
 
-              <div className="p-4 rounded-xl border border-[#C8A34D]/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent space-y-2">
+              <div className="p-4 rounded-xl border border-[#B88B2A]/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent space-y-2">
                 <h5 className="font-extrabold text-xs text-slate-900 dark:text-white">
                   AI LEGAL Smart Delivery
                 </h5>
@@ -408,7 +408,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
             {/* 6. Personal Welcome Message Card */}
             <div className="p-4.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-2">
               <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black text-sm">
-                <MessageSquare className="w-5 h-5 text-[#C8A34D]" />
+                <MessageSquare className="w-5 h-5 text-[#B88B2A]" />
                 <span>6. Personal Welcome Message</span>
               </div>
 
@@ -416,13 +416,13 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
                 rows={2}
                 value={personalMessage}
                 onChange={e => setPersonalMessage(e.target.value)}
-                className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111] resize-none"
+                className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111] resize-none"
               />
             </div>
 
             {/* Invitation Summary Preview Card */}
-            <div className="p-4 rounded-2xl border-2 border-[#C8A34D] bg-amber-500/5 dark:bg-amber-500/10 space-y-2">
-              <h5 className="font-extrabold text-xs text-[#C8A34D] uppercase tracking-wider flex items-center gap-1.5">
+            <div className="p-4 rounded-2xl border-2 border-[#B88B2A] bg-amber-500/5 dark:bg-amber-500/10 space-y-2">
+              <h5 className="font-extrabold text-xs text-[#B88B2A] uppercase tracking-wider flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4" /> Invitation Summary Preview
               </h5>
               <div className="text-xs text-slate-700 dark:text-slate-300 space-y-1 font-medium">
@@ -438,7 +438,7 @@ export const InviteTeamMemberModal = ({ isOpen, onClose, onSuccess }) => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+                className="w-full py-3.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
                 <span>{isSubmitting ? 'Sending Invitation...' : 'Send Invitation'}</span>

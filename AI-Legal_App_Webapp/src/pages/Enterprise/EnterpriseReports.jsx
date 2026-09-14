@@ -29,7 +29,7 @@ const EnterpriseReports = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <FileText className="text-[#C8A34D]" size={26} /> Institutional Audit & Activity Reports
+            <FileText className="text-[#B88B2A]" size={26} /> Institutional Audit & Activity Reports
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Generate printable activity reports for NAAC accreditation preparation, BCI inspection, internal audits, and digital literacy records.
@@ -39,7 +39,7 @@ const EnterpriseReports = () => {
         <button
           onClick={handleExportPdf}
           disabled={generating}
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer shrink-0"
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Printer size={16} /> Export Audit Report as PDF
         </button>
@@ -108,7 +108,7 @@ const EnterpriseReports = () => {
         {/* Letterhead Header */}
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-6">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#C8A34D]">
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#B88B2A]">
               AI LEGAL™ ENTERPRISE AUDIT & ACCREDITATION RECORD
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">
@@ -145,8 +145,8 @@ const EnterpriseReports = () => {
           </div>
           <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
             <span className="text-slate-400 text-[10px] font-bold uppercase block mb-0.5">Legal Drafts Created</span>
-            <span className="text-xl font-black text-[#C8A34D]">2,800</span>
-            <span className="text-[10px] text-[#C8A34D] font-bold block mt-0.5">Memorials & Pleadings</span>
+            <span className="text-xl font-black text-[#B88B2A]">2,800</span>
+            <span className="text-[10px] text-[#B88B2A] font-bold block mt-0.5">Memorials & Pleadings</span>
           </div>
         </div>
 

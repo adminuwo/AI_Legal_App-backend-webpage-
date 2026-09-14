@@ -90,7 +90,7 @@ export default function JudgmentReader({
                 <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight truncate">
                   {judgment.title}
                 </h2>
-                <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-50 dark:bg-amber-950/40 text-[#B38628] border border-[#C8A34D]/30 shrink-0">
+                <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-50 dark:bg-amber-950/40 text-[#B38628] border border-[#B88B2A]/30 shrink-0">
                   {judgment.citation}
                 </span>
               </div>
@@ -104,7 +104,7 @@ export default function JudgmentReader({
           <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end">
             <button
               onClick={() => onAddToCase(judgment)}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#C8A34D] hover:bg-[#B38628] text-slate-950 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#B88B2A] hover:bg-[#B38628] text-slate-950 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <Plus size={13} />
               <span>Add to Case</span>
@@ -257,7 +257,7 @@ export default function JudgmentReader({
                 
                 {/* Court Emblem & Name */}
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center shrink-0 border border-[#C8A34D]/30">
+                  <div className="w-11 h-11 rounded-2xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center shrink-0 border border-[#B88B2A]/30">
                     <Landmark size={22} />
                   </div>
                   <div>
@@ -276,7 +276,7 @@ export default function JudgmentReader({
                     {judgment.title}
                   </h1>
                   <div className="flex flex-wrap items-center gap-2 pt-1">
-                    <span className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-[#C8A34D]/15 text-[#B38628] dark:text-amber-300 border border-[#C8A34D]/40">
+                    <span className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-[#B88B2A]/15 text-[#B38628] dark:text-amber-300 border border-[#B88B2A]/40">
                       {judgment.citation}
                     </span>
                     <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
@@ -335,7 +335,7 @@ export default function JudgmentReader({
                       <span className="font-bold text-slate-500 shrink-0 w-24">Subjects:</span>
                       <div className="flex flex-wrap gap-1">
                         {judgment.subjectTags.map((tag, idx) => (
-                          <span key={idx} className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] dark:text-amber-300 border border-[#C8A34D]/30">
+                          <span key={idx} className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] dark:text-amber-300 border border-[#B88B2A]/30">
                             {tag}
                           </span>
                         ))}
@@ -345,7 +345,7 @@ export default function JudgmentReader({
                 </div>
 
                 {/* Binding Ratio Decidendi Golden Callout */}
-                <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/30 dark:to-slate-900 border-2 border-[#C8A34D] space-y-1.5">
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/30 dark:to-slate-900 border-2 border-[#B88B2A] space-y-1.5">
                   <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-[#B38628] dark:text-[#E5A93C]">
                     <Scale size={14} />
                     <span>Binding Ratio Decidendi (Precedent Law)</span>
@@ -359,7 +359,7 @@ export default function JudgmentReader({
                 {judgment.caseContext?.legalIssue && (
                   <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5 text-xs">
                     <div className="flex items-center gap-1.5 font-black uppercase tracking-wider text-slate-500">
-                      <HelpCircle size={14} className="text-[#C8A34D]" />
+                      <HelpCircle size={14} className="text-[#B88B2A]" />
                       <span>Questions of Law Determined</span>
                     </div>
                     <p className="text-slate-800 dark:text-slate-200 whitespace-pre-line leading-relaxed font-semibold">
@@ -382,7 +382,7 @@ export default function JudgmentReader({
                 </div>
 
                 <div 
-                  className="font-serif leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap select-text selection:bg-[#C8A34D]/30"
+                  className="font-serif leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap select-text selection:bg-[#B88B2A]/30"
                   style={{ fontSize: `${fontSize}px`, lineHeight: 1.85 }}
                 >
                   {renderHighlightedText(judgment.fullTextExcerpt || judgment.facts || 'Full judgment report is being synchronized.')}

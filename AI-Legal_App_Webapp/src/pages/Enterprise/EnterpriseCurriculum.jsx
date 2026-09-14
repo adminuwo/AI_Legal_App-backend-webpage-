@@ -480,7 +480,7 @@ const EnterpriseCurriculum = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <BookOpen className="text-[#C8A34D]" size={26} /> Curriculum & Syllabus AI Alignment
+            <BookOpen className="text-[#B88B2A]" size={26} /> Curriculum & Syllabus AI Alignment
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Map course units, topics, reference books, and syllabus PDFs to automatically guide student AI Tutors, Quizzes, and Notes.
@@ -489,7 +489,7 @@ const EnterpriseCurriculum = () => {
 
         <button
           onClick={handleSaveCurriculum}
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer"
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer"
         >
           <Save size={16} /> Save AI Syllabus Context
         </button>
@@ -538,9 +538,9 @@ const EnterpriseCurriculum = () => {
       </div>
 
       {/* Syllabus Banner + Global AI Auto-Fetch Official Syllabus & Add Unit Button */}
-      <div className="p-4 rounded-2xl bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-[#C8A34D] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-[#B88B2A] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Sparkles size={20} className="shrink-0 text-[#C8A34D]" />
+          <Sparkles size={20} className="shrink-0 text-[#B88B2A]" />
           <p className="font-semibold">
             Active Context: <strong>{selectedCourse} - {selectedSemester} ({selectedSubject})</strong>.
           </p>
@@ -549,7 +549,7 @@ const EnterpriseCurriculum = () => {
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={handleGlobalAiFetchOfficialSyllabus}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md cursor-pointer hover:brightness-110 transition-all"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md cursor-pointer hover:brightness-110 transition-all"
           >
             <Wand2 size={14} className="text-slate-950" /> ✨ AI Auto-Fetch Official Syllabus
           </button>
@@ -581,7 +581,7 @@ const EnterpriseCurriculum = () => {
             <div className="flex justify-center gap-2 pt-1">
               <button
                 onClick={handleGlobalAiFetchOfficialSyllabus}
-                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black text-xs cursor-pointer shadow-md"
+                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black text-xs cursor-pointer shadow-md"
               >
                 ✨ AI Auto-Fetch Syllabus
               </button>
@@ -600,7 +600,7 @@ const EnterpriseCurriculum = () => {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div className="space-y-0.5">
                   <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
-                    <Layers size={16} className="text-[#C8A34D]" /> Unit {unit.unitNumber}: {unit.title}
+                    <Layers size={16} className="text-[#B88B2A]" /> Unit {unit.unitNumber}: {unit.title}
                   </h3>
                   
                   {/* Attached PDFs List */}
@@ -622,7 +622,7 @@ const EnterpriseCurriculum = () => {
                   {/* 1. Unit AI Auto Fetch Topics */}
                   <button
                     onClick={() => handleUnitAiAutoFetch(uIdx)}
-                    className="px-3 py-1.5 rounded-xl bg-[#C8A34D]/15 hover:bg-[#C8A34D] text-[#B08D3E] hover:text-slate-950 border border-[#C8A34D]/40 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    className="px-3 py-1.5 rounded-xl bg-[#B88B2A]/15 hover:bg-[#B88B2A] text-[#B08D3E] hover:text-slate-950 border border-[#B88B2A]/40 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
                     title="Auto generate topics for this Unit using AI"
                   >
                     <Wand2 size={13} /> AI Auto-Fetch Topics
@@ -633,7 +633,7 @@ const EnterpriseCurriculum = () => {
                     onClick={() => triggerUnitFileUpload(uIdx)}
                     className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 cursor-pointer"
                   >
-                    <Upload size={13} className="text-[#C8A34D]" /> Upload PDFs / Books (Multiple)
+                    <Upload size={13} className="text-[#B88B2A]" /> Upload PDFs / Books (Multiple)
                   </button>
 
                   {/* 3. Edit Unit */}
@@ -689,11 +689,11 @@ const EnterpriseCurriculum = () => {
                     setNewTopic(e.target.value);
                   }}
                   placeholder="Add new syllabus topic (e.g. Doctrine of Severability)..."
-                  className="flex-1 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:outline-none focus:border-[#C8A34D]"
+                  className="flex-1 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:outline-none focus:border-[#B88B2A]"
                 />
                 <button
                   onClick={() => handleAddTopic(uIdx)}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black text-xs hover:brightness-110 transition-all cursor-pointer shadow-sm"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black text-xs hover:brightness-110 transition-all cursor-pointer shadow-sm"
                 >
                   + Add Topic
                 </button>
@@ -709,7 +709,7 @@ const EnterpriseCurriculum = () => {
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <PlusCircle size={20} className="text-[#C8A34D]" /> Create Unit {units.length + 1}
+                <PlusCircle size={20} className="text-[#B88B2A]" /> Create Unit {units.length + 1}
               </h3>
               <button onClick={() => setShowAddUnitModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
@@ -725,7 +725,7 @@ const EnterpriseCurriculum = () => {
                   value={unitTitleInput}
                   onChange={e => setUnitTitleInput(e.target.value)}
                   placeholder="e.g. Union Judiciary & Supreme Court Jurisdiction"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -734,7 +734,7 @@ const EnterpriseCurriculum = () => {
                   Upload Syllabus PDFs / Reference Books (Multiple Allowed)
                 </label>
                 <div className="p-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50 dark:bg-slate-950 text-center space-y-2">
-                  <FileUp size={24} className="mx-auto text-[#C8A34D]" />
+                  <FileUp size={24} className="mx-auto text-[#B88B2A]" />
                   <p className="text-[11px] text-slate-500 font-semibold">
                     {unitPdfInputs.length > 0
                       ? `Selected ${unitPdfInputs.length} file(s): ${unitPdfInputs.map(f => f.name).join(', ')}`
@@ -745,7 +745,7 @@ const EnterpriseCurriculum = () => {
                     accept=".pdf,.doc,.docx"
                     multiple={true}
                     onChange={e => setUnitPdfInputs(Array.from(e.target.files))}
-                    className="w-full text-[11px] text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#C8A34D] file:text-slate-950 hover:file:bg-[#B08D3E]"
+                    className="w-full text-[11px] text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#B88B2A] file:text-slate-950 hover:file:bg-[#B08D3E]"
                   />
                 </div>
               </div>
@@ -759,7 +759,7 @@ const EnterpriseCurriculum = () => {
                 </button>
                 <button
                   onClick={handleCreateUnitSubmit}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md cursor-pointer"
                 >
                   Create Unit
                 </button>
@@ -775,7 +775,7 @@ const EnterpriseCurriculum = () => {
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Edit size={20} className="text-[#C8A34D]" /> Edit Unit {units[editingUnitIdx].unitNumber}
+                <Edit size={20} className="text-[#B88B2A]" /> Edit Unit {units[editingUnitIdx].unitNumber}
               </h3>
               <button onClick={() => setShowEditUnitModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
@@ -789,7 +789,7 @@ const EnterpriseCurriculum = () => {
                   type="text"
                   value={unitTitleInput}
                   onChange={e => setUnitTitleInput(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -802,7 +802,7 @@ const EnterpriseCurriculum = () => {
                   accept=".pdf,.doc,.docx"
                   multiple={true}
                   onChange={e => setUnitPdfInputs(Array.from(e.target.files))}
-                  className="w-full text-[11px] text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#C8A34D] file:text-slate-950 hover:file:bg-[#B08D3E]"
+                  className="w-full text-[11px] text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#B88B2A] file:text-slate-950 hover:file:bg-[#B08D3E]"
                 />
               </div>
 
@@ -815,7 +815,7 @@ const EnterpriseCurriculum = () => {
                 </button>
                 <button
                   onClick={handleSaveEditUnit}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md cursor-pointer"
                 >
                   Save Changes
                 </button>

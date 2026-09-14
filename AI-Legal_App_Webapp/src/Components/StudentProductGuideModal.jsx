@@ -59,8 +59,8 @@ export default function StudentProductGuideModal({ isOpen, onClose }) {
           {/* Header */}
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 inline-flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-[#C8A34D]" /> AI LEGAL<sup className="text-[8px] font-bold text-[#111827] dark:text-white ml-0.5">TM</sup> PRODUCT GUIDE
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30 inline-flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-[#B88B2A]" /> AI LEGAL<sup className="text-[8px] font-bold text-[#111827] dark:text-white ml-0.5">TM</sup> PRODUCT GUIDE
               </span>
               <h2 className="text-xl sm:text-2xl font-black text-[#111827] dark:text-white tracking-tight">
                 Welcome to Law Student Suite 📚⚖️
@@ -85,10 +85,10 @@ export default function StudentProductGuideModal({ isOpen, onClose }) {
               return (
                 <div
                   key={idx}
-                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#C8A34D]/40 transition-all"
+                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#B88B2A]/40 transition-all"
                 >
                   <div className="flex items-start gap-3.5 flex-1">
-                    <div className="p-3 rounded-xl bg-[#C8A34D]/10 border border-[#C8A34D]/25 text-[#C8A34D] shrink-0">
+                    <div className="p-3 rounded-xl bg-[#B88B2A]/10 border border-[#B88B2A]/25 text-[#B88B2A] shrink-0">
                       <IconComp className="w-5 h-5" />
                     </div>
                     <div className="space-y-0.5">
@@ -106,7 +106,7 @@ export default function StudentProductGuideModal({ isOpen, onClose }) {
                       onClose();
                       navigate(item.path);
                     }}
-                    className="px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 font-bold text-xs flex items-center justify-center gap-1.5 shrink-0 transition-all cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30 font-bold text-xs flex items-center justify-center gap-1.5 shrink-0 transition-all cursor-pointer"
                   >
                     <span>{item.action}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -123,7 +123,7 @@ export default function StudentProductGuideModal({ isOpen, onClose }) {
             </span>
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-white font-bold text-xs transition-all cursor-pointer shadow-2xs"
+              className="px-5 py-2 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-white font-bold text-xs transition-all cursor-pointer shadow-2xs"
             >
               Got It!
             </button>

@@ -283,15 +283,15 @@ export default function OnboardingPage() {
       <header className="w-full max-w-5xl px-6 py-5 flex items-center justify-between z-20">
         <button
           onClick={toggleVoice}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-800 text-[#C8A34D] text-xs font-black tracking-wide transition-all cursor-pointer"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-800 text-[#B88B2A] text-xs font-black tracking-wide transition-all cursor-pointer"
         >
-          {isVoiceMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-[#C8A34D]" />}
+          {isVoiceMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-[#B88B2A]" />}
           <span>{isVoiceMuted ? 'Voice OFF' : 'Voice ON'}</span>
         </button>
 
         <button
           onClick={() => completeOnboarding('/login')}
-          className="px-4 py-1.5 rounded-full bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] text-xs font-black tracking-wide shadow-xs transition-all cursor-pointer"
+          className="px-4 py-1.5 rounded-full bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] text-xs font-black tracking-wide shadow-xs transition-all cursor-pointer"
         >
           Skip
         </button>
@@ -412,8 +412,8 @@ export default function OnboardingPage() {
         <div className="w-full max-w-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xl space-y-5 z-20 relative">
 
           {/* Card Topic Badge */}
-          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#111111] dark:text-[#C8A34D]">
-            <SlideIcon className="w-4 h-4 text-[#C8A34D]" />
+          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#111111] dark:text-[#B88B2A]">
+            <SlideIcon className="w-4 h-4 text-[#B88B2A]" />
             <span>{slide.topic}</span>
           </div>
 
@@ -436,7 +436,7 @@ export default function OnboardingPage() {
                 <div
                   key={sIdx}
                   className={`h-2 rounded-full transition-all duration-300 ${sIdx === currentSlide
-                      ? 'w-6 bg-[#C8A34D]'
+                      ? 'w-6 bg-[#B88B2A]'
                       : 'w-2 bg-slate-200 dark:bg-slate-700'
                     }`}
                 />
@@ -447,7 +447,7 @@ export default function OnboardingPage() {
             {currentSlide < slides.length - 1 ? (
               <button
                 onClick={handleNext}
-                className="px-5 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] text-xs font-black tracking-wide shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] text-xs font-black tracking-wide shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
               >
                 <span>{visibleCount < fullText.length ? 'Skip Typing ›' : 'Next'}</span>
                 {visibleCount >= fullText.length && <ArrowRight className="w-3.5 h-3.5" />}
@@ -462,7 +462,7 @@ export default function OnboardingPage() {
                 </button>
                 <button
                   onClick={() => completeOnboarding('/login')}
-                  className="px-5 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer"
                 >
                   Get Started
                 </button>

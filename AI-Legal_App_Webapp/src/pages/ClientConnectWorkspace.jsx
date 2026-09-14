@@ -632,7 +632,7 @@ ${advocateSignature}`;
                   <h1 className="text-xs sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white truncate">
                     {activeRole === 'law_firm' ? 'AI Team Communication' : 'AI Client Connect'}
                   </h1>
-                  <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0 hidden md:inline-block">
+                  <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0 hidden md:inline-block">
                     {activeRole === 'law_firm' ? 'Firm Suite' : 'Client Suite'}
                   </span>
                 </div>
@@ -661,7 +661,7 @@ ${advocateSignature}`;
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by case name, client name, or forum..."
-              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none shadow-xs"
+              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none shadow-xs"
             />
           </div>
 
@@ -678,7 +678,7 @@ ${advocateSignature}`;
 
             {isLoadingCases ? (
               <div className="py-16 text-center text-xs text-slate-400 font-bold space-y-2 bg-white dark:bg-[#111622] rounded-3xl border border-slate-200 dark:border-slate-800">
-                <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#C8A34D]" />
+                <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#B88B2A]" />
                 <p>Loading registered firm matters...</p>
               </div>
             ) : cases.filter(c => !searchQuery.trim() || c.name?.toLowerCase().includes(searchQuery.toLowerCase()) || c.clientName?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
@@ -696,7 +696,7 @@ ${advocateSignature}`;
                 </div>
                 <button
                   onClick={() => setStage('CONNECT_NEW')}
-                  className="px-6 py-3 rounded-2xl bg-[#C8A34D] text-[#111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md inline-flex items-center gap-2"
+                  className="px-6 py-3 rounded-2xl bg-[#B88B2A] text-[#111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md inline-flex items-center gap-2"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Connect New Client</span>
@@ -708,15 +708,15 @@ ${advocateSignature}`;
                   <div
                     key={c._id || c.id}
                     onClick={() => handleSelectMatter(c)}
-                    className="p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#111622] border-2 border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] transition-all cursor-pointer shadow-xs hover:shadow-md space-y-2 group"
+                    className="p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#111622] border-2 border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] transition-all cursor-pointer shadow-xs hover:shadow-md space-y-2 group"
                   >
                     <div className="flex items-center justify-between gap-2.5">
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl sm:rounded-2xl bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center font-black group-hover:scale-105 transition-transform shrink-0">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl sm:rounded-2xl bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center font-black group-hover:scale-105 transition-transform shrink-0">
                           <FolderOpen className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white group-hover:text-[#C8A34D] transition-colors truncate">
+                          <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white group-hover:text-[#B88B2A] transition-colors truncate">
                             {c.name}
                           </h3>
                           <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">
@@ -729,10 +729,10 @@ ${advocateSignature}`;
 
                     <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 dark:border-slate-800/80 text-[10.5px] sm:text-xs">
                       <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 min-w-0">
-                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C8A34D] shrink-0" />
+                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B88B2A] shrink-0" />
                         <span className="font-bold truncate">{c.clientName || 'Primary Client'}</span>
                       </div>
-                      <span className="text-[10px] sm:text-[11px] font-extrabold text-[#C8A34D] group-hover:underline flex items-center gap-1 shrink-0">
+                      <span className="text-[10px] sm:text-[11px] font-extrabold text-[#B88B2A] group-hover:underline flex items-center gap-1 shrink-0">
                         <span>Launch Workspace</span>
                         <ArrowRight className="w-3 h-3" />
                       </span>
@@ -777,7 +777,7 @@ ${advocateSignature}`;
 
           {isLoadingCases ? (
             <div className="py-16 text-center text-xs text-slate-400 font-bold space-y-2">
-              <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#C8A34D]" />
+              <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#B88B2A]" />
               <p>Fetching deep case details & syncing client emails...</p>
             </div>
           ) : cases.length === 0 ? (
@@ -794,7 +794,7 @@ ${advocateSignature}`;
               </div>
               <button
                 onClick={() => setStage('CONNECT_NEW')}
-                className="px-6 py-3 rounded-2xl bg-[#C8A34D] text-[#111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md inline-flex items-center gap-2"
+                className="px-6 py-3 rounded-2xl bg-[#B88B2A] text-[#111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md inline-flex items-center gap-2"
               >
                 <UserPlus className="w-4 h-4" /> Connect New Client
               </button>
@@ -806,18 +806,18 @@ ${advocateSignature}`;
                 <div
                   key={c._id}
                   onClick={() => handleSelectMatter(c)}
-                  className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] transition-all cursor-pointer shadow-sm flex items-center justify-between gap-4 group"
+                  className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] transition-all cursor-pointer shadow-sm flex items-center justify-between gap-4 group"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[9px] font-black uppercase">
+                      <span className="px-2 py-0.5 rounded bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 text-[9px] font-black uppercase">
                         {c.caseType || 'Litigation File'}
                       </span>
                       <span className="text-[10px] text-slate-400 font-bold">
                         Court: {c.courtName || 'District Court'}
                       </span>
                     </div>
-                    <h3 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-[#C8A34D] transition-colors">
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-[#B88B2A] transition-colors">
                       📁 {c.name}
                     </h3>
                     <p className="text-xs text-slate-500 font-medium flex items-center gap-2">
@@ -825,7 +825,7 @@ ${advocateSignature}`;
                       {(c.clientEmail || c.email) && <span className="text-sky-500">• Email: {c.clientEmail || c.email}</span>}
                     </p>
                   </div>
-                  <button className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] group-hover:bg-[#C8A34D] group-hover:text-[#111] text-xs font-black transition-all cursor-pointer shrink-0 flex items-center gap-1">
+                  <button className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] group-hover:bg-[#B88B2A] group-hover:text-[#111] text-xs font-black transition-all cursor-pointer shrink-0 flex items-center gap-1">
                     <span>Sync & Select Client</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
@@ -867,7 +867,7 @@ ${advocateSignature}`;
                 onClick={() => setSelectedClientForExisting(cl)}
                 className={`p-5 rounded-2xl bg-white dark:bg-[#111622] border-2 transition-all cursor-pointer shadow-sm space-y-3 ${
                   selectedClientForExisting?.id === cl.id
-                    ? 'border-[#C8A34D] bg-[#C8A34D]/5'
+                    ? 'border-[#B88B2A] bg-[#B88B2A]/5'
                     : 'border-slate-200 dark:border-slate-800 hover:border-slate-400'
                 }`}
               >
@@ -876,7 +876,7 @@ ${advocateSignature}`;
                     {cl.role}
                   </span>
                   {selectedClientForExisting?.id === cl.id && (
-                    <CheckCircle2 className="w-5 h-5 text-[#C8A34D]" />
+                    <CheckCircle2 className="w-5 h-5 text-[#B88B2A]" />
                   )}
                 </div>
                 <div>
@@ -891,7 +891,7 @@ ${advocateSignature}`;
           <div className="flex justify-end pt-4">
             <button
               onClick={() => handleConfirmExistingConnection(selectedCaseForExisting, selectedClientForExisting)}
-              className="px-8 py-3.5 rounded-2xl bg-[#C8A34D] text-[#111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
+              className="px-8 py-3.5 rounded-2xl bg-[#B88B2A] text-[#111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
             >
               <span>Continue with {selectedClientForExisting?.name}</span>
               <ArrowRight className="w-4 h-4" />
@@ -937,7 +937,7 @@ ${advocateSignature}`;
                 value={newClientName}
                 onChange={(e) => setNewClientName(e.target.value)}
                 placeholder="e.g. Suresh Kumar"
-                className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
               />
             </div>
 
@@ -952,7 +952,7 @@ ${advocateSignature}`;
                   value={newClientMobile}
                   onChange={(e) => setNewClientMobile(e.target.value)}
                   placeholder="e.g. +91 98765 43210"
-                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                 />
               </div>
 
@@ -965,7 +965,7 @@ ${advocateSignature}`;
                   value={newClientWhatsApp}
                   onChange={(e) => setNewClientWhatsApp(e.target.value)}
                   placeholder="Leave empty if same as Mobile"
-                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                 />
               </div>
             </div>
@@ -981,7 +981,7 @@ ${advocateSignature}`;
                   value={newClientEmail}
                   onChange={(e) => setNewClientEmail(e.target.value)}
                   placeholder="e.g. client@example.com"
-                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                 />
               </div>
 
@@ -992,7 +992,7 @@ ${advocateSignature}`;
                 <select
                   value={newClientLanguage}
                   onChange={(e) => setNewClientLanguage(e.target.value)}
-                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none cursor-pointer"
+                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none cursor-pointer"
                 >
                   {LANGUAGES.map(l => (
                     <option key={l} value={l}>{l}</option>
@@ -1010,7 +1010,7 @@ ${advocateSignature}`;
                 <select
                   value={newClientRole}
                   onChange={(e) => setNewClientRole(e.target.value)}
-                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none cursor-pointer"
+                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none cursor-pointer"
                 >
                   {CLIENT_ROLES.map(r => (
                     <option key={r} value={r}>{r}</option>
@@ -1025,7 +1025,7 @@ ${advocateSignature}`;
                 <select
                   value={newClientAssociatedCaseId}
                   onChange={(e) => setNewClientAssociatedCaseId(e.target.value)}
-                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none cursor-pointer"
+                  className="w-full p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none cursor-pointer"
                 >
                   <option value="">-- Independent Legal Consultation --</option>
                   {cases.map(c => (
@@ -1077,12 +1077,12 @@ ${advocateSignature}`;
                   <h1 className="text-xs sm:text-xl font-black tracking-tight text-slate-900 dark:text-white truncate">
                     {activeRole === 'law_firm' ? 'AI Team Communication Workspace' : 'AI Client Connect Workspace'}
                   </h1>
-                  <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0 hidden md:inline-block">
+                  <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0 hidden md:inline-block">
                     Connected Session
                   </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium hidden md:block mt-0.5">
-                  Active Client: <strong className="text-slate-900 dark:text-white">{activeClient.name}</strong> • Matter: <strong className="text-[#C8A34D]">{activeMatter?.name}</strong>
+                  Active Client: <strong className="text-slate-900 dark:text-white">{activeClient.name}</strong> • Matter: <strong className="text-[#B88B2A]">{activeMatter?.name}</strong>
                 </p>
               </div>
             </div>
@@ -1091,7 +1091,7 @@ ${advocateSignature}`;
               onClick={handleSwitchClientMatter}
               className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-[10.5px] sm:text-xs font-extrabold hover:bg-slate-200 transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap"
             >
-              <Users className="w-3.5 h-3.5 text-[#C8A34D]" /> <span className="hidden sm:inline">Change Client / Matter</span><span className="sm:hidden">Change</span>
+              <Users className="w-3.5 h-3.5 text-[#B88B2A]" /> <span className="hidden sm:inline">Change Client / Matter</span><span className="sm:hidden">Change</span>
             </button>
           </div>
 
@@ -1099,7 +1099,7 @@ ${advocateSignature}`;
           <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-xs space-y-4 sm:space-y-5">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3.5">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#C8A34D]/15 border border-[#C8A34D]/30 flex items-center justify-center font-black text-base sm:text-lg text-[#C8A34D] shrink-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#B88B2A]/15 border border-[#B88B2A]/30 flex items-center justify-center font-black text-base sm:text-lg text-[#B88B2A] shrink-0">
                   {activeClient.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
@@ -1110,7 +1110,7 @@ ${advocateSignature}`;
                     </span>
                   </h2>
                   <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
-                    Matter: <strong className="text-[#C8A34D]">{activeMatter?.name}</strong> • Forum: {activeMatter?.courtName || 'Advocate Office'}
+                    Matter: <strong className="text-[#B88B2A]">{activeMatter?.name}</strong> • Forum: {activeMatter?.courtName || 'Advocate Office'}
                   </p>
                 </div>
               </div>
@@ -1159,7 +1159,7 @@ ${advocateSignature}`;
 
               <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-1">
                 <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Preferred Language</span>
-                <span className="font-extrabold text-[#C8A34D] block">{selectedLanguage}</span>
+                <span className="font-extrabold text-[#B88B2A] block">{selectedLanguage}</span>
               </div>
             </div>
           </div>
@@ -1173,7 +1173,7 @@ ${advocateSignature}`;
                 
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-[#C8A34D]" />
+                    <Sparkles className="w-5 h-5 text-[#B88B2A]" />
                     <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
                       {activeChannel} AI Communication Builder
                     </h3>
@@ -1199,7 +1199,7 @@ ${advocateSignature}`;
                             onClick={() => setSelectedPurpose(purpose)}
                             className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
                               selectedPurpose === purpose
-                                ? 'bg-[#C8A34D] text-[#111111] shadow-sm'
+                                ? 'bg-[#B88B2A] text-[#111111] shadow-sm'
                                 : 'bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100'
                             }`}
                           >
@@ -1214,7 +1214,7 @@ ${advocateSignature}`;
                           value={customPurpose}
                           onChange={(e) => setCustomPurpose(e.target.value)}
                           placeholder="Enter custom communication purpose..."
-                          className="w-full mt-2 p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                          className="w-full mt-2 p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                         />
                       )}
                     </div>
@@ -1229,7 +1229,7 @@ ${advocateSignature}`;
                         value={advocateInstructions}
                         onChange={(e) => setAdvocateInstructions(e.target.value)}
                         placeholder="e.g. Mention next hearing on 28 July in Delhi High Court. Tell client to carry Aadhaar and signed affidavit..."
-                        className="w-full p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-medium focus:border-[#C8A34D] focus:outline-none leading-relaxed"
+                        className="w-full p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-medium focus:border-[#B88B2A] focus:outline-none leading-relaxed"
                       />
                     </div>
 
@@ -1242,7 +1242,7 @@ ${advocateSignature}`;
                         <select
                           value={selectedStyle}
                           onChange={(e) => setSelectedStyle(e.target.value)}
-                          className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-extrabold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none cursor-pointer"
+                          className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-extrabold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none cursor-pointer"
                         >
                           {COMMUNICATION_STYLES.map(s => (
                             <option key={s} value={s}>{s}</option>
@@ -1257,7 +1257,7 @@ ${advocateSignature}`;
                         <select
                           value={selectedLanguage}
                           onChange={(e) => setSelectedLanguage(e.target.value)}
-                          className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-extrabold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none cursor-pointer"
+                          className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-extrabold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none cursor-pointer"
                         >
                           {LANGUAGES.map(l => (
                             <option key={l} value={l}>{l}</option>
@@ -1280,7 +1280,7 @@ ${advocateSignature}`;
                         type="button"
                         disabled={isGeneratingDraft}
                         onClick={handleGenerateAiDraft}
-                        className="px-8 py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2 disabled:opacity-50"
+                        className="px-8 py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2 disabled:opacity-50"
                       >
                         {isGeneratingDraft ? (
                           <>
@@ -1301,7 +1301,7 @@ ${advocateSignature}`;
                   /* DRAFT PREVIEW & EDITING VIEW */
                   <div className="space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                      <span className="text-xs font-black uppercase text-[#C8A34D] flex items-center gap-1.5">
+                      <span className="text-xs font-black uppercase text-[#B88B2A] flex items-center gap-1.5">
                         <FileText className="w-4 h-4" /> Generated {activeChannel} Preview
                       </span>
                       <button
@@ -1320,7 +1320,7 @@ ${advocateSignature}`;
                           disabled={!isEditingDraft}
                           value={aiDraftSubject}
                           onChange={(e) => setAiDraftSubject(e.target.value)}
-                          className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                          className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                         />
                       </div>
                     )}
@@ -1332,7 +1332,7 @@ ${advocateSignature}`;
                         disabled={!isEditingDraft}
                         value={aiDraftBody}
                         onChange={(e) => setAiDraftBody(e.target.value)}
-                        className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-medium focus:border-[#C8A34D] focus:outline-none leading-relaxed whitespace-pre-wrap"
+                        className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-medium focus:border-[#B88B2A] focus:outline-none leading-relaxed whitespace-pre-wrap"
                       />
                     </div>
 
@@ -1352,7 +1352,7 @@ ${advocateSignature}`;
                         </button>
                         <button
                           onClick={handleGenerateAiDraft}
-                          className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[11px] sm:text-xs font-extrabold hover:bg-[#C8A34D] hover:text-[#111] cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0"
+                          className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 text-[11px] sm:text-xs font-extrabold hover:bg-[#B88B2A] hover:text-[#111] cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0"
                         >
                           <RefreshCw className="w-3.5 h-3.5 shrink-0" /> Regenerate
                         </button>
@@ -1378,7 +1378,7 @@ ${advocateSignature}`;
                 
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-[#C8A34D]" />
+                    <Clock className="w-4 h-4 text-[#B88B2A]" />
                     <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
                       Communication Timeline ({filteredLogs.length})
                     </h3>
@@ -1427,7 +1427,7 @@ ${advocateSignature}`;
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search logs by keyword..."
-                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                   />
                 </div>
 
@@ -1444,7 +1444,7 @@ ${advocateSignature}`;
                       <div
                         key={log.id || log._id}
                         onClick={() => setSelectedLogRecord(log)}
-                        className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-2 hover:border-[#C8A34D]/50 transition-colors cursor-pointer"
+                        className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-2 hover:border-[#B88B2A]/50 transition-colors cursor-pointer"
                       >
                         <div className="flex items-center justify-between text-[11px]">
                           <div className="flex items-center gap-1.5">
@@ -1482,10 +1482,10 @@ ${advocateSignature}`;
       {/* ─── COMMUNICATION DETAIL AUDIT MODAL ─── */}
       {selectedLogRecord && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#111622] border-2 border-[#C8A34D] w-full max-w-xl rounded-3xl p-6 space-y-4 shadow-2xl relative overflow-hidden">
+          <div className="bg-white dark:bg-[#111622] border-2 border-[#B88B2A] w-full max-w-xl rounded-3xl p-6 space-y-4 shadow-2xl relative overflow-hidden">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-[#C8A34D]" />
+                <FileText className="w-5 h-5 text-[#B88B2A]" />
                 <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
                   Communication Audit Record
                 </h3>
@@ -1501,7 +1501,7 @@ ${advocateSignature}`;
             <div className="space-y-3 text-xs">
               <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-400 font-bold">Channel & Purpose:</span>
-                <span className="font-extrabold text-[#C8A34D]">{selectedLogRecord.type} ({selectedLogRecord.reason})</span>
+                <span className="font-extrabold text-[#B88B2A]">{selectedLogRecord.type} ({selectedLogRecord.reason})</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-slate-400 font-bold">Recipient:</span>
@@ -1529,7 +1529,7 @@ ${advocateSignature}`;
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setSelectedLogRecord(null)}
-                className="px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm"
+                className="px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm"
               >
                 Close Audit Record
               </button>

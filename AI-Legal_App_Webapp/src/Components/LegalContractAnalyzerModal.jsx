@@ -121,18 +121,18 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#C8A34D]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
+          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#B88B2A]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
         >
           {/* Header */}
-          <div className="px-8 py-5 bg-[#111111] border-b border-[#C8A34D]/30 flex items-center justify-between shrink-0 text-white">
+          <div className="px-8 py-5 bg-[#111111] border-b border-[#B88B2A]/30 flex items-center justify-between shrink-0 text-white">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D]">
+              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A]">
                 <FileText className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-xl font-extrabold tracking-tight flex items-center gap-2">
                   <span>Contract Review & Risk Audit</span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 uppercase">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 uppercase">
                     Redline Intelligence Engine
                   </span>
                 </h2>
@@ -159,9 +159,9 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
                 onClick={() => { if (step.num < currentStep) setCurrentStep(step.num); }}
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-xl cursor-pointer transition-all ${
                   currentStep === step.num
-                    ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md shadow-[#C8A34D]/20'
+                    ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md shadow-[#B88B2A]/20'
                     : currentStep > step.num
-                    ? 'text-[#C8A34D]'
+                    ? 'text-[#B88B2A]'
                     : 'text-slate-500'
                 }`}
               >
@@ -188,7 +188,7 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#C8A34D] focus:outline-none"
+                      className="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#B88B2A] focus:outline-none"
                     >
                       {AGREEMENT_TYPES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
@@ -197,8 +197,8 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
                   {/* Dropzone */}
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Upload Agreement File</label>
-                    <label className="border-2 border-dashed border-[#C8A34D]/40 hover:border-[#C8A34D] bg-slate-50 dark:bg-[#111111] p-8 rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all">
-                      <Upload className="w-8 h-8 text-[#C8A34D] mb-2" />
+                    <label className="border-2 border-dashed border-[#B88B2A]/40 hover:border-[#B88B2A] bg-slate-50 dark:bg-[#111111] p-8 rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all">
+                      <Upload className="w-8 h-8 text-[#B88B2A] mb-2" />
                       <span className="text-xs font-bold text-slate-900 dark:text-white">Click to upload agreement or drag & drop</span>
                       <span className="text-[10px] text-slate-400 mt-1">Supports PDF, DOCX, TXT files (Max 25 MB)</span>
                       <input type="file" onChange={handleFileUpload} className="hidden" />
@@ -206,9 +206,9 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
                   </div>
 
                   {uploadedContract && (
-                    <div className="p-3 rounded-2xl bg-[#111111] border border-[#C8A34D]/40 flex items-center justify-between text-xs font-mono text-white">
+                    <div className="p-3 rounded-2xl bg-[#111111] border border-[#B88B2A]/40 flex items-center justify-between text-xs font-mono text-white">
                       <span>📄 {uploadedContract.name} ({uploadedContract.size})</span>
-                      <span className="text-[#C8A34D] font-bold">Ready for Audit</span>
+                      <span className="text-[#B88B2A] font-bold">Ready for Audit</span>
                     </div>
                   )}
                 </div>
@@ -219,19 +219,19 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
             {currentStep === 2 && (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-6 my-12">
                 <div className="relative w-24 h-24 flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border-4 border-[#C8A34D]/20 animate-ping" />
-                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#C8A34D] flex items-center justify-center text-[#C8A34D]">
+                  <div className="absolute inset-0 rounded-full border-4 border-[#B88B2A]/20 animate-ping" />
+                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#B88B2A] flex items-center justify-center text-[#B88B2A]">
                     <Sparkles className="w-8 h-8 animate-spin" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <h3 className="text-xl font-black text-slate-900 dark:text-white">Executing 9-Stage Contract Audit</h3>
-                  <p className="text-xs font-mono text-[#C8A34D]">{progressStatus}</p>
+                  <p className="text-xs font-mono text-[#B88B2A]">{progressStatus}</p>
                 </div>
 
                 <div className="w-full max-w-md bg-slate-200 dark:bg-[#222222] h-2 rounded-full overflow-hidden">
-                  <div className="bg-[#C8A34D] h-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
+                  <div className="bg-[#B88B2A] h-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
                 </div>
               </div>
             )}
@@ -257,10 +257,10 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
                   <div className="p-5 rounded-3xl bg-white dark:bg-[#181818] border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-md">
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 uppercase">Contract Health Index</span>
-                      <h4 className="text-2xl font-black text-[#C8A34D] mt-0.5">{auditResult.healthScore} / 100</h4>
-                      <span className="text-[9px] text-[#C8A34D] font-semibold">Requires Redlining</span>
+                      <h4 className="text-2xl font-black text-[#B88B2A] mt-0.5">{auditResult.healthScore} / 100</h4>
+                      <span className="text-[9px] text-[#B88B2A] font-semibold">Requires Redlining</span>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D]">
+                    <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-[#B88B2A]/30 flex items-center justify-center text-[#B88B2A]">
                       <FileCheck className="w-6 h-6" />
                     </div>
                   </div>
@@ -280,7 +280,7 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
 
                 {/* Clause Risk Audit & Redlines */}
                 <div className="space-y-4">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">High Exposure Clause Audits & AI Redlines</h4>
+                  <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">High Exposure Clause Audits & AI Redlines</h4>
                   {CLAUSE_RISKS.map(clause => (
                     <div key={clause.id} className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
                       <div className="flex items-center justify-between">
@@ -297,8 +297,8 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
                       <p className="text-xs text-slate-600 dark:text-slate-300">{clause.riskAnalysis}</p>
 
                       {/* Redline Card */}
-                      <div className="p-4 bg-[#111111] rounded-2xl border border-[#C8A34D]/40 space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#C8A34D] block">Recommended AI Redline Replacement</span>
+                      <div className="p-4 bg-[#111111] rounded-2xl border border-[#B88B2A]/40 space-y-1">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[#B88B2A] block">Recommended AI Redline Replacement</span>
                         <p className="text-xs font-mono text-slate-200 leading-relaxed">{clause.redline}</p>
                       </div>
                     </div>
@@ -307,7 +307,7 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
 
                 {/* Missing Clause Checklist */}
                 <div className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Missing Protective Clause Checklist</h4>
+                  <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Missing Protective Clause Checklist</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {auditResult.missingClauses.map((missing, i) => (
                       <div key={i} className="p-3 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-300 flex items-center gap-2">
@@ -320,12 +320,12 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
 
                 {/* Obligations & Milestones Table */}
                 <div className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Extracted Financial Obligations & Milestones</h4>
+                  <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Extracted Financial Obligations & Milestones</h4>
                   <div className="space-y-2">
                     {auditResult.milestones.map((m, i) => (
                       <div key={i} className="p-3 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
                         <div>
-                          <span className="font-bold text-[#C8A34D] block">{m.party}</span>
+                          <span className="font-bold text-[#B88B2A] block">{m.party}</span>
                           <span className="text-slate-300">{m.duty}</span>
                         </div>
                         <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-lg bg-[#111111] text-slate-400 border border-slate-800">
@@ -340,11 +340,11 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
           </div>
 
           {/* Footer Action Bar */}
-          <div className="px-8 py-4 bg-[#111111] border-t border-[#C8A34D]/30 flex items-center justify-between shrink-0">
+          <div className="px-8 py-4 bg-[#111111] border-t border-[#B88B2A]/30 flex items-center justify-between shrink-0">
             {currentStep === 1 && (
               <button 
                 onClick={startContractAudit}
-                className="ml-auto px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                className="ml-auto px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
               >
                 <Sparkles className="w-4 h-4" /> Run 9-Stage Contract Audit
               </button>
@@ -354,14 +354,14 @@ export default function LegalContractAnalyzerModal({ isOpen, onClose }) {
               <div className="flex items-center justify-between w-full">
                 <button 
                   onClick={handleExportRedlines}
-                  className="px-4 py-2 rounded-xl bg-[#222222] text-[#C8A34D] border border-[#C8A34D]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#222222] text-[#B88B2A] border border-[#B88B2A]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
                 >
                   📝 Export Redlines (.docx)
                 </button>
 
                 <button 
                   onClick={handleExportReport}
-                  className="px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                  className="px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
                 >
                   <Download className="w-4 h-4" /> Export Risk Audit Report (PDF)
                 </button>

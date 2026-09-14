@@ -32,7 +32,7 @@ export default function SavedResearchDrawer({
         {/* Header */}
         <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#C8A34D]/15 text-[#B38628] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#B88B2A]/15 text-[#B38628] flex items-center justify-center">
               <Bookmark size={16} />
             </div>
             <div>
@@ -59,7 +59,7 @@ export default function SavedResearchDrawer({
             onClick={() => setActiveTab('bookmarks')}
             className={`pb-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'bookmarks'
-                ? 'border-[#C8A34D] text-[#B38628] dark:text-[#E5A93C]'
+                ? 'border-[#B88B2A] text-[#B38628] dark:text-[#E5A93C]'
                 : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-white'
             }`}
           >
@@ -71,7 +71,7 @@ export default function SavedResearchDrawer({
             onClick={() => setActiveTab('history')}
             className={`pb-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'history'
-                ? 'border-[#C8A34D] text-[#B38628] dark:text-[#E5A93C]'
+                ? 'border-[#B88B2A] text-[#B38628] dark:text-[#E5A93C]'
                 : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-white'
             }`}
           >
@@ -99,7 +99,7 @@ export default function SavedResearchDrawer({
                     onSelectJudgment(item);
                     onClose();
                   }}
-                  className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/50 transition-all cursor-pointer space-y-1.5 group"
+                  className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/50 transition-all cursor-pointer space-y-1.5 group"
                 >
                   <div className="flex items-center justify-between text-[10px] text-slate-400">
                     <span className="font-bold text-[#B38628] uppercase">{item.court || 'Court'}</span>

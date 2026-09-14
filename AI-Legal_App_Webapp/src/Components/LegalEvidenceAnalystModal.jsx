@@ -108,18 +108,18 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#C8A34D]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
+          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#B88B2A]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
         >
           {/* Header */}
-          <div className="px-8 py-5 bg-[#111111] border-b border-[#C8A34D]/30 flex items-center justify-between shrink-0 text-white">
+          <div className="px-8 py-5 bg-[#111111] border-b border-[#B88B2A]/30 flex items-center justify-between shrink-0 text-white">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D]">
+              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A]">
                 <Binary className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-xl font-extrabold tracking-tight flex items-center gap-2">
                   <span>Evidence Analyst & Forensics</span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 uppercase">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 uppercase">
                     BSA Sec 65B Audit Engine
                   </span>
                 </h2>
@@ -146,9 +146,9 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
                 onClick={() => { if (step.num < currentStep) setCurrentStep(step.num); }}
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-xl cursor-pointer transition-all ${
                   currentStep === step.num
-                    ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md shadow-[#C8A34D]/20'
+                    ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md shadow-[#B88B2A]/20'
                     : currentStep > step.num
-                    ? 'text-[#C8A34D]'
+                    ? 'text-[#B88B2A]'
                     : 'text-slate-500'
                 }`}
               >
@@ -178,8 +178,8 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
                         onClick={() => setSelectedSource(source.id)}
                         className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                           selectedSource === source.id
-                            ? 'bg-white dark:bg-[#222222] border-[#C8A34D] ring-1 ring-[#C8A34D] shadow-md'
-                            : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/40'
+                            ? 'bg-white dark:bg-[#222222] border-[#B88B2A] ring-1 ring-[#B88B2A] shadow-md'
+                            : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/40'
                         }`}
                       >
                         <span className="text-xs font-bold text-slate-900 dark:text-white block">{source.label}</span>
@@ -199,8 +199,8 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
                         onClick={() => setSelectedSource(source.id)}
                         className={`p-3 rounded-2xl border transition-all cursor-pointer ${
                           selectedSource === source.id
-                            ? 'bg-white dark:bg-[#222222] border-[#C8A34D] ring-1 ring-[#C8A34D]'
-                            : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/40'
+                            ? 'bg-white dark:bg-[#222222] border-[#B88B2A] ring-1 ring-[#B88B2A]'
+                            : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/40'
                         }`}
                       >
                         <span className="text-[11px] font-bold text-slate-900 dark:text-white block">{source.label}</span>
@@ -212,8 +212,8 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
                 {/* Dropzone */}
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Upload Physical Exhibit File</label>
-                  <label className="border-2 border-dashed border-[#C8A34D]/40 hover:border-[#C8A34D] bg-white dark:bg-[#181818] p-8 rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all">
-                    <Upload className="w-8 h-8 text-[#C8A34D] mb-2" />
+                  <label className="border-2 border-dashed border-[#B88B2A]/40 hover:border-[#B88B2A] bg-white dark:bg-[#181818] p-8 rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all">
+                    <Upload className="w-8 h-8 text-[#B88B2A] mb-2" />
                     <span className="text-xs font-bold text-slate-900 dark:text-white">Click to upload exhibit or drag & drop</span>
                     <span className="text-[10px] text-slate-400 mt-1">Supports PDF, DOCX, MP4, MP3, JPG, PNG (SHA-256 Hashing Active)</span>
                     <input type="file" onChange={handleFileUpload} className="hidden" />
@@ -226,19 +226,19 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
             {currentStep === 2 && (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-6 my-12">
                 <div className="relative w-24 h-24 flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border-4 border-[#C8A34D]/20 animate-ping" />
-                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#C8A34D] flex items-center justify-center text-[#C8A34D]">
+                  <div className="absolute inset-0 rounded-full border-4 border-[#B88B2A]/20 animate-ping" />
+                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#B88B2A] flex items-center justify-center text-[#B88B2A]">
                     <Sparkles className="w-8 h-8 animate-spin" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <h3 className="text-xl font-black text-slate-900 dark:text-white">Executing 10 Forensic Integrity Scans</h3>
-                  <p className="text-xs font-mono text-[#C8A34D]">{scanStatus}</p>
+                  <p className="text-xs font-mono text-[#B88B2A]">{scanStatus}</p>
                 </div>
 
                 <div className="w-full max-w-md bg-slate-200 dark:bg-[#222222] h-2 rounded-full overflow-hidden">
-                  <div className="bg-[#C8A34D] h-full transition-all duration-300" style={{ width: `${scanProgress}%` }} />
+                  <div className="bg-[#B88B2A] h-full transition-all duration-300" style={{ width: `${scanProgress}%` }} />
                 </div>
               </div>
             )}
@@ -252,10 +252,10 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
                   <div className="p-5 rounded-3xl bg-white dark:bg-[#181818] border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-md">
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 uppercase">Authenticity Rating</span>
-                      <h4 className="text-2xl font-black text-[#C8A34D] mt-0.5">{forensicData.authenticityScore}%</h4>
+                      <h4 className="text-2xl font-black text-[#B88B2A] mt-0.5">{forensicData.authenticityScore}%</h4>
                       <span className="text-[9px] text-emerald-400 font-semibold">Valid Metadata</span>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D]">
+                    <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-[#B88B2A]/30 flex items-center justify-center text-[#B88B2A]">
                       <ShieldCheck className="w-6 h-6" />
                     </div>
                   </div>
@@ -265,9 +265,9 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 uppercase">Court Readiness</span>
                       <h4 className="text-2xl font-black text-white mt-0.5">{forensicData.courtReadinessScore}%</h4>
-                      <span className="text-[9px] text-[#C8A34D] font-semibold">Admissible in Court</span>
+                      <span className="text-[9px] text-[#B88B2A] font-semibold">Admissible in Court</span>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D]">
+                    <div className="w-12 h-12 rounded-2xl bg-[#111111] border border-[#B88B2A]/30 flex items-center justify-center text-[#B88B2A]">
                       <FileText className="w-6 h-6" />
                     </div>
                   </div>
@@ -287,7 +287,7 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
 
                 {/* Metadata Audit Grid */}
                 <div className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Forensic Metadata & Cryptographic Integrity</h4>
+                  <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Forensic Metadata & Cryptographic Integrity</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
                     <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800">
                       <span className="text-[9px] font-bold text-slate-400 uppercase block">SHA-256 Checksum Hash</span>
@@ -314,8 +314,8 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
                 {/* OCR Extracted Text */}
                 <div className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">OCR Extracted Text Canvas</h4>
-                    <button onClick={handleCopyOcr} className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/30 text-xs font-bold flex items-center gap-1 cursor-pointer">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">OCR Extracted Text Canvas</h4>
+                    <button onClick={handleCopyOcr} className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/30 text-xs font-bold flex items-center gap-1 cursor-pointer">
                       <Copy className="w-3.5 h-3.5" /> Copy OCR Text
                     </button>
                   </div>
@@ -328,7 +328,7 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Contradiction Table */}
                   <div className="p-5 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D] flex items-center gap-1">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A] flex items-center gap-1">
                       <AlertTriangle className="w-4 h-4 text-amber-400" /> Deposition Contradictions
                     </h4>
                     {forensicData.contradictions.map((c, i) => (
@@ -342,7 +342,7 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
 
                   {/* Missing Proof Alerts */}
                   <div className="p-5 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D] flex items-center gap-1">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A] flex items-center gap-1">
                       <ShieldAlert className="w-4 h-4 text-rose-400" /> Missing Proof Gaps
                     </h4>
                     <div className="space-y-2">
@@ -360,11 +360,11 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
           </div>
 
           {/* Footer Action Bar */}
-          <div className="px-8 py-4 bg-[#111111] border-t border-[#C8A34D]/30 flex items-center justify-between shrink-0">
+          <div className="px-8 py-4 bg-[#111111] border-t border-[#B88B2A]/30 flex items-center justify-between shrink-0">
             {currentStep === 1 && (
               <button 
                 onClick={startForensicScan}
-                className="ml-auto px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                className="ml-auto px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
               >
                 <Sparkles className="w-4 h-4" /> Run 10 Forensic Scans
               </button>
@@ -374,14 +374,14 @@ export default function LegalEvidenceAnalystModal({ isOpen, onClose }) {
               <div className="flex items-center justify-between w-full">
                 <button 
                   onClick={handleGenerate65B}
-                  className="px-4 py-2 rounded-xl bg-[#222222] text-[#C8A34D] border border-[#C8A34D]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#222222] text-[#B88B2A] border border-[#B88B2A]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
                 >
                   📜 Generate BSA Sec 65B Certificate
                 </button>
 
                 <button 
                   onClick={handleExportReport}
-                  className="px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                  className="px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
                 >
                   <Download className="w-4 h-4" /> Export Audit Report (PDF)
                 </button>

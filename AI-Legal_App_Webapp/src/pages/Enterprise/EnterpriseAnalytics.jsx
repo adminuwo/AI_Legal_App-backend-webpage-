@@ -6,7 +6,7 @@ const EnterpriseAnalytics = () => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('30_days');
 
   const featureUsageList = [
-    { name: 'AI Legal Assistant (General Chat)', count: 14200, pct: 40.7, color: '#C8A34D' },
+    { name: 'AI Legal Assistant (General Chat)', count: 14200, pct: 40.7, color: '#B88B2A' },
     { name: 'AI Legal Tutor & Bare Acts Study', count: 8600, pct: 24.6, color: '#3B82F6' },
     { name: 'Quiz & MCQ Practice Engine', count: 5400, pct: 15.5, color: '#10B981' },
     { name: 'Draft Maker & Memorial Architect', count: 2800, pct: 8.0, color: '#F59E0B' },
@@ -33,7 +33,7 @@ const EnterpriseAnalytics = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <BarChart3 className="text-[#C8A34D]" size={26} /> Feature Usage & Institutional Adoption Analytics
+            <BarChart3 className="text-[#B88B2A]" size={26} /> Feature Usage & Institutional Adoption Analytics
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Privacy-compliant aggregate analytics tracking feature adoption, batch engagement, and academic study metrics.
@@ -53,7 +53,7 @@ const EnterpriseAnalytics = () => {
 
           <button
             onClick={handleExportReport}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
           >
             <Download size={15} /> Export NAAC Audit Report
           </button>
@@ -63,12 +63,12 @@ const EnterpriseAnalytics = () => {
       {/* Privacy Guarantee Compliance Banner */}
       <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs font-bold text-amber-700 dark:text-amber-400 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <ShieldCheck size={20} className="text-[#C8A34D] shrink-0" />
+          <ShieldCheck size={20} className="text-[#B88B2A] shrink-0" />
           <span>
             <strong>🔒 DPDP & Privacy Protection Guarantee:</strong> Analytics are strictly aggregated and anonymous. Student private chats, personal dossiers, and confidential case files are <u>NEVER</u> visible to faculty or admins.
           </span>
         </div>
-        <span className="px-2.5 py-1 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-black uppercase shrink-0">
+        <span className="px-2.5 py-1 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] text-[10px] font-black uppercase shrink-0">
           Verified Private
         </span>
       </div>
@@ -86,7 +86,7 @@ const EnterpriseAnalytics = () => {
         <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1 shadow-xs">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Top Performing Batch</span>
           <p className="text-base font-extrabold text-slate-900 dark:text-white">BA LLB 2025-2030</p>
-          <span className="text-xs text-[#C8A34D] font-bold">92.4% Active Engagement</span>
+          <span className="text-xs text-[#B88B2A] font-bold">92.4% Active Engagement</span>
         </div>
 
         <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1 shadow-xs">
@@ -106,7 +106,7 @@ const EnterpriseAnalytics = () => {
       <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-6 shadow-xs">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <TrendingUp size={20} className="text-[#C8A34D]" /> Aggregate Feature Adoption Breakdown
+            <TrendingUp size={20} className="text-[#B88B2A]" /> Aggregate Feature Adoption Breakdown
           </h3>
           <span className="text-xs text-slate-400 font-semibold">Total Sessions: 34,850</span>
         </div>
@@ -137,7 +137,7 @@ const EnterpriseAnalytics = () => {
         {/* Batch-wise Engagement Leaderboard */}
         <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
           <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Award size={18} className="text-[#C8A34D]" /> Academic Batch Engagement Leaderboard
+            <Award size={18} className="text-[#B88B2A]" /> Academic Batch Engagement Leaderboard
           </h3>
 
           <div className="space-y-3 pt-1">
@@ -148,8 +148,8 @@ const EnterpriseAnalytics = () => {
                   <span className="text-[11px] text-slate-400 font-semibold">{item.activeStudents} Active Students • {item.queries.toLocaleString()} AI Queries</span>
                 </div>
                 <div className="text-right">
-                  <span className="font-black text-[#C8A34D] text-sm block">{item.engagement}</span>
-                  <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full bg-[#C8A34D]/10 text-[#C8A34D]">
+                  <span className="font-black text-[#B88B2A] text-sm block">{item.engagement}</span>
+                  <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full bg-[#B88B2A]/10 text-[#B88B2A]">
                     {item.status}
                   </span>
                 </div>
@@ -161,7 +161,7 @@ const EnterpriseAnalytics = () => {
         {/* Peak Study Hours & Usage Patterns */}
         <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
           <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Clock size={18} className="text-[#C8A34D]" /> Peak Study Hours & Exam Spikes
+            <Clock size={18} className="text-[#B88B2A]" /> Peak Study Hours & Exam Spikes
           </h3>
 
           <p className="text-xs text-slate-500">
@@ -182,7 +182,7 @@ const EnterpriseAnalytics = () => {
                 <span className="font-bold text-slate-900 dark:text-white block">Afternoon Library Hours (2 PM - 5 PM)</span>
                 <span className="text-slate-400 text-[11px]">Moot Court Drafting & Legal Precedents</span>
               </div>
-              <span className="font-extrabold text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 py-1 rounded-xl">34% Daily Vol</span>
+              <span className="font-extrabold text-[#B88B2A] bg-[#B88B2A]/10 px-2.5 py-1 rounded-xl">34% Daily Vol</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between">

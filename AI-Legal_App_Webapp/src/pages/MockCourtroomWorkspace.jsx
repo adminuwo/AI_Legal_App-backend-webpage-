@@ -1076,15 +1076,15 @@ Return ONLY a valid JSON object matching this structure:
           <style>
             @page { size: A4; margin: 18mm 20mm; }
             body { font-family: 'Times New Roman', Times, serif; font-size: 10.5pt; line-height: 1.5; color: #111; }
-            .header { text-align: center; border-bottom: 2px solid #C8A34D; padding-bottom: 8px; margin-bottom: 16px; }
+            .header { text-align: center; border-bottom: 2px solid #B88B2A; padding-bottom: 8px; margin-bottom: 16px; }
             .header h1 { font-size: 16pt; margin: 0; text-transform: uppercase; }
             .header p { font-size: 9pt; font-family: Arial, sans-serif; color: #555; margin-top: 3px; }
             .table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
             .table td { border: 1px solid #444; padding: 6px 8px; font-size: 9.5pt; }
             .table td strong { font-family: Arial, sans-serif; text-transform: uppercase; color: #444; font-size: 8pt; display: block; }
-            .sec { font-family: Arial, sans-serif; font-size: 10.5pt; font-weight: bold; text-transform: uppercase; background: #f4f4f4; border-left: 4px solid #C8A34D; padding: 4px 8px; margin: 14px 0 6px 0; }
+            .sec { font-family: Arial, sans-serif; font-size: 10.5pt; font-weight: bold; text-transform: uppercase; background: #f4f4f4; border-left: 4px solid #B88B2A; padding: 4px 8px; margin: 14px 0 6px 0; }
             .box { border: 1px solid #ccc; padding: 8px; background: #fafafa; font-size: 10pt; margin-bottom: 10px; }
-            .msg-box { border-left: 3px solid #C8A34D; background: #fafafa; padding: 8px; margin-bottom: 6px; font-size: 9.5pt; }
+            .msg-box { border-left: 3px solid #B88B2A; background: #fafafa; padding: 8px; margin-bottom: 6px; font-size: 9.5pt; }
           </style>
         </head>
         <body>
@@ -1165,13 +1165,13 @@ Return ONLY a valid JSON object matching this structure:
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
             <button
               onClick={() => navigate('/dashboard/tools')}
-              className="p-1.5 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-600 dark:text-slate-300 hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-xs font-bold shadow-xs shrink-0"
+              className="p-1.5 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-600 dark:text-slate-300 hover:bg-[#B88B2A] hover:text-[#111111] transition-all cursor-pointer border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-xs font-bold shadow-xs shrink-0"
               title="Back to AI Tools Suite"
             >
               <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden md:inline">Back to AI Tools</span>
             </button>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D] shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A] shrink-0">
               <Gavel className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -1179,7 +1179,7 @@ Return ONLY a valid JSON object matching this structure:
                 <h1 className="text-xs sm:text-xl font-black tracking-tight text-slate-900 dark:text-white truncate">
                   AI Mock Courtroom
                 </h1>
-                <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0 hidden md:inline-block">
+                <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0 hidden md:inline-block">
                   {simulationMode.toUpperCase()} SIMULATOR
                 </span>
               </div>
@@ -1193,7 +1193,7 @@ Return ONLY a valid JSON object matching this structure:
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={handleOpenSavedVaultModal}
-              className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 text-[#C8A34D] text-[10.5px] sm:text-xs font-bold hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer flex items-center gap-1.5 shadow-xs shrink-0 whitespace-nowrap"
+              className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 text-[#B88B2A] text-[10.5px] sm:text-xs font-bold hover:bg-[#B88B2A] hover:text-[#111111] transition-all cursor-pointer flex items-center gap-1.5 shadow-xs shrink-0 whitespace-nowrap"
               title="View Saved Courtroom Sessions"
             >
               <HardDrive className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Saved Sessions</span><span className="sm:hidden">Saved</span>
@@ -1220,7 +1220,7 @@ Return ONLY a valid JSON object matching this structure:
             <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-6 shadow-sm">
               <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
                 <h2 className="text-base font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                  <Gavel className="w-5 h-5 text-[#C8A34D]" /> Configure Simulated Courtroom Hearing
+                  <Gavel className="w-5 h-5 text-[#B88B2A]" /> Configure Simulated Courtroom Hearing
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Select case ingestion, court level, bench difficulty, trial style, language, and simulation mode.
@@ -1235,7 +1235,7 @@ Return ONLY a valid JSON object matching this structure:
                     onClick={() => setIngestionMode('LINK_CASE')}
                     className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                       ingestionMode === 'LINK_CASE'
-                        ? 'bg-[#C8A34D] text-[#111111] font-black border-[#C8A34D] shadow-md'
+                        ? 'bg-[#B88B2A] text-[#111111] font-black border-[#B88B2A] shadow-md'
                         : 'bg-slate-50 dark:bg-[#1A2333] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
                     }`}
                   >
@@ -1249,7 +1249,7 @@ Return ONLY a valid JSON object matching this structure:
                     onClick={() => setIngestionMode('CUSTOM_BRIEF')}
                     className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                       ingestionMode === 'CUSTOM_BRIEF'
-                        ? 'bg-[#C8A34D] text-[#111111] font-black border-[#C8A34D] shadow-md'
+                        ? 'bg-[#B88B2A] text-[#111111] font-black border-[#B88B2A] shadow-md'
                         : 'bg-slate-50 dark:bg-[#1A2333] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
                     }`}
                   >
@@ -1264,7 +1264,7 @@ Return ONLY a valid JSON object matching this structure:
                   <div className="pt-2">
                     {isLoadingCases ? (
                       <div className="p-3 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                        <RefreshCw className="w-4 h-4 animate-spin text-[#C8A34D]" /> Loading Advocate Cases...
+                        <RefreshCw className="w-4 h-4 animate-spin text-[#B88B2A]" /> Loading Advocate Cases...
                       </div>
                     ) : (
                       <select
@@ -1273,7 +1273,7 @@ Return ONLY a valid JSON object matching this structure:
                           const found = advocateCases.find(c => c._id === e.target.value);
                           setSelectedCase(found || null);
                         }}
-                        className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                        className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                       >
                         {advocateCases.map(c => (
                           <option key={c._id} value={c._id}>{c.name} — ({c.caseType})</option>
@@ -1288,14 +1288,14 @@ Return ONLY a valid JSON object matching this structure:
                       value={customTitle}
                       onChange={(e) => setCustomTitle(e.target.value)}
                       placeholder="Case Title (e.g. State vs Raj Malhotra)"
-                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                     />
                     <textarea
                       rows={3}
                       value={customFacts}
                       onChange={(e) => setCustomFacts(e.target.value)}
                       placeholder="Case Facts & Claims narrative..."
-                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-medium focus:border-[#C8A34D] focus:outline-none"
+                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-medium focus:border-[#B88B2A] focus:outline-none"
                     />
                   </div>
                 )}
@@ -1307,7 +1307,7 @@ Return ONLY a valid JSON object matching this structure:
                 <select
                   value={selectedCourt}
                   onChange={(e) => setSelectedCourt(e.target.value)}
-                  className="w-full p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                  className="w-full p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                 >
                   {COURTS.map(c => (
                     <option key={c} value={c}>{c}</option>
@@ -1325,7 +1325,7 @@ Return ONLY a valid JSON object matching this structure:
                       onClick={() => setSelectedDifficulty(d.id)}
                       className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                         selectedDifficulty === d.id
-                          ? 'bg-[#C8A34D] text-[#111111] font-black border-[#C8A34D] shadow-sm'
+                          ? 'bg-[#B88B2A] text-[#111111] font-black border-[#B88B2A] shadow-sm'
                           : 'bg-slate-50 dark:bg-[#1A2333] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
                       }`}
                     >
@@ -1343,7 +1343,7 @@ Return ONLY a valid JSON object matching this structure:
                   <select
                     value={selectedTrialStyle}
                     onChange={(e) => setSelectedTrialStyle(e.target.value)}
-                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                   >
                     {TRIAL_STYLES.map(ts => (
                       <option key={ts} value={ts}>{ts}</option>
@@ -1356,7 +1356,7 @@ Return ONLY a valid JSON object matching this structure:
                   <select
                     value={selectedLanguage}
                     onChange={(e) => setSelectedLanguage(e.target.value)}
-                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                   >
                     {LANGUAGES.map(l => (
                       <option key={l} value={l}>{l}</option>
@@ -1379,7 +1379,7 @@ Return ONLY a valid JSON object matching this structure:
                       onClick={() => setSimulationMode(m.id)}
                       className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                         simulationMode === m.id
-                          ? 'bg-[#C8A34D] text-[#111111] font-black border-[#C8A34D] shadow-md'
+                          ? 'bg-[#B88B2A] text-[#111111] font-black border-[#B88B2A] shadow-md'
                           : 'bg-slate-50 dark:bg-[#1A2333] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
                       }`}
                     >
@@ -1393,7 +1393,7 @@ Return ONLY a valid JSON object matching this structure:
               <div className="flex justify-end pt-4">
                 <button
                   onClick={handleProceedToConfirm}
-                  className="px-8 py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
+                  className="px-8 py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
                 >
                   <span>Continue to Setup Confirmation</span>
                   <ArrowRight className="w-4 h-4" />
@@ -1409,7 +1409,7 @@ Return ONLY a valid JSON object matching this structure:
         {step === 'CONFIRM' && (
           <div className="max-w-3xl mx-auto p-8 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-6 shadow-lg">
             <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D]">
+              <div className="w-12 h-12 rounded-2xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A]">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <div>
@@ -1425,7 +1425,7 @@ Return ONLY a valid JSON object matching this structure:
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-3 text-xs">
               <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-800">
                 <span className="text-slate-500">Case Title:</span>
-                <span className="font-extrabold text-[#C8A34D]">{ingestionMode === 'CUSTOM_BRIEF' ? customTitle : selectedCase ? selectedCase.name : 'State vs Defendant'}</span>
+                <span className="font-extrabold text-[#B88B2A]">{ingestionMode === 'CUSTOM_BRIEF' ? customTitle : selectedCase ? selectedCase.name : 'State vs Defendant'}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-800">
                 <span className="text-slate-500">Court Forum:</span>
@@ -1455,7 +1455,7 @@ Return ONLY a valid JSON object matching this structure:
 
               <button
                 onClick={handleStartCourtroom}
-                className="px-8 py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
+                className="px-8 py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
               >
                 <Gavel className="w-4 h-4" /> Enter Courtroom Hearing
               </button>
@@ -1509,8 +1509,8 @@ Return ONLY a valid JSON object matching this structure:
                 </div>
 
                 {/* VOICE HERO SPEAKER CARD (Theme-Aware Light/Dark) */}
-                <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-white dark:bg-gradient-to-br dark:from-[#111622] dark:to-[#1A2333] border-2 border-[#C8A34D]/40 text-center space-y-4 sm:space-y-6 shadow-xl relative overflow-hidden">
-                  <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider border border-[#C8A34D]/30 max-w-full truncate">
+                <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-white dark:bg-gradient-to-br dark:from-[#111622] dark:to-[#1A2333] border-2 border-[#B88B2A]/40 text-center space-y-4 sm:space-y-6 shadow-xl relative overflow-hidden">
+                  <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider border border-[#B88B2A]/30 max-w-full truncate">
                     <Scale className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" /> <span className="truncate">Bench Status: Active Voice Proceeding</span>
                   </div>
 
@@ -1542,7 +1542,7 @@ Return ONLY a valid JSON object matching this structure:
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#C8A34D]/20 border-2 border-[#C8A34D] flex items-center justify-center mx-auto text-[#C8A34D]">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#B88B2A]/20 border-2 border-[#B88B2A] flex items-center justify-center mx-auto text-[#B88B2A]">
                           <Gavel className="w-8 h-8 sm:w-10 sm:h-10" />
                         </div>
                         <h3 className="text-sm sm:text-lg font-black text-slate-900 dark:text-white uppercase tracking-wide">
@@ -1564,7 +1564,7 @@ Return ONLY a valid JSON object matching this structure:
                         className={`px-5 sm:px-8 py-3 sm:py-4 rounded-2xl font-black text-xs transition-all cursor-pointer shadow-lg flex items-center gap-2 ${
                           isListening
                             ? 'bg-rose-500 text-white animate-pulse'
-                            : 'bg-[#C8A34D] text-[#111111] hover:bg-[#b8933d]'
+                            : 'bg-[#B88B2A] text-[#111111] hover:bg-[#b8933d]'
                         }`}
                       >
                         {isListening ? <MicOff className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />}
@@ -1588,14 +1588,14 @@ Return ONLY a valid JSON object matching this structure:
                 <div className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs">
                   <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2 gap-2">
                     <span className="truncate">Hearing Audio Transcript History</span>
-                    <span className="text-[10px] text-[#C8A34D] font-bold whitespace-nowrap shrink-0">{messages.length} Entries</span>
+                    <span className="text-[10px] text-[#B88B2A] font-bold whitespace-nowrap shrink-0">{messages.length} Entries</span>
                   </h4>
 
                   <div className="max-h-[220px] overflow-y-auto space-y-3 pr-1">
                     {messages.map(m => (
                       <div key={m.id} className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs space-y-1">
                         <div className="flex justify-between font-extrabold text-[10px] text-slate-400">
-                          <span className="text-[#C8A34D]">{m.senderName}</span>
+                          <span className="text-[#B88B2A]">{m.senderName}</span>
                           <span>{m.timestamp}</span>
                         </div>
                         <p className="text-slate-700 dark:text-slate-300 leading-relaxed font-medium">{m.text}</p>
@@ -1639,7 +1639,7 @@ Return ONLY a valid JSON object matching this structure:
                     return (
                       <div key={m.id} className={`flex gap-2 sm:gap-3 text-xs ${isAdv ? 'flex-row-reverse' : ''}`}>
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-black text-[9.5px] sm:text-[10px] shrink-0 ${
-                          isAdv ? 'bg-[#C8A34D] text-[#111]' :
+                          isAdv ? 'bg-[#B88B2A] text-[#111]' :
                           isJdg ? 'bg-amber-500/20 text-amber-500' :
                           isOpp ? 'bg-rose-500/20 text-rose-500' :
                           'bg-slate-200 text-slate-700'
@@ -1648,7 +1648,7 @@ Return ONLY a valid JSON object matching this structure:
                         </div>
 
                         <div className={`p-3 sm:p-4 rounded-2xl max-w-[85%] sm:max-w-[80%] space-y-1 min-w-0 ${
-                          isAdv ? 'bg-[#C8A34D] text-[#111] font-bold' :
+                          isAdv ? 'bg-[#B88B2A] text-[#111] font-bold' :
                           isJdg ? 'bg-amber-500/10 border border-amber-500/20 text-slate-900 dark:text-white' :
                           isOpp ? 'bg-rose-500/10 border border-rose-500/20 text-slate-900 dark:text-white' :
                           'bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800'
@@ -1679,12 +1679,12 @@ Return ONLY a valid JSON object matching this structure:
                     value={userTextInput}
                     onChange={(e) => setUserTextInput(e.target.value)}
                     placeholder="Type written oral submission to the Bench..."
-                    className="flex-1 min-w-0 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                    className="flex-1 min-w-0 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                   />
                   <button
                     type="submit"
                     disabled={isAiThinking}
-                    className="px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-xs flex items-center gap-1.5 whitespace-nowrap shrink-0"
+                    className="px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-xs flex items-center gap-1.5 whitespace-nowrap shrink-0"
                   >
                     <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                     <span>Submit</span>
@@ -1720,7 +1720,7 @@ Return ONLY a valid JSON object matching this structure:
                         </div>
                       ) : (
                         <div className="space-y-3">
-                          <div className="w-24 h-24 rounded-full bg-[#C8A34D]/15 border-2 border-[#C8A34D] flex items-center justify-center mx-auto text-[#C8A34D]">
+                          <div className="w-24 h-24 rounded-full bg-[#B88B2A]/15 border-2 border-[#B88B2A] flex items-center justify-center mx-auto text-[#B88B2A]">
                             <Mic className="w-12 h-12" />
                           </div>
                           <h3 className="text-lg font-black text-slate-900 dark:text-white">
@@ -1737,7 +1737,7 @@ Return ONLY a valid JSON object matching this structure:
                       {!isRecording ? (
                         <button
                           onClick={startOralPracticeRecording}
-                          className="px-8 py-4 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-lg flex items-center gap-2"
+                          className="px-8 py-4 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-lg flex items-center gap-2"
                         >
                           <Mic className="w-5 h-5" /> Start Recording
                         </button>
@@ -1796,7 +1796,7 @@ Return ONLY a valid JSON object matching this structure:
 
                       <button
                         onClick={handleAnalyzePracticeRecording}
-                        className="px-8 py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
+                        className="px-8 py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
                       >
                         <Sparkles className="w-4 h-4" /> Analyze Oral Advocacy Performance
                       </button>
@@ -1828,13 +1828,13 @@ Return ONLY a valid JSON object matching this structure:
               <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
                 <button
                   onClick={handleSaveReportInstant}
-                  className="px-3 sm:px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs font-bold hover:bg-[#C8A34D] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0"
+                  className="px-3 sm:px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs font-bold hover:bg-[#B88B2A] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0"
                 >
-                  <Gavel className="w-3.5 h-3.5 text-[#C8A34D]" /> Save Report
+                  <Gavel className="w-3.5 h-3.5 text-[#B88B2A]" /> Save Report
                 </button>
                 <button
                   onClick={handleExportTranscriptPDF}
-                  className="px-3.5 sm:px-4 py-1.5 rounded-xl bg-[#C8A34D] text-[#111111] font-extrabold text-[11px] sm:text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-xs flex items-center gap-1.5 whitespace-nowrap shrink-0"
+                  className="px-3.5 sm:px-4 py-1.5 rounded-xl bg-[#B88B2A] text-[#111111] font-extrabold text-[11px] sm:text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-xs flex items-center gap-1.5 whitespace-nowrap shrink-0"
                 >
                   <Download className="w-3.5 h-3.5" /> Export PDF
                 </button>
@@ -1870,7 +1870,7 @@ Return ONLY a valid JSON object matching this structure:
 
             {/* VERDICT OR PRACTICE SUMMARY */}
             <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-3 sm:space-y-4 shadow-xs">
-              <h3 className="text-xs font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-2">
+              <h3 className="text-xs font-black uppercase tracking-wider text-[#B88B2A] flex items-center gap-2">
                 <Scale className="w-4 h-4" /> {simulationMode === 'practice' ? 'Oral Advocacy Performance Summary' : 'Simulated AI Judicial Verdict Summary'}
               </h3>
               <p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-relaxed">
@@ -1914,13 +1914,13 @@ Return ONLY a valid JSON object matching this structure:
               </div>
 
               <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs">
-                <h4 className="text-xs font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-2">
+                <h4 className="text-xs font-black uppercase tracking-wider text-[#B88B2A] flex items-center gap-2">
                   <Sparkles className="w-4 h-4" /> Court Prep Recommendations
                 </h4>
                 <ul className="space-y-2 text-xs text-slate-700 dark:text-slate-300">
                   {courtroomReport.recommendations && courtroomReport.recommendations.map((r, idx) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <ArrowRight className="w-4 h-4 text-[#C8A34D] shrink-0 mt-0.5" />
+                      <ArrowRight className="w-4 h-4 text-[#B88B2A] shrink-0 mt-0.5" />
                       <span className="leading-snug text-[11px] sm:text-xs">{r}</span>
                     </li>
                   ))}
@@ -1934,19 +1934,19 @@ Return ONLY a valid JSON object matching this structure:
                 onClick={handleStartNewHearing}
                 className="px-5 sm:px-6 py-3 rounded-2xl bg-slate-100 dark:bg-[#1A2333] text-slate-700 dark:text-slate-200 font-extrabold text-xs hover:bg-slate-200 transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap shrink-0"
               >
-                <RefreshCw className="w-4 h-4 text-[#C8A34D]" /> Start New Hearing
+                <RefreshCw className="w-4 h-4 text-[#B88B2A]" /> Start New Hearing
               </button>
 
               <div className="flex items-center justify-end gap-2.5 sm:gap-3">
                 <button
                   onClick={handleSaveReportInstant}
-                  className="px-4 sm:px-6 py-3 rounded-2xl bg-[#C8A34D]/15 text-[#C8A34D] font-extrabold text-xs hover:bg-[#C8A34D] hover:text-[#111] transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap shrink-0"
+                  className="px-4 sm:px-6 py-3 rounded-2xl bg-[#B88B2A]/15 text-[#B88B2A] font-extrabold text-xs hover:bg-[#B88B2A] hover:text-[#111] transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap shrink-0"
                 >
                   <Gavel className="w-4 h-4" /> Save Session
                 </button>
                 <button
                   onClick={handleExportTranscriptPDF}
-                  className="px-5 sm:px-8 py-3 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2 whitespace-nowrap shrink-0"
+                  className="px-5 sm:px-8 py-3 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2 whitespace-nowrap shrink-0"
                 >
                   <Download className="w-4 h-4" /> Export PDF Report
                 </button>
@@ -1961,10 +1961,10 @@ Return ONLY a valid JSON object matching this structure:
       {/* SAVED SESSIONS VAULT MODAL */}
       {isSavedModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#111622] border-2 border-[#C8A34D] w-full max-w-2xl rounded-3xl p-6 space-y-5 shadow-2xl relative overflow-hidden">
+          <div className="bg-white dark:bg-[#111622] border-2 border-[#B88B2A] w-full max-w-2xl rounded-3xl p-6 space-y-5 shadow-2xl relative overflow-hidden">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <HardDrive className="w-5 h-5 text-[#C8A34D]" />
+                <HardDrive className="w-5 h-5 text-[#B88B2A]" />
                 <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
                   Saved Courtroom Hearing Sessions ({savedSessionsList.length})
                 </h3>
@@ -1985,11 +1985,11 @@ Return ONLY a valid JSON object matching this structure:
             ) : (
               <div className="max-h-[380px] overflow-y-auto space-y-3 pr-1">
                 {savedSessionsList.map((item) => (
-                  <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 hover:border-[#C8A34D]/50 transition-colors">
+                  <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 hover:border-[#B88B2A]/50 transition-colors">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-extrabold text-xs text-slate-900 dark:text-white">{item.name}</h4>
-                        <span className="px-2 py-0.5 rounded bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-bold">{item.type}</span>
+                        <span className="px-2 py-0.5 rounded bg-[#B88B2A]/20 text-[#B88B2A] text-[10px] font-bold">{item.type}</span>
                         <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-500 text-[10px] font-bold">{item.score}/100 Score</span>
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -1999,7 +1999,7 @@ Return ONLY a valid JSON object matching this structure:
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => handleLoadSavedSession(item)}
-                        className="px-3 py-1.5 rounded-xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer flex items-center gap-1 shadow-sm"
+                        className="px-3 py-1.5 rounded-xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer flex items-center gap-1 shadow-sm"
                       >
                         <Eye className="w-3.5 h-3.5" /> View Session
                       </button>

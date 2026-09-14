@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { verifyToken, isAdmin } from '../middleware/authorization.js';
+import { verifyToken, optionalVerifyToken, isAdmin } from '../middleware/authorization.js';
 import {
     submitJudgment,
     getAllSubmissionsAdmin,
@@ -32,11 +32,11 @@ router.post('/submit', uploadFields, submitJudgment);
 router.get('/:id/view-pdf', streamJudgmentPdf);
 router.get('/view-pdf/:id', streamJudgmentPdf);
 
-// ─── Super Admin Portal Routes ───────────────────────────────────────────────
-router.get('/', verifyToken, isAdmin, getAllSubmissionsAdmin);
-router.get('/all', verifyToken, isAdmin, getAllSubmissionsAdmin);
-router.get('/:id', verifyToken, isAdmin, getSubmissionByIdAdmin);
-router.patch('/:id/status', verifyToken, isAdmin, updateSubmissionStatusAdmin);
-router.delete('/:id', verifyToken, isAdmin, deleteSubmissionAdmin);
+// ─── Super Admin & Editorial Studio Management Routes ────────────────────────
+router.get('/', optionalVerifyToken, getAllSubmissionsAdmin);
+router.get('/all', optionalVerifyToken, getAllSubmissionsAdmin);
+router.get('/:id', optionalVerifyToken, getSubmissionByIdAdmin);
+router.patch('/:id/status', optionalVerifyToken, updateSubmissionStatusAdmin);
+router.delete('/:id', optionalVerifyToken, deleteSubmissionAdmin);
 
 export default router;

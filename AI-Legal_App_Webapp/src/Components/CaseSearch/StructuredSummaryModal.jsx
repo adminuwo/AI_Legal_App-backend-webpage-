@@ -127,7 +127,7 @@ Generated via AI LEGAL™ Research Workspace`;
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#12192A] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center border border-[#C8A34D]/30">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center border border-[#B88B2A]/30">
               <FileText size={20} />
             </div>
             <div>
@@ -135,7 +135,7 @@ Generated via AI LEGAL™ Research Workspace`;
                 <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
                   14-Point Structured Legal Summary
                 </h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] border border-[#C8A34D]/30">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] border border-[#B88B2A]/30">
                   {judgment.citation}
                 </span>
               </div>
@@ -186,7 +186,7 @@ Generated via AI LEGAL™ Research Workspace`;
                 onClick={() => scrollToSection(sec.id)}
                 className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between ${
                   activeSection === sec.id
-                    ? 'bg-[#C8A34D]/15 text-[#B38628] dark:text-amber-300 font-bold'
+                    ? 'bg-[#B88B2A]/15 text-[#B38628] dark:text-amber-300 font-bold'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60'
                 }`}
               >
@@ -204,7 +204,7 @@ Generated via AI LEGAL™ Research Workspace`;
                 id={sec.id}
                 className={`p-5 rounded-2xl border transition-all ${
                   sec.isRatio
-                    ? 'bg-gradient-to-br from-amber-50 to-amber-100/40 dark:from-amber-950/30 dark:to-slate-900 border-2 border-[#C8A34D] shadow-sm'
+                    ? 'bg-gradient-to-br from-amber-50 to-amber-100/40 dark:from-amber-950/30 dark:to-slate-900 border-2 border-[#B88B2A] shadow-sm'
                     : 'bg-slate-50 dark:bg-[#12192A] border-slate-200 dark:border-slate-800'
                 }`}
               >

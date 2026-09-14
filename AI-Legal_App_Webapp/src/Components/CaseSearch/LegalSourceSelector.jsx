@@ -118,7 +118,7 @@ export default function LegalSourceSelector({
             <select
               value={selectedHighCourt}
               onChange={(e) => onSelectHighCourt(e.target.value)}
-              className="w-full appearance-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1 pr-8 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D] cursor-pointer shadow-xs"
+              className="w-full appearance-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1 pr-8 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A] cursor-pointer shadow-xs"
             >
               <option value="all">All 25 High Courts</option>
               {highCourts.map(hc => (

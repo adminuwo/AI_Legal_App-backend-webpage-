@@ -37,10 +37,10 @@ const EnterpriseDashboardLayout = () => {
       {/* Mobile Header */}
       <header className="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#C8A34D]/10 border border-[#C8A34D]/30 flex items-center justify-center">
-            <Building2 className="w-4 h-4 text-[#C8A34D]" />
+          <div className="w-8 h-8 rounded-lg bg-[#B88B2A]/10 border border-[#B88B2A]/30 flex items-center justify-center">
+            <Building2 className="w-4 h-4 text-[#B88B2A]" />
           </div>
-          <span className="font-extrabold text-sm tracking-tight">AI LEGAL <span className="text-[#C8A34D]">ENTERPRISE</span></span>
+          <span className="font-extrabold text-sm tracking-tight">AI LEGAL <span className="text-[#B88B2A]">ENTERPRISE</span></span>
         </div>
 
         <button
@@ -60,12 +60,12 @@ const EnterpriseDashboardLayout = () => {
         {/* Brand Header */}
         <div className="h-16 px-6 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 shrink-0">
           <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <div className="w-8 h-8 rounded-xl bg-[#C8A34D]/10 border border-[#C8A34D]/30 flex items-center justify-center">
-              <Building2 className="w-4 h-4 text-[#C8A34D]" />
+            <div className="w-8 h-8 rounded-xl bg-[#B88B2A]/10 border border-[#B88B2A]/30 flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-[#B88B2A]" />
             </div>
             <div>
               <h2 className="text-sm font-black tracking-tight flex items-center gap-1">
-                AI LEGAL <span className="text-[#C8A34D] text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#C8A34D]/10">UNIV</span>
+                AI LEGAL <span className="text-[#B88B2A] text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#B88B2A]/10">UNIV</span>
               </h2>
               <p className="text-[10px] text-slate-400 font-semibold truncate">Enterprise Admin Suite</p>
             </div>
@@ -74,7 +74,7 @@ const EnterpriseDashboardLayout = () => {
 
         {/* Institution Badge */}
         <div className="px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] font-black text-xs flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] font-black text-xs flex items-center justify-center shrink-0">
             RD
           </div>
           <div className="min-w-0">
@@ -97,11 +97,11 @@ const EnterpriseDashboardLayout = () => {
                 }}
                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
                   active
-                    ? 'bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 font-black shadow-xs'
+                    ? 'bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 font-black shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                <Icon size={16} className={active ? 'text-[#C8A34D]' : 'text-slate-400'} />
+                <Icon size={16} className={active ? 'text-[#B88B2A]' : 'text-slate-400'} />
                 <span>{item.name}</span>
               </button>
             );

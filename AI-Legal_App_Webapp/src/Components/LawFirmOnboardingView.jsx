@@ -148,7 +148,7 @@ const LawFirmOnboardingView = ({ onWorkspaceCreated }) => {
       
       {/* Onboarding Header Banner */}
       <div className="text-center space-y-3 max-w-2xl">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-xs font-black uppercase tracking-wider">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 text-xs font-black uppercase tracking-wider">
           <Building2 size={15} /> Law Firm Enterprise Setup
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-[#111111] dark:text-white tracking-tight">
@@ -163,9 +163,9 @@ const LawFirmOnboardingView = ({ onWorkspaceCreated }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
         
         {/* OPTION 1: CREATE NEW LAW FIRM */}
-        <div className="bg-white dark:bg-[#1E293B] border-2 border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] dark:hover:border-[#C8A34D] rounded-3xl p-8 shadow-sm transition-all flex flex-col justify-between space-y-6 group">
+        <div className="bg-white dark:bg-[#1E293B] border-2 border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] dark:hover:border-[#B88B2A] rounded-3xl p-8 shadow-sm transition-all flex flex-col justify-between space-y-6 group">
           <div className="space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+            <div className="w-14 h-14 rounded-2xl bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <Building2 size={28} />
             </div>
             <div className="space-y-1.5">
@@ -185,14 +185,14 @@ const LawFirmOnboardingView = ({ onWorkspaceCreated }) => {
                 <Users size={16} className="text-indigo-500" /> Multi-User Team Roster & Seat Management
               </div>
               <div className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300">
-                <Briefcase size={16} className="text-[#C8A34D]" /> Shared Firm Docket & Evidence Repository
+                <Briefcase size={16} className="text-[#B88B2A]" /> Shared Firm Docket & Evidence Repository
               </div>
             </div>
           </div>
 
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="w-full py-3.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs uppercase tracking-wider rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            className="w-full py-3.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs uppercase tracking-wider rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95"
           >
             <Plus size={18} />
             <span>+ Setup Enterprise Firm Workspace</span>
@@ -209,7 +209,7 @@ const LawFirmOnboardingView = ({ onWorkspaceCreated }) => {
               <button 
                 onClick={fetchPendingInvites}
                 disabled={isFetchingInvites}
-                className="p-2 text-slate-400 hover:text-[#C8A34D] rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-2 text-slate-400 hover:text-[#B88B2A] rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 title="Refresh Invitations"
               >
                 <RefreshCw size={16} className={isFetchingInvites ? 'animate-spin' : ''} />
@@ -239,7 +239,7 @@ const LawFirmOnboardingView = ({ onWorkspaceCreated }) => {
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <h4 className="text-xs font-black text-[#111111] dark:text-white">{wsName}</h4>
-                          <span className="text-[10px] font-bold text-[#C8A34D] uppercase">{roleName}</span>
+                          <span className="text-[10px] font-bold text-[#B88B2A] uppercase">{roleName}</span>
                         </div>
                         <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
                           Pending Invite
@@ -253,7 +253,7 @@ const LawFirmOnboardingView = ({ onWorkspaceCreated }) => {
                       <div className="flex items-center gap-2 pt-1">
                         <button
                           onClick={() => handleAcceptInvite(invId, wsId)}
-                          className="flex-1 py-1.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-[11px] rounded-xl flex items-center justify-center gap-1 transition-all cursor-pointer"
+                          className="flex-1 py-1.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-[11px] rounded-xl flex items-center justify-center gap-1 transition-all cursor-pointer"
                         >
                           <CheckCircle2 size={14} /> Accept
                         </button>
@@ -288,7 +288,7 @@ const LawFirmOnboardingView = ({ onWorkspaceCreated }) => {
             
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center font-black">
+                <div className="w-10 h-10 rounded-2xl bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center font-black">
                   <Building2 size={20} />
                 </div>
                 <div>
@@ -311,7 +311,7 @@ const LawFirmOnboardingView = ({ onWorkspaceCreated }) => {
                   placeholder="e.g. Lakhera & Associates Law Offices"
                   value={firmName}
                   onChange={e => setFirmName(e.target.value)}
-                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                   required
                 />
               </div>
@@ -330,7 +330,7 @@ const LawFirmOnboardingView = ({ onWorkspaceCreated }) => {
                         onClick={() => handleToggleArea(area)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/50 shadow-xs'
+                            ? 'bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/50 shadow-xs'
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                         }`}
                       >
@@ -352,7 +352,7 @@ const LawFirmOnboardingView = ({ onWorkspaceCreated }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting || !firmName.trim()}
-                  className="px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider shadow-md disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                  className="px-6 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider shadow-md disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   {isSubmitting ? 'Creating...' : 'Initialize Firm Workspace'}
                 </button>

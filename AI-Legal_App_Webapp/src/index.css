@@ -19,12 +19,12 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 7%;
 
-    --primary: 42 53% 54%;
-    /* #C8A34D Soft Gold */
-    --primary-light: 42 60% 70%;
-    --primary-dark: 42 50% 40%;
-    --primary-bg: 42 40% 96%;
-    --primary-border: 42 53% 54% / 0.2;
+    --primary: 41 63% 44%;
+    /* #B88B2A Dark Gold */
+    --primary-light: 41 55% 58%;
+    --primary-dark: 41 65% 32%;
+    --primary-bg: 41 35% 95%;
+    --primary-border: 41 63% 44% / 0.2;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 100%;
@@ -33,7 +33,7 @@
     --muted: 0 0% 92%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 42 53% 54%;
+    --accent: 41 63% 44%;
     --accent-foreground: 0 0% 7%;
 
     --destructive: 0 84% 60%;
@@ -41,11 +41,11 @@
 
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 42 53% 54%;
+    --ring: 41 63% 44%;
 
     --radius: 1rem;
-    --primary-rgb: 200, 163, 77;
-    --color-primary-rgb: 200, 163, 77;
+    --primary-rgb: 184, 139, 42;
+    --color-primary-rgb: 184, 139, 42;
   }
 
   :root.dark,
@@ -59,26 +59,26 @@
     --card-foreground: 0 0% 95%;
     --popover: 0 0% 13%;
     --popover-foreground: 0 0% 95%;
-    --primary: 42 53% 54%;
-    /* #C8A34D Soft Gold */
-    --primary-light: 42 60% 70%;
-    --primary-dark: 42 50% 40%;
-    --primary-bg: 42 30% 14%;
-    --primary-border: 42 53% 54% / 0.25;
+    --primary: 41 63% 44%;
+    /* #B88B2A Dark Gold */
+    --primary-light: 41 55% 58%;
+    --primary-dark: 41 65% 32%;
+    --primary-bg: 41 25% 13%;
+    --primary-border: 41 63% 44% / 0.25;
     --primary-foreground: 0 0% 7%;
     --secondary: 0 0% 13%;
     --secondary-foreground: 0 0% 95%;
     --muted: 0 0% 18%;
     --muted-foreground: 240 5% 65%;
-    --accent: 42 53% 54%;
+    --accent: 41 63% 44%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 20%;
     --input: 0 0% 18%;
-    --ring: 42 53% 54%;
-    --primary-rgb: 200, 163, 77;
-    --color-primary-rgb: 200, 163, 77;
+    --ring: 41 63% 44%;
+    --primary-rgb: 184, 139, 42;
+    --color-primary-rgb: 184, 139, 42;
   }
 }
 
@@ -1114,18 +1114,18 @@ html.lenis body {
 
 .user-row .chat-bubble-text {
   background-color: #FBF8F1 !important; /* Soft warm Rolex gold cream background */
-  border: 1px solid rgba(200, 163, 77, 0.3) !important; /* Warm Rolex gold border */
+  border: 1px solid rgba(184, 139, 42, 0.3) !important; /* Warm Rolex gold border */
   padding: 14px 18px !important;
   border-radius: 16px !important; /* Clean, modern uniform border radius */
-  box-shadow: 0 2px 8px rgba(200, 163, 77, 0.06) !important;
+  box-shadow: 0 2px 8px rgba(184, 139, 42, 0.06) !important;
   color: #111827 !important; /* Clean dark text for contrast in light mode */
   text-align: left !important; /* Keep text left-aligned inside the bubble */
   margin-left: auto !important;
 }
 
 .dark .user-row .chat-bubble-text {
-  background-color: rgba(200, 163, 77, 0.12) !important;
-  border: 1px solid rgba(200, 163, 77, 0.35) !important;
+  background-color: rgba(184, 139, 42, 0.12) !important;
+  border: 1px solid rgba(184, 139, 42, 0.35) !important;
   color: #f3f4f6 !important; /* Soft light text in dark mode */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
 }
@@ -2328,11 +2328,11 @@ html.dark select option,
 /* 19. Custom Scrollbar Styling (Horizontal & Vertical) */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #C8A34D #E2E8F0;
+  scrollbar-color: #B88B2A #E2E8F0;
 }
 
 .dark .custom-scrollbar {
-  scrollbar-color: #C8A34D #1E293B;
+  scrollbar-color: #B88B2A #1E293B;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -2351,12 +2351,12 @@ html.dark select option,
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(200, 163, 77, 0.7);
+  background: rgba(184, 139, 42, 0.7);
   border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(200, 163, 77, 1);
+  background: rgba(184, 139, 42, 1);
 }
 
 

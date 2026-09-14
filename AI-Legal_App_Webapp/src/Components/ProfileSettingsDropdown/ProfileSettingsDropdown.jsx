@@ -319,13 +319,13 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                     {/* Modal Sticky Header */}
                     <div className="sticky top-0 z-20 px-3.5 sm:px-8 py-3 sm:py-5 flex items-center justify-between gap-2.5 bg-white dark:bg-[#1E293B] border-b border-slate-100 dark:border-slate-800 shrink-0">
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#111111] dark:bg-[#0F172A] flex items-center justify-center text-[#C8A34D] border border-[#C8A34D]/30 shrink-0">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#111111] dark:bg-[#0F172A] flex items-center justify-center text-[#B88B2A] border border-[#B88B2A]/30 shrink-0">
                                 {selectedRole === 'student' ? (
                                     <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
                                 ) : selectedRole === 'law_firm' ? (
                                     <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
                                 ) : (
-                                    <Scale className="w-4 h-4 sm:w-5 sm:h-5 text-[#C8A34D]" />
+                                    <Scale className="w-4 h-4 sm:w-5 sm:h-5 text-[#B88B2A]" />
                                 )}
                             </div>
                             <div className="min-w-0 flex-1">
@@ -352,7 +352,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                 className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all border cursor-pointer whitespace-nowrap shrink-0 ${
                                     isEditing 
                                         ? 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700' 
-                                        : 'bg-[#111111] dark:bg-[#C8A34D] text-[#C8A34D] dark:text-[#111111] border-[#C8A34D]/40 dark:border-transparent hover:bg-[#222222] dark:hover:bg-[#b08d3b]'
+                                        : 'bg-[#111111] dark:bg-[#B88B2A] text-[#B88B2A] dark:text-[#111111] border-[#B88B2A]/40 dark:border-transparent hover:bg-[#222222] dark:hover:bg-[#b08d3b]'
                                 }`}
                             >
                                 {isEditing ? 'Cancel' : 'Edit Profile'}
@@ -375,7 +375,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                     <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
                                         {/* Avatar Box */}
                                         <div className="relative group shrink-0">
-                                            <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-[#111111] dark:bg-[#0F172A] flex items-center justify-center text-[#C8A34D] border border-[#C8A34D]/30 shadow-sm overflow-hidden relative z-10">
+                                            <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-[#111111] dark:bg-[#0F172A] flex items-center justify-center text-[#B88B2A] border border-[#B88B2A]/30 shadow-sm overflow-hidden relative z-10">
                                                 {user.avatar ? (
                                                     <img 
                                                         src={user.avatar} 
@@ -402,7 +402,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                             {/* Photo Management Plus Icon (Edit mode only) */}
                                             {isEditing && (
                                                 <button
-                                                    className="absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-800 z-20 hover:scale-105 transition-transform cursor-pointer"
+                                                    className="absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-800 z-20 hover:scale-105 transition-transform cursor-pointer"
                                                     onClick={() => fileInputRef.current?.click()}
                                                     title="Upload Photo"
                                                 >
@@ -418,7 +418,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight capitalize">
                                                         {profileForm.fullName || user.name || (selectedRole === 'law_firm' ? 'Law Firm Entity' : 'Anonymous User')}
                                                     </h3>
-                                                    <div className="flex items-center gap-1 px-2.5 py-0.5 bg-[#C8A34D]/15 border border-[#C8A34D]/30 rounded-md text-[9px] font-black text-[#C8A34D] uppercase tracking-widest">
+                                                    <div className="flex items-center gap-1 px-2.5 py-0.5 bg-[#B88B2A]/15 border border-[#B88B2A]/30 rounded-md text-[9px] font-black text-[#B88B2A] uppercase tracking-widest">
                                                         <ShieldCheck size={11} /> 
                                                         {selectedRole === 'student' ? 'Verified Law Student' : selectedRole === 'law_firm' ? 'Verified Law Firm' : (profileForm.barNumber ? 'Verified Advocate' : 'Practicing Advocate')}
                                                     </div>
@@ -434,7 +434,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
                                                     <button
                                                         onClick={() => fileInputRef.current?.click()}
-                                                        className="inline-flex items-center gap-1 px-3 py-1 bg-[#111111] dark:bg-[#C8A34D] hover:bg-[#222222] dark:hover:bg-[#b08d3b] text-[#C8A34D] dark:text-[#111111] rounded-lg border border-[#C8A34D]/30 dark:border-transparent text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer"
+                                                        className="inline-flex items-center gap-1 px-3 py-1 bg-[#111111] dark:bg-[#B88B2A] hover:bg-[#222222] dark:hover:bg-[#b08d3b] text-[#B88B2A] dark:text-[#111111] rounded-lg border border-[#B88B2A]/30 dark:border-transparent text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer"
                                                     >
                                                         Change Photo
                                                     </button>
@@ -454,7 +454,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
 
                                 {/* 2. Personal Information Card */}
                                 <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none space-y-5 sm:space-y-6">
-                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#C8A34D] border-b border-slate-100 dark:border-slate-800 pb-3">Personal Information</h3>
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#B88B2A] border-b border-slate-100 dark:border-slate-800 pb-3">Personal Information</h3>
                                     
                                     {isEditing ? (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -465,7 +465,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     value={profileForm.fullName} 
                                                     onChange={e => setProfileForm({ ...profileForm, fullName: e.target.value })} 
                                                     placeholder="Advocate Full Name" 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                 />
                                             </div>
                                             <div>
@@ -484,7 +484,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     value={profileForm.phoneNumber} 
                                                     onChange={e => setProfileForm({ ...profileForm, phoneNumber: e.target.value })} 
                                                     placeholder="+91 XXXXX XXXXX" 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                 />
                                             </div>
                                             <div>
@@ -493,7 +493,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     type="date" 
                                                     value={profileForm.dob} 
                                                     onChange={e => setProfileForm({ ...profileForm, dob: e.target.value })} 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all cursor-pointer"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all cursor-pointer"
                                                 />
                                             </div>
                                             <div>
@@ -501,7 +501,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                 <select 
                                                     value={profileForm.gender} 
                                                     onChange={e => setProfileForm({ ...profileForm, gender: e.target.value })} 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all cursor-pointer"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all cursor-pointer"
                                                 >
                                                     <option value="">Select Gender</option>
                                                     <option value="Male">Male</option>
@@ -517,7 +517,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     value={profileForm.city} 
                                                     onChange={e => setProfileForm({ ...profileForm, city: e.target.value })} 
                                                     placeholder="e.g. New Delhi" 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                 />
                                             </div>
                                             <div>
@@ -527,7 +527,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     value={profileForm.state} 
                                                     onChange={e => setProfileForm({ ...profileForm, state: e.target.value })} 
                                                     placeholder="e.g. Delhi" 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                 />
                                             </div>
                                             <div>
@@ -537,7 +537,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     value={profileForm.country} 
                                                     onChange={e => setProfileForm({ ...profileForm, country: e.target.value })} 
                                                     placeholder="e.g. India" 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                 />
                                             </div>
                                             <div className="md:col-span-2">
@@ -547,7 +547,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     value={profileForm.address} 
                                                     onChange={e => setProfileForm({ ...profileForm, address: e.target.value })} 
                                                     placeholder="Complete residential address" 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                 />
                                             </div>
                                         </div>
@@ -570,16 +570,16 @@ const ProfileSettingsDropdown = ({ onClose }) => {
 
                                 {/* 3. Professional / Academic / Law Firm Credentials Card */}
                                 <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none space-y-6 sm:space-y-8">
-                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#C8A34D] border-b border-slate-100 dark:border-slate-800 pb-3">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#B88B2A] border-b border-slate-100 dark:border-slate-800 pb-3">
                                         {selectedRole === 'student' ? 'Academic & Education Details' : selectedRole === 'law_firm' ? 'Firm Registration & Operations' : 'Professional & Practice Details'}
                                     </h3>
                                     
                                     {/* Role Sub-Card 1: Credentials */}
                                     {selectedRole === 'student' ? (
-                                        <div className="bg-[#C8A34D]/8 dark:bg-[#C8A34D]/10 border border-[#C8A34D]/25 dark:border-[#C8A34D]/30 rounded-2xl p-3.5 sm:p-6">
+                                        <div className="bg-[#B88B2A]/8 dark:bg-[#B88B2A]/10 border border-[#B88B2A]/25 dark:border-[#B88B2A]/30 rounded-2xl p-3.5 sm:p-6">
                                             <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#B48A35] dark:text-[#C8A34D] flex items-center gap-1.5"><GraduationCap size={14} /> Law College Credentials</span>
-                                                <div className="flex items-center gap-1.5 px-3 py-1 bg-[#C8A34D]/15 border border-[#C8A34D]/30 rounded-lg text-[10px] font-black text-[#B48A35] dark:text-[#C8A34D] uppercase tracking-widest">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#B48A35] dark:text-[#B88B2A] flex items-center gap-1.5"><GraduationCap size={14} /> Law College Credentials</span>
+                                                <div className="flex items-center gap-1.5 px-3 py-1 bg-[#B88B2A]/15 border border-[#B88B2A]/30 rounded-lg text-[10px] font-black text-[#B48A35] dark:text-[#B88B2A] uppercase tracking-widest">
                                                     <ShieldCheck size={12} /> Student ID Active
                                                 </div>
                                             </div>
@@ -593,7 +593,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                             value={profileForm.collegeName || ''} 
                                                             onChange={e => setProfileForm({ ...profileForm, collegeName: e.target.value })} 
                                                             placeholder="e.g. NLU Delhi / Faculty of Law, DU" 
-                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                         />
                                                     </div>
                                                     <div>
@@ -603,7 +603,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                             value={profileForm.courseEnrolled || ''} 
                                                             onChange={e => setProfileForm({ ...profileForm, courseEnrolled: e.target.value })} 
                                                             placeholder="e.g. BA LL.B (Hons)" 
-                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                         />
                                                     </div>
                                                     <div>
@@ -613,7 +613,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                             value={profileForm.studentRollNo || ''} 
                                                             onChange={e => setProfileForm({ ...profileForm, studentRollNo: e.target.value })} 
                                                             placeholder="e.g. 2021/LLB/104" 
-                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all font-mono"
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all font-mono"
                                                         />
                                                     </div>
                                                 </div>
@@ -626,10 +626,10 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                             )}
                                         </div>
                                     ) : selectedRole === 'law_firm' ? (
-                                        <div className="bg-[#C8A34D]/8 dark:bg-[#C8A34D]/10 border border-[#C8A34D]/25 dark:border-[#C8A34D]/30 rounded-2xl p-3.5 sm:p-6">
+                                        <div className="bg-[#B88B2A]/8 dark:bg-[#B88B2A]/10 border border-[#B88B2A]/25 dark:border-[#B88B2A]/30 rounded-2xl p-3.5 sm:p-6">
                                             <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#B48A35] dark:text-[#C8A34D] flex items-center gap-1.5"><Building2 size={14} /> Corporate Law Firm Registration</span>
-                                                <div className="flex items-center gap-1.5 px-3 py-1 bg-[#C8A34D]/15 border border-[#C8A34D]/30 rounded-lg text-[10px] font-black text-[#B48A35] dark:text-[#C8A34D] uppercase tracking-widest">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#B48A35] dark:text-[#B88B2A] flex items-center gap-1.5"><Building2 size={14} /> Corporate Law Firm Registration</span>
+                                                <div className="flex items-center gap-1.5 px-3 py-1 bg-[#B88B2A]/15 border border-[#B88B2A]/30 rounded-lg text-[10px] font-black text-[#B48A35] dark:text-[#B88B2A] uppercase tracking-widest">
                                                     <ShieldCheck size={12} /> Firm Entity Verified
                                                 </div>
                                             </div>
@@ -643,7 +643,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                             value={profileForm.firmName || ''} 
                                                             onChange={e => setProfileForm({ ...profileForm, firmName: e.target.value })} 
                                                             placeholder="e.g. Apex Legal Associates LLP" 
-                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                         />
                                                     </div>
                                                     <div>
@@ -653,7 +653,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                             value={profileForm.firmRegistrationNo || ''} 
                                                             onChange={e => setProfileForm({ ...profileForm, firmRegistrationNo: e.target.value })} 
                                                             placeholder="e.g. AAA-1234 / REG-2020-ND" 
-                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all font-mono"
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all font-mono"
                                                         />
                                                     </div>
                                                     <div>
@@ -663,7 +663,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                             value={profileForm.establishmentYear || ''} 
                                                             onChange={e => setProfileForm({ ...profileForm, establishmentYear: e.target.value })} 
                                                             placeholder="e.g. 2012" 
-                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                         />
                                                     </div>
                                                 </div>
@@ -676,12 +676,12 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                             )}
                                         </div>
                                     ) : (
-                                        <div className="bg-[#C8A34D]/8 dark:bg-[#C8A34D]/10 border border-[#C8A34D]/20 dark:border-[#C8A34D]/30 rounded-2xl p-3.5 sm:p-6">
+                                        <div className="bg-[#B88B2A]/8 dark:bg-[#B88B2A]/10 border border-[#B88B2A]/20 dark:border-[#B88B2A]/30 rounded-2xl p-3.5 sm:p-6">
                                             <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#B48A35] dark:text-[#C8A34D] flex items-center gap-1.5"><Award size={14} /> State Bar Council Credentials</span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#B48A35] dark:text-[#B88B2A] flex items-center gap-1.5"><Award size={14} /> State Bar Council Credentials</span>
                                                 <div className={`flex items-center gap-1.5 px-3 py-1 border rounded-lg text-[10px] font-black uppercase tracking-widest ${
                                                     profileForm.barNumber 
-                                                        ? 'bg-[#C8A34D]/15 border-[#C8A34D]/30 text-[#B48A35] dark:text-[#C8A34D]'
+                                                        ? 'bg-[#B88B2A]/15 border-[#B88B2A]/30 text-[#B48A35] dark:text-[#B88B2A]'
                                                         : 'bg-amber-50 dark:bg-amber-950/40 border-amber-100 dark:border-amber-900/50 text-amber-600 dark:text-amber-400'
                                                 }`}>
                                                     <ShieldCheck size={12} />
@@ -698,7 +698,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                             value={profileForm.stateBarCouncil || ''} 
                                                             onChange={e => setProfileForm({ ...profileForm, stateBarCouncil: e.target.value })} 
                                                             placeholder="e.g. Bar Council of Delhi" 
-                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                         />
                                                     </div>
                                                     <div>
@@ -708,7 +708,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                             value={profileForm.barNumber || ''} 
                                                             onChange={e => setProfileForm({ ...profileForm, barNumber: e.target.value })} 
                                                             placeholder="e.g. D/1234/2018" 
-                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all font-mono"
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all font-mono"
                                                         />
                                                     </div>
                                                     <div>
@@ -716,7 +716,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         <select 
                                                             value={profileForm.advocateType || 'Practicing Advocate'} 
                                                             onChange={e => setProfileForm({ ...profileForm, advocateType: e.target.value })} 
-                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all cursor-pointer"
+                                                            className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all cursor-pointer"
                                                         >
                                                             <option value="Practicing Advocate">Practicing Advocate</option>
                                                             <option value="Senior Counsel">Senior Counsel</option>
@@ -746,7 +746,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         value={profileForm.currentYear || ''} 
                                                         onChange={e => setProfileForm({ ...profileForm, currentYear: e.target.value })} 
                                                         placeholder="e.g. 4th Year / 7th Semester" 
-                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                     />
                                                 </div>
                                                 <div>
@@ -756,7 +756,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         value={profileForm.expectedGraduationYear || ''} 
                                                         onChange={e => setProfileForm({ ...profileForm, expectedGraduationYear: e.target.value })} 
                                                         placeholder="e.g. 2025" 
-                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                     />
                                                 </div>
                                             </div>
@@ -776,7 +776,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         value={profileForm.managingPartnerName || ''} 
                                                         onChange={e => setProfileForm({ ...profileForm, managingPartnerName: e.target.value })} 
                                                         placeholder="e.g. Senior Adv. Rajesh Sharma" 
-                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                     />
                                                 </div>
                                                 <div>
@@ -786,7 +786,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         value={profileForm.totalAdvocatesCount || ''} 
                                                         onChange={e => setProfileForm({ ...profileForm, totalAdvocatesCount: e.target.value })} 
                                                         placeholder="e.g. 24 Advocates" 
-                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                     />
                                                 </div>
                                                 <div className="md:col-span-2">
@@ -796,7 +796,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         value={profileForm.hqAddress || ''} 
                                                         onChange={e => setProfileForm({ ...profileForm, hqAddress: e.target.value })} 
                                                         placeholder="Complete corporate office address" 
-                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                     />
                                                 </div>
                                             </div>
@@ -819,7 +819,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         value={profileForm.enrollmentYear || ''} 
                                                         onChange={e => setProfileForm({ ...profileForm, enrollmentYear: e.target.value })} 
                                                         placeholder="e.g. 2018" 
-                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#B88B2A] transition-all"
                                                     />
                                                 </div>
                                                 <div>
@@ -829,7 +829,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         value={profileForm.practiceExperience || ''} 
                                                         onChange={e => setProfileForm({ ...profileForm, practiceExperience: e.target.value })} 
                                                         placeholder="e.g. 6 Years" 
-                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#B88B2A] transition-all"
                                                     />
                                                 </div>
                                                 <div>
@@ -839,7 +839,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         value={profileForm.primaryCourt || ''} 
                                                         onChange={e => setProfileForm({ ...profileForm, primaryCourt: e.target.value })} 
                                                         placeholder="e.g. Delhi High Court / District Courts" 
-                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#B88B2A] transition-all"
                                                     />
                                                 </div>
                                                 <div>
@@ -849,12 +849,12 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         value={profileForm.languagesKnown || ''} 
                                                         onChange={e => setProfileForm({ ...profileForm, languagesKnown: e.target.value })} 
                                                         placeholder="e.g. English, Hindi, Punjabi" 
-                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                        className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#B88B2A] transition-all"
                                                     />
                                                 </div>
 
                                                 <div className="md:col-span-2 border-t border-slate-100 dark:border-slate-800 pt-6 mt-2 space-y-4">
-                                                    <div className="text-[10px] font-black uppercase tracking-widest text-[#6D5DFC] dark:text-[#C8A34D]">Office Details</div>
+                                                    <div className="text-[10px] font-black uppercase tracking-widest text-[#6D5DFC] dark:text-[#B88B2A]">Office Details</div>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                                         <div>
                                                             <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest block mb-1">Office Name</label>
@@ -863,7 +863,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                                 value={profileForm.officeName || ''} 
                                                                 onChange={e => setProfileForm({ ...profileForm, officeName: e.target.value })} 
                                                                 placeholder="e.g. Apex Legal Chambers" 
-                                                                className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                                className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#B88B2A] transition-all"
                                                             />
                                                         </div>
                                                         <div>
@@ -873,7 +873,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                                 value={profileForm.officeAddress || ''} 
                                                                 onChange={e => setProfileForm({ ...profileForm, officeAddress: e.target.value })} 
                                                                 placeholder="Complete office chambers address" 
-                                                                className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#C8A34D] transition-all"
+                                                                className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#6D5DFC] dark:focus:border-[#B88B2A] transition-all"
                                                             />
                                                         </div>
                                                     </div>
@@ -887,7 +887,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                 {renderField('Languages Known', profileForm.languagesKnown, <Languages size={13} className="text-slate-400" />)}
                                                 
                                                 <div className="md:col-span-2 border-t border-slate-100 dark:border-slate-800 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                    <div className="md:col-span-2 text-[10px] font-black uppercase tracking-widest text-[#6D5DFC] dark:text-[#C8A34D]">Office Details</div>
+                                                    <div className="md:col-span-2 text-[10px] font-black uppercase tracking-widest text-[#6D5DFC] dark:text-[#B88B2A]">Office Details</div>
                                                     {renderField('Office Name', profileForm.officeName, <Building2 size={13} className="text-slate-400" />)}
                                                     {renderField('Office Address', profileForm.officeAddress, <MapPin size={13} className="text-slate-400" />)}
                                                 </div>
@@ -920,8 +920,8 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                                 }}
                                                                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
                                                                     isSelected 
-                                                                        ? 'bg-[#C8A34D] border-[#C8A34D] text-[#111111] font-black shadow-xs'
-                                                                        : 'bg-white dark:bg-[#0F172A] border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-[#C8A34D]/50'
+                                                                        ? 'bg-[#B88B2A] border-[#B88B2A] text-[#111111] font-black shadow-xs'
+                                                                        : 'bg-white dark:bg-[#0F172A] border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-[#B88B2A]/50'
                                                                 }`}
                                                             >
                                                                 {area}
@@ -933,7 +933,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                         activeArray.map(area => (
                                                             <span
                                                                 key={area}
-                                                                className="px-3 py-1.5 rounded-full text-xs font-bold bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-[#B48A35] dark:text-[#C8A34D]"
+                                                                className="px-3 py-1.5 rounded-full text-xs font-bold bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-[#B48A35] dark:text-[#B88B2A]"
                                                             >
                                                                 {area}
                                                             </span>
@@ -949,7 +949,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
 
                                 {/* 4. About Card (Role-Specific) */}
                                 <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none space-y-5 sm:space-y-6">
-                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#C8A34D] border-b border-slate-100 dark:border-slate-800 pb-3">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-[#B88B2A] border-b border-slate-100 dark:border-slate-800 pb-3">
                                         {selectedRole === 'student' ? 'About Law Student' : selectedRole === 'law_firm' ? 'About Law Firm' : 'About Advocate'}
                                     </h3>
                                     
@@ -962,7 +962,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     value={profileForm.specialization || ''} 
                                                     onChange={e => setProfileForm({ ...profileForm, specialization: e.target.value })} 
                                                     placeholder={selectedRole === 'student' ? "e.g. Constitutional Law, Moot Court Specialization" : selectedRole === 'law_firm' ? "e.g. Cross-Border M&A, Commercial Arbitration" : "e.g. Criminal Trial Defense, Corporate Law"} 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#C8A34D] transition-all"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-[#B88B2A] transition-all"
                                                 />
                                             </div>
                                             <div>
@@ -972,7 +972,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     onChange={e => setProfileForm({ ...profileForm, bio: e.target.value })} 
                                                     rows={4}
                                                     placeholder="Profile bio, legal background, highlights..." 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-xs font-medium focus:outline-none focus:border-[#C8A34D] transition-all resize-none"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-xs font-medium focus:outline-none focus:border-[#B88B2A] transition-all resize-none"
                                                 />
                                             </div>
                                             <div>
@@ -982,7 +982,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                                     onChange={e => setProfileForm({ ...profileForm, achievements: e.target.value })} 
                                                     rows={3}
                                                     placeholder="Moots won, landmark judgments, publications..." 
-                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-xs font-medium focus:outline-none focus:border-[#C8A34D] transition-all resize-none"
+                                                    className="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-xs font-medium focus:outline-none focus:border-[#B88B2A] transition-all resize-none"
                                                 />
                                             </div>
                                         </div>
@@ -1025,7 +1025,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                     <div className="relative w-24 h-24 mx-auto flex items-center justify-center mb-4">
                                         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                                             <path className="text-slate-100 dark:text-slate-800" strokeWidth="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                            <path className="text-[#C8A34D]" strokeDasharray={`${profileCompletion}, 100`} strokeWidth="3" strokeLinecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                            <path className="text-[#B88B2A]" strokeDasharray={`${profileCompletion}, 100`} strokeWidth="3" strokeLinecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                                         </svg>
                                         <div className="absolute text-xl font-extrabold text-slate-800 dark:text-white">{profileCompletion}%</div>
                                     </div>
@@ -1037,8 +1037,8 @@ const ProfileSettingsDropdown = ({ onClose }) => {
 
                                 {/* B. AI Integration Card */}
                                 <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none">
-                                    <div className="flex items-center gap-2 text-[#C8A34D] mb-4">
-                                        <Sparkles size={14} className="fill-[#C8A34D]" />
+                                    <div className="flex items-center gap-2 text-[#B88B2A] mb-4">
+                                        <Sparkles size={14} className="fill-[#B88B2A]" />
                                         <span className="text-xs font-black uppercase tracking-widest">AI Customization</span>
                                     </div>
                                     <p className="text-xs text-slate-600 dark:text-slate-300 font-bold leading-relaxed mb-4">
@@ -1053,7 +1053,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                             'Strategic Case Recommendations'
                                         ].map(item => (
                                             <li key={item} className="flex items-start gap-2.5 text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-normal">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-[#C8A34D] mt-1.5 shrink-0" />
+                                                <span className="w-1.5 h-1.5 rounded-full bg-[#B88B2A] mt-1.5 shrink-0" />
                                                 <span>{item}</span>
                                             </li>
                                         ))}
@@ -1083,7 +1083,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                             </button>
                             <button
                                 onClick={handleSaveProfile}
-                                className="px-5 sm:px-7 py-2.5 sm:py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-colors shadow-md active:scale-[0.98] animate-fade-in cursor-pointer"
+                                className="px-5 sm:px-7 py-2.5 sm:py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-colors shadow-md active:scale-[0.98] animate-fade-in cursor-pointer"
                             >
                                 Save Changes
                             </button>
@@ -1135,7 +1135,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">
                                         <span>Zoom</span>
-                                        <span className="text-[#6D5DFC] dark:text-[#C8A34D]">{Math.round(zoom * 100)}%</span>
+                                        <span className="text-[#6D5DFC] dark:text-[#B88B2A]">{Math.round(zoom * 100)}%</span>
                                     </div>
                                     <input
                                         type="range"
@@ -1145,7 +1145,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                         step={0.1}
                                         aria-labelledby="Zoom Slider"
                                         onChange={(e) => setZoom(parseFloat(e.target.value))}
-                                        className="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#6D5DFC] dark:accent-[#C8A34D]"
+                                        className="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#6D5DFC] dark:accent-[#B88B2A]"
                                     />
                                 </div>
 
@@ -1153,7 +1153,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">
                                         <span>Rotation</span>
-                                        <span className="text-[#6D5DFC] dark:text-[#C8A34D]">{rotation}°</span>
+                                        <span className="text-[#6D5DFC] dark:text-[#B88B2A]">{rotation}°</span>
                                     </div>
                                     <input
                                         type="range"
@@ -1163,7 +1163,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                         step={1}
                                         aria-labelledby="Rotation Slider"
                                         onChange={(e) => setRotation(parseInt(e.target.value))}
-                                        className="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#6D5DFC] dark:accent-[#C8A34D]"
+                                        className="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#6D5DFC] dark:accent-[#B88B2A]"
                                     />
                                 </div>
                             </div>
@@ -1180,7 +1180,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                             onClick={() => setAspect(opt.value)}
                                             className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border ${
                                                 aspect === opt.value 
-                                                    ? 'bg-[#6D5DFC] dark:bg-[#C8A34D] border-[#6D5DFC] dark:border-[#C8A34D] text-white dark:text-[#111111] shadow-sm'
+                                                    ? 'bg-[#6D5DFC] dark:bg-[#B88B2A] border-[#6D5DFC] dark:border-[#B88B2A] text-white dark:text-[#111111] shadow-sm'
                                                     : 'bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white'
                                             }`}
                                         >
@@ -1199,7 +1199,7 @@ const ProfileSettingsDropdown = ({ onClose }) => {
                                     <button
                                         onClick={handleSaveCrop}
                                         disabled={uploadingCroppedImage}
-                                        className="flex-1 sm:flex-none px-6 py-2.5 bg-[#6D5DFC] dark:bg-[#C8A34D] hover:bg-[#5b4edb] dark:hover:bg-[#b08d3b] text-white dark:text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider shadow-lg transition-colors disabled:opacity-50"
+                                        className="flex-1 sm:flex-none px-6 py-2.5 bg-[#6D5DFC] dark:bg-[#B88B2A] hover:bg-[#5b4edb] dark:hover:bg-[#b08d3b] text-white dark:text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider shadow-lg transition-colors disabled:opacity-50"
                                     >
                                         {uploadingCroppedImage ? 'Uploading...' : 'Save & Update'}
                                     </button>

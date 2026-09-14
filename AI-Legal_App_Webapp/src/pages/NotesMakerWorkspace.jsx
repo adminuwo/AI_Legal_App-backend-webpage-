@@ -113,7 +113,7 @@ const CleanMarkdownRenderer = ({ rawText }) => {
     } else if (trimmed.startsWith('## ')) {
       const cleanHeading = trimmed.replace(/^##\s*/, '').replace(/\*+/g, '').trim();
       elements.push(
-        <h2 key={`h2_${idx}`} className="text-base sm:text-lg font-bold text-[#C8A34D] mt-4 mb-1.5 flex items-center gap-2">
+        <h2 key={`h2_${idx}`} className="text-base sm:text-lg font-bold text-[#B88B2A] mt-4 mb-1.5 flex items-center gap-2">
           <span>{cleanHeading}</span>
         </h2>
       );
@@ -128,7 +128,7 @@ const CleanMarkdownRenderer = ({ rawText }) => {
       const cleanBullet = trimmed.replace(/^[-*]\s*/, '').replace(/^\d+\.\s*/, '').replace(/\*+/g, '').trim();
       elements.push(
         <div key={`bullet_${idx}`} className="flex items-start gap-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 my-1 pl-2">
-          <span className="text-[#C8A34D] font-bold shrink-0">•</span>
+          <span className="text-[#B88B2A] font-bold shrink-0">•</span>
           <span className="leading-relaxed">{cleanBullet}</span>
         </div>
       );
@@ -685,7 +685,7 @@ Answer the student's question specifically in context of this active study note.
           </button>
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 inline-flex items-center gap-1">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30 inline-flex items-center gap-1">
                 <Bookmark className="w-3 h-3" /> STUDENT AI TOOL
               </span>
             </div>
@@ -701,7 +701,7 @@ Answer the student's question specifically in context of this active study note.
         <div className="flex items-center gap-3">
           {/* Language Selector */}
           <div className="flex items-center gap-2 bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
-            <Globe className="w-4 h-4 text-[#C8A34D] ml-2" />
+            <Globe className="w-4 h-4 text-[#B88B2A] ml-2" />
             <select
               value={outputLanguage}
               onChange={(e) => setOutputLanguage(e.target.value)}
@@ -718,7 +718,7 @@ Answer the student's question specifically in context of this active study note.
 
           <button
             onClick={() => setHistoryModalVisible(true)}
-            className="px-3.5 py-2 rounded-xl bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-all"
+            className="px-3.5 py-2 rounded-xl bg-[#B88B2A]/10 hover:bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-all"
           >
             <BookOpen className="w-4 h-4" />
             <span className="hidden sm:inline">My Saved Notes</span>
@@ -743,7 +743,7 @@ Answer the student's question specifically in context of this active study note.
                     onClick={() => setAcademicLevel(lvl)}
                     className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                       isSelected
-                        ? 'bg-[#C8A34D] text-white shadow-2xs'
+                        ? 'bg-[#B88B2A] text-white shadow-2xs'
                         : 'bg-white dark:bg-[#1E293B] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
@@ -759,7 +759,7 @@ Answer the student's question specifically in context of this active study note.
             <button
               onClick={() => setInputMode('ai_topic')}
               className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                inputMode === 'ai_topic' ? 'bg-[#C8A34D] text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300'
+                inputMode === 'ai_topic' ? 'bg-[#B88B2A] text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300'
               }`}
             >
               ✨ Generate with AI
@@ -767,7 +767,7 @@ Answer the student's question specifically in context of this active study note.
             <button
               onClick={() => setInputMode('user_input')}
               className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                inputMode === 'user_input' ? 'bg-[#C8A34D] text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300'
+                inputMode === 'user_input' ? 'bg-[#B88B2A] text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300'
               }`}
             >
               ✍️ Create from My Input
@@ -792,7 +792,7 @@ Answer the student's question specifically in context of this active study note.
                   <button
                     onClick={() => handleGenerateNotes()}
                     disabled={isGenerating}
-                    className="px-5 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-white font-bold text-xs shadow-2xs transition-all cursor-pointer flex items-center gap-2"
+                    className="px-5 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-white font-bold text-xs shadow-2xs transition-all cursor-pointer flex items-center gap-2"
                   >
                     <Zap className="w-4 h-4 fill-white" />
                     <span>Generate Notes</span>
@@ -814,7 +814,7 @@ Answer the student's question specifically in context of this active study note.
                   value={userTopicInput}
                   onChange={(e) => setUserTopicInput(e.target.value)}
                   placeholder="Optional title / case / topic (e.g. Kesavananda Bharati)"
-                  className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -826,7 +826,7 @@ Answer the student's question specifically in context of this active study note.
                   <button
                     onClick={toggleVoiceListening}
                     className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                      isListening ? 'bg-rose-500 text-white animate-pulse' : 'bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30'
+                      isListening ? 'bg-rose-500 text-white animate-pulse' : 'bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30'
                     }`}
                   >
                     <Mic className="w-3.5 h-3.5" />
@@ -838,7 +838,7 @@ Answer the student's question specifically in context of this active study note.
                   value={userInputContent}
                   onChange={(e) => setUserInputContent(e.target.value)}
                   placeholder="Type your observations, case facts, lecture points or dictate using the mic..."
-                  className="w-full p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#C8A34D] resize-none"
+                  className="w-full p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#B88B2A] resize-none"
                 />
               </div>
 
@@ -847,9 +847,9 @@ Answer the student's question specifically in context of this active study note.
                 <button
                   onClick={handleSaveAsWritten}
                   disabled={isSavingAsWritten}
-                  className="p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#C8A34D]/40 hover:border-[#C8A34D] text-left transition-all cursor-pointer space-y-1 shadow-2xs"
+                  className="p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#B88B2A]/40 hover:border-[#B88B2A] text-left transition-all cursor-pointer space-y-1 shadow-2xs"
                 >
-                  <div className="text-xs font-bold text-[#C8A34D] flex items-center gap-1.5">
+                  <div className="text-xs font-bold text-[#B88B2A] flex items-center gap-1.5">
                     <Save className="w-4 h-4" /> Save As Written
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">Save exact text without any AI modifications</p>
@@ -858,10 +858,10 @@ Answer the student's question specifically in context of this active study note.
                 <button
                   onClick={handleTransformWithAI}
                   disabled={isTransforming}
-                  className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-[#C8A34D]/50 hover:border-[#C8A34D] text-left transition-all cursor-pointer space-y-1 shadow-2xs"
+                  className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-[#B88B2A]/50 hover:border-[#B88B2A] text-left transition-all cursor-pointer space-y-1 shadow-2xs"
                 >
                   <div className="text-xs font-bold text-amber-800 dark:text-amber-200 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-[#C8A34D]" /> Transform with AI
+                    <Sparkles className="w-4 h-4 text-[#B88B2A]" /> Transform with AI
                   </div>
                   <p className="text-[11px] text-amber-700 dark:text-amber-300">Clean grammar, structure headings & bullet points</p>
                 </button>
@@ -869,7 +869,7 @@ Answer the student's question specifically in context of this active study note.
                 <button
                   onClick={() => handleGenerateNotes()}
                   disabled={isGenerating}
-                  className="p-4 rounded-2xl bg-[#C8A34D] hover:bg-[#b08d3b] text-white text-left transition-all cursor-pointer space-y-1 shadow-2xs"
+                  className="p-4 rounded-2xl bg-[#B88B2A] hover:bg-[#b08d3b] text-white text-left transition-all cursor-pointer space-y-1 shadow-2xs"
                 >
                   <div className="text-xs font-bold flex items-center gap-1.5">
                     <Zap className="w-4 h-4 fill-white" /> Generate Notes
@@ -894,7 +894,7 @@ Answer the student's question specifically in context of this active study note.
                     onClick={() => setSelectedChip(chip.id)}
                     className={`p-3 rounded-2xl border text-left cursor-pointer transition-all space-y-1 ${
                       isSelected
-                        ? 'bg-[#C8A34D]/10 border-[#C8A34D] text-[#C8A34D] font-bold'
+                        ? 'bg-[#B88B2A]/10 border-[#B88B2A] text-[#B88B2A] font-bold'
                         : 'bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300'
                     }`}
                   >
@@ -919,7 +919,7 @@ Answer the student's question specifically in context of this active study note.
                     setPromptInput(topic);
                     handleGenerateNotes(topic);
                   }}
-                  className="px-3.5 py-1.5 rounded-full bg-white dark:bg-[#1E293B] hover:bg-[#C8A34D]/10 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-[#C8A34D] hover:border-[#C8A34D]/40 transition-all cursor-pointer whitespace-nowrap"
+                  className="px-3.5 py-1.5 rounded-full bg-white dark:bg-[#1E293B] hover:bg-[#B88B2A]/10 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-[#B88B2A] hover:border-[#B88B2A]/40 transition-all cursor-pointer whitespace-nowrap"
                 >
                   {topic}
                 </button>
@@ -946,7 +946,7 @@ Answer the student's question specifically in context of this active study note.
                 onClick={() => setViewMode(tab.id)}
                 className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
                   viewMode === tab.id
-                    ? 'bg-[#C8A34D] text-white shadow-2xs'
+                    ? 'bg-[#B88B2A] text-white shadow-2xs'
                     : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                 }`}
               >
@@ -957,7 +957,7 @@ Answer the student's question specifically in context of this active study note.
 
           {/* Action Bar */}
           <div className="flex items-center justify-between gap-3 bg-white dark:bg-[#1E293B] p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
-            <span className="text-xs font-bold text-[#C8A34D] flex items-center gap-1.5">
+            <span className="text-xs font-bold text-[#B88B2A] flex items-center gap-1.5">
               <Award className="w-4 h-4" /> {academicLevel} Notes
             </span>
 
@@ -966,7 +966,7 @@ Answer the student's question specifically in context of this active study note.
                 onClick={handleSaveNotes}
                 className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1 transition-all cursor-pointer"
               >
-                <Bookmark className="w-3.5 h-3.5 text-[#C8A34D]" /> Save
+                <Bookmark className="w-3.5 h-3.5 text-[#B88B2A]" /> Save
               </button>
 
               <button
@@ -976,12 +976,12 @@ Answer the student's question specifically in context of this active study note.
                 }}
                 className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1 transition-all cursor-pointer"
               >
-                <Copy className="w-3.5 h-3.5 text-[#C8A34D]" /> Copy
+                <Copy className="w-3.5 h-3.5 text-[#B88B2A]" /> Copy
               </button>
 
               <button
                 onClick={() => handleOpenEditModal()}
-                className="px-3 py-1.5 rounded-xl bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-xs font-bold text-[#C8A34D] flex items-center gap-1 transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-xl bg-[#B88B2A]/10 hover:bg-[#B88B2A]/20 text-xs font-bold text-[#B88B2A] flex items-center gap-1 transition-all cursor-pointer"
               >
                 <Edit3 className="w-3.5 h-3.5" /> Edit
               </button>
@@ -993,7 +993,7 @@ Answer the student's question specifically in context of this active study note.
             <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-xl min-h-[400px]">
               {isGenerating || isTransforming ? (
                 <div className="py-20 text-center space-y-3">
-                  <div className="w-10 h-10 rounded-full border-4 border-[#C8A34D] border-t-transparent animate-spin mx-auto" />
+                  <div className="w-10 h-10 rounded-full border-4 border-[#B88B2A] border-t-transparent animate-spin mx-auto" />
                   <p className="text-xs font-bold text-slate-600 dark:text-slate-300">
                     {LOADING_STEPS[loadingStepIdx]}
                   </p>
@@ -1009,9 +1009,9 @@ Answer the student's question specifically in context of this active study note.
             <div className="p-8 rounded-3xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-xl text-center space-y-6">
               <div
                 onClick={() => setShowFlashcardAnswer(!showFlashcardAnswer)}
-                className="p-8 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-[#C8A34D]/40 cursor-pointer min-h-[220px] flex flex-col items-center justify-center space-y-3"
+                className="p-8 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-[#B88B2A]/40 cursor-pointer min-h-[220px] flex flex-col items-center justify-center space-y-3"
               >
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#C8A34D]">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#B88B2A]">
                   {showFlashcardAnswer ? 'ANSWER / DEFINITION' : 'QUESTION / TERM'}
                 </span>
                 <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white max-w-md">
@@ -1040,7 +1040,7 @@ Answer the student's question specifically in context of this active study note.
                     setShowFlashcardAnswer(false);
                   }}
                   disabled={currentFlashcardIdx === parsedFlashcards.length - 1}
-                  className="px-4 py-2 rounded-xl bg-[#C8A34D] text-white disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#B88B2A] text-white disabled:opacity-50 cursor-pointer"
                 >
                   Next →
                 </button>
@@ -1052,7 +1052,7 @@ Answer the student's question specifically in context of this active study note.
           {viewMode === 'mindmap' && (
             <div className="p-6 rounded-3xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
               <h3 className="text-sm font-bold text-[#111827] dark:text-white flex items-center gap-2">
-                <Brain className="w-4 h-4 text-[#C8A34D]" /> Legal Concept Mind Map Tree
+                <Brain className="w-4 h-4 text-[#B88B2A]" /> Legal Concept Mind Map Tree
               </h3>
               <div className="space-y-3 pl-2">
                 {mindMapNodes.map((node) => (
@@ -1061,7 +1061,7 @@ Answer the student's question specifically in context of this active study note.
                       {node.label}
                     </div>
                     {node.children && (
-                      <div className="pl-6 space-y-1.5 border-l-2 border-[#C8A34D]/40 ml-4">
+                      <div className="pl-6 space-y-1.5 border-l-2 border-[#B88B2A]/40 ml-4">
                         {node.children.map((c) => (
                           <div key={c.id} className="p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300">
                             {c.label}
@@ -1078,7 +1078,7 @@ Answer the student's question specifically in context of this active study note.
           {/* TAB 4: 1-PAGE SUMMARY */}
           {viewMode === 'summary' && (
             <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-xl space-y-3">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 inline-block">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30 inline-block">
                 ⚡ 1-MINUTE QUICK REVISION SUMMARY
               </span>
               <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
@@ -1113,7 +1113,7 @@ Answer the student's question specifically in context of this active study note.
                             if (isCorr) style = 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-900 dark:text-emerald-100 font-bold';
                             else if (isSel && !isCorr) style = 'bg-rose-50 dark:bg-rose-950/40 border-rose-500 text-rose-900 dark:text-rose-100 font-bold';
                           } else if (isSel) {
-                            style = 'bg-[#C8A34D]/10 border-[#C8A34D] text-[#C8A34D] font-bold';
+                            style = 'bg-[#B88B2A]/10 border-[#B88B2A] text-[#B88B2A] font-bold';
                           }
 
                           return (
@@ -1142,7 +1142,7 @@ Answer the student's question specifically in context of this active study note.
           {/* PHASE 3: CONVERSATIONAL AI LEGAL TUTOR THREAD (ATTACHED TO ACTIVE NOTE) */}
           <div className="p-6 rounded-3xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
             <h3 className="text-sm font-bold text-[#111827] dark:text-white flex items-center gap-2">
-              <Brain className="w-4.5 h-4.5 text-[#C8A34D]" />
+              <Brain className="w-4.5 h-4.5 text-[#B88B2A]" />
               <span>Ask AI Legal Tutor (Attached to this Note)</span>
             </h3>
 
@@ -1158,7 +1158,7 @@ Answer the student's question specifically in context of this active study note.
                   key={idx}
                   onClick={() => handleFollowUpInstruction(chip)}
                   disabled={isFollowUpGenerating}
-                  className="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#C8A34D]/10 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-[#C8A34D] transition-all cursor-pointer whitespace-nowrap"
+                  className="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#B88B2A]/10 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-[#B88B2A] transition-all cursor-pointer whitespace-nowrap"
                 >
                   + {chip}
                 </button>
@@ -1170,7 +1170,7 @@ Answer the student's question specifically in context of this active study note.
               <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
                 {followUpThread.map((msg) => (
                   <div key={msg.id} className="space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#C8A34D]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#B88B2A]">
                       {msg.role === 'user' ? '👤 YOU ASKED:' : '🤖 AI TUTOR REPLY:'}
                     </span>
                     {msg.role === 'user' ? (
@@ -1178,10 +1178,10 @@ Answer the student's question specifically in context of this active study note.
                         {msg.text}
                       </p>
                     ) : (
-                      <div className="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-[#C8A34D]/30 min-h-[60px]">
+                      <div className="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-[#B88B2A]/30 min-h-[60px]">
                         {msg.isThinking || !msg.text ? (
-                          <div className="flex items-center gap-2.5 text-xs font-bold text-[#C8A34D] py-1">
-                            <div className="w-4 h-4 rounded-full border-2 border-[#C8A34D] border-t-transparent animate-spin" />
+                          <div className="flex items-center gap-2.5 text-xs font-bold text-[#B88B2A] py-1">
+                            <div className="w-4 h-4 rounded-full border-2 border-[#B88B2A] border-t-transparent animate-spin" />
                             <span className="animate-pulse">✨ AI Tutor is thinking & reviewing note context...</span>
                           </div>
                         ) : (
@@ -1202,12 +1202,12 @@ Answer the student's question specifically in context of this active study note.
                 onChange={(e) => setFollowUpInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleFollowUpInstruction()}
                 placeholder="Ask follow-up question about this note (e.g., 'Explain Section 103 in Hindi', 'Compare with IPC')..."
-                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#C8A34D]"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-[#B88B2A]"
               />
               <button
                 onClick={() => handleFollowUpInstruction()}
                 disabled={isFollowUpGenerating || !followUpInput.trim()}
-                className="px-4 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-white font-bold text-xs transition-all cursor-pointer flex items-center gap-1 disabled:opacity-50"
+                className="px-4 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-white font-bold text-xs transition-all cursor-pointer flex items-center gap-1 disabled:opacity-50"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>
@@ -1222,7 +1222,7 @@ Answer the student's question specifically in context of this active study note.
           <div className="w-full max-w-2xl bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-5 max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="text-lg font-black text-[#111827] dark:text-white flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-[#C8A34D]" /> My Saved Study Notes Library
+                <BookOpen className="w-5 h-5 text-[#B88B2A]" /> My Saved Study Notes Library
               </h3>
               <button
                 onClick={() => setHistoryModalVisible(false)}
@@ -1242,11 +1242,11 @@ Answer the student's question specifically in context of this active study note.
                 savedNotes.map((note) => (
                   <div
                     key={note.id}
-                    className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 hover:border-[#C8A34D]/50 transition-all"
+                    className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 hover:border-[#B88B2A]/50 transition-all"
                   >
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-[#C8A34D]/10 text-[#C8A34D]">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-[#B88B2A]/10 text-[#B88B2A]">
                           {note.level}
                         </span>
                         <span className="text-[10px] font-bold text-slate-400">{note.date}</span>
@@ -1260,13 +1260,13 @@ Answer the student's question specifically in context of this active study note.
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => handleOpenSavedNote(note)}
-                        className="px-3 py-1.5 rounded-xl bg-[#C8A34D] text-white text-xs font-bold hover:bg-[#b08d3b] transition-all cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-[#B88B2A] text-white text-xs font-bold hover:bg-[#b08d3b] transition-all cursor-pointer"
                       >
                         Open
                       </button>
                       <button
                         onClick={() => handleOpenEditModal(note)}
-                        className="p-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-[#C8A34D] transition-colors cursor-pointer"
+                        className="p-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-[#B88B2A] transition-colors cursor-pointer"
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
@@ -1291,7 +1291,7 @@ Answer the student's question specifically in context of this active study note.
           <div className="w-full max-w-2xl bg-white dark:bg-[#1E293B] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-4 max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="text-lg font-black text-[#111827] dark:text-white flex items-center gap-2">
-                <Edit3 className="w-5 h-5 text-[#C8A34D]" /> Edit Study Note
+                <Edit3 className="w-5 h-5 text-[#B88B2A]" /> Edit Study Note
               </h3>
               <button
                 onClick={() => setIsEditModalOpen(false)}
@@ -1308,7 +1308,7 @@ Answer the student's question specifically in context of this active study note.
                   type="text"
                   value={editingTitle}
                   onChange={(e) => setEditingTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -1318,7 +1318,7 @@ Answer the student's question specifically in context of this active study note.
                   rows={12}
                   value={editingNotesText}
                   onChange={(e) => setEditingNotesText(e.target.value)}
-                  className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D] resize-none"
+                  className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A] resize-none"
                 />
               </div>
             </div>
@@ -1332,7 +1332,7 @@ Answer the student's question specifically in context of this active study note.
               </button>
               <button
                 onClick={handleSaveEditedNotes}
-                className="px-5 py-2 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-white font-bold text-xs shadow-2xs cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-white font-bold text-xs shadow-2xs cursor-pointer"
               >
                 Save Changes
               </button>

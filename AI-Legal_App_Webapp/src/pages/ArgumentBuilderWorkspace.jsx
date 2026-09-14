@@ -436,7 +436,7 @@ Language: ${outputLanguage}
             <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
 
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#111111] border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D] shadow-md shrink-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#111111] border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A] shadow-md shrink-0">
             <Gavel className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
 
@@ -445,7 +445,7 @@ Language: ${outputLanguage}
               <h1 className="text-xs sm:text-lg font-black tracking-tight text-slate-900 dark:text-white truncate">
                 Argument Builder
               </h1>
-              <span className="text-[9px] sm:text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 uppercase shrink-0 hidden md:inline-block">
+              <span className="text-[9px] sm:text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 uppercase shrink-0 hidden md:inline-block">
                 Courtroom Intelligence
               </span>
             </div>
@@ -462,13 +462,13 @@ Language: ${outputLanguage}
               {/* Saved Briefs Button */}
               <button
                 onClick={() => setIsSavedModalOpen(true)}
-                className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs font-bold flex items-center gap-1 cursor-pointer hover:border-[#C8A34D] transition-all whitespace-nowrap"
+                className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs font-bold flex items-center gap-1 cursor-pointer hover:border-[#B88B2A] transition-all whitespace-nowrap"
               >
-                <FolderOpen className="w-3.5 h-3.5 text-[#C8A34D]" />
+                <FolderOpen className="w-3.5 h-3.5 text-[#B88B2A]" />
                 <span className="hidden xs:inline sm:inline">Saved Briefs</span>
                 <span className="xs:hidden">Briefs</span>
                 {savedBriefs.length > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full bg-[#C8A34D] text-[#111111] text-[9px] sm:text-[10px] font-black">
+                  <span className="px-1.5 py-0.2 rounded-full bg-[#B88B2A] text-[#111111] text-[9px] sm:text-[10px] font-black">
                     {savedBriefs.length}
                   </span>
                 )}
@@ -479,7 +479,7 @@ Language: ${outputLanguage}
                 <select
                   value={outputLanguage}
                   onChange={(e) => setOutputLanguage(e.target.value)}
-                  className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs font-bold text-[#C8A34D] focus:outline-none focus:border-[#C8A34D] cursor-pointer"
+                  className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs font-bold text-[#B88B2A] focus:outline-none focus:border-[#B88B2A] cursor-pointer"
                 >
                   {SUPPORTED_LANGUAGES.map(lang => (
                     <option key={lang} value={lang}>{lang}</option>
@@ -493,21 +493,21 @@ Language: ${outputLanguage}
             <>
               <button
                 onClick={handleCopyOralNotes}
-                className="px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs font-bold flex items-center gap-1 cursor-pointer hover:border-[#C8A34D]"
+                className="px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 text-[11px] sm:text-xs font-bold flex items-center gap-1 cursor-pointer hover:border-[#B88B2A]"
               >
-                <Copy className="w-3.5 h-3.5 text-[#C8A34D]" /> <span className="hidden xs:inline">Copy</span>
+                <Copy className="w-3.5 h-3.5 text-[#B88B2A]" /> <span className="hidden xs:inline">Copy</span>
               </button>
 
               <button
                 onClick={handleSaveBrief}
-                className="px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/40 text-[11px] sm:text-xs font-bold flex items-center gap-1 cursor-pointer hover:bg-[#C8A34D] hover:text-[#111111] transition-all"
+                className="px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/40 text-[11px] sm:text-xs font-bold flex items-center gap-1 cursor-pointer hover:bg-[#B88B2A] hover:text-[#111111] transition-all"
               >
                 Save
               </button>
 
               <button
                 onClick={handleDownloadPDF}
-                className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#C8A34D] text-[#111111] text-[11px] sm:text-xs font-black flex items-center gap-1 cursor-pointer shadow-md shadow-[#C8A34D]/20 hover:bg-[#b8933d] transition-all"
+                className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#B88B2A] text-[#111111] text-[11px] sm:text-xs font-black flex items-center gap-1 cursor-pointer shadow-md shadow-[#B88B2A]/20 hover:bg-[#b8933d] transition-all"
               >
                 <Download className="w-3.5 h-3.5" /> <span className="hidden xs:inline">Export</span> PDF
               </button>
@@ -530,9 +530,9 @@ Language: ${outputLanguage}
             disabled={step.num > currentStep}
             className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
               currentStep === step.num
-                ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md shadow-[#C8A34D]/20'
+                ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md shadow-[#B88B2A]/20'
                 : currentStep > step.num
-                ? 'bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 cursor-pointer hover:bg-[#C8A34D]/25'
+                ? 'bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 cursor-pointer hover:bg-[#B88B2A]/25'
                 : 'bg-slate-100 dark:bg-[#1E293B] text-slate-400 opacity-60 cursor-not-allowed'
             }`}
           >
@@ -575,15 +575,15 @@ Language: ${outputLanguage}
                     onClick={() => setInputSource(source.id)}
                     className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col gap-3 ${
                       isSelected
-                        ? 'bg-white dark:bg-[#1A2333] border-[#C8A34D] ring-2 ring-[#C8A34D]/30 shadow-lg'
-                        : 'bg-white dark:bg-[#111622] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/50'
+                        ? 'bg-white dark:bg-[#1A2333] border-[#B88B2A] ring-2 ring-[#B88B2A]/30 shadow-lg'
+                        : 'bg-white dark:bg-[#111622] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/50'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className={`p-2.5 rounded-xl ${isSelected ? 'bg-[#C8A34D] text-[#111111]' : 'bg-slate-100 dark:bg-[#1E293B] text-slate-500'}`}>
+                      <div className={`p-2.5 rounded-xl ${isSelected ? 'bg-[#B88B2A] text-[#111111]' : 'bg-slate-100 dark:bg-[#1E293B] text-slate-500'}`}>
                         <Icon className="w-5 h-5" />
                       </div>
-                      {isSelected && <CheckCircle2 className="w-5 h-5 text-[#C8A34D]" />}
+                      {isSelected && <CheckCircle2 className="w-5 h-5 text-[#B88B2A]" />}
                     </div>
                     <div>
                       <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">{source.label}</h3>
@@ -610,14 +610,14 @@ Language: ${outputLanguage}
                       placeholder="Search cases..."
                       value={caseSearchQuery}
                       onChange={(e) => setCaseSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
 
                 {isLoadingCases ? (
                   <div className="py-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                    <RefreshCw className="w-4 h-4 animate-spin text-[#C8A34D]" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#B88B2A]" />
                     <span>Loading advocate case files...</span>
                   </div>
                 ) : filteredCases.length === 0 ? (
@@ -649,15 +649,15 @@ Language: ${outputLanguage}
                           }}
                           className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
                             isCaseSelected
-                              ? 'bg-[#C8A34D]/15 border-[#C8A34D] ring-2 ring-[#C8A34D]/40 shadow-md'
-                              : 'bg-slate-50 dark:bg-[#1A2333] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/50'
+                              ? 'bg-[#B88B2A]/15 border-[#B88B2A] ring-2 ring-[#B88B2A]/40 shadow-md'
+                              : 'bg-slate-50 dark:bg-[#1A2333] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/50'
                           }`}
                         >
                           <div className="flex items-start justify-between">
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] uppercase">
+                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] uppercase">
                               {caseType}
                             </span>
-                            {isCaseSelected && <CheckCircle2 className="w-4 h-4 text-[#C8A34D]" />}
+                            {isCaseSelected && <CheckCircle2 className="w-4 h-4 text-[#B88B2A]" />}
                           </div>
 
                           <div>
@@ -681,9 +681,9 @@ Language: ${outputLanguage}
                 </div>
 
                 {uploadedFile ? (
-                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-[#C8A34D]/40 flex items-center justify-between">
+                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-[#B88B2A]/40 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-[#C8A34D]/20 text-[#C8A34D]">
+                      <div className="p-2.5 rounded-xl bg-[#B88B2A]/20 text-[#B88B2A]">
                         <FileText className="w-5 h-5" />
                       </div>
                       <div>
@@ -699,8 +699,8 @@ Language: ${outputLanguage}
                     </button>
                   </div>
                 ) : (
-                  <label className="border-2 border-dashed border-[#C8A34D]/40 hover:border-[#C8A34D] bg-slate-50 dark:bg-[#1A2333] p-8 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all space-y-2">
-                    <Upload className="w-8 h-8 text-[#C8A34D]" />
+                  <label className="border-2 border-dashed border-[#B88B2A]/40 hover:border-[#B88B2A] bg-slate-50 dark:bg-[#1A2333] p-8 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all space-y-2">
+                    <Upload className="w-8 h-8 text-[#B88B2A]" />
                     <span className="text-xs font-bold text-slate-900 dark:text-white">Click or Drag & Drop legal pleadings file here</span>
                     <span className="text-[10px] text-slate-400">PDF, DOCX, TXT up to 25MB</span>
                     <input type="file" onChange={handleFileUpload} className="hidden" />
@@ -724,7 +724,7 @@ Language: ${outputLanguage}
                       type="text"
                       value={manualForm.caseTitle}
                       onChange={(e) => setManualForm({ ...manualForm, caseTitle: e.target.value })}
-                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
 
@@ -734,7 +734,7 @@ Language: ${outputLanguage}
                       <select
                         value={manualForm.caseType}
                         onChange={(e) => setManualForm({ ...manualForm, caseType: e.target.value })}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#C8A34D] focus:outline-none"
+                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#B88B2A] focus:outline-none"
                       >
                         {CASE_TYPES.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
@@ -746,7 +746,7 @@ Language: ${outputLanguage}
                         type="text"
                         value={manualForm.courtName}
                         onChange={(e) => setManualForm({ ...manualForm, courtName: e.target.value })}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                       />
                     </div>
                   </div>
@@ -758,7 +758,7 @@ Language: ${outputLanguage}
                         type="text"
                         value={manualForm.clientRole}
                         onChange={(e) => setManualForm({ ...manualForm, clientRole: e.target.value })}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                       />
                     </div>
 
@@ -768,7 +768,7 @@ Language: ${outputLanguage}
                         type="text"
                         value={manualForm.opponentName}
                         onChange={(e) => setManualForm({ ...manualForm, opponentName: e.target.value })}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                       />
                     </div>
                   </div>
@@ -779,7 +779,7 @@ Language: ${outputLanguage}
                       rows={3}
                       value={manualForm.facts}
                       onChange={(e) => setManualForm({ ...manualForm, facts: e.target.value })}
-                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
@@ -796,8 +796,8 @@ Language: ${outputLanguage}
                     onClick={() => setSelectedStyle(style.id)}
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
                       selectedStyle === style.id
-                        ? 'bg-[#C8A34D]/10 border-[#C8A34D] ring-1 ring-[#C8A34D]'
-                        : 'bg-slate-50 dark:bg-[#1A2333] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/40'
+                        ? 'bg-[#B88B2A]/10 border-[#B88B2A] ring-1 ring-[#B88B2A]'
+                        : 'bg-slate-50 dark:bg-[#1A2333] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/40'
                     }`}
                   >
                     <span className="text-xs font-bold text-slate-900 dark:text-white block">{style.label}</span>
@@ -811,7 +811,7 @@ Language: ${outputLanguage}
             <div className="flex justify-end pt-2">
               <button
                 onClick={handleStartCompilation}
-                className="px-6 py-3 rounded-2xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-2 cursor-pointer shadow-lg shadow-[#C8A34D]/20 hover:bg-[#b8933d] transition-all"
+                className="px-6 py-3 rounded-2xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-2 cursor-pointer shadow-lg shadow-[#B88B2A]/20 hover:bg-[#b8933d] transition-all"
               >
                 <span>Review Input Context</span>
                 <ArrowRight className="w-4 h-4" />
@@ -840,7 +840,7 @@ Language: ${outputLanguage}
               <div className="grid grid-cols-2 gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Selected Input Source</span>
-                  <span className="text-xs font-black text-[#C8A34D] capitalize">{inputSource.replace('_', ' ')}</span>
+                  <span className="text-xs font-black text-[#B88B2A] capitalize">{inputSource.replace('_', ' ')}</span>
                 </div>
 
                 <div>
@@ -867,7 +867,7 @@ Language: ${outputLanguage}
 
               <div>
                 <span className="text-[10px] font-bold text-slate-400 uppercase block">Advocacy Strategy</span>
-                <p className="text-xs text-[#C8A34D] font-bold">{LITIGATION_STYLES.find(s => s.id === selectedStyle)?.label}</p>
+                <p className="text-xs text-[#B88B2A] font-bold">{LITIGATION_STYLES.find(s => s.id === selectedStyle)?.label}</p>
               </div>
 
               <div>
@@ -882,14 +882,14 @@ Language: ${outputLanguage}
             <div className="flex items-center justify-between pt-2">
               <button
                 onClick={() => setCurrentStep(1)}
-                className="px-5 py-2.5 rounded-2xl bg-slate-100 dark:bg-[#1A2333] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-2 cursor-pointer border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]"
+                className="px-5 py-2.5 rounded-2xl bg-slate-100 dark:bg-[#1A2333] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-2 cursor-pointer border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]"
               >
                 <ArrowLeft className="w-4 h-4" /> Back / Modify
               </button>
 
               <button
                 onClick={handleConfirmGenerate}
-                className="px-6 py-3 rounded-2xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-2 cursor-pointer shadow-lg shadow-[#C8A34D]/20 hover:bg-[#b8933d] transition-all"
+                className="px-6 py-3 rounded-2xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-2 cursor-pointer shadow-lg shadow-[#B88B2A]/20 hover:bg-[#b8933d] transition-all"
               >
                 <Sparkles className="w-4 h-4" /> Generate Arguments
               </button>
@@ -901,20 +901,20 @@ Language: ${outputLanguage}
         {currentStep === 3 && (
           <div className="py-16 flex flex-col items-center justify-center text-center space-y-6">
             <div className="relative w-24 h-24 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border-4 border-[#C8A34D]/20 animate-ping" />
-              <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#C8A34D] flex items-center justify-center text-[#C8A34D]">
+              <div className="absolute inset-0 rounded-full border-4 border-[#B88B2A]/20 animate-ping" />
+              <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#B88B2A] flex items-center justify-center text-[#B88B2A]">
                 <Sparkles className="w-8 h-8 animate-spin" />
               </div>
             </div>
 
             <div className="space-y-2">
               <h2 className="text-xl font-black text-slate-900 dark:text-white">Preparing Argument Builder Workspace</h2>
-              <p className="text-xs font-mono text-[#C8A34D]">{progressStatus}</p>
+              <p className="text-xs font-mono text-[#B88B2A]">{progressStatus}</p>
             </div>
 
             <div className="w-full max-w-md bg-slate-200 dark:bg-[#1A2333] h-2.5 rounded-full overflow-hidden">
               <div 
-                className="bg-[#C8A34D] h-full transition-all duration-300"
+                className="bg-[#B88B2A] h-full transition-all duration-300"
                 style={{ width: `${progressPct}%` }}
               />
             </div>
@@ -932,7 +932,7 @@ Language: ${outputLanguage}
             <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] uppercase">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] uppercase">
                     AI Confidence: 96%
                   </span>
                   <span className="text-xs font-bold text-slate-400">• {manualForm.caseType}</span>
@@ -948,7 +948,7 @@ Language: ${outputLanguage}
                   onClick={() => setCurrentStep(1)}
                   className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer border border-slate-200 dark:border-slate-800"
                 >
-                  <RefreshCw className="w-3.5 h-3.5 text-[#C8A34D]" /> Re-Analyze
+                  <RefreshCw className="w-3.5 h-3.5 text-[#B88B2A]" /> Re-Analyze
                 </button>
               </div>
             </div>
@@ -956,7 +956,7 @@ Language: ${outputLanguage}
             {/* MAIN 12 STRUCTURED LEGAL SECTIONS */}
             <div className="space-y-4">
               <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Scale className="w-5 h-5 text-[#C8A34D]" />
+                <Scale className="w-5 h-5 text-[#B88B2A]" />
                 <span>12 Structured Legal Pillars</span>
               </h3>
 
@@ -1121,11 +1121,11 @@ Language: ${outputLanguage}
                       >
                         <div className="flex items-center gap-3">
                           <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">{card.title}</span>
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30">
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30">
                             {card.pct}% Confidence
                           </span>
                         </div>
-                        {isOpen ? <ChevronUp className="w-4 h-4 text-[#C8A34D]" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                        {isOpen ? <ChevronUp className="w-4 h-4 text-[#B88B2A]" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                       </div>
 
                       {isOpen && (
@@ -1144,7 +1144,7 @@ Language: ${outputLanguage}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <div>
                   <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-[#C8A34D]" />
+                    <Sparkles className="w-5 h-5 text-[#B88B2A]" />
                     <span>6 Interactive Courtroom Intelligence Tools</span>
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">Oral submissions, bench Q&A, opponent strategy & trial checklists.</p>
@@ -1166,7 +1166,7 @@ Language: ${outputLanguage}
                     onClick={() => setActiveIntelTab(tab.id)}
                     className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
                       activeIntelTab === tab.id
-                        ? 'bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/40 font-black shadow-md'
+                        ? 'bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/40 font-black shadow-md'
                         : 'bg-white dark:bg-[#111622] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800'
                     }`}
                   >
@@ -1180,8 +1180,8 @@ Language: ${outputLanguage}
                 {activeIntelTab === 'oral-notes' && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Courtroom Oral Arguments Speaking Draft (2-Minute Format)</h4>
-                      <button onClick={handleCopyOralNotes} className="text-xs font-bold text-[#C8A34D] hover:underline flex items-center gap-1">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Courtroom Oral Arguments Speaking Draft (2-Minute Format)</h4>
+                      <button onClick={handleCopyOralNotes} className="text-xs font-bold text-[#B88B2A] hover:underline flex items-center gap-1">
                         <Copy className="w-3.5 h-3.5" /> Copy Draft
                       </button>
                     </div>
@@ -1189,7 +1189,7 @@ Language: ${outputLanguage}
                     <div className="p-4 bg-slate-50 dark:bg-[#0E131F] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs font-mono leading-relaxed space-y-2 text-slate-800 dark:text-slate-200">
                       {isNepal ? (
                         <>
-                          <p className="font-bold text-[#C8A34D]">"सम्मानित इजलास, निवेदकको तर्फबाट बैंकिङ कसूर तथा सजाय ऐन २०६४ अन्तर्गत स्पष्ट दाबी प्रस्तुत गरिन्छ..."</p>
+                          <p className="font-bold text-[#B88B2A]">"सम्मानित इजलास, निवेदकको तर्फबाट बैंकिङ कसूर तथा सजाय ऐन २०६४ अन्तर्गत स्पष्ट दाबी प्रस्तुत गरिन्छ..."</p>
                           <p>1. चेकमा भएको हस्ताक्षर विपक्षीले स्वीकार गरेको हुँदा प्रमाण ऐन २०३१ को दफा २५ बमोजिम दायित्वको कानुनी अनुमान आकर्षित हुन्छ।</p>
                           <p>2. बैंकको बाउन्स स्लिप / रिटर्न मेमोबाट खातामा पर्याप्त रकम नभएको स्पष्ट प्रमाणित छ।</p>
                           <p>3. कानुनी सूचना तामेल भए पनि म्यादभित्र रकम भुक्तानी भएको छैन।</p>
@@ -1197,7 +1197,7 @@ Language: ${outputLanguage}
                         </>
                       ) : (
                         <>
-                          <p className="font-bold text-[#C8A34D]">"My Lord, complainant presents a clear statutory breach under Section 138 of the Negotiable Instruments Act..."</p>
+                          <p className="font-bold text-[#B88B2A]">"My Lord, complainant presents a clear statutory breach under Section 138 of the Negotiable Instruments Act..."</p>
                           <p>1. Signature on the cheque is admitted by the accused, which automatically triggers the mandatory statutory presumption under Section 139 NI Act.</p>
                           <p>2. Official Bank Return Memo Exhibit P-2 confirms dishonour with 'Funds Insufficient'.</p>
                           <p>3. Demand notice was delivered on 12th May 2026. Accused failed to reply or repay within 15 days.</p>
@@ -1210,20 +1210,20 @@ Language: ${outputLanguage}
 
                 {activeIntelTab === 'judge-questions' && (
                   <div className="space-y-3">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Anticipated Bench Inquiries & Live Answers</h4>
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Anticipated Bench Inquiries & Live Answers</h4>
                     <div className="space-y-3">
                       <div className="p-4 bg-slate-50 dark:bg-[#0E131F] rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
-                        <div className="flex items-center justify-between text-xs font-bold text-[#C8A34D]">
+                        <div className="flex items-center justify-between text-xs font-bold text-[#B88B2A]">
                           <span>Q1: Was the cheque issued for a legally enforceable debt?</span>
-                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#C8A34D]/20">98% Confidence</span>
+                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#B88B2A]/20">98% Confidence</span>
                         </div>
                         <p className="text-xs text-slate-700 dark:text-slate-300">Answer: {isNepal ? 'Yes Hon\'ble Court. Invoices and transaction deeds (Lekhat) Exhibit P-4 establish pre-existing commercial obligation.' : 'Yes My Lord. Invoices and ledger statements Exhibit P-4 establish pre-existing commercial liability for supply of goods.'}</p>
                       </div>
 
                       <div className="p-4 bg-slate-50 dark:bg-[#0E131F] rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
-                        <div className="flex items-center justify-between text-xs font-bold text-[#C8A34D]">
+                        <div className="flex items-center justify-between text-xs font-bold text-[#B88B2A]">
                           <span>Q2: What if defense argues cheque was given as security?</span>
-                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#C8A34D]/20">95% Confidence</span>
+                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#B88B2A]/20">95% Confidence</span>
                         </div>
                         <p className="text-xs text-slate-700 dark:text-slate-300">Answer: {isNepal ? 'Hon\'ble Bench, Supreme Court of Nepal precedents firmly establish that a security cheque defence fails when the underlying consideration and debt are unpaid.' : 'My Lord, Rangappa v. Sri Mohan (2010 SC) clearly holds that Section 139 presumption applies even to security cheques once default occurs.'}</p>
                       </div>
@@ -1233,46 +1233,46 @@ Language: ${outputLanguage}
 
                 {activeIntelTab === 'opponent-strat' && (
                   <div className="space-y-3">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Opposing Counsel Defense & Rebuttal Strategy</h4>
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Opposing Counsel Defense & Rebuttal Strategy</h4>
                     <div className="p-4 bg-slate-50 dark:bg-[#0E131F] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="font-extrabold text-slate-900 dark:text-white">Security Deposit Defense</span>
                         <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full">35% Defense Likelihood</span>
                       </div>
                       <p className="text-slate-600 dark:text-slate-400 font-mono">Opponent Position: Accused will claim cheque was handed over as collateral for transaction.</p>
-                      <p className="text-[#C8A34D] font-mono font-bold">Recommended Rebuttal: {isNepal ? 'Lead with Supreme Court of Nepal NLR rulings and show transaction invoices/Lekhat confirming debt obligation.' : 'Lead with Rangappa SC precedent and show delivery challans confirming actual supply.'}</p>
+                      <p className="text-[#B88B2A] font-mono font-bold">Recommended Rebuttal: {isNepal ? 'Lead with Supreme Court of Nepal NLR rulings and show transaction invoices/Lekhat confirming debt obligation.' : 'Lead with Rangappa SC precedent and show delivery challans confirming actual supply.'}</p>
                     </div>
                   </div>
                 )}
 
                 {activeIntelTab === 'weakness-analysis' && (
                   <div className="space-y-3">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Case Vulnerability Audit & Actionable Fixes</h4>
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Case Vulnerability Audit & Actionable Fixes</h4>
                     <div className="p-4 bg-slate-50 dark:bg-[#0E131F] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs space-y-2">
                       <div className="flex items-center gap-2">
                         <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-mono text-[9px] font-bold">MODERATE RISK</span>
                         <span className="font-bold text-slate-900 dark:text-white">Delivery Tracking Receipt Legibility</span>
                       </div>
                       <p className="text-slate-600 dark:text-slate-300 font-mono">Vulnerability: Thermal postal or digital dispatch receipt text may fade or require authentication.</p>
-                      <p className="text-[#C8A34D] font-mono font-bold">Recommended Repair: {isNepal ? 'Obtain certified electronic transmission certificate under Sec 56-58 Electronic Transactions Act 2063.' : 'Obtain certified postal track report under Sec 65B Evidence Act.'}</p>
+                      <p className="text-[#B88B2A] font-mono font-bold">Recommended Repair: {isNepal ? 'Obtain certified electronic transmission certificate under Sec 56-58 Electronic Transactions Act 2063.' : 'Obtain certified postal track report under Sec 65B Evidence Act.'}</p>
                     </div>
                   </div>
                 )}
 
                 {activeIntelTab === 'winning-strat' && (
                   <div className="space-y-3">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Step-by-Step Trial Roadmap</h4>
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Step-by-Step Trial Roadmap</h4>
                     <div className="p-4 bg-slate-50 dark:bg-[#0E131F] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs font-mono space-y-1.5 text-slate-700 dark:text-slate-300">
                       {isNepal ? (
                         <>
-                          <p className="text-[#C8A34D] font-bold">Stage 1: Pre-trial admission of cheque signature.</p>
+                          <p className="text-[#B88B2A] font-bold">Stage 1: Pre-trial admission of cheque signature.</p>
                           <p>Stage 2: CW-1 Deposition (Bakpatra) & marking Exhibit P-1 to P-4.</p>
                           <p>Stage 3: Cross-examination on lack of payment and notice receipt.</p>
                           <p>Stage 4: Final oral arguments (Bahas) citing Banking Offence Act 2064 & SC precedents.</p>
                         </>
                       ) : (
                         <>
-                          <p className="text-[#C8A34D] font-bold">Stage 1: Pre-trial admission of cheque signature.</p>
+                          <p className="text-[#B88B2A] font-bold">Stage 1: Pre-trial admission of cheque signature.</p>
                           <p>Stage 2: CW-1 Chief Examination & marking Exhibit P-1 to P-4.</p>
                           <p>Stage 3: Cross-examine accused on failure to reply to notice.</p>
                           <p>Stage 4: Final arguments citing mandatory double compensation under CrPC 357(3).</p>
@@ -1284,7 +1284,7 @@ Language: ${outputLanguage}
 
                 {activeIntelTab === 'hearing-checklist' && (
                   <div className="space-y-3">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Hearing Day Document Checklist</h4>
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Hearing Day Document Checklist</h4>
                     <div className="space-y-2">
                       {[
                         { key: 'chk1', label: 'Original Cheque (Exhibit P-1)' },
@@ -1296,12 +1296,12 @@ Language: ${outputLanguage}
                         <div
                           key={item.key}
                           onClick={() => toggleChecklist(item.key)}
-                          className="p-3 rounded-xl bg-slate-50 dark:bg-[#0E131F] border border-slate-200 dark:border-slate-800 flex items-center justify-between cursor-pointer hover:border-[#C8A34D]/50"
+                          className="p-3 rounded-xl bg-slate-50 dark:bg-[#0E131F] border border-slate-200 dark:border-slate-800 flex items-center justify-between cursor-pointer hover:border-[#B88B2A]/50"
                         >
                           <span className={`text-xs font-semibold ${checkedItems[item.key] ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}`}>
                             {item.label}
                           </span>
-                          <div className={`w-5 h-5 rounded-lg border flex items-center justify-center ${checkedItems[item.key] ? 'bg-[#C8A34D] border-[#C8A34D] text-[#111111]' : 'border-slate-400'}`}>
+                          <div className={`w-5 h-5 rounded-lg border flex items-center justify-center ${checkedItems[item.key] ? 'bg-[#B88B2A] border-[#B88B2A] text-[#111111]' : 'border-slate-400'}`}>
                             {checkedItems[item.key] && <Check className="w-3.5 h-3.5" />}
                           </div>
                         </div>
@@ -1323,11 +1323,11 @@ Language: ${outputLanguage}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-[#111622] border border-[#C8A34D]/30 rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
+              className="bg-white dark:bg-[#111622] border border-[#B88B2A]/30 rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
             >
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2.5 rounded-xl bg-[#C8A34D]/15 text-[#C8A34D]">
+                  <div className="p-2.5 rounded-xl bg-[#B88B2A]/15 text-[#B88B2A]">
                     <FolderOpen className="w-5 h-5" />
                   </div>
                   <div>
@@ -1359,15 +1359,15 @@ Language: ${outputLanguage}
                         setCurrentStep(4);
                         toast.success(`Opened "${brief.title}" in Workspace!`);
                       }}
-                      className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] transition-all cursor-pointer flex flex-col gap-2 group"
+                      className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] transition-all cursor-pointer flex flex-col gap-2 group"
                     >
                       <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#C8A34D] transition-colors">
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#B88B2A] transition-colors">
                           {brief.title}
                         </h4>
                         <span className="text-[10px] text-slate-400">{brief.savedAt}</span>
                       </div>
-                      <div className="flex items-center justify-between text-[11px] pt-1 font-bold text-[#C8A34D]">
+                      <div className="flex items-center justify-between text-[11px] pt-1 font-bold text-[#B88B2A]">
                         <span>Open in Workspace →</span>
                         <span className="text-slate-400 text-[10px]">{brief.language}</span>
                       </div>

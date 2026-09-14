@@ -150,7 +150,7 @@ const EnterpriseAnnouncements = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Megaphone className="text-[#C8A34D]" size={26} /> Institutional Announcements & Broadcasts
+            <Megaphone className="text-[#B88B2A]" size={26} /> Institutional Announcements & Broadcasts
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Publish targeted circulars, academic notices, and push notifications to students, courses, or faculty members.
@@ -160,7 +160,7 @@ const EnterpriseAnnouncements = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer"
           >
             <Plus size={16} /> New Institutional Announcement
           </button>
@@ -181,7 +181,7 @@ const EnterpriseAnnouncements = () => {
             className={`px-4 py-2 rounded-xl font-bold transition-all cursor-pointer whitespace-nowrap ${
               selectedFilter === tab.key
                 ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xs'
-                : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-[#C8A34D]'
+                : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-[#B88B2A]'
             }`}
           >
             {tab.label}
@@ -203,7 +203,7 @@ const EnterpriseAnnouncements = () => {
               key={item._id}
               className={`p-6 rounded-3xl bg-white dark:bg-slate-900 border transition-all space-y-3 shadow-xs ${
                 item.isPinned
-                  ? 'border-[#C8A34D]/60 ring-1 ring-[#C8A34D]/30'
+                  ? 'border-[#B88B2A]/60 ring-1 ring-[#B88B2A]/30'
                   : 'border-slate-200 dark:border-slate-800'
               }`}
             >
@@ -214,7 +214,7 @@ const EnterpriseAnnouncements = () => {
                       <Pin size={11} /> PINNED NOTICE
                     </span>
                   )}
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#C8A34D] px-2.5 py-0.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/20">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#B88B2A] px-2.5 py-0.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/20">
                     Audience: {item.targetAudience} {item.targetCourse !== 'All' ? `(${item.targetCourse})` : ''}
                   </span>
                   <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 flex items-center gap-1">
@@ -262,7 +262,7 @@ const EnterpriseAnnouncements = () => {
           <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Megaphone size={20} className="text-[#C8A34D]" /> Create Institutional Notice
+                <Megaphone size={20} className="text-[#B88B2A]" /> Create Institutional Notice
               </h3>
               <button onClick={() => setShowCreateModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
@@ -278,7 +278,7 @@ const EnterpriseAnnouncements = () => {
                   value={form.title}
                   onChange={e => setForm({ ...form, title: e.target.value })}
                   placeholder="e.g. Constitutional Law Mid-Term Notes Published"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-bold focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-bold focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -320,7 +320,7 @@ const EnterpriseAnnouncements = () => {
                   value={form.message}
                   onChange={e => setForm({ ...form, message: e.target.value })}
                   placeholder="Type the official announcement message for students or faculty..."
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -330,7 +330,7 @@ const EnterpriseAnnouncements = () => {
                   type="checkbox"
                   checked={form.isPinned}
                   onChange={e => setForm({ ...form, isPinned: e.target.checked })}
-                  className="w-4 h-4 accent-[#C8A34D] rounded"
+                  className="w-4 h-4 accent-[#B88B2A] rounded"
                 />
               </div>
 
@@ -344,7 +344,7 @@ const EnterpriseAnnouncements = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md flex items-center gap-1.5 cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md flex items-center gap-1.5 cursor-pointer"
                 >
                   <Send size={14} /> Broadcast Announcement
                 </button>

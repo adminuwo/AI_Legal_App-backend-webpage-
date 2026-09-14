@@ -280,14 +280,14 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F19] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#C8A34D]/25 selection:text-[#111111] transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F19] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#B88B2A]/25 selection:text-[#111111] transition-colors duration-300">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           <div onClick={() => navigate('/')} className="flex items-center gap-2.5 cursor-pointer select-none">
             <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-9 h-9 object-contain" />
             <span className="text-lg font-black tracking-tight text-[#0F172A] dark:text-white flex items-center">
-              AI LEGAL<span className="text-[10px] text-[#C8A34D] font-extrabold ml-0.5">TM</span>
+              AI LEGAL<span className="text-[10px] text-[#B88B2A] font-extrabold ml-0.5">TM</span>
             </span>
           </div>
 
@@ -298,7 +298,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
             <button onClick={() => navigate('/features')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Features
             </button>
-            <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
+            <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
               Blog
             </span>
             <button onClick={() => navigate('/pricing')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
@@ -320,7 +320,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
 
             <button
               onClick={() => navigate('/post-judgment')}
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
             >
               <Plus size={14} className="text-[#B38628] stroke-[2.5]" />
               <span>Post your judgement</span>
@@ -329,14 +329,14 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
             {isAuthenticated ? (
               <button
                 onClick={() => navigate('/dashboard')}
-                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
               >
                 Dashboard →
               </button>
             ) : (
               <button
                 onClick={() => navigate('/signup')}
-                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
               >
                 Get Started
               </button>
@@ -350,7 +350,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
         <article className="py-10 sm:py-14 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-8">
           <button
             onClick={() => navigate('/blog')}
-            className="inline-flex items-center gap-2 text-xs font-bold text-[#C8A34D] hover:underline cursor-pointer"
+            className="inline-flex items-center gap-2 text-xs font-bold text-[#B88B2A] hover:underline cursor-pointer"
           >
             <ArrowLeft size={14} /> Back to all articles
           </button>
@@ -369,7 +369,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
 
           <div className="space-y-4 border-b border-slate-200 dark:border-slate-800 pb-6">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="px-3 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] font-black text-[11px] uppercase tracking-wider border border-[#C8A34D]/25">
+              <span className="px-3 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] font-black text-[11px] uppercase tracking-wider border border-[#B88B2A]/25">
                 {selectedArticle.category || 'Legal Insights'}
               </span>
               <span className="text-xs text-slate-400 font-medium">
@@ -382,7 +382,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
               <div className="flex items-center gap-2 flex-wrap">
                 {(Array.isArray(selectedArticle.keywords) ? selectedArticle.keywords : (Array.isArray(selectedArticle.tags) ? selectedArticle.tags : (selectedArticle.keywords || selectedArticle.tags || '').split(','))).map((kw, i) => (
                   <span key={i} className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-[11px] flex items-center gap-1">
-                    <Tag size={10} className="text-[#C8A34D]" /> #{typeof kw === 'string' ? kw.trim() : kw}
+                    <Tag size={10} className="text-[#B88B2A]" /> #{typeof kw === 'string' ? kw.trim() : kw}
                   </span>
                 ))}
               </div>
@@ -395,7 +395,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
 
             {/* Subtitle / Overview */}
             {(selectedArticle.subtitle || selectedArticle.summary) && (
-              <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/80 dark:bg-slate-900/80 border-l-4 border-[#C8A34D] text-base sm:text-lg text-slate-900 dark:text-slate-100 leading-relaxed font-bold shadow-xs">
+              <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/80 dark:bg-slate-900/80 border-l-4 border-[#B88B2A] text-base sm:text-lg text-slate-900 dark:text-slate-100 leading-relaxed font-bold shadow-xs">
                 {selectedArticle.subtitle || selectedArticle.summary}
               </div>
             )}
@@ -404,7 +404,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
               <span>By <strong className="text-slate-800 dark:text-slate-200">{selectedArticle.author || 'AI LEGAL™ Editorial Board'}</strong></span>
               <button
                 onClick={handleShare}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#C8A34D]/15 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-[#B88B2A]/15 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
               >
                 <Share2 size={13} /> Share Article
               </button>
@@ -440,10 +440,10 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
                   <b className="font-black text-slate-950 dark:text-white" {...props} />
                 ),
                 ul: ({ node, ...props }) => (
-                  <ul className="list-disc pl-6 mb-5 space-y-2 text-slate-800 dark:text-slate-200 marker:text-[#C8A34D]" {...props} />
+                  <ul className="list-disc pl-6 mb-5 space-y-2 text-slate-800 dark:text-slate-200 marker:text-[#B88B2A]" {...props} />
                 ),
                 ol: ({ node, ...props }) => (
-                  <ol className="list-decimal pl-6 mb-5 space-y-2 text-slate-800 dark:text-slate-200 marker:text-[#C8A34D] font-bold" {...props} />
+                  <ol className="list-decimal pl-6 mb-5 space-y-2 text-slate-800 dark:text-slate-200 marker:text-[#B88B2A] font-bold" {...props} />
                 ),
                 li: ({ node, ...props }) => (
                   <li className="pl-1 text-slate-800 dark:text-slate-200 text-sm sm:text-[15px] leading-relaxed font-normal" {...props} />
@@ -452,10 +452,10 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
                   <hr className="my-8 border-t-2 border-slate-200 dark:border-slate-800" {...props} />
                 ),
                 blockquote: ({ node, ...props }) => (
-                  <blockquote className="border-l-4 border-[#C8A34D] bg-[#C8A34D]/10 dark:bg-[#C8A34D]/15 pl-4 py-3 pr-3 rounded-r-2xl my-5 text-slate-900 dark:text-zinc-100 font-medium italic" {...props} />
+                  <blockquote className="border-l-4 border-[#B88B2A] bg-[#B88B2A]/10 dark:bg-[#B88B2A]/15 pl-4 py-3 pr-3 rounded-r-2xl my-5 text-slate-900 dark:text-zinc-100 font-medium italic" {...props} />
                 ),
                 code: ({ node, inline, className, children, ...props }) => (
-                  <code className="bg-slate-100 dark:bg-slate-800 text-[#C8A34D] px-1.5 py-0.5 rounded-md font-mono text-xs border border-slate-200 dark:border-slate-700" {...props}>
+                  <code className="bg-slate-100 dark:bg-slate-800 text-[#B88B2A] px-1.5 py-0.5 rounded-md font-mono text-xs border border-slate-200 dark:border-slate-700" {...props}>
                     {children}
                   </code>
                 ),
@@ -472,9 +472,9 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
 
           {/* Special App Store & Google Play Store Section for Blog 1 */}
           {selectedArticle.hasMobileDownload && (
-            <div className="my-10 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B132B] to-[#1C2541] text-white border border-[#C8A34D]/40 shadow-2xl space-y-5">
+            <div className="my-10 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B132B] to-[#1C2541] text-white border border-[#B88B2A]/40 shadow-2xl space-y-5">
               <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#C8A34D] to-[#B38628] flex items-center justify-center p-1.5 shadow-lg shadow-[#C8A34D]/30 shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B88B2A] to-[#B38628] flex items-center justify-center p-1.5 shadow-lg shadow-[#B88B2A]/30 shrink-0">
                   <img src="/logo/logo_transparent.png" alt="AI Legal Mobile App" className="w-full h-full object-contain" />
                 </div>
                 <div>
@@ -537,7 +537,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
             </div>
             <button
               onClick={() => navigate('/signup')}
-              className="px-5 py-2.5 rounded-full text-xs font-black text-[#111111] bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 shadow-md shadow-[#C8A34D]/25 cursor-pointer whitespace-nowrap"
+              className="px-5 py-2.5 rounded-full text-xs font-black text-[#111111] bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 shadow-md shadow-[#B88B2A]/25 cursor-pointer whitespace-nowrap"
             >
               Get Started Free →
             </button>
@@ -549,11 +549,11 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
           {/* Hero Section (Compact) */}
           <section className="py-6 sm:py-8 px-4 sm:px-6 lg:px-8 border-b border-slate-200 dark:border-slate-800 bg-gradient-to-b from-white via-slate-50 to-slate-50 dark:from-[#070A12] dark:via-[#0B0F19] dark:to-[#0B0F19]">
             <div className="max-w-4xl mx-auto text-center space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-[#C8A34D] text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-[#B88B2A] text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
                 <BookOpen size={12} /> The AI LEGAL™ Journal
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-white tracking-tight">
-                Legal Intelligence for <span className="text-[#C8A34D]">Modern Practice</span>
+                Legal Intelligence for <span className="text-[#B88B2A]">Modern Practice</span>
               </h1>
               <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-normal">
                 Curated insights on AI Legal™ architecture, customized chamber roles for advocates, law students, and law firms, and comprehensive feature guides.
@@ -570,7 +570,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
                   onClick={() => setActiveCategory(cat)}
                   className={`px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap cursor-pointer text-xs ${
                     activeCategory === cat
-                      ? 'bg-[#C8A34D] text-[#111111] shadow-xs font-black'
+                      ? 'bg-[#B88B2A] text-[#111111] shadow-xs font-black'
                       : 'bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                   }`}
                 >
@@ -581,8 +581,8 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
 
             {/* Right-aligned Search Bar */}
             <div className="relative w-full sm:w-72 shrink-0">
-              <div className="relative flex items-center bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 rounded-full shadow-xs px-3.5 py-1.5 focus-within:border-[#C8A34D] transition-colors">
-                <Search size={14} className="text-[#C8A34D] mr-2 shrink-0" />
+              <div className="relative flex items-center bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 rounded-full shadow-xs px-3.5 py-1.5 focus-within:border-[#B88B2A] transition-colors">
+                <Search size={14} className="text-[#B88B2A] mr-2 shrink-0" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -610,7 +610,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
                 <p className="text-sm font-bold text-slate-600 dark:text-slate-300">
                   No articles found matching your criteria.
                 </p>
-                <button onClick={() => { setActiveCategory('All'); setSearchQuery(''); }} className="text-xs text-[#C8A34D] underline font-bold cursor-pointer">
+                <button onClick={() => { setActiveCategory('All'); setSearchQuery(''); }} className="text-xs text-[#B88B2A] underline font-bold cursor-pointer">
                   Show all articles
                 </button>
               </div>
@@ -626,7 +626,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
                     <div
                       key={art.slug}
                       onClick={() => navigate(`/blog/${art.slug}`)}
-                      className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200/90 dark:border-slate-800 hover:border-[#C8A34D] shadow-sm hover:shadow-xl transition-all flex flex-col justify-between space-y-4 cursor-pointer group"
+                      className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200/90 dark:border-slate-800 hover:border-[#B88B2A] shadow-sm hover:shadow-xl transition-all flex flex-col justify-between space-y-4 cursor-pointer group"
                     >
                       <div className="space-y-3.5">
                         {/* 1. Card Cover Image */}
@@ -640,21 +640,21 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
                             />
                           </div>
                         ) : (
-                          <div className="h-32 w-full rounded-2xl bg-gradient-to-br from-[#C8A34D]/15 via-amber-600/5 to-slate-900/30 border border-[#C8A34D]/25 flex items-center justify-center text-[#C8A34D] shrink-0">
+                          <div className="h-32 w-full rounded-2xl bg-gradient-to-br from-[#B88B2A]/15 via-amber-600/5 to-slate-900/30 border border-[#B88B2A]/25 flex items-center justify-center text-[#B88B2A] shrink-0">
                             <Scale size={30} className="opacity-75" />
                           </div>
                         )}
 
                         {/* Category & Read Time */}
                         <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold">
-                          <span className="px-2.5 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] uppercase tracking-wider border border-[#C8A34D]/25">
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] uppercase tracking-wider border border-[#B88B2A]/25">
                             {art.category || 'Legal Insights'}
                           </span>
                           <span>{art.readTime || '4 min read'}</span>
                         </div>
 
                         {/* 2. Article Title */}
-                        <h3 className="text-base font-black text-slate-900 dark:text-white group-hover:text-[#C8A34D] transition-colors leading-snug line-clamp-2">
+                        <h3 className="text-base font-black text-slate-900 dark:text-white group-hover:text-[#B88B2A] transition-colors leading-snug line-clamp-2">
                           {art.title}
                         </h3>
 
@@ -681,7 +681,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
                       {/* Card Footer */}
                       <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
                         <span className="text-[11px] text-slate-400 font-medium">{art.date}</span>
-                        <span className="text-xs font-black text-[#C8A34D] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                        <span className="text-xs font-black text-[#B88B2A] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                           Read Article <ArrowRight size={13} />
                         </span>
                       </div>

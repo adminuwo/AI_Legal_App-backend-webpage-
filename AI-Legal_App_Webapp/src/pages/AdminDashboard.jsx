@@ -1628,7 +1628,7 @@ export default function AdminDashboard() {
           </div>
           <button
             onClick={() => navigate('/dashboard')}
-            className="w-full py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all cursor-pointer"
+            className="w-full py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all cursor-pointer"
           >
             Back to User Dashboard
           </button>
@@ -1646,20 +1646,20 @@ export default function AdminDashboard() {
             onClick={() => navigate('/dashboard')}
             className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer py-1.5 px-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800/80 hover:bg-slate-200 shrink-0"
           >
-            <ArrowLeft className="w-4 h-4 text-[#C8A34D]" />
+            <ArrowLeft className="w-4 h-4 text-[#B88B2A]" />
             <span className="hidden xs:inline sm:inline">Dashboard</span>
           </button>
 
           <div className="h-5 w-[1px] bg-slate-200 dark:bg-zinc-700 hidden xs:block" />
 
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#C8A34D]/10 flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-[#C8A34D]" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#B88B2A]/10 flex items-center justify-center border border-[#B88B2A]/30 shrink-0">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-[#B88B2A]" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white truncate">Admin Portal</h1>
-                <span className="px-1.5 sm:px-2 py-0.5 rounded bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0">
+                <span className="px-1.5 sm:px-2 py-0.5 rounded bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0">
                   SUPER ADMIN
                 </span>
               </div>
@@ -1674,7 +1674,7 @@ export default function AdminDashboard() {
             className="p-2 sm:px-3 sm:py-2 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-xl border border-slate-200/80 dark:border-zinc-700 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold"
             title="Refresh Live Data"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-[#C8A34D] ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-[#B88B2A] ${refreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Refresh Data</span>
           </button>
         </div>
@@ -1691,7 +1691,7 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 sm:gap-2 shrink-0 select-none active:scale-95 ${
                 isActive
-                  ? 'bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/40 shadow-xs ring-1 ring-[#C8A34D]/20'
+                  ? 'bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/40 shadow-xs ring-1 ring-[#B88B2A]/20'
                   : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/60'
               }`}
             >
@@ -1706,7 +1706,7 @@ export default function AdminDashboard() {
       <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
         {loading ? (
           <div className="py-24 text-center space-y-3">
-            <RefreshCw className="w-8 h-8 text-[#C8A34D] animate-spin mx-auto" />
+            <RefreshCw className="w-8 h-8 text-[#B88B2A] animate-spin mx-auto" />
             <p className="text-xs font-bold text-slate-400">Fetching live Admin Console telemetry...</p>
           </div>
         ) : activeTab === 'overview' ? (
@@ -1718,7 +1718,7 @@ export default function AdminDashboard() {
               <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">TOTAL REGISTERED USERS</span>
-                  <div className="p-2 rounded-lg bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20 shrink-0">
+                  <div className="p-2 rounded-lg bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20 shrink-0">
                     <Users className="w-4 h-4" />
                   </div>
                 </div>
@@ -1750,7 +1750,7 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-2 gap-2">
                   <div className="p-2 bg-slate-50 dark:bg-zinc-900/80 rounded-xl border border-slate-100 dark:border-zinc-800 text-center">
                     <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{(stats.premiumUsers || 0).toLocaleString()}</h4>
-                    <p className="text-[9px] font-bold text-[#C8A34D]">Paid Users</p>
+                    <p className="text-[9px] font-bold text-[#B88B2A]">Paid Users</p>
                   </div>
                   <div className="p-2 bg-slate-50 dark:bg-zinc-900/80 rounded-xl border border-slate-100 dark:border-zinc-800 text-center">
                     <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">{(stats.freeUsers || 0).toLocaleString()}</h4>
@@ -1805,7 +1805,7 @@ export default function AdminDashboard() {
                   <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">DAILY ACTIVITY</h3>
                   <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Last 7 Days aggregated logins & AI queries</p>
                 </div>
-                <span className="text-[11px] sm:text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 sm:px-3 py-1 rounded-full border border-[#C8A34D]/20 shrink-0">
+                <span className="text-[11px] sm:text-xs font-bold text-[#B88B2A] bg-[#B88B2A]/10 px-2.5 sm:px-3 py-1 rounded-full border border-[#B88B2A]/20 shrink-0">
                   7-Day Trend
                 </span>
               </div>
@@ -1828,16 +1828,16 @@ export default function AdminDashboard() {
                   const heightPercent = Math.max(12, Math.min(100, ((day.val || 0) / maxVal) * 100));
                   return (
                     <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
-                      <span className="text-[9px] sm:text-[10px] font-black text-slate-500 group-hover:text-[#C8A34D] transition-colors opacity-80 sm:opacity-0 group-hover:opacity-100">
+                      <span className="text-[9px] sm:text-[10px] font-black text-slate-500 group-hover:text-[#B88B2A] transition-colors opacity-80 sm:opacity-0 group-hover:opacity-100">
                         {day.val}
                       </span>
                       <div className="w-full max-w-[28px] sm:max-w-[40px] bg-slate-200 dark:bg-zinc-800 rounded-t-lg sm:rounded-t-xl overflow-hidden h-24 sm:h-32 flex items-end">
                         <div
                           style={{ height: `${heightPercent}%` }}
-                          className="w-full bg-[#C8A34D] group-hover:bg-[#b08d3b] transition-all rounded-t-lg sm:rounded-t-xl"
+                          className="w-full bg-[#B88B2A] group-hover:bg-[#b08d3b] transition-all rounded-t-lg sm:rounded-t-xl"
                         />
                       </div>
-                      <span className="text-[9px] sm:text-[11px] font-black text-slate-600 dark:text-zinc-400 group-hover:text-[#C8A34D] truncate">
+                      <span className="text-[9px] sm:text-[11px] font-black text-slate-600 dark:text-zinc-400 group-hover:text-[#B88B2A] truncate">
                         {day.label}
                       </span>
                     </div>
@@ -1870,7 +1870,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
-                  <div className="p-2.5 w-fit rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20">
+                  <div className="p-2.5 w-fit rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20">
                     <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">STRATEGY ENGINE REPORTS</p>
@@ -1979,7 +1979,7 @@ export default function AdminDashboard() {
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Target Device Platform:</span>
-                <span className="text-[11px] sm:text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-[#C8A34D]/20">
+                <span className="text-[11px] sm:text-xs font-black text-[#B88B2A] bg-[#B88B2A]/10 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-[#B88B2A]/20">
                   {platformFilter === 'all' && `${platformCounts.all} Total Users`}
                   {platformFilter === 'android' && `🤖 ${platformCounts.android} Android`}
                   {platformFilter === 'ios' && `🍎 ${platformCounts.ios} iOS`}
@@ -2025,7 +2025,7 @@ export default function AdminDashboard() {
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col md:flex-row gap-3 sm:gap-4 justify-between items-stretch md:items-center">
               <div className="flex flex-col sm:flex-row items-center gap-2.5 flex-1 w-full">
                 <div className="relative flex-1 w-full">
-                  <Search className="w-4 h-4 text-[#C8A34D] absolute left-3.5 top-3" />
+                  <Search className="w-4 h-4 text-[#B88B2A] absolute left-3.5 top-3" />
                   <input
                     type="text"
                     placeholder="Search by name, email, phone, role, ID..."
@@ -2034,7 +2034,7 @@ export default function AdminDashboard() {
                       setUserSearch(e.target.value);
                       if (usersPage !== 1) setUsersPage(1);
                     }}
-                    className="w-full pl-10 pr-8 py-2 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#C8A34D] bg-slate-50 dark:bg-zinc-900"
+                    className="w-full pl-10 pr-8 py-2 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#B88B2A] bg-slate-50 dark:bg-zinc-900"
                   />
                   {userSearch && (
                     <button
@@ -2051,8 +2051,8 @@ export default function AdminDashboard() {
 
                 {/* Date / Registration Filter Dropdown immediately beside search bar */}
                 <div className="relative w-full sm:w-auto shrink-0">
-                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 hover:border-[#C8A34D] transition-colors">
-                    <Calendar className="w-3.5 h-3.5 text-[#C8A34D] shrink-0" />
+                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 hover:border-[#B88B2A] transition-colors">
+                    <Calendar className="w-3.5 h-3.5 text-[#B88B2A] shrink-0" />
                     <select
                       value={dateFilter}
                       onChange={e => {
@@ -2080,7 +2080,7 @@ export default function AdminDashboard() {
                     setEmailDomainFilter(e.target.value);
                     setUsersPage(1);
                   }}
-                  className="px-3 py-2 rounded-xl text-xs font-black bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 focus:outline-none focus:border-[#C8A34D] cursor-pointer flex-1 sm:flex-initial"
+                  className="px-3 py-2 rounded-xl text-xs font-black bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 focus:outline-none focus:border-[#B88B2A] cursor-pointer flex-1 sm:flex-initial"
                 >
                   <option value="all">ALL DOMAINS ({emailDomainCounts.all})</option>
                   <option value="gmail">📧 Gmail ({emailDomainCounts.gmail})</option>
@@ -2105,7 +2105,7 @@ export default function AdminDashboard() {
                       }}
                       className={`px-3 py-1.5 rounded-xl text-[11px] font-black transition-all cursor-pointer border shrink-0 ${
                         userFilter === f.id
-                          ? 'bg-[#C8A34D]/15 text-[#C8A34D] border-[#C8A34D]/50 shadow-2xs'
+                          ? 'bg-[#B88B2A]/15 text-[#B88B2A] border-[#B88B2A]/50 shadow-2xs'
                           : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-800'
                       }`}
                     >
@@ -2123,8 +2123,8 @@ export default function AdminDashboard() {
                   <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">User Accounts Directory</h3>
                   <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Manage user profiles, roles, AI credits, subscriptions and access controls</p>
                 </div>
-                <span className="text-xs font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20 self-start sm:self-auto shrink-0 flex items-center gap-1.5">
-                  {usersLoading && <RotateCw className="w-3 h-3 animate-spin text-[#C8A34D]" />}
+                <span className="text-xs font-bold text-[#B88B2A] bg-[#B88B2A]/10 px-3 py-1 rounded-full border border-[#B88B2A]/20 self-start sm:self-auto shrink-0 flex items-center gap-1.5">
+                  {usersLoading && <RotateCw className="w-3 h-3 animate-spin text-[#B88B2A]" />}
                   <span>{userPagination.total ?? filteredUsers.length} Users Found</span>
                 </span>
               </div>
@@ -2151,13 +2151,13 @@ export default function AdminDashboard() {
                         <div key={u._id} className="p-4 space-y-3 hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors">
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-center gap-3 min-w-0">
-                              <div className="w-10 h-10 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] font-black text-sm flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
+                              <div className="w-10 h-10 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] font-black text-sm flex items-center justify-center border border-[#B88B2A]/30 shrink-0">
                                 {(u.name || u.displayName || u.email || 'U').charAt(0).toUpperCase()}
                               </div>
                               <div className="min-w-0">
                                 <button
                                   onClick={() => setSelectedDossierUser(u)}
-                                  className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#C8A34D] text-left truncate block cursor-pointer"
+                                  className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#B88B2A] text-left truncate block cursor-pointer"
                                 >
                                   {u.name || u.displayName || 'Advocate Client'}
                                 </button>
@@ -2186,7 +2186,7 @@ export default function AdminDashboard() {
                                 <span>🤖</span> Android
                               </span>
                             )}
-                            <span className="text-[10px] font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2 py-0.5 rounded-md border border-[#C8A34D]/20 uppercase">
+                            <span className="text-[10px] font-black text-[#B88B2A] bg-[#B88B2A]/10 px-2 py-0.5 rounded-md border border-[#B88B2A]/20 uppercase">
                               {userPlan}
                             </span>
                             <span className="text-[10px] font-bold text-slate-500 bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
@@ -2197,7 +2197,7 @@ export default function AdminDashboard() {
                           <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-100 dark:border-zinc-800/60">
                             <button
                               onClick={() => setSelectedDossierUser(u)}
-                              className="w-full py-2 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                              className="w-full py-2 bg-[#B88B2A]/10 hover:bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                             >
                               <Eye className="w-3.5 h-3.5" />
                               <span>View Dossier & Controls</span>
@@ -2232,13 +2232,13 @@ export default function AdminDashboard() {
                             <tr key={u._id} className="hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors group">
                               <td className="px-5 py-2.5 whitespace-nowrap">
                                 <div className="flex items-center gap-2.5">
-                                  <div className="w-8 h-8 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] font-black text-xs flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
+                                  <div className="w-8 h-8 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] font-black text-xs flex items-center justify-center border border-[#B88B2A]/30 shrink-0">
                                     {(u.name || u.displayName || u.email || 'U').charAt(0).toUpperCase()}
                                   </div>
                                   <div className="min-w-0">
                                     <button
                                       onClick={() => setSelectedDossierUser(u)}
-                                      className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#C8A34D] transition-colors text-left cursor-pointer whitespace-nowrap truncate block"
+                                      className="text-xs font-black text-slate-900 dark:text-zinc-100 hover:text-[#B88B2A] transition-colors text-left cursor-pointer whitespace-nowrap truncate block"
                                     >
                                       {u.name || u.displayName || 'Advocate Client'}
                                     </button>
@@ -2263,7 +2263,7 @@ export default function AdminDashboard() {
                                 )}
                               </td>
                               <td className="px-5 py-2.5 whitespace-nowrap">
-                                <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 py-0.5 rounded-lg border border-[#C8A34D]/20 whitespace-nowrap shrink-0 inline-block">
+                                <span className="text-xs font-black text-[#B88B2A] bg-[#B88B2A]/10 px-2.5 py-0.5 rounded-lg border border-[#B88B2A]/20 whitespace-nowrap shrink-0 inline-block">
                                   {userPlan}
                                 </span>
                               </td>
@@ -2278,7 +2278,7 @@ export default function AdminDashboard() {
                               <td className="px-5 py-2.5 text-right whitespace-nowrap">
                                 <button
                                   onClick={() => setSelectedDossierUser(u)}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs whitespace-nowrap shrink-0"
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#B88B2A]/10 hover:bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs whitespace-nowrap shrink-0"
                                 >
                                   <Eye className="w-3.5 h-3.5 shrink-0" />
                                   <span className="whitespace-nowrap shrink-0">View Profile</span>
@@ -2296,7 +2296,7 @@ export default function AdminDashboard() {
                     <div className="text-slate-500 dark:text-zinc-400 font-semibold text-[11px] sm:text-xs">
                       Showing <span className="font-bold text-slate-800 dark:text-zinc-200">{filteredUsers.length > 0 ? (userPagination.page - 1) * userPagination.limit + 1 : 0}</span> to{' '}
                       <span className="font-bold text-slate-800 dark:text-zinc-200">{Math.min(userPagination.page * userPagination.limit, userPagination.total)}</span> of{' '}
-                      <span className="font-bold text-[#C8A34D]">{userPagination.total}</span> users
+                      <span className="font-bold text-[#B88B2A]">{userPagination.total}</span> users
                       {dateFilter === 'today' && <span className="ml-1 text-[10px] text-slate-400 font-bold">(Registered Today)</span>}
                     </div>
 
@@ -2349,7 +2349,7 @@ export default function AdminDashboard() {
 
               <div className="bg-white dark:bg-[#1E293B] p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between">
                 <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-400">Paid Invoices</p>
-                <p className="text-lg sm:text-xl font-black text-[#C8A34D] my-1">
+                <p className="text-lg sm:text-xl font-black text-[#B88B2A] my-1">
                   {liveBillingStats.successCount}
                 </p>
                 <p className="text-[9px] sm:text-[10px] font-bold text-slate-400">Successful Txns</p>
@@ -2377,12 +2377,12 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                 <p className="text-xs font-black text-slate-700 dark:text-zinc-200 truncate">
-                  Live Stream • <span className="text-[#C8A34D]">{filteredPayments.length}</span> of {liveBillingStats.totalCount} Invoices
+                  Live Stream • <span className="text-[#B88B2A]">{filteredPayments.length}</span> of {liveBillingStats.totalCount} Invoices
                 </p>
               </div>
               <button
                 onClick={handleExportCSV}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#C8A34D]/15 hover:bg-[#C8A34D]/25 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#B88B2A]/15 hover:bg-[#B88B2A]/25 text-[#B88B2A] border border-[#B88B2A]/30 rounded-xl text-xs font-black transition-all cursor-pointer shadow-2xs"
               >
                 <Download className="w-4 h-4" />
                 <span>Excel Export (.xlsx)</span>
@@ -2399,7 +2399,7 @@ export default function AdminDashboard() {
                   value={billingSearch}
                   onChange={(e) => setBillingSearch(e.target.value)}
                   placeholder="Search invoice number, user name, email, or TXN ID..."
-                  className="w-full pl-10 pr-8 py-2.5 sm:py-3 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-zinc-800 rounded-xl sm:rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:border-[#C8A34D] transition-all shadow-xs"
+                  className="w-full pl-10 pr-8 py-2.5 sm:py-3 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-zinc-800 rounded-xl sm:rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:border-[#B88B2A] transition-all shadow-xs"
                 />
                 {billingSearch && (
                   <button
@@ -2427,8 +2427,8 @@ export default function AdminDashboard() {
                       onClick={() => setBillingFilter(tab.id)}
                       className={`px-3.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-black tracking-wider transition-all cursor-pointer border shrink-0 ${
                         isActive
-                          ? 'bg-[#C8A34D]/15 border-[#C8A34D] text-[#C8A34D] shadow-2xs'
-                          : 'bg-white dark:bg-[#1E293B] border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-[#C8A34D]/50'
+                          ? 'bg-[#B88B2A]/15 border-[#B88B2A] text-[#B88B2A] shadow-2xs'
+                          : 'bg-white dark:bg-[#1E293B] border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-[#B88B2A]/50'
                       }`}
                     >
                       {tab.label}
@@ -2445,7 +2445,7 @@ export default function AdminDashboard() {
                   <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">Transactions & Invoices</h3>
                   <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Real-time financial payment ledger</p>
                 </div>
-                <span className="text-xs font-black text-[#C8A34D] bg-[#C8A34D]/10 px-3 py-1 rounded-full border border-[#C8A34D]/20 shrink-0">
+                <span className="text-xs font-black text-[#B88B2A] bg-[#B88B2A]/10 px-3 py-1 rounded-full border border-[#B88B2A]/20 shrink-0">
                   {filteredPayments.length} Records
                 </span>
               </div>
@@ -2478,7 +2478,7 @@ export default function AdminDashboard() {
                     return (
                       <div
                         key={p._id || idx}
-                        className="bg-slate-50/70 dark:bg-zinc-900/60 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3 hover:border-[#C8A34D]/40 transition-all"
+                        className="bg-slate-50/70 dark:bg-zinc-900/60 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-3 hover:border-[#B88B2A]/40 transition-all"
                       >
                         {/* Header: User & Amount */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
@@ -2498,7 +2498,7 @@ export default function AdminDashboard() {
                           <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-slate-200/60 dark:bg-zinc-800 text-[9.5px] sm:text-[10px] font-extrabold uppercase text-slate-600 dark:text-zinc-300">
                             Gateway: {p.gateway || 'Razorpay'}
                           </span>
-                          <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[9.5px] sm:text-[10px] font-black uppercase">
+                          <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 text-[9.5px] sm:text-[10px] font-black uppercase">
                             Plan: {planName}
                           </span>
                           <span className="px-2 sm:px-2.5 py-0.5 rounded-md bg-slate-200/60 dark:bg-zinc-800 text-[9.5px] sm:text-[10px] font-medium text-slate-500 dark:text-zinc-400">
@@ -2567,7 +2567,7 @@ export default function AdminDashboard() {
               </div>
               <button
                 onClick={handleOpenPlanCreator}
-                className="w-full sm:w-auto px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0"
+                className="w-full sm:w-auto px-5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ Create Plan</span>
@@ -2596,7 +2596,7 @@ export default function AdminDashboard() {
                       key={plan._id || planSlug}
                       className={`bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border shadow-sm space-y-4 relative flex flex-col justify-between transition-all hover:shadow-md ${
                         isPopular
-                          ? 'border-[#C8A34D] border-2 ring-1 ring-[#C8A34D]/30'
+                          ? 'border-[#B88B2A] border-2 ring-1 ring-[#B88B2A]/30'
                           : 'border-slate-200/80 dark:border-zinc-800'
                       }`}
                     >
@@ -2607,7 +2607,7 @@ export default function AdminDashboard() {
                             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                               <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">{planTitle}</h3>
                               {badgeText && (
-                                <span className="bg-[#C8A34D] text-[#111111] text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0">
+                                <span className="bg-[#B88B2A] text-[#111111] text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0">
                                   {badgeText}
                                 </span>
                               )}
@@ -2626,7 +2626,7 @@ export default function AdminDashboard() {
                           <div className="flex items-center gap-1.5 shrink-0">
                             <button
                               onClick={() => handleOpenPlanEdit(plan)}
-                              className="px-2.5 py-1.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-lg text-[11px] transition-all cursor-pointer inline-flex items-center gap-1"
+                              className="px-2.5 py-1.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-lg text-[11px] transition-all cursor-pointer inline-flex items-center gap-1"
                             >
                               <Edit3 className="w-3 h-3" />
                               <span>Edit</span>
@@ -2652,7 +2652,7 @@ export default function AdminDashboard() {
                           </div>
                           <div>
                             <p className="text-[8.5px] sm:text-[9px] font-black uppercase text-slate-400 truncate">CREDITS</p>
-                            <p className="text-xs sm:text-sm font-black text-[#C8A34D] mt-0.5">{Number(plan.credits || 0).toLocaleString('en-IN')}</p>
+                            <p className="text-xs sm:text-sm font-black text-[#B88B2A] mt-0.5">{Number(plan.credits || 0).toLocaleString('en-IN')}</p>
                           </div>
                         </div>
 
@@ -2735,7 +2735,7 @@ export default function AdminDashboard() {
               </div>
               <button
                 onClick={handleOpenCouponCreator}
-                className="w-full sm:w-auto px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0"
+                className="w-full sm:w-auto px-5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ Create Coupon</span>
@@ -2762,7 +2762,7 @@ export default function AdminDashboard() {
               </div>
               <div className="col-span-2 sm:col-span-1 bg-white dark:bg-[#1E293B] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-1">
                 <p className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-wider">TOTAL DISCOUNT</p>
-                <p className="text-lg sm:text-xl font-black text-[#C8A34D]">₹{(couponStats.totalDiscountGiven || 0).toLocaleString('en-IN')}</p>
+                <p className="text-lg sm:text-xl font-black text-[#B88B2A]">₹{(couponStats.totalDiscountGiven || 0).toLocaleString('en-IN')}</p>
               </div>
             </div>
 
@@ -2773,7 +2773,7 @@ export default function AdminDashboard() {
                 <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Coupons Created Yet</p>
                 <button
                   onClick={handleOpenCouponCreator}
-                  className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer transition-all inline-block mt-2"
+                  className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer transition-all inline-block mt-2"
                 >
                   Create First Coupon
                 </button>
@@ -2806,8 +2806,8 @@ export default function AdminDashboard() {
                         <div className="flex justify-between items-start gap-2">
                           <div className="space-y-2 flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                              <div className="bg-[#C8A34D]/15 border border-[#C8A34D] px-2.5 py-1 rounded-xl">
-                                <span className="text-xs sm:text-sm font-black text-[#C8A34D] font-mono tracking-wider">{c.code}</span>
+                              <div className="bg-[#B88B2A]/15 border border-[#B88B2A] px-2.5 py-1 rounded-xl">
+                                <span className="text-xs sm:text-sm font-black text-[#B88B2A] font-mono tracking-wider">{c.code}</span>
                               </div>
                               <button
                                 type="button"
@@ -2815,7 +2815,7 @@ export default function AdminDashboard() {
                                 className={`px-2 py-1 rounded-lg text-[10px] font-extrabold border transition-all cursor-pointer flex items-center gap-1 ${
                                   copiedCouponCode === c.code
                                     ? 'bg-emerald-500 text-white border-emerald-500'
-                                    : 'bg-[#C8A34D]/10 text-[#C8A34D] border-[#C8A34D]/30 hover:bg-[#C8A34D]/20'
+                                    : 'bg-[#B88B2A]/10 text-[#B88B2A] border-[#B88B2A]/30 hover:bg-[#B88B2A]/20'
                                 }`}
                               >
                                 <span>{copiedCouponCode === c.code ? 'Copied ✓' : 'Copy'}</span>
@@ -2844,7 +2844,7 @@ export default function AdminDashboard() {
                           </div>
                           <div>
                             <p className="text-[8.5px] sm:text-[9px] font-black uppercase text-slate-400">USAGE</p>
-                            <p className="text-[11px] sm:text-xs font-black text-[#C8A34D] mt-0.5 truncate">
+                            <p className="text-[11px] sm:text-xs font-black text-[#B88B2A] mt-0.5 truncate">
                               {c.usedCount || 0} / {c.usageLimit !== null && c.usageLimit !== undefined ? c.usageLimit : '∞'}
                             </p>
                           </div>
@@ -2860,7 +2860,7 @@ export default function AdminDashboard() {
                         <button
                           type="button"
                           onClick={() => handleViewCouponDetails(c._id)}
-                          className="px-2.5 py-1.5 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 font-extrabold rounded-lg sm:rounded-xl text-[11px] transition-all cursor-pointer flex items-center gap-1"
+                          className="px-2.5 py-1.5 bg-[#B88B2A]/10 hover:bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 font-extrabold rounded-lg sm:rounded-xl text-[11px] transition-all cursor-pointer flex items-center gap-1"
                         >
                           <BarChart3 className="w-3.5 h-3.5" />
                           <span>Stats</span>
@@ -2870,7 +2870,7 @@ export default function AdminDashboard() {
                           onClick={() => handleOpenCouponEdit(c)}
                           className="px-2.5 py-1.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-slate-800 dark:text-zinc-200 font-extrabold rounded-lg sm:rounded-xl text-[11px] transition-all cursor-pointer flex items-center gap-1"
                         >
-                          <Edit3 className="w-3.5 h-3.5 text-[#C8A34D]" />
+                          <Edit3 className="w-3.5 h-3.5 text-[#B88B2A]" />
                           <span>Edit</span>
                         </button>
                         <button
@@ -2904,14 +2904,14 @@ export default function AdminDashboard() {
             <div className="bg-white dark:bg-[#1E293B] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
               <div>
                 <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <PlusCircle className="text-[#C8A34D] w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+                  <PlusCircle className="text-[#B88B2A] w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
                   <span>Institutional Add-on Feature Requests</span>
                 </h2>
                 <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium mt-0.5 sm:mt-1">
                   Review and allow add-on feature requests submitted by Law Universities for their students & faculty.
                 </p>
               </div>
-              <div className="px-3.5 py-1.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-xs font-black text-[#C8A34D] shrink-0">
+              <div className="px-3.5 py-1.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-xs font-black text-[#B88B2A] shrink-0">
                 {addonRequestsList.filter(r => r.status === 'Pending').length} Pending Approvals
               </div>
             </div>
@@ -2930,7 +2930,7 @@ export default function AdminDashboard() {
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] px-2.5 py-0.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/20">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] px-2.5 py-0.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/20">
                           🏛️ {req.institutionName || 'RDVV Law University'}
                         </span>
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
@@ -3035,7 +3035,7 @@ export default function AdminDashboard() {
                     onClick={() => setFeatureFilterState(f)}
                     className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all shrink-0 cursor-pointer border ${
                       isSelected
-                        ? 'bg-[#C8A34D]/20 text-[#C8A34D] border-[#C8A34D] shadow-2xs'
+                        ? 'bg-[#B88B2A]/20 text-[#B88B2A] border-[#B88B2A] shadow-2xs'
                         : 'bg-white dark:bg-[#1E293B] text-slate-500 border-slate-200/80 dark:border-zinc-800 hover:border-slate-300'
                     }`}
                   >
@@ -3067,7 +3067,7 @@ export default function AdminDashboard() {
                       {/* Header Row: Category, Priority Badge, Status Badge */}
                       <div className="flex flex-wrap justify-between items-center gap-2 pb-2 border-b border-slate-100 dark:border-zinc-800/80">
                         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                          <span className="text-[11px] sm:text-xs font-extrabold text-[#C8A34D] bg-[#C8A34D]/10 border border-[#C8A34D]/30 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-xl">
+                          <span className="text-[11px] sm:text-xs font-extrabold text-[#B88B2A] bg-[#B88B2A]/10 border border-[#B88B2A]/30 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-xl">
                             {fr.category || 'General Feature'}
                           </span>
                           <span className={`px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-black uppercase border ${priorityClass}`}>
@@ -3095,14 +3095,14 @@ export default function AdminDashboard() {
                           User: <strong className="text-slate-800 dark:text-zinc-200">{fr.email || fr.userEmail || 'Client Advocate'}</strong> ({fr.userPlan || 'ADVOCATE_PRO'})
                         </p>
                         <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
-                          Assigned Dev: <strong className="text-[#C8A34D] font-bold">{fr.developerAssigned || 'None'}</strong>
+                          Assigned Dev: <strong className="text-[#B88B2A] font-bold">{fr.developerAssigned || 'None'}</strong>
                         </p>
                       </div>
 
                       {/* Developer / Admin Reply Container */}
                       {devReply && (
-                        <div className="p-3 sm:p-3.5 bg-[#C8A34D]/10 border border-[#C8A34D]/30 rounded-xl sm:rounded-2xl space-y-1">
-                          <p className="text-[10px] sm:text-[11px] font-black text-[#C8A34D] uppercase tracking-wider">Dev Reply:</p>
+                        <div className="p-3 sm:p-3.5 bg-[#B88B2A]/10 border border-[#B88B2A]/30 rounded-xl sm:rounded-2xl space-y-1">
+                          <p className="text-[10px] sm:text-[11px] font-black text-[#B88B2A] uppercase tracking-wider">Dev Reply:</p>
                           <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">{devReply}</p>
                         </div>
                       )}
@@ -3118,7 +3118,7 @@ export default function AdminDashboard() {
                             developerAssigned: fr.developerAssigned || 'None',
                             adminNote: fr.reply || fr.adminNote || ''
                           })}
-                          className="px-3.5 py-1.5 sm:px-4 sm:py-2 bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 font-extrabold rounded-lg sm:rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5"
+                          className="px-3.5 py-1.5 sm:px-4 sm:py-2 bg-[#B88B2A]/10 hover:bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 font-extrabold rounded-lg sm:rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5"
                         >
                           <Wrench className="w-3.5 h-3.5" />
                           <span>Manage Request</span>
@@ -3158,7 +3158,7 @@ export default function AdminDashboard() {
                       </div>
                       <button
                         onClick={() => setBugModal({ isOpen: true, bug: b, status: b.status || 'Open', assignedTo: b.assignedTo || '' })}
-                        className="w-full sm:w-auto px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all cursor-pointer text-center shrink-0"
+                        className="w-full sm:w-auto px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all cursor-pointer text-center shrink-0"
                       >
                         Update Bug
                       </button>
@@ -3252,7 +3252,7 @@ export default function AdminDashboard() {
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-5">
               <div>
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-[#C8A34D] shrink-0" />
+                  <Globe className="w-5 h-5 text-[#B88B2A] shrink-0" />
                   <span>Global Jurisdiction Administration & Sandbox</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 font-medium">
@@ -3269,7 +3269,7 @@ export default function AdminDashboard() {
                       <select
                         value={jSelectedCountry?.name || 'India'}
                         onChange={e => handleCountryChange(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#C8A34D]"
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#B88B2A]"
                       >
                         {COUNTRIES.map(c => (
                           <option key={c.code} value={c.name} className="bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200">
@@ -3291,7 +3291,7 @@ export default function AdminDashboard() {
                         value={jTargetState}
                         onChange={e => setJTargetState(e.target.value)}
                         disabled={availableStates.length === 0}
-                        className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#C8A34D] ${
+                        className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#B88B2A] ${
                           availableStates.length === 0 ? 'opacity-60 cursor-not-allowed' : ''
                         }`}
                       >
@@ -3340,7 +3340,7 @@ export default function AdminDashboard() {
                         key={idx}
                         type="button"
                         onClick={() => setJTestQuery(template)}
-                        className="px-2.5 py-1 text-[11px] font-medium bg-slate-100 hover:bg-[#C8A34D]/10 hover:text-[#C8A34D] dark:bg-zinc-800/80 dark:hover:bg-[#C8A34D]/20 text-slate-600 dark:text-zinc-300 rounded-lg border border-slate-200/80 dark:border-zinc-700/80 transition-all cursor-pointer text-left"
+                        className="px-2.5 py-1 text-[11px] font-medium bg-slate-100 hover:bg-[#B88B2A]/10 hover:text-[#B88B2A] dark:bg-zinc-800/80 dark:hover:bg-[#B88B2A]/20 text-slate-600 dark:text-zinc-300 rounded-lg border border-slate-200/80 dark:border-zinc-700/80 transition-all cursor-pointer text-left"
                       >
                         {template}
                       </button>
@@ -3357,12 +3357,12 @@ export default function AdminDashboard() {
                       value={jTestQuery}
                       onChange={e => setJTestQuery(e.target.value)}
                       placeholder="e.g. What is the statutory limitation period for filing an appeal in the High Court?"
-                      className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#C8A34D]"
+                      className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#B88B2A]"
                     />
                     <button
                       type="submit"
                       disabled={jTestLoading || !jTestQuery.trim()}
-                      className="w-full sm:w-auto px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer flex items-center justify-center gap-2 shrink-0 transition-all disabled:opacity-50"
+                      className="w-full sm:w-auto px-6 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer flex items-center justify-center gap-2 shrink-0 transition-all disabled:opacity-50"
                     >
                       {jTestLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Terminal className="w-4 h-4" />}
                       <span>{jTestLoading ? 'Executing Sandbox...' : 'Run Test'}</span>
@@ -3384,7 +3384,7 @@ export default function AdminDashboard() {
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30">
                             {jTestMetadata?.model || 'Gemini 2.5 Flash'}
                           </span>
                           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/15 text-emerald-500 border border-emerald-500/30">
@@ -3415,7 +3415,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="p-2 rounded-xl bg-white dark:bg-zinc-800/60 border border-slate-100 dark:border-zinc-700/60">
                           <span className="text-slate-400 block text-[10px] uppercase font-bold">Citations</span>
-                          <span className="font-extrabold text-[#C8A34D]">
+                          <span className="font-extrabold text-[#B88B2A]">
                             {jTestMetadata?.sourceCount ?? (jTestMetadata?.sources?.length || 0)} Verified Sources
                           </span>
                         </div>
@@ -3425,7 +3425,7 @@ export default function AdminDashboard() {
                     {/* AI Response Text */}
                     <div className="p-4 sm:p-5 bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm space-y-2">
                       <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-1.5">
+                        <p className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] flex items-center gap-1.5">
                           <Sparkles className="w-3.5 h-3.5" />
                           <span>AI Jurisdictional Legal Response</span>
                         </p>
@@ -3449,7 +3449,7 @@ export default function AdminDashboard() {
                             >
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2">
-                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-[#C8A34D]/15 text-[#C8A34D]">
+                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-[#B88B2A]/15 text-[#B88B2A]">
                                     {src.domainTier || 'Legal Authority'}
                                   </span>
                                   <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
@@ -3467,7 +3467,7 @@ export default function AdminDashboard() {
                                   href={src.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-[11px] font-bold text-[#C8A34D] hover:underline shrink-0 flex items-center gap-1"
+                                  className="text-[11px] font-bold text-[#B88B2A] hover:underline shrink-0 flex items-center gap-1"
                                 >
                                   <span>View Source</span>
                                   <ExternalLink className="w-3 h-3" />
@@ -3480,7 +3480,7 @@ export default function AdminDashboard() {
                     )}
 
                     {/* Action Bar: Save This Jurisdiction after verification */}
-                    <div className="p-4 bg-gradient-to-r from-emerald-500/10 via-[#C8A34D]/10 to-transparent dark:from-emerald-500/15 dark:via-[#C8A34D]/15 dark:to-transparent rounded-2xl border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="p-4 bg-gradient-to-r from-emerald-500/10 via-[#B88B2A]/10 to-transparent dark:from-emerald-500/15 dark:via-[#B88B2A]/15 dark:to-transparent rounded-2xl border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       <div>
                         <p className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
                           <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -3552,7 +3552,7 @@ export default function AdminDashboard() {
 
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-6 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer transition-all text-center"
+                  className="w-full sm:w-auto px-6 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer transition-all text-center"
                 >
                   Save Global System Settings
                 </button>
@@ -3578,7 +3578,7 @@ export default function AdminDashboard() {
                   />
                   <button
                     type="submit"
-                    className="w-full sm:col-span-2 py-3 bg-[#C8A34D] hover:bg-[#b5923f] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+                    className="w-full sm:col-span-2 py-3 bg-[#B88B2A] hover:bg-[#b5923f] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
                   >
                     Update Admin Password
                   </button>
@@ -3590,14 +3590,14 @@ export default function AdminDashboard() {
           /* TAB 12: RAG FILES & DOCUMENT INGESTION */
           <div className="space-y-5 sm:space-y-6">
             {/* Header / Overview Card */}
-            <div className="bg-gradient-to-r from-amber-500/10 via-[#C8A34D]/10 to-transparent dark:from-amber-500/15 dark:via-[#C8A34D]/10 dark:to-transparent rounded-2xl sm:rounded-3xl p-5 border border-[#C8A34D]/30 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="bg-gradient-to-r from-amber-500/10 via-[#B88B2A]/10 to-transparent dark:from-amber-500/15 dark:via-[#B88B2A]/10 dark:to-transparent rounded-2xl sm:rounded-3xl p-5 border border-[#B88B2A]/30 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 border border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D] shadow-xs shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 border border-[#B88B2A]/30 flex items-center justify-center text-[#B88B2A] shadow-xs shrink-0">
                   <Database className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] bg-[#C8A34D]/10 px-2 py-0.5 rounded-md border border-[#C8A34D]/20">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] bg-[#B88B2A]/10 px-2 py-0.5 rounded-md border border-[#B88B2A]/20">
                       RAG Knowledge Engine
                     </span>
                     <span className="text-[10px] font-extrabold uppercase tracking-wide text-slate-400">
@@ -3619,7 +3619,7 @@ export default function AdminDashboard() {
                   disabled={ragLoading}
                   className="px-3.5 py-2 bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 text-[#C8A34D] ${ragLoading ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={`w-3.5 h-3.5 text-[#B88B2A] ${ragLoading ? 'animate-spin' : ''}`} />
                   <span>Refresh</span>
                 </button>
               </div>
@@ -3670,7 +3670,7 @@ export default function AdminDashboard() {
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
               <div>
                 <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                  <FileUp className="w-4 h-4 text-[#C8A34D]" />
+                  <FileUp className="w-4 h-4 text-[#B88B2A]" />
                   <span>Upload Document to Knowledge Base</span>
                 </h4>
                 <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
@@ -3688,7 +3688,7 @@ export default function AdminDashboard() {
                     <select
                       value={ragCategory}
                       onChange={e => setRagCategory(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 focus:outline-hidden focus:border-[#C8A34D]"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-zinc-200 focus:outline-hidden focus:border-[#B88B2A]"
                     >
                       <option value="General">General Legal</option>
                       <option value="Statutes">Statutes & Acts (BNS / BNSS / BSA)</option>
@@ -3723,7 +3723,7 @@ export default function AdminDashboard() {
                         <span className="truncate">
                           {ragSelectedFile ? `📄 ${ragSelectedFile.name} (${(ragSelectedFile.size / 1024).toFixed(1)} KB)` : 'Click to select or drop document here...'}
                         </span>
-                        <Upload className="w-4 h-4 text-[#C8A34D] shrink-0 ml-2" />
+                        <Upload className="w-4 h-4 text-[#B88B2A] shrink-0 ml-2" />
                       </label>
 
                       {ragSelectedFile && (
@@ -3747,7 +3747,7 @@ export default function AdminDashboard() {
                   <button
                     type="submit"
                     disabled={!ragSelectedFile || ragUploading}
-                    className="w-full sm:w-auto px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full sm:w-auto px-6 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md cursor-pointer transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {ragUploading ? (
                       <>
@@ -3770,7 +3770,7 @@ export default function AdminDashboard() {
               <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <h4 className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                    <FolderOpen className="w-4 h-4 text-[#C8A34D]" />
+                    <FolderOpen className="w-4 h-4 text-[#B88B2A]" />
                     <span>Ingested Knowledge Documents ({ragDocuments.length})</span>
                   </h4>
                   <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
@@ -3785,7 +3785,7 @@ export default function AdminDashboard() {
                     placeholder="Search documents..."
                     value={ragSearchQuery}
                     onChange={e => setRagSearchQuery(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs text-slate-800 dark:text-zinc-200 placeholder-slate-400 focus:outline-hidden focus:border-[#C8A34D]"
+                    className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs text-slate-800 dark:text-zinc-200 placeholder-slate-400 focus:outline-hidden focus:border-[#B88B2A]"
                   />
                 </div>
               </div>
@@ -3809,7 +3809,7 @@ export default function AdminDashboard() {
                       .map((doc, idx) => (
                         <tr key={doc._id || idx} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/40 transition-colors">
                           <td className="py-3 px-4 font-bold text-slate-900 dark:text-white flex items-center gap-2 max-w-xs truncate">
-                            <FileText className="w-4 h-4 text-[#C8A34D] shrink-0" />
+                            <FileText className="w-4 h-4 text-[#B88B2A] shrink-0" />
                             <span className="truncate" title={doc.filename}>
                               {(() => {
                                 let s = doc.filename || 'Document';
@@ -3834,7 +3834,7 @@ export default function AdminDashboard() {
                           <td className="py-3 px-4 text-slate-500 font-medium">
                             {doc.size ? `${(doc.size / 1024).toFixed(1)} KB` : '—'}
                           </td>
-                          <td className="py-3 px-4 font-bold text-[#C8A34D]">
+                          <td className="py-3 px-4 font-bold text-[#B88B2A]">
                             {doc.totalChunks || 1}
                           </td>
                           <td className="py-3 px-4">
@@ -3879,14 +3879,14 @@ export default function AdminDashboard() {
           /* TAB: POSTED ADVOCATE JUDGEMENTS & COMMUNITY PRECEDENTS */
           <div className="space-y-5 sm:space-y-6">
             {/* Header / Overview Hero Banner */}
-            <div className="bg-gradient-to-r from-amber-500/15 via-[#C8A34D]/10 to-transparent dark:from-amber-500/20 dark:via-[#C8A34D]/10 dark:to-transparent rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#C8A34D]/30 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="bg-gradient-to-r from-amber-500/15 via-[#B88B2A]/10 to-transparent dark:from-amber-500/20 dark:via-[#B88B2A]/10 dark:to-transparent rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#B88B2A]/30 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 border border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D] shadow-xs shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 border border-[#B88B2A]/30 flex items-center justify-center text-[#B88B2A] shadow-xs shrink-0">
                   <Scale className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] bg-[#C8A34D]/10 px-2 py-0.5 rounded-md border border-[#C8A34D]/20">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] bg-[#B88B2A]/10 px-2 py-0.5 rounded-md border border-[#B88B2A]/20">
                       Community Precedents
                     </span>
                     <span className="text-[10px] font-extrabold uppercase tracking-wide text-slate-400">
@@ -3908,12 +3908,12 @@ export default function AdminDashboard() {
                   disabled={judgmentsLoading}
                   className="px-3.5 py-2 bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 text-[#C8A34D] ${judgmentsLoading ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={`w-3.5 h-3.5 text-[#B88B2A] ${judgmentsLoading ? 'animate-spin' : ''}`} />
                   <span>Refresh</span>
                 </button>
                 <button
                   onClick={() => window.open('/post-judgment', '_blank')}
-                  className="px-3.5 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] text-xs font-black rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] text-xs font-black rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Public Form</span>
@@ -3985,7 +3985,7 @@ export default function AdminDashboard() {
                     setJudgmentsSearch(e.target.value);
                     fetchJudgments(e.target.value, judgmentsStatusFilter);
                   }}
-                  className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A]"
                 />
                 {judgmentsSearch && (
                   <button
@@ -4014,7 +4014,7 @@ export default function AdminDashboard() {
                       }}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                         isActive
-                          ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
+                          ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
                           : 'bg-slate-100 dark:bg-zinc-800/80 text-slate-600 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-zinc-700'
                       }`}
                     >
@@ -4060,10 +4060,10 @@ export default function AdminDashboard() {
                                 <img
                                   src={item.profilePhotoUrl}
                                   alt={item.advocateName}
-                                  className="w-10 h-10 rounded-xl object-cover border border-[#C8A34D]/30 shadow-xs shrink-0"
+                                  className="w-10 h-10 rounded-xl object-cover border border-[#B88B2A]/30 shadow-xs shrink-0"
                                 />
                               ) : (
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C8A34D]/20 to-amber-600/10 border border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D] font-black text-sm shrink-0">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#B88B2A]/20 to-amber-600/10 border border-[#B88B2A]/30 flex items-center justify-center text-[#B88B2A] font-black text-sm shrink-0">
                                   {item.advocateName?.charAt(0) || 'A'}
                                 </div>
                               )}
@@ -4071,10 +4071,10 @@ export default function AdminDashboard() {
                                 <div className="font-black text-slate-900 dark:text-white truncate flex items-center gap-1.5">
                                   <span>{item.advocateName}</span>
                                   {item.status === 'Featured' && (
-                                    <Star className="w-3.5 h-3.5 text-[#C8A34D] fill-[#C8A34D] shrink-0" />
+                                    <Star className="w-3.5 h-3.5 text-[#B88B2A] fill-[#B88B2A] shrink-0" />
                                   )}
                                 </div>
-                                <div className="text-[11px] font-mono font-bold text-[#C8A34D] truncate">
+                                <div className="text-[11px] font-mono font-bold text-[#B88B2A] truncate">
                                   {item.enrolmentNumber}
                                 </div>
                               </div>
@@ -4152,7 +4152,7 @@ export default function AdminDashboard() {
                                   enrolmentNumber: item.enrolmentNumber,
                                   fileSize: item.pdfFileSize
                                 })}
-                                className="px-2.5 py-1 rounded-lg bg-[#C8A34D]/15 hover:bg-[#C8A34D]/25 text-[#C8A34D] border border-[#C8A34D]/30 text-[11px] font-black flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                                className="px-2.5 py-1 rounded-lg bg-[#B88B2A]/15 hover:bg-[#B88B2A]/25 text-[#B88B2A] border border-[#B88B2A]/30 text-[11px] font-black flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
                                 title="Open in-app PDF Viewer"
                               >
                                 <Eye className="w-3.5 h-3.5" />
@@ -4182,7 +4182,7 @@ export default function AdminDashboard() {
                               onChange={(e) => handleUpdateJudgmentStatus(item._id, e.target.value)}
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase border cursor-pointer focus:outline-none transition-all ${
                                 item.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
-                                item.status === 'Featured' ? 'bg-[#C8A34D]/15 text-[#C8A34D] border-[#C8A34D]/30' :
+                                item.status === 'Featured' ? 'bg-[#B88B2A]/15 text-[#B88B2A] border-[#B88B2A]/30' :
                                 item.status === 'Rejected' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' :
                                 'bg-amber-500/10 text-amber-500 border-amber-500/20'
                               }`}
@@ -4254,7 +4254,7 @@ export default function AdminDashboard() {
                 <button
                   key={role}
                   onClick={() => handleUserRoleSave(editUserModal._id, role)}
-                  className="w-full py-2.5 px-4 bg-slate-50 dark:bg-zinc-900 hover:bg-[#C8A34D]/10 hover:text-[#C8A34D] border border-slate-200 dark:border-zinc-800 rounded-xl text-xs font-bold capitalize text-left transition-all cursor-pointer"
+                  className="w-full py-2.5 px-4 bg-slate-50 dark:bg-zinc-900 hover:bg-[#B88B2A]/10 hover:text-[#B88B2A] border border-slate-200 dark:border-zinc-800 rounded-xl text-xs font-bold capitalize text-left transition-all cursor-pointer"
                 >
                   Set as {role}
                 </button>
@@ -4293,7 +4293,7 @@ export default function AdminDashboard() {
               />
             </div>
             <div className="flex gap-2 pt-1">
-              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer transition-all">Save</button>
+              <button type="submit" className="flex-1 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer transition-all">Save</button>
               <button type="button" onClick={() => setCreditModalUser(null)} className="py-2.5 px-4 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 text-xs font-bold rounded-xl cursor-pointer">Cancel</button>
             </div>
           </form>
@@ -4307,7 +4307,7 @@ export default function AdminDashboard() {
             {/* Header */}
             <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-zinc-800 flex justify-between items-center bg-slate-50/50 dark:bg-zinc-900/50">
               <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] font-black text-base sm:text-lg flex items-center justify-center border border-[#C8A34D]/40 shrink-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] font-black text-base sm:text-lg flex items-center justify-center border border-[#B88B2A]/40 shrink-0">
                   {(selectedDossierUser.name || selectedDossierUser.email || 'U').charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
@@ -4315,7 +4315,7 @@ export default function AdminDashboard() {
                     <h3 className="text-sm sm:text-lg font-black text-slate-900 dark:text-white truncate">
                       {selectedDossierUser.name || 'Advocate Client Dossier'}
                     </h3>
-                    <span className="text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20 uppercase">
+                    <span className="text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20 uppercase">
                       {selectedDossierUser.role || 'Advocate'}
                     </span>
                     <span className={`text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full ${
@@ -4359,7 +4359,7 @@ export default function AdminDashboard() {
                     Legal Jurisdiction: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.jurisdiction || selectedDossierUser.country || 'India'}</span>
                   </p>
                   <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
-                    Plan: <span className="font-black text-[#C8A34D]">{selectedDossierUser.subscription?.plan || selectedDossierUser.currentPlan || 'Free'}</span>
+                    Plan: <span className="font-black text-[#B88B2A]">{selectedDossierUser.subscription?.plan || selectedDossierUser.currentPlan || 'Free'}</span>
                   </p>
                   <p className="text-slate-500 dark:text-zinc-400 font-medium">
                     Account Status: <span className={`font-black ${selectedDossierUser.isBlocked || selectedDossierUser.status === 'Suspended' ? 'text-red-500' : 'text-emerald-500'}`}>
@@ -4394,7 +4394,7 @@ export default function AdminDashboard() {
 
                 {/* Real Usage Stats Subsection */}
                 <div className="pt-3 border-t border-slate-200/80 dark:border-zinc-800 space-y-2">
-                  <p className="text-[11px] font-black text-[#C8A34D]">📊 ACTIVE USAGE STATS</p>
+                  <p className="text-[11px] font-black text-[#B88B2A]">📊 ACTIVE USAGE STATS</p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                     <div className="p-2.5 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
                       <p className="text-[9px] text-slate-400 font-bold uppercase truncate">Cases Folders</p>
@@ -4453,8 +4453,8 @@ export default function AdminDashboard() {
                           onClick={() => setSubForm(prev => ({ ...prev, planId: plan.id }))}
                           className={`px-3 py-2 rounded-xl border text-left shrink-0 transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#C8A34D]/20 border-[#C8A34D] text-[#C8A34D] shadow-2xs'
-                              : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 hover:border-[#C8A34D]/50'
+                              ? 'bg-[#B88B2A]/20 border-[#B88B2A] text-[#B88B2A] shadow-2xs'
+                              : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 hover:border-[#B88B2A]/50'
                           }`}
                         >
                           <p className="text-xs font-black">{plan.name}</p>
@@ -4474,7 +4474,7 @@ export default function AdminDashboard() {
                       onClick={() => setSubForm(prev => ({ ...prev, billingCycle: 'monthly' }))}
                       className={`py-2.5 rounded-xl font-extrabold text-xs transition-all cursor-pointer border ${
                         subForm.billingCycle === 'monthly'
-                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-sm'
+                          ? 'bg-[#B88B2A] text-[#111111] border-[#B88B2A] shadow-sm'
                           : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800'
                       }`}
                     >
@@ -4485,7 +4485,7 @@ export default function AdminDashboard() {
                       onClick={() => setSubForm(prev => ({ ...prev, billingCycle: 'yearly' }))}
                       className={`py-2.5 rounded-xl font-extrabold text-xs transition-all cursor-pointer border ${
                         subForm.billingCycle === 'yearly'
-                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-sm'
+                          ? 'bg-[#B88B2A] text-[#111111] border-[#B88B2A] shadow-sm'
                           : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800'
                       }`}
                     >
@@ -4499,7 +4499,7 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     onClick={handleSubscriptionSave}
-                    className="py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+                    className="py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
                   >
                     Assign Plan
                   </button>
@@ -4563,7 +4563,7 @@ export default function AdminDashboard() {
                     onClick={() => setSubForm(prev => ({ ...prev, billingCycle: c }))}
                     className={`flex-1 py-2 text-xs font-bold rounded-xl capitalize transition-all cursor-pointer border ${
                       subForm.billingCycle === c
-                        ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D]'
+                        ? 'bg-[#B88B2A] text-[#111111] border-[#B88B2A]'
                         : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
                     }`}
                   >
@@ -4584,7 +4584,7 @@ export default function AdminDashboard() {
               >
                 Expire Plan
               </button>
-              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer text-center">
+              <button type="submit" className="flex-1 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer text-center">
                 Assign Plan
               </button>
             </div>
@@ -4613,7 +4613,7 @@ export default function AdminDashboard() {
               <button type="button" onClick={() => { setPasswordResetUser(null); setPasswordResetVal(''); }} className="py-2.5 px-4 bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 text-xs font-bold rounded-xl cursor-pointer text-center">
                 Cancel
               </button>
-              <button type="submit" className="flex-1 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer text-center">
+              <button type="submit" className="flex-1 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer text-center">
                 Save Password
               </button>
             </div>
@@ -4756,7 +4756,7 @@ export default function AdminDashboard() {
                   placeholder="5876"
                   value={planForm.credits}
                   onChange={e => setPlanForm(prev => ({ ...prev, credits: e.target.value }))}
-                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-[#C8A34D]"
+                  className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-[#B88B2A]"
                   required
                 />
               </div>
@@ -4780,7 +4780,7 @@ export default function AdminDashboard() {
                 placeholder={`Active Cases: 100\nStorage: 20 GB\nDraft Maker: 15 / month\nContract Analyzer: 15 / month`}
                 value={planForm.features}
                 onChange={e => setPlanForm(prev => ({ ...prev, features: e.target.value }))}
-                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:border-[#C8A34D]"
+                className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white outline-none focus:border-[#B88B2A]"
               />
               <p className="text-[10px] text-slate-400 mt-1 font-medium">Checkmarks (✓) are added automatically on the plan cards.</p>
             </div>
@@ -4791,7 +4791,7 @@ export default function AdminDashboard() {
                   type="checkbox"
                   checked={planForm.isPopular}
                   onChange={e => setPlanForm(prev => ({ ...prev, isPopular: e.target.checked }))}
-                  className="rounded border-slate-300 text-[#C8A34D] focus:ring-[#C8A34D]"
+                  className="rounded border-slate-300 text-[#B88B2A] focus:ring-[#B88B2A]"
                 />
                 <span className="text-xs font-black text-slate-800 dark:text-zinc-200">Highlight as Popular Tier</span>
               </label>
@@ -4801,7 +4801,7 @@ export default function AdminDashboard() {
                   type="checkbox"
                   checked={planForm.isActive}
                   onChange={e => setPlanForm(prev => ({ ...prev, isActive: e.target.checked }))}
-                  className="rounded border-slate-300 text-[#C8A34D] focus:ring-[#C8A34D]"
+                  className="rounded border-slate-300 text-[#B88B2A] focus:ring-[#B88B2A]"
                 />
                 <span className="text-xs font-black text-slate-800 dark:text-zinc-200">Active Plan</span>
               </label>
@@ -4817,7 +4817,7 @@ export default function AdminDashboard() {
               </button>
               <button
                 type="submit"
-                className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+                className="flex-1 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Save Plan Parameters
               </button>
@@ -4889,7 +4889,7 @@ export default function AdminDashboard() {
                     onClick={() => setCouponForm(prev => ({ ...prev, discountType: 'percentage' }))}
                     className={`py-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
                       couponForm.discountType === 'percentage'
-                        ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D]'
+                        ? 'bg-[#B88B2A] text-[#111111] border-[#B88B2A]'
                         : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
                     }`}
                   >
@@ -4900,7 +4900,7 @@ export default function AdminDashboard() {
                     onClick={() => setCouponForm(prev => ({ ...prev, discountType: 'fixed' }))}
                     className={`py-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
                       couponForm.discountType === 'fixed'
-                        ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D]'
+                        ? 'bg-[#B88B2A] text-[#111111] border-[#B88B2A]'
                         : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
                     }`}
                   >
@@ -4949,7 +4949,7 @@ export default function AdminDashboard() {
                       }}
                       className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-extrabold border transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D]'
+                          ? 'bg-[#B88B2A] text-[#111111] border-[#B88B2A]'
                           : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
                       }`}
                     >
@@ -5034,7 +5034,7 @@ export default function AdminDashboard() {
                   type="checkbox"
                   checked={couponForm.status === 'active'}
                   onChange={e => setCouponForm(prev => ({ ...prev, status: e.target.checked ? 'active' : 'inactive' }))}
-                  className="rounded border-slate-300 text-[#C8A34D] focus:ring-[#C8A34D]"
+                  className="rounded border-slate-300 text-[#B88B2A] focus:ring-[#B88B2A]"
                 />
                 <span className="text-xs font-black text-slate-800 dark:text-zinc-200">Status Active</span>
               </label>
@@ -5050,7 +5050,7 @@ export default function AdminDashboard() {
               </button>
               <button
                 type="submit"
-                className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+                className="flex-1 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Save Coupon 🎉
               </button>
@@ -5068,7 +5068,7 @@ export default function AdminDashboard() {
               <div>
                 <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2 flex-wrap">
                   <span>Coupon Analytics: {couponDetailsModal.coupon.code}</span>
-                  <span className="bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-black px-2 py-0.5 rounded-md border border-[#C8A34D]/40">
+                  <span className="bg-[#B88B2A]/20 text-[#B88B2A] text-[10px] font-black px-2 py-0.5 rounded-md border border-[#B88B2A]/40">
                     {couponDetailsModal.coupon.discountType === 'percentage' ? `${couponDetailsModal.coupon.discountValue}% OFF` : `₹${couponDetailsModal.coupon.discountValue} OFF`}
                   </span>
                 </h3>
@@ -5098,7 +5098,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="p-2.5 sm:p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800">
                   <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase">REVENUE GENERATED</p>
-                  <p className="text-base sm:text-lg font-extrabold text-[#C8A34D] mt-0.5 sm:mt-1">₹{(couponDetailsModal.stats?.totalRevenueGenerated || 0).toLocaleString('en-IN')}</p>
+                  <p className="text-base sm:text-lg font-extrabold text-[#B88B2A] mt-0.5 sm:mt-1">₹{(couponDetailsModal.stats?.totalRevenueGenerated || 0).toLocaleString('en-IN')}</p>
                 </div>
                 <div className="p-2.5 sm:p-3 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800">
                   <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase">AVG ORDER VALUE</p>
@@ -5135,7 +5135,7 @@ export default function AdminDashboard() {
                               <p className="text-[10px] text-slate-400">{u.userEmail || 'N/A'}</p>
                             </td>
                             <td className="py-2.5">
-                              <span className="font-bold uppercase text-[#C8A34D]">{u.planId || 'PRO'}</span>
+                              <span className="font-bold uppercase text-[#B88B2A]">{u.planId || 'PRO'}</span>
                             </td>
                             <td className="py-2.5 text-slate-500 line-through">₹{u.originalAmount || 0}</td>
                             <td className="py-2.5 text-emerald-500 font-bold">-₹{u.discountAmount || 0}</td>
@@ -5156,7 +5156,7 @@ export default function AdminDashboard() {
             <div className="p-3 sm:p-4 border-t border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex justify-end">
               <button
                 onClick={() => setCouponDetailsModal({ isOpen: false, coupon: null, stats: null, usageHistory: [] })}
-                className="w-full sm:w-auto px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer shadow-md transition-all text-center"
+                className="w-full sm:w-auto px-6 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer shadow-md transition-all text-center"
               >
                 Close Details
               </button>
@@ -5175,7 +5175,7 @@ export default function AdminDashboard() {
             </p>
 
             <div className="bg-slate-50 dark:bg-zinc-900 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
-              <p><span className="text-slate-400 font-bold">Promo Code:</span> <strong className="text-[#C8A34D] font-black font-mono">{couponDeleteConfirmModal.coupon.code}</strong></p>
+              <p><span className="text-slate-400 font-bold">Promo Code:</span> <strong className="text-[#B88B2A] font-black font-mono">{couponDeleteConfirmModal.coupon.code}</strong></p>
               <p><span className="text-slate-400 font-bold">Discount:</span> <span className="text-slate-700 dark:text-zinc-300 font-bold">{couponDeleteConfirmModal.coupon.discountType === 'percentage' ? `${couponDeleteConfirmModal.coupon.discountValue}% OFF` : `₹${couponDeleteConfirmModal.coupon.discountValue} OFF`}</span></p>
             </div>
 
@@ -5217,7 +5217,7 @@ export default function AdminDashboard() {
             {/* Read-Only Feature Overview Box */}
             <div className="bg-slate-50 dark:bg-zinc-900/60 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-extrabold text-[#C8A34D] bg-[#C8A34D]/10 border border-[#C8A34D]/30 px-2.5 py-0.5 rounded-lg text-[11px]">
+                <span className="font-extrabold text-[#B88B2A] bg-[#B88B2A]/10 border border-[#B88B2A]/30 px-2.5 py-0.5 rounded-lg text-[11px]">
                   {featureModal.feature.category || 'General Feature'}
                 </span>
                 <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase border ${
@@ -5246,7 +5246,7 @@ export default function AdminDashboard() {
                       onClick={() => setFeatureModal(prev => ({ ...prev, status: st }))}
                       className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-black uppercase transition-all cursor-pointer border ${
                         isSelected
-                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-xs'
+                          ? 'bg-[#B88B2A] text-[#111111] border-[#B88B2A] shadow-xs'
                           : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
                       }`}
                     >
@@ -5303,7 +5303,7 @@ export default function AdminDashboard() {
               </button>
               <button
                 type="submit"
-                className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+                className="flex-1 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Save Update 🎉
               </button>
@@ -5322,7 +5322,7 @@ export default function AdminDashboard() {
             </p>
 
             <div className="bg-slate-50 dark:bg-zinc-900 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-zinc-800 space-y-2 text-xs">
-              <p><span className="text-slate-400 font-bold">Category:</span> <span className="font-extrabold text-[#C8A34D]">{featureDeleteModal.feature.category || 'General'}</span></p>
+              <p><span className="text-slate-400 font-bold">Category:</span> <span className="font-extrabold text-[#B88B2A]">{featureDeleteModal.feature.category || 'General'}</span></p>
               <p><span className="text-slate-400 font-bold">Title:</span> <strong className="text-slate-800 dark:text-zinc-200">{featureDeleteModal.feature.title}</strong></p>
             </div>
 
@@ -5393,7 +5393,7 @@ export default function AdminDashboard() {
                       onClick={() => setBugModal(prev => ({ ...prev, status: st }))}
                       className={`px-3 py-1.5 rounded-xl text-[11px] font-black uppercase transition-all cursor-pointer border ${
                         isSelected
-                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-xs'
+                          ? 'bg-[#B88B2A] text-[#111111] border-[#B88B2A] shadow-xs'
                           : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
                       }`}
                     >
@@ -5428,7 +5428,7 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={handleSaveBugStatus}
-                className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
+                className="flex-1 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer text-center"
               >
                 Save Bug Status
               </button>
@@ -5444,12 +5444,12 @@ export default function AdminDashboard() {
             {/* Modal Header */}
             <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-900/80 flex items-center justify-between gap-3 shrink-0">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-xl bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center shrink-0">
                   <FileText className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] bg-[#C8A34D]/10 px-2 py-0.5 rounded border border-[#C8A34D]/20">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] bg-[#B88B2A]/10 px-2 py-0.5 rounded border border-[#B88B2A]/20">
                       Judgment PDF
                     </span>
                     {selectedPdfModal.enrolmentNumber && (
@@ -5477,7 +5477,7 @@ export default function AdminDashboard() {
                   className="px-3 py-2 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-bold rounded-xl border border-slate-200 dark:border-zinc-700 transition-all flex items-center gap-1.5"
                   title="Download PDF"
                 >
-                  <Download className="w-3.5 h-3.5 text-[#C8A34D]" />
+                  <Download className="w-3.5 h-3.5 text-[#B88B2A]" />
                   <span className="hidden sm:inline">Download</span>
                 </a>
 
@@ -5527,14 +5527,14 @@ export default function AdminDashboard() {
                     href={selectedPdfModal.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-bold text-[#C8A34D] hover:underline flex items-center gap-1"
+                    className="font-bold text-[#B88B2A] hover:underline flex items-center gap-1"
                   >
                     Open Direct in New Tab <ExternalLink className="w-3 h-3" />
                   </a>
                   <a
                     href={selectedPdfModal.url}
                     download={selectedPdfModal.title || 'judgement.pdf'}
-                    className="font-bold text-slate-700 dark:text-zinc-200 hover:text-[#C8A34D] flex items-center gap-1"
+                    className="font-bold text-slate-700 dark:text-zinc-200 hover:text-[#B88B2A] flex items-center gap-1"
                   >
                     Download <Download className="w-3 h-3" />
                   </a>
@@ -5556,10 +5556,10 @@ export default function AdminDashboard() {
                   <img
                     src={selectedJudgmentDetail.profilePhotoUrl}
                     alt={selectedJudgmentDetail.advocateName}
-                    className="w-14 h-14 rounded-2xl object-cover border-2 border-[#C8A34D]/40 shadow-sm"
+                    className="w-14 h-14 rounded-2xl object-cover border-2 border-[#B88B2A]/40 shadow-sm"
                   />
                 ) : (
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#C8A34D]/20 to-amber-600/10 border-2 border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D] font-black text-xl shadow-sm">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#B88B2A]/20 to-amber-600/10 border-2 border-[#B88B2A]/30 flex items-center justify-center text-[#B88B2A] font-black text-xl shadow-sm">
                     {selectedJudgmentDetail.advocateName?.charAt(0) || 'A'}
                   </div>
                 )}
@@ -5570,14 +5570,14 @@ export default function AdminDashboard() {
                     </h3>
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
                       selectedJudgmentDetail.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
-                      selectedJudgmentDetail.status === 'Featured' ? 'bg-[#C8A34D]/15 text-[#C8A34D] border-[#C8A34D]/30' :
+                      selectedJudgmentDetail.status === 'Featured' ? 'bg-[#B88B2A]/15 text-[#B88B2A] border-[#B88B2A]/30' :
                       selectedJudgmentDetail.status === 'Rejected' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' :
                       'bg-amber-500/10 text-amber-500 border-amber-500/20'
                     }`}>
                       {selectedJudgmentDetail.status}
                     </span>
                   </div>
-                  <p className="text-xs font-mono font-bold text-[#C8A34D] mt-0.5">
+                  <p className="text-xs font-mono font-bold text-[#B88B2A] mt-0.5">
                     {selectedJudgmentDetail.enrolmentNumber}
                   </p>
                   <p className="text-[11px] text-slate-400 mt-1">
@@ -5671,9 +5671,9 @@ export default function AdminDashboard() {
               {/* Attached Judgment PDF Card */}
               <div>
                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Attached Legal Order / Judgment</label>
-                <div className="mt-1.5 p-3.5 rounded-2xl bg-[#C8A34D]/5 border border-[#C8A34D]/25 flex items-center justify-between gap-3">
+                <div className="mt-1.5 p-3.5 rounded-2xl bg-[#B88B2A]/5 border border-[#B88B2A]/25 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-[#C8A34D]/20 text-[#C8A34D] flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-[#B88B2A]/20 text-[#B88B2A] flex items-center justify-center shrink-0">
                       <FileText className="w-5 h-5" />
                     </div>
                     <div className="min-w-0">
@@ -5698,7 +5698,7 @@ export default function AdminDashboard() {
                           fileSize: selectedJudgmentDetail.pdfFileSize
                         });
                       }}
-                      className="px-3 py-1.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
+                      className="px-3 py-1.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>View PDF</span>
@@ -5712,7 +5712,7 @@ export default function AdminDashboard() {
                       className="p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-200 transition-colors"
                       title="Download PDF"
                     >
-                      <Download className="w-3.5 h-3.5 text-[#C8A34D]" />
+                      <Download className="w-3.5 h-3.5 text-[#B88B2A]" />
                     </a>
                   </div>
                 </div>
@@ -5730,10 +5730,10 @@ export default function AdminDashboard() {
                       className={`py-2 px-3 rounded-xl text-xs font-black uppercase transition-all cursor-pointer border ${
                         selectedJudgmentDetail.status === st
                           ? st === 'Approved' ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm'
-                            : st === 'Featured' ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D] shadow-sm'
+                            : st === 'Featured' ? 'bg-[#B88B2A] text-[#111111] border-[#B88B2A] shadow-sm'
                             : st === 'Rejected' ? 'bg-rose-500 text-white border-rose-500 shadow-sm'
                             : 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                          : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800 hover:border-[#C8A34D]/40'
+                          : 'bg-slate-50 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800 hover:border-[#B88B2A]/40'
                       }`}
                     >
                       {st}
@@ -5750,7 +5750,7 @@ export default function AdminDashboard() {
                   defaultValue={selectedJudgmentDetail.adminNotes || ''}
                   onChange={e => setAdminNoteInput(e.target.value)}
                   placeholder="e.g. Bar council verified, published in High Court bail directory..."
-                  className="w-full mt-1.5 p-3 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full mt-1.5 p-3 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A]"
                 />
                 <div className="flex justify-end mt-2">
                   <button

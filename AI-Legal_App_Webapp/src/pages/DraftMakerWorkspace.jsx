@@ -512,7 +512,7 @@ THROUGH ADVOCATE`;
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <button 
             onClick={() => navigate('/dashboard/tools')}
-            className="p-1.5 sm:p-2 rounded-xl bg-slate-100 dark:bg-[#1E293B] hover:bg-[#C8A34D]/20 text-slate-700 dark:text-slate-200 hover:text-[#C8A34D] transition-colors flex items-center gap-1.5 text-xs font-bold shrink-0 cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-xl bg-slate-100 dark:bg-[#1E293B] hover:bg-[#B88B2A]/20 text-slate-700 dark:text-slate-200 hover:text-[#B88B2A] transition-colors flex items-center gap-1.5 text-xs font-bold shrink-0 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">AI Tools</span>
@@ -523,7 +523,7 @@ THROUGH ADVOCATE`;
           <div className="min-w-0 flex-1">
             <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2 flex-wrap truncate">
               <span className="truncate">Draft Maker</span>
-              <span className="text-[9px] sm:text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 uppercase shrink-0 hidden xs:inline-block">
+              <span className="text-[9px] sm:text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 uppercase shrink-0 hidden xs:inline-block">
                 Advocate Production Suite
               </span>
             </h1>
@@ -546,14 +546,14 @@ THROUGH ADVOCATE`;
               onClick={() => { if (step.num < currentStep) setCurrentStep(step.num); }}
               className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                 currentStep === step.num
-                  ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md shadow-[#C8A34D]/20'
+                  ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md shadow-[#B88B2A]/20'
                   : currentStep > step.num
-                  ? 'bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 cursor-pointer hover:bg-[#C8A34D]/25'
+                  ? 'bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 cursor-pointer hover:bg-[#B88B2A]/25'
                   : 'bg-slate-100 dark:bg-[#1E293B] text-slate-400 cursor-not-allowed'
               }`}
             >
               <span>{step.num}. <span className="sm:hidden">{step.short}</span><span className="hidden sm:inline">{step.label}</span></span>
-              {currentStep > step.num && <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C8A34D]" />}
+              {currentStep > step.num && <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B88B2A]" />}
             </button>
           ))}
         </div>
@@ -580,24 +580,24 @@ THROUGH ADVOCATE`;
               {/* Search Box & Saved Drafts Button */}
               <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-2.5 w-full md:w-auto">
                 <div className="relative w-full sm:w-72">
-                  <Search className="absolute left-3 top-2.5 sm:top-3 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C8A34D]" />
+                  <Search className="absolute left-3 top-2.5 sm:top-3 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B88B2A]" />
                   <input
                     type="text"
                     placeholder="Search templates..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D] truncate"
+                    className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A] truncate"
                   />
                 </div>
 
                 <button
                   onClick={() => setIsSavedModalOpen(true)}
-                  className="w-full sm:w-auto px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 text-[#C8A34D] hover:bg-[#C8A34D] hover:text-[#111111] text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all shrink-0 shadow-2xs"
+                  className="w-full sm:w-auto px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 text-[#B88B2A] hover:bg-[#B88B2A] hover:text-[#111111] text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer transition-all shrink-0 shadow-2xs"
                 >
                   <FolderOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span>Saved Drafts</span>
                   {savedDrafts.length > 0 && (
-                    <span className="px-2 py-0.5 rounded-full bg-[#C8A34D] text-[#111111] text-[10px] font-black">
+                    <span className="px-2 py-0.5 rounded-full bg-[#B88B2A] text-[#111111] text-[10px] font-black">
                       {savedDrafts.length}
                     </span>
                   )}
@@ -613,8 +613,8 @@ THROUGH ADVOCATE`;
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     selectedCategory === cat
-                      ? 'bg-[#C8A34D] text-[#111111] shadow-md shadow-[#C8A34D]/20 font-black'
-                      : 'bg-white dark:bg-[#1E293B] text-slate-600 dark:text-slate-300 hover:text-[#C8A34D] border border-slate-200 dark:border-slate-800'
+                      ? 'bg-[#B88B2A] text-[#111111] shadow-md shadow-[#B88B2A]/20 font-black'
+                      : 'bg-white dark:bg-[#1E293B] text-slate-600 dark:text-slate-300 hover:text-[#B88B2A] border border-slate-200 dark:border-slate-800'
                   }`}
                 >
                   {cat}
@@ -634,8 +634,8 @@ THROUGH ADVOCATE`;
                     onClick={() => handleSelectTemplate(tmpl)}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
                       isSelected
-                        ? 'bg-white dark:bg-[#1E293B] border-[#C8A34D] shadow-md ring-2 ring-[#C8A34D]'
-                        : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/50 hover:shadow-sm'
+                        ? 'bg-white dark:bg-[#1E293B] border-[#B88B2A] shadow-md ring-2 ring-[#B88B2A]'
+                        : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/50 hover:shadow-sm'
                     }`}
                   >
                     <div>
@@ -644,7 +644,7 @@ THROUGH ADVOCATE`;
                           {tmpl.icon}
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 uppercase">
+                          <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 uppercase">
                             {tmpl.category}
                           </span>
                           <button 
@@ -667,11 +667,11 @@ THROUGH ADVOCATE`;
                     <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                       <span>Est: {tmpl.estimatedTime || tmpl.estTime || '2 Mins'} • {tmpl.difficulty}</span>
                       {isSelected ? (
-                        <span className="text-[#C8A34D] font-extrabold flex items-center gap-1">
+                        <span className="text-[#B88B2A] font-extrabold flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5" /> Selected
                         </span>
                       ) : (
-                        <span className="text-slate-400 group-hover:text-[#C8A34D] flex items-center gap-1">
+                        <span className="text-slate-400 group-hover:text-[#B88B2A] flex items-center gap-1">
                           Select <ChevronRight className="w-3 h-3" />
                         </span>
                       )}
@@ -685,7 +685,7 @@ THROUGH ADVOCATE`;
             <div className="flex justify-end pt-4">
               <button
                 onClick={() => setCurrentStep(2)}
-                className="px-8 py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-2 cursor-pointer shadow-lg shadow-[#C8A34D]/25 hover:bg-[#b08e3e] transition-all"
+                className="px-8 py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-2 cursor-pointer shadow-lg shadow-[#B88B2A]/25 hover:bg-[#b08e3e] transition-all"
               >
                 <span>Continue to Input Source</span>
                 <ChevronRight className="w-4 h-4" />
@@ -702,17 +702,17 @@ THROUGH ADVOCATE`;
             className="space-y-6 max-w-4xl mx-auto"
           >
             {/* Top Selected Template Info Banner */}
-            <div className="p-5 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#C8A34D]/30 flex items-center justify-between">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#B88B2A]/30 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{selectedTemplate.icon}</span>
                 <div>
-                  <span className="text-[10px] font-mono font-bold text-[#C8A34D] uppercase">Selected Template</span>
+                  <span className="text-[10px] font-mono font-bold text-[#B88B2A] uppercase">Selected Template</span>
                   <h3 className="text-sm font-black text-slate-900 dark:text-white">{selectedTemplate.title}</h3>
                 </div>
               </div>
               <button 
                 onClick={() => setCurrentStep(1)}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111111] text-slate-600 dark:text-slate-300 hover:text-[#C8A34D] text-xs font-bold cursor-pointer"
+                className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111111] text-slate-600 dark:text-slate-300 hover:text-[#B88B2A] text-xs font-bold cursor-pointer"
               >
                 Change Template
               </button>
@@ -749,12 +749,12 @@ THROUGH ADVOCATE`;
                     onClick={() => setInputSource(opt.id)}
                     className={`p-5 rounded-2xl border transition-all cursor-pointer ${
                       isCurrent
-                        ? 'bg-white dark:bg-[#1E293B] border-[#C8A34D] shadow-md ring-2 ring-[#C8A34D]'
-                        : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/40'
+                        ? 'bg-white dark:bg-[#1E293B] border-[#B88B2A] shadow-md ring-2 ring-[#B88B2A]'
+                        : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/40'
                     }`}
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <div className={`p-2.5 rounded-xl ${isCurrent ? 'bg-[#C8A34D] text-[#111111]' : 'bg-slate-100 dark:bg-[#111111] text-[#C8A34D]'}`}>
+                      <div className={`p-2.5 rounded-xl ${isCurrent ? 'bg-[#B88B2A] text-[#111111]' : 'bg-slate-100 dark:bg-[#111111] text-[#B88B2A]'}`}>
                         <IconComp className="w-5 h-5" />
                       </div>
                       <h4 className="text-sm font-bold text-slate-900 dark:text-white">{opt.title}</h4>
@@ -775,13 +775,13 @@ THROUGH ADVOCATE`;
                   </div>
 
                   <div className="relative w-full sm:w-64">
-                    <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-[#C8A34D]" />
+                    <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-[#B88B2A]" />
                     <input
                       type="text"
                       placeholder="Search cases..."
                       value={caseSearchQuery}
                       onChange={(e) => setCaseSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
@@ -810,16 +810,16 @@ THROUGH ADVOCATE`;
                           onClick={() => setSelectedCase(c)}
                           className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-slate-50 dark:bg-[#111111] border-[#C8A34D] ring-1 ring-[#C8A34D] shadow-sm'
-                              : 'bg-slate-50 dark:bg-[#111111] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/40'
+                              ? 'bg-slate-50 dark:bg-[#111111] border-[#B88B2A] ring-1 ring-[#B88B2A] shadow-sm'
+                              : 'bg-slate-50 dark:bg-[#111111] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/40'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
                             <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">{name}</h4>
                             {isSelected ? (
-                              <span className="text-[10px] font-extrabold text-[#C8A34D] shrink-0 bg-[#C8A34D]/10 px-2 py-0.5 rounded-full border border-[#C8A34D]/30">Selected ✓</span>
+                              <span className="text-[10px] font-extrabold text-[#B88B2A] shrink-0 bg-[#B88B2A]/10 px-2 py-0.5 rounded-full border border-[#B88B2A]/30">Selected ✓</span>
                             ) : (
-                              <span className="text-[10px] font-medium text-slate-400 shrink-0 hover:text-[#C8A34D]">Select</span>
+                              <span className="text-[10px] font-medium text-slate-400 shrink-0 hover:text-[#B88B2A]">Select</span>
                             )}
                           </div>
                           <div className="mt-2 space-y-1 text-[11px] text-slate-500 dark:text-slate-400">
@@ -843,16 +843,16 @@ THROUGH ADVOCATE`;
                 </div>
 
                 {!uploadedDoc ? (
-                  <label className="border-2 border-dashed border-[#C8A34D]/40 hover:border-[#C8A34D] bg-slate-50 dark:bg-[#111111] p-8 rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all">
-                    <FileUp className="w-10 h-10 text-[#C8A34D] mb-3" />
+                  <label className="border-2 border-dashed border-[#B88B2A]/40 hover:border-[#B88B2A] bg-slate-50 dark:bg-[#111111] p-8 rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all">
+                    <FileUp className="w-10 h-10 text-[#B88B2A] mb-3" />
                     <span className="text-xs font-bold text-slate-900 dark:text-white">Click or drag file to upload</span>
                     <span className="text-[10px] text-slate-400 mt-1">Supports PDF, DOCX, TXT, PNG, JPG (Max 25MB)</span>
                     <input type="file" onChange={handleFileUpload} className="hidden" accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg" />
                   </label>
                 ) : (
-                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-[#C8A34D]/30 flex items-center justify-between">
+                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-[#B88B2A]/30 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <FileText className="w-8 h-8 text-[#C8A34D]" />
+                      <FileText className="w-8 h-8 text-[#B88B2A]" />
                       <div>
                         <h4 className="text-xs font-bold text-slate-900 dark:text-white">{uploadedDoc.name}</h4>
                         <p className="text-[11px] text-slate-400 mt-0.5">{uploadedDoc.size} • Ready for AI Drafting</p>
@@ -885,21 +885,21 @@ THROUGH ADVOCATE`;
                     return (
                       <div key={key} className={isLongText ? 'sm:col-span-2' : ''}>
                         <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
-                          {formattedLabel} <span className="text-[#C8A34D]">*</span>
+                          {formattedLabel} <span className="text-[#B88B2A]">*</span>
                         </label>
                         {isLongText ? (
                           <textarea
                             rows={3}
                             value={manualFields[key]}
                             onChange={(e) => setManualFields({ ...manualFields, [key]: e.target.value })}
-                            className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                            className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                           />
                         ) : (
                           <input
                             type="text"
                             value={manualFields[key]}
                             onChange={(e) => setManualFields({ ...manualFields, [key]: e.target.value })}
-                            className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                            className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                           />
                         )}
                       </div>
@@ -920,18 +920,18 @@ THROUGH ADVOCATE`;
                   placeholder="e.g. Emphasize urgent interim stay order under Order 39 Rule 1 CPC..."
                   value={generalInstructions}
                   onChange={(e) => setGeneralInstructions(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
               <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
                 <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <Globe className="w-4 h-4 text-[#C8A34D]" /> Output Language
+                  <Globe className="w-4 h-4 text-[#B88B2A]" /> Output Language
                 </span>
                 <select
                   value={outputLanguage}
                   onChange={(e) => setOutputLanguage(e.target.value)}
-                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#C8A34D] focus:outline-none"
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#B88B2A] focus:outline-none"
                 >
                   {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
@@ -949,7 +949,7 @@ THROUGH ADVOCATE`;
 
               <button
                 onClick={validateAndProceedToReview}
-                className="px-8 py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-2 cursor-pointer shadow-lg shadow-[#C8A34D]/25 hover:bg-[#b08e3e] transition-all"
+                className="px-8 py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-2 cursor-pointer shadow-lg shadow-[#B88B2A]/25 hover:bg-[#b08e3e] transition-all"
               >
                 <span>Review & Confirm</span>
                 <ChevronRight className="w-4 h-4" />
@@ -976,17 +976,17 @@ THROUGH ADVOCATE`;
                 {/* Selected Template */}
                 <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-[#C8A34D] uppercase">Selected Template</span>
+                    <span className="text-[10px] font-bold text-[#B88B2A] uppercase">Selected Template</span>
                     <h4 className="text-sm font-black text-slate-900 dark:text-white mt-0.5">{selectedTemplate.title}</h4>
                   </div>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D]">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A]">
                     {selectedTemplate.category}
                   </span>
                 </div>
 
                 {/* Input Source Summary */}
                 <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 space-y-2">
-                  <span className="text-[10px] font-bold text-[#C8A34D] uppercase">Input Source Mode</span>
+                  <span className="text-[10px] font-bold text-[#B88B2A] uppercase">Input Source Mode</span>
                   <p className="text-xs font-bold text-slate-900 dark:text-white">
                     {inputSource === 'existing_case' && `Existing Case: ${selectedCase?.name || selectedCase?.caseName || 'Case Workspace'}`}
                     {inputSource === 'upload_doc' && `Uploaded Document: ${uploadedDoc?.name || 'Attached File'}`}
@@ -995,7 +995,7 @@ THROUGH ADVOCATE`;
 
                   {/* Summary Snippet */}
                   <div className="p-3 rounded-xl bg-white dark:bg-[#181818] border border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-300 space-y-1 font-mono">
-                    <p>• Output Language: <span className="font-bold text-[#C8A34D]">{outputLanguage}</span></p>
+                    <p>• Output Language: <span className="font-bold text-[#B88B2A]">{outputLanguage}</span></p>
                     {generalInstructions && <p>• Special Instructions: "{generalInstructions}"</p>}
                   </div>
                 </div>
@@ -1012,7 +1012,7 @@ THROUGH ADVOCATE`;
 
                 <button
                   onClick={handleGenerateDraft}
-                  className="px-8 py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-2 cursor-pointer shadow-xl shadow-[#C8A34D]/30 hover:bg-[#b08e3e] transition-all"
+                  className="px-8 py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-2 cursor-pointer shadow-xl shadow-[#B88B2A]/30 hover:bg-[#b08e3e] transition-all"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>Generate Legal Draft</span>
@@ -1030,17 +1030,17 @@ THROUGH ADVOCATE`;
             className="space-y-6"
           >
             {isGenerating ? (
-              <div className="py-24 flex flex-col items-center justify-center text-center space-y-6 bg-white dark:bg-[#1E293B] rounded-3xl border border-[#C8A34D]/30 shadow-xl">
+              <div className="py-24 flex flex-col items-center justify-center text-center space-y-6 bg-white dark:bg-[#1E293B] rounded-3xl border border-[#B88B2A]/30 shadow-xl">
                 <div className="relative w-20 h-20 flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border-4 border-[#C8A34D]/20 animate-ping" />
-                  <div className="w-16 h-16 rounded-full bg-[#111111] border-2 border-[#C8A34D] flex items-center justify-center text-[#C8A34D]">
+                  <div className="absolute inset-0 rounded-full border-4 border-[#B88B2A]/20 animate-ping" />
+                  <div className="w-16 h-16 rounded-full bg-[#111111] border-2 border-[#B88B2A] flex items-center justify-center text-[#B88B2A]">
                     <Sparkles className="w-7 h-7 animate-spin" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <h3 className="text-xl font-black text-slate-900 dark:text-white">Synthesizing Legal Draft</h3>
-                  <p className="text-xs font-mono text-[#C8A34D]">{generationStatus}</p>
+                  <p className="text-xs font-mono text-[#B88B2A]">{generationStatus}</p>
                   <p className="text-[11px] text-slate-400 max-w-sm">
                     AI LEGAL is preparing your draft using the selected template and source information.
                   </p>
@@ -1060,7 +1060,7 @@ THROUGH ADVOCATE`;
                     </button>
                     <button 
                       onClick={handleGenerateDraft}
-                      className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111111] text-[#C8A34D] text-xs font-bold flex items-center gap-1.5 cursor-pointer border border-[#C8A34D]/30 whitespace-nowrap shrink-0"
+                      className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111111] text-[#B88B2A] text-xs font-bold flex items-center gap-1.5 cursor-pointer border border-[#B88B2A]/30 whitespace-nowrap shrink-0"
                     >
                       <RefreshCw className="w-3.5 h-3.5" /> Regenerate
                     </button>
@@ -1070,7 +1070,7 @@ THROUGH ADVOCATE`;
                   <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 md:pb-0 shrink-0">
                     <button 
                       onClick={handleCopyDraft}
-                      className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111111] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer hover:border-[#C8A34D] border border-transparent whitespace-nowrap shrink-0"
+                      className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111111] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer hover:border-[#B88B2A] border border-transparent whitespace-nowrap shrink-0"
                     >
                       <Copy className="w-3.5 h-3.5" /> Copy
                     </button>
@@ -1081,7 +1081,7 @@ THROUGH ADVOCATE`;
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
                         hasSaved 
                           ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30' 
-                          : 'bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30'
+                          : 'bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30'
                       }`}
                     >
                       <Save className="w-3.5 h-3.5" />
@@ -1091,7 +1091,7 @@ THROUGH ADVOCATE`;
                     {/* Format Export Buttons */}
                     <button 
                       onClick={handleDownloadPDF}
-                      className="px-3 py-1.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md hover:bg-[#b08e3e] whitespace-nowrap shrink-0"
+                      className="px-3 py-1.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md hover:bg-[#b08e3e] whitespace-nowrap shrink-0"
                     >
                       <Download className="w-3.5 h-3.5" /> Export PDF
                     </button>
@@ -1113,7 +1113,7 @@ THROUGH ADVOCATE`;
                 </div>
 
                 {/* Court Paper Canvas Editor */}
-                <div className="bg-white text-slate-900 p-8 sm:p-14 rounded-3xl border border-[#C8A34D]/40 shadow-2xl min-h-[650px] font-serif leading-relaxed">
+                <div className="bg-white text-slate-900 p-8 sm:p-14 rounded-3xl border border-[#B88B2A]/40 shadow-2xl min-h-[650px] font-serif leading-relaxed">
                   <div 
                     ref={editorRef}
                     contentEditable
@@ -1137,11 +1137,11 @@ THROUGH ADVOCATE`;
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-[#1E293B] border border-[#C8A34D]/30 rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
+              className="bg-white dark:bg-[#1E293B] border border-[#B88B2A]/30 rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
             >
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2.5 rounded-xl bg-[#C8A34D]/15 text-[#C8A34D]">
+                  <div className="p-2.5 rounded-xl bg-[#B88B2A]/15 text-[#B88B2A]">
                     <FolderOpen className="w-5 h-5" />
                   </div>
                   <div>
@@ -1169,14 +1169,14 @@ THROUGH ADVOCATE`;
                     <div 
                       key={draft.id}
                       onClick={() => handleOpenSavedDraft(draft)}
-                      className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] transition-all cursor-pointer flex flex-col gap-2 group"
+                      className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] transition-all cursor-pointer flex flex-col gap-2 group"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 uppercase">
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 uppercase">
                             {draft.category || 'Draft'}
                           </span>
-                          <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#C8A34D] transition-colors">
+                          <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#B88B2A] transition-colors">
                             {draft.title}
                           </h4>
                         </div>
@@ -1196,7 +1196,7 @@ THROUGH ADVOCATE`;
                         {draft.content}
                       </p>
 
-                      <div className="flex items-center justify-between text-[11px] pt-1 font-bold text-[#C8A34D]">
+                      <div className="flex items-center justify-between text-[11px] pt-1 font-bold text-[#B88B2A]">
                         <span>Open in Editor & Exports →</span>
                         <span className="text-slate-400 text-[10px]">{draft.language}</span>
                       </div>

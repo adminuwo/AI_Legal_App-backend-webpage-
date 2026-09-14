@@ -269,14 +269,14 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
       {/* 1. Header & Enterprise Banner */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-sm text-slate-900 dark:text-white transition-colors">
         <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C8A34D]/15 border border-[#C8A34D]/30 text-[#C8A34D] text-xs font-extrabold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B88B2A]/15 border border-[#B88B2A]/30 text-[#B88B2A] text-xs font-extrabold uppercase tracking-wider">
             <Building2 className="w-3.5 h-3.5" />
             <span>Law Firm Enterprise Workspace</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
             <span>{activeWsName}</span>
             {activeWorkspaceObj?.badge && (
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] font-bold border border-[#C8A34D]/30">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] font-bold border border-[#B88B2A]/30">
                 {activeWorkspaceObj.badge}
               </span>
             )}
@@ -289,7 +289,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto shrink-0">
           <button
             onClick={() => setIsInviteModalOpen(true)}
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b59240] text-slate-950 font-black text-xs sm:text-sm shadow-md transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b59240] text-slate-950 font-black text-xs sm:text-sm shadow-md transition-all active:scale-95 cursor-pointer whitespace-nowrap"
           >
             <UserPlus className="w-4 h-4" />
             <span>Invite Team</span>
@@ -298,7 +298,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
             onClick={() => navigate('/dashboard/subscription')}
             className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-bold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap"
           >
-            <CreditCard className="w-4 h-4 text-[#C8A34D]" />
+            <CreditCard className="w-4 h-4 text-[#B88B2A]" />
             <span>Manage Seats</span>
           </button>
         </div>
@@ -306,14 +306,14 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
 
       {/* Pending Workspace Invitation Banner */}
       {pendingInvite && (
-        <div className="p-5 rounded-2xl bg-white dark:bg-[#1E293B] border-2 border-[#C8A34D] text-slate-900 dark:text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-5 rounded-2xl bg-white dark:bg-[#1E293B] border-2 border-[#B88B2A] text-slate-900 dark:text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-extrabold uppercase tracking-wider">
-              <Users className="w-3.5 h-3.5 text-[#C8A34D]" />
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] text-[10px] font-extrabold uppercase tracking-wider">
+              <Users className="w-3.5 h-3.5 text-[#B88B2A]" />
               <span>Pending Firm Invitation</span>
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">
-              Invited to join <strong className="text-[#C8A34D]">{pendingInvite.firmName || pendingInvite.workspaceName || 'Law Firm Workspace'}</strong>
+              Invited to join <strong className="text-[#B88B2A]">{pendingInvite.firmName || pendingInvite.workspaceName || 'Law Firm Workspace'}</strong>
             </h3>
             <p className="text-xs text-slate-600 dark:text-slate-300">
               Role Designation: <span className="font-semibold text-slate-900 dark:text-white">{pendingInvite.role || 'Associate Advocate'}</span>
@@ -323,7 +323,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
           <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
             <button
               onClick={() => handleAcceptInvite(pendingInvite._id || pendingInvite.id)}
-              className="flex-1 sm:flex-none px-4 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-slate-950 font-black text-xs rounded-xl shadow-md transition-all cursor-pointer uppercase tracking-wider"
+              className="flex-1 sm:flex-none px-4 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-slate-950 font-black text-xs rounded-xl shadow-md transition-all cursor-pointer uppercase tracking-wider"
             >
               Accept Invitation
             </button>
@@ -397,8 +397,8 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
       </div>
 
       {/* 3. Daily AI Firm Executive Brief */}
-      <div className="p-5 rounded-2xl bg-amber-50/60 dark:bg-[#1E2538] border-2 border-[#C8A34D]/80 shadow-sm space-y-2.5 transition-colors">
-        <div className="flex items-center gap-2 text-[#C8A34D] font-extrabold text-sm uppercase tracking-wider">
+      <div className="p-5 rounded-2xl bg-amber-50/60 dark:bg-[#1E2538] border-2 border-[#B88B2A]/80 shadow-sm space-y-2.5 transition-colors">
+        <div className="flex items-center gap-2 text-[#B88B2A] font-extrabold text-sm uppercase tracking-wider">
           <Sparkles className="w-4.5 h-4.5" />
           <span>Daily AI Firm Executive Brief</span>
         </div>
@@ -418,7 +418,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
       {/* 4. AI Legal Knowledge Hub Card (Mobile Parity) */}
       <div className="p-6 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 transition-colors">
         <div className="flex items-start gap-3">
-          <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#C8A34D] border border-slate-200 dark:border-slate-700">
+          <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#B88B2A] border border-slate-200 dark:border-slate-700">
             <Database className="w-5 h-5" />
           </div>
           <div>
@@ -438,9 +438,9 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
                 navigate(`/dashboard/tools/knowledge-hub?q=${encodeURIComponent(e.target.value)}`);
               }
             }}
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D]"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A]"
           />
-          <Sparkles className="w-4 h-4 text-[#C8A34D] absolute left-3.5 top-3" />
+          <Sparkles className="w-4 h-4 text-[#B88B2A] absolute left-3.5 top-3" />
         </div>
 
         <div className="space-y-2">
@@ -450,7 +450,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
               <button
                 key={tag}
                 onClick={() => navigate(`/dashboard/tools/knowledge-hub?q=${encodeURIComponent(tag)}`)}
-                className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#C8A34D] hover:bg-[#C8A34D]/15 text-xs font-bold transition-colors cursor-pointer border border-slate-200 dark:border-slate-700"
+                className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#B88B2A] hover:bg-[#B88B2A]/15 text-xs font-bold transition-colors cursor-pointer border border-slate-200 dark:border-slate-700"
               >
                 {tag}
               </button>
@@ -461,7 +461,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
         <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
           <button
             onClick={() => navigate('/dashboard/tools/knowledge-hub')}
-            className="text-xs font-extrabold text-[#C8A34D] hover:text-[#b08d3b] flex items-center gap-1 transition-colors cursor-pointer"
+            className="text-xs font-extrabold text-[#B88B2A] hover:text-[#b08d3b] flex items-center gap-1 transition-colors cursor-pointer"
           >
             <span>Open Knowledge Hub</span>
             <ChevronRight className="w-4 h-4" />
@@ -472,7 +472,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
       {/* 5. New to AI LEGAL™ Product Guide Banner */}
       <div className="p-6 rounded-2xl bg-indigo-50/50 dark:bg-[#1E1B4B]/40 border border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-4 transition-colors">
         <div className="flex items-center gap-2 text-indigo-900 dark:text-indigo-200 font-extrabold text-sm">
-          <Sparkles className="w-4.5 h-4.5 text-[#C8A34D]" />
+          <Sparkles className="w-4.5 h-4.5 text-[#B88B2A]" />
           <span>New to AI LEGAL™?</span>
         </div>
         <p className="text-xs text-indigo-700 dark:text-indigo-300 font-medium">Meet your AI Product Guide.</p>
@@ -483,7 +483,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
         </ul>
         <button
           onClick={() => navigate('/dashboard/guide')}
-          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-slate-950 font-black text-xs transition-all shadow-md active:scale-95 cursor-pointer"
+          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-slate-950 font-black text-xs transition-all shadow-md active:scale-95 cursor-pointer"
         >
           Open Product Guide →
         </button>
@@ -494,12 +494,12 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
           <div>
             <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-              <Users className="w-5 h-5 text-[#C8A34D]" />
+              <Users className="w-5 h-5 text-[#B88B2A]" />
               <span>Firm Advocates & Team Roster</span>
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">Manage permissions, seat assignments, and active litigation workloads</p>
           </div>
-          <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 shrink-0">
+          <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 shrink-0">
             {usedSeats} / {maxSeats} Active Team Members
           </span>
         </div>
@@ -528,7 +528,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
                     <tr key={member.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
                       <td className="py-3 px-3 sm:px-4 font-semibold text-slate-900 dark:text-white">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-[#C8A34D]/20 border border-[#C8A34D]/40 flex items-center justify-center font-bold text-[#C8A34D] text-xs shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-[#B88B2A]/20 border border-[#B88B2A]/40 flex items-center justify-center font-bold text-[#B88B2A] text-xs shrink-0">
                             {member.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
@@ -576,7 +576,7 @@ export default function LawFirmDashboardSection({ user, cases = [], workspaces =
                                   onClick={() => toggleMemberStatus(member.id)}
                                   className="w-full px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center gap-2 cursor-pointer"
                                 >
-                                  <RefreshCw className="w-3.5 h-3.5 text-[#C8A34D]" />
+                                  <RefreshCw className="w-3.5 h-3.5 text-[#B88B2A]" />
                                   <span>{member.status === 'Active' ? 'Set Pending' : 'Set Active'}</span>
                                 </button>
                                 <button

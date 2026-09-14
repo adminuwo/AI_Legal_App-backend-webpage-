@@ -35,7 +35,7 @@ export default function DownloadAppModal({ isOpen, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Gold Accent Bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#D4AF37] via-[#F59E0B] to-[#C8A34D]" />
+        <div className="h-1.5 w-full bg-gradient-to-r from-[#D4AF37] via-[#F59E0B] to-[#B88B2A]" />
 
         {/* Close Button */}
         <button
@@ -48,16 +48,16 @@ export default function DownloadAppModal({ isOpen, onClose }) {
 
         {/* Header Content */}
         <div className="p-6 sm:p-7 pb-4 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#111827] to-[#1F2937] p-2.5 shadow-lg border border-[#C8A34D]/30 mb-3.5">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#111827] to-[#1F2937] p-2.5 shadow-lg border border-[#B88B2A]/30 mb-3.5">
             <img src="/logo/logo_transparent.png" alt="AI LEGAL" className="w-full h-full object-contain" />
           </div>
 
-          <div className="inline-block px-2.5 py-0.5 rounded-full bg-[#C8A34D]/10 text-[#B38628] dark:text-[#C8A34D] text-[10px] font-extrabold uppercase tracking-wider mb-1.5 border border-[#C8A34D]/20">
+          <div className="inline-block px-2.5 py-0.5 rounded-full bg-[#B88B2A]/10 text-[#B38628] dark:text-[#B88B2A] text-[10px] font-extrabold uppercase tracking-wider mb-1.5 border border-[#B88B2A]/20">
             Official Mobile Application
           </div>
 
           <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-            Download AI LEGAL<span className="text-[#C8A34D] text-xs align-super ml-0.5">™</span>
+            Download AI LEGAL<span className="text-[#B88B2A] text-xs align-super ml-0.5">™</span>
           </h3>
 
           <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-400 max-w-sm mx-auto mt-1 leading-relaxed">
@@ -72,7 +72,7 @@ export default function DownloadAppModal({ isOpen, onClose }) {
             href={GOOGLE_PLAY_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center justify-between p-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#151E33] hover:bg-amber-500/10 dark:hover:bg-amber-500/10 border-2 border-slate-200 dark:border-slate-700/80 hover:border-[#C8A34D] dark:hover:border-[#C8A34D] transition-all shadow-sm cursor-pointer"
+            className="group flex items-center justify-between p-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#151E33] hover:bg-amber-500/10 dark:hover:bg-amber-500/10 border-2 border-slate-200 dark:border-slate-700/80 hover:border-[#B88B2A] dark:hover:border-[#B88B2A] transition-all shadow-sm cursor-pointer"
           >
             <div className="flex items-center gap-3.5">
               {/* Google Play Icon Badge */}
@@ -89,7 +89,7 @@ export default function DownloadAppModal({ isOpen, onClose }) {
                 <div className="text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
                   GET IT ON
                 </div>
-                <div className="text-base font-black text-slate-900 dark:text-white leading-tight group-hover:text-[#B38628] dark:group-hover:text-[#C8A34D] transition-colors">
+                <div className="text-base font-black text-slate-900 dark:text-white leading-tight group-hover:text-[#B38628] dark:group-hover:text-[#B88B2A] transition-colors">
                   Google Play Store
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -98,7 +98,7 @@ export default function DownloadAppModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:bg-[#C8A34D] group-hover:text-slate-950 flex items-center justify-center shrink-0 transition-all shadow-xs">
+            <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:bg-[#B88B2A] group-hover:text-slate-950 flex items-center justify-center shrink-0 transition-all shadow-xs">
               <ExternalLink size={15} />
             </div>
           </a>
@@ -108,7 +108,7 @@ export default function DownloadAppModal({ isOpen, onClose }) {
             href={APP_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center justify-between p-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#151E33] hover:bg-amber-500/10 dark:hover:bg-amber-500/10 border-2 border-slate-200 dark:border-slate-700/80 hover:border-[#C8A34D] dark:hover:border-[#C8A34D] transition-all shadow-sm cursor-pointer"
+            className="group flex items-center justify-between p-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-[#151E33] hover:bg-amber-500/10 dark:hover:bg-amber-500/10 border-2 border-slate-200 dark:border-slate-700/80 hover:border-[#B88B2A] dark:hover:border-[#B88B2A] transition-all shadow-sm cursor-pointer"
           >
             <div className="flex items-center gap-3.5">
               {/* Apple Icon Badge */}
@@ -122,7 +122,7 @@ export default function DownloadAppModal({ isOpen, onClose }) {
                 <div className="text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
                   DOWNLOAD ON THE
                 </div>
-                <div className="text-base font-black text-slate-900 dark:text-white leading-tight group-hover:text-[#B38628] dark:group-hover:text-[#C8A34D] transition-colors">
+                <div className="text-base font-black text-slate-900 dark:text-white leading-tight group-hover:text-[#B38628] dark:group-hover:text-[#B88B2A] transition-colors">
                   Apple App Store
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -131,7 +131,7 @@ export default function DownloadAppModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:bg-[#C8A34D] group-hover:text-slate-950 flex items-center justify-center shrink-0 transition-all shadow-xs">
+            <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:bg-[#B88B2A] group-hover:text-slate-950 flex items-center justify-center shrink-0 transition-all shadow-xs">
               <ExternalLink size={15} />
             </div>
           </a>
@@ -140,7 +140,7 @@ export default function DownloadAppModal({ isOpen, onClose }) {
         {/* Quick QR Code Scanner Row for Desktop Convenience */}
         <div className="px-6 sm:px-7 py-3 bg-slate-50/80 dark:bg-[#080C14] border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] flex items-center justify-center shrink-0">
               <ShieldCheck size={16} />
             </div>
             <div className="text-left">
@@ -153,7 +153,7 @@ export default function DownloadAppModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          <span className="text-[10.5px] font-extrabold text-[#B38628] dark:text-[#C8A34D] bg-[#C8A34D]/10 px-2.5 py-1 rounded-full border border-[#C8A34D]/25 shrink-0">
+          <span className="text-[10.5px] font-extrabold text-[#B38628] dark:text-[#B88B2A] bg-[#B88B2A]/10 px-2.5 py-1 rounded-full border border-[#B88B2A]/25 shrink-0">
             ★ 4.8 / 5.0 Rating
           </span>
         </div>

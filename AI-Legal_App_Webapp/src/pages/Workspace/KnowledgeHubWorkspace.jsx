@@ -20,7 +20,7 @@ const NEPAL_LEGAL_BOOKS_DATABASE = [
     title: 'Constitution of Nepal, 2072',
     nepaliTitle: 'नेपालको संविधान २०७२',
     coverColor: '#1E3A8A',
-    accentColor: '#C8A34D',
+    accentColor: '#B88B2A',
     textColor: '#FFFFFF',
     icon: '🇳🇵',
     edition: 'Official 2072 Edition',
@@ -81,7 +81,7 @@ const NEPAL_LEGAL_BOOKS_DATABASE = [
     title: 'Muluki Criminal Code, 2074',
     nepaliTitle: 'मुलुकी अपराध संहिता २०७४',
     coverColor: '#800020',
-    accentColor: '#C8A34D',
+    accentColor: '#B88B2A',
     textColor: '#FFFFFF',
     icon: '⚖️',
     edition: '2074 Enacted Edition',
@@ -124,7 +124,7 @@ const NEPAL_LEGAL_BOOKS_DATABASE = [
     title: 'Muluki Civil Code, 2074',
     nepaliTitle: 'मुलुकी देवानी संहिता २०७४',
     coverColor: '#14532D',
-    accentColor: '#C8A34D',
+    accentColor: '#B88B2A',
     textColor: '#FFFFFF',
     icon: '📜',
     edition: '2074 Enacted Edition',
@@ -167,7 +167,7 @@ const NEPAL_LEGAL_BOOKS_DATABASE = [
     title: 'Banking Offence and Punishment Act, 2064',
     nepaliTitle: 'बैंकिङ्ग कसूर तथा सजाय ऐन २०६४',
     coverColor: '#4C1D95',
-    accentColor: '#C8A34D',
+    accentColor: '#B88B2A',
     textColor: '#FFFFFF',
     icon: '💳',
     edition: '2064 Act (Second Amendment 2073)',
@@ -212,7 +212,7 @@ const LEGAL_BOOKS_DATABASE = [
     id: 'consti',
     title: 'Constitution of India',
     coverColor: '#1E3A8A',
-    accentColor: '#C8A34D',
+    accentColor: '#B88B2A',
     icon: '🏛',
     edition: '2024 Gold Edition',
     chaptersCount: 22,
@@ -327,7 +327,7 @@ const LEGAL_BOOKS_DATABASE = [
     id: 'bns',
     title: 'Bharatiya Nyaya Sanhita (BNS)',
     coverColor: '#800020',
-    accentColor: '#C8A34D',
+    accentColor: '#B88B2A',
     icon: '⚖️',
     edition: '2024 Flagship Edition',
     chaptersCount: 20,
@@ -389,7 +389,7 @@ const LEGAL_BOOKS_DATABASE = [
     id: 'bnss',
     title: 'Bharatiya Nagarik Suraksha Sanhita (BNSS)',
     coverColor: '#0F5132',
-    accentColor: '#C8A34D',
+    accentColor: '#B88B2A',
     icon: '📗',
     edition: '2024 Flagship Edition',
     chaptersCount: 38,
@@ -401,7 +401,7 @@ const LEGAL_BOOKS_DATABASE = [
     id: 'bsa',
     title: 'Bharatiya Sakshya Adhiniyam (BSA)',
     coverColor: '#5C4033',
-    accentColor: '#C8A34D',
+    accentColor: '#B88B2A',
     icon: '📙',
     edition: '2024 Flagship Edition',
     chaptersCount: 11,
@@ -413,7 +413,7 @@ const LEGAL_BOOKS_DATABASE = [
     id: 'contract',
     title: 'Indian Contract Act, 1872',
     coverColor: '#0B3C5D',
-    accentColor: '#C8A34D',
+    accentColor: '#B88B2A',
     icon: '📒',
     edition: '2024 Legal Edition',
     chaptersCount: 11,
@@ -425,7 +425,7 @@ const LEGAL_BOOKS_DATABASE = [
     id: 'cpc',
     title: 'Code of Civil Procedure (CPC)',
     coverColor: '#0D5C75',
-    accentColor: '#C8A34D',
+    accentColor: '#B88B2A',
     icon: '📓',
     edition: '2024 Legal Edition',
     chaptersCount: 11,
@@ -777,7 +777,7 @@ export default function KnowledgeHubWorkspace() {
           </button>
 
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#C8A34D]/15 border border-[#C8A34D]/30 flex items-center justify-center text-[#C8A34D]">
+            <div className="w-8 h-8 rounded-xl bg-[#B88B2A]/15 border border-[#B88B2A]/30 flex items-center justify-center text-[#B88B2A]">
               <BookOpen size={18} />
             </div>
             <div>
@@ -795,7 +795,7 @@ export default function KnowledgeHubWorkspace() {
         <div className="flex items-center gap-3">
           {/* Global Search Bar */}
           <div className="relative hidden md:flex items-center w-72 lg:w-96">
-            <Search className="w-4 h-4 text-[#C8A34D] absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-[#B88B2A] absolute left-3 top-2.5" />
             <input 
               type="text"
               placeholder={isNepal ? "Search Article 16, Muluki Code 177, Banking Act..." : "Search Article 21, Section 101 BNS, IPC 420..."}
@@ -804,7 +804,7 @@ export default function KnowledgeHubWorkspace() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleExecuteSearch();
               }}
-              className="w-full pl-9 pr-8 py-1.5 rounded-xl bg-slate-100 dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white transition-all"
+              className="w-full pl-9 pr-8 py-1.5 rounded-xl bg-slate-100 dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white transition-all"
             />
             {searchQuery && (
               <button 
@@ -820,7 +820,7 @@ export default function KnowledgeHubWorkspace() {
           <button
             type="button"
             onClick={() => setIsCopilotOpen(!isCopilotOpen)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-xs cursor-pointer active:scale-95 shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-xs cursor-pointer active:scale-95 shrink-0"
           >
             <Sparkles size={14} />
             <span>✨ AI Assistant</span>
@@ -840,7 +840,7 @@ export default function KnowledgeHubWorkspace() {
               
               {/* Mobile Search Bar */}
               <div className="md:hidden relative w-full">
-                <Search className="w-4 h-4 text-[#C8A34D] absolute left-3 top-3" />
+                <Search className="w-4 h-4 text-[#B88B2A] absolute left-3 top-3" />
                 <input 
                   type="text"
                   placeholder="Search Article 21, Section 101 BNS..."
@@ -849,14 +849,14 @@ export default function KnowledgeHubWorkspace() {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleExecuteSearch();
                   }}
-                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white"
+                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white"
                 />
               </div>
 
               {/* Banner */}
-              <div className="p-6 rounded-2xl bg-gradient-to-r from-[#111111] via-[#1E293B] to-[#0F172A] border border-[#C8A34D]/30 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="p-6 rounded-2xl bg-gradient-to-r from-[#111111] via-[#1E293B] to-[#0F172A] border border-[#B88B2A]/30 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="space-y-1.5 z-10">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#C8A34D]/20 border border-[#C8A34D]/40 text-[#C8A34D] text-[10px] font-black uppercase tracking-wider">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#B88B2A]/20 border border-[#B88B2A]/40 text-[#B88B2A] text-[10px] font-black uppercase tracking-wider">
                     <Sparkles size={12} />
                     <span>2024 Flagship Legal Library</span>
                   </div>
@@ -870,7 +870,7 @@ export default function KnowledgeHubWorkspace() {
                 <div className="flex items-center gap-2 shrink-0 z-10">
                   <button 
                     onClick={() => handleExecuteSearch('Article 21')}
-                    className="px-3.5 py-2 rounded-xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b08d3b] transition-all cursor-pointer shadow-xs"
+                    className="px-3.5 py-2 rounded-xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b08d3b] transition-all cursor-pointer shadow-xs"
                   >
                     Quick Read: Article 21 →
                   </button>
@@ -883,7 +883,7 @@ export default function KnowledgeHubWorkspace() {
                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500">
                     Primary Statutory Acts ({ACTIVE_DATABASE.length})
                   </h3>
-                  <span className="text-[11px] font-bold text-[#C8A34D]">Select volume to open Table of Contents</span>
+                  <span className="text-[11px] font-bold text-[#B88B2A]">Select volume to open Table of Contents</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -891,19 +891,19 @@ export default function KnowledgeHubWorkspace() {
                     <div 
                       key={book.id}
                       onClick={() => handleSelectBook(book)}
-                      className="group p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-[#111622] hover:border-[#C8A34D] hover:shadow-lg transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-4"
+                      className="group p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-[#111622] hover:border-[#B88B2A] hover:shadow-lg transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-4"
                     >
                       {/* Top Spine / Edition Tag */}
                       <div className="flex items-center justify-between">
                         <span className="text-2xl">{book.icon}</span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 text-[10px] font-black uppercase">
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30 text-[10px] font-black uppercase">
                           {book.edition}
                         </span>
                       </div>
 
                       {/* Title & Details */}
                       <div className="space-y-1">
-                        <h4 className="text-base font-extrabold text-slate-900 dark:text-zinc-100 group-hover:text-[#C8A34D] transition-colors">
+                        <h4 className="text-base font-extrabold text-slate-900 dark:text-zinc-100 group-hover:text-[#B88B2A] transition-colors">
                           {book.title}
                         </h4>
                         <div className="flex items-center gap-3 text-xs font-medium text-slate-500 dark:text-zinc-400">
@@ -916,7 +916,7 @@ export default function KnowledgeHubWorkspace() {
                       {/* Footer Info */}
                       <div className="pt-3 border-t border-slate-100 dark:border-zinc-800/80 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-zinc-400">
                         <span className="text-[10px] text-slate-400">{book.lastUpdated}</span>
-                        <span className="text-[#C8A34D] group-hover:translate-x-1 transition-transform flex items-center gap-1 font-black">
+                        <span className="text-[#B88B2A] group-hover:translate-x-1 transition-transform flex items-center gap-1 font-black">
                           Open Volume <ChevronRight size={14} />
                         </span>
                       </div>
@@ -960,7 +960,7 @@ export default function KnowledgeHubWorkspace() {
               <div className="space-y-4">
                 {selectedBook.parts.map((part, pIdx) => (
                   <div key={pIdx} className="space-y-3">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">
                       {part.title}
                     </h3>
 
@@ -984,14 +984,14 @@ export default function KnowledgeHubWorkspace() {
                                 <div 
                                   key={sec.id}
                                   onClick={() => handleSelectSection(sec)}
-                                  className="p-4 hover:bg-[#C8A34D]/10 transition-colors cursor-pointer flex items-center justify-between group"
+                                  className="p-4 hover:bg-[#B88B2A]/10 transition-colors cursor-pointer flex items-center justify-between group"
                                 >
                                   <div className="space-y-0.5">
                                     <div className="flex items-center gap-2">
-                                      <span className="px-2 py-0.5 rounded-md bg-[#C8A34D]/15 text-[#C8A34D] text-xs font-black">
+                                      <span className="px-2 py-0.5 rounded-md bg-[#B88B2A]/15 text-[#B88B2A] text-xs font-black">
                                         {sec.num}
                                       </span>
-                                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-zinc-100 group-hover:text-[#C8A34D] transition-colors">
+                                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-zinc-100 group-hover:text-[#B88B2A] transition-colors">
                                         {sec.title}
                                       </h4>
                                     </div>
@@ -1004,7 +1004,7 @@ export default function KnowledgeHubWorkspace() {
                                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-500">
                                       {sec.readTime}
                                     </span>
-                                    <ChevronRight size={16} className="text-slate-400 group-hover:text-[#C8A34D] group-hover:translate-x-1 transition-all" />
+                                    <ChevronRight size={16} className="text-slate-400 group-hover:text-[#B88B2A] group-hover:translate-x-1 transition-all" />
                                   </div>
                                 </div>
                               ))}
@@ -1033,7 +1033,7 @@ export default function KnowledgeHubWorkspace() {
                   >
                     ← TOC
                   </button>
-                  <span className="text-xs font-black text-[#C8A34D]">{activeSection.actTitle}</span>
+                  <span className="text-xs font-black text-[#B88B2A]">{activeSection.actTitle}</span>
                 </div>
 
                 {/* Reader Theme & Font Customization */}
@@ -1065,9 +1065,9 @@ export default function KnowledgeHubWorkspace() {
 
                   {/* Font Size */}
                   <div className="flex items-center bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded-xl text-xs font-bold gap-2">
-                    <button onClick={() => setFontSize(f => Math.max(12, f - 1))} className="hover:text-[#C8A34D]">-</button>
+                    <button onClick={() => setFontSize(f => Math.max(12, f - 1))} className="hover:text-[#B88B2A]">-</button>
                     <span>{fontSize}px</span>
-                    <button onClick={() => setFontSize(f => Math.min(22, f + 1))} className="hover:text-[#C8A34D]">+</button>
+                    <button onClick={() => setFontSize(f => Math.min(22, f + 1))} className="hover:text-[#B88B2A]">+</button>
                   </div>
 
                   {/* Font Family */}
@@ -1092,7 +1092,7 @@ export default function KnowledgeHubWorkspace() {
                         toast.success("Section bookmarked!");
                       }
                     }}
-                    className={`p-1.5 rounded-xl border transition-all ${bookmarks.includes(activeSection.id) ? 'bg-[#C8A34D]/20 border-[#C8A34D] text-[#C8A34D]' : 'border-slate-200 dark:border-zinc-700 text-slate-400'}`}
+                    className={`p-1.5 rounded-xl border transition-all ${bookmarks.includes(activeSection.id) ? 'bg-[#B88B2A]/20 border-[#B88B2A] text-[#B88B2A]' : 'border-slate-200 dark:border-zinc-700 text-slate-400'}`}
                   >
                     <Bookmark size={15} />
                   </button>
@@ -1108,7 +1108,7 @@ export default function KnowledgeHubWorkspace() {
                 {/* Header info */}
                 <div className="space-y-1 border-b border-slate-200/60 dark:border-zinc-800 pb-4">
                   <div className="flex items-center gap-2">
-                    <span className="px-3 py-1 rounded-xl bg-[#C8A34D] text-[#111111] font-black text-xs uppercase tracking-wider">
+                    <span className="px-3 py-1 rounded-xl bg-[#B88B2A] text-[#111111] font-black text-xs uppercase tracking-wider">
                       {activeSection.num}
                     </span>
                     <span className="text-xs font-bold opacity-75">{activeSection.actTitle}</span>
@@ -1118,7 +1118,7 @@ export default function KnowledgeHubWorkspace() {
 
                 {/* Layer 1: Original Bare Act Statutory Text */}
                 <div className={`p-5 rounded-2xl border space-y-2 ${getThemeSurface()}`}>
-                  <div className="flex items-center justify-between text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                  <div className="flex items-center justify-between text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                     <span>📜 1. Original Statutory Bare Act Text</span>
                     <button 
                       onClick={() => {
@@ -1137,7 +1137,7 @@ export default function KnowledgeHubWorkspace() {
 
                 {/* Layer 2: Plain English Explanation */}
                 <div className="space-y-2">
-                  <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                  <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                     💡 2. Plain English Explanation
                   </h3>
                   <p className="leading-relaxed text-sm font-medium">
@@ -1147,7 +1147,7 @@ export default function KnowledgeHubWorkspace() {
 
                 {/* Layer 3: Hindi Explanation */}
                 <div className={`p-4 rounded-2xl border space-y-1.5 ${getThemeSurface()}`}>
-                  <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                  <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                     🇮🇳 3. Hindi Explanation (हिंदी व्याख्या)
                   </h3>
                   <p className="leading-relaxed text-sm font-medium">
@@ -1157,7 +1157,7 @@ export default function KnowledgeHubWorkspace() {
 
                 {/* Layer 4: Real-Life Practical Example */}
                 <div className="space-y-2">
-                  <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                  <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                     🏢 4. Real-Life Practical Example
                   </h3>
                   <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-200 text-xs font-medium leading-relaxed">
@@ -1167,7 +1167,7 @@ export default function KnowledgeHubWorkspace() {
 
                 {/* Layer 5: Lawyer & Judicial Interpretation */}
                 <div className="space-y-2">
-                  <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                  <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                     ⚖️ 5. Lawyer & Judicial Interpretation
                   </h3>
                   <p className="leading-relaxed text-sm font-medium">
@@ -1177,7 +1177,7 @@ export default function KnowledgeHubWorkspace() {
 
                 {/* Layer 6: Important Notes */}
                 <div className="space-y-2">
-                  <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                  <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                     📌 6. Important Notes & Scope Conditions
                   </h3>
                   <p className="leading-relaxed text-sm font-medium whitespace-pre-line">
@@ -1188,25 +1188,25 @@ export default function KnowledgeHubWorkspace() {
                 {/* Layer 7: Landmark Judgments */}
                 {activeSection.landmarkJudgments && activeSection.landmarkJudgments.length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                    <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                       🏛 7. Landmark Judgments & Ratio Decidendi
                     </h3>
                     <div className="grid grid-cols-1 gap-3">
                       {activeSection.landmarkJudgments.map((caseItem, idx) => (
                         <div key={idx} className={`p-4 rounded-2xl border space-y-2 ${getThemeSurface()}`}>
                           <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-extrabold text-[#C8A34D]">{caseItem.title}</h4>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#C8A34D]/20 text-[#C8A34D]">
+                            <h4 className="text-sm font-extrabold text-[#B88B2A]">{caseItem.title}</h4>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#B88B2A]/20 text-[#B88B2A]">
                               {caseItem.citation}
                             </span>
                           </div>
                           <p className="text-xs opacity-90 font-medium">
-                            <strong className="text-[#C8A34D]">Ratio:</strong> {caseItem.ratio}
+                            <strong className="text-[#B88B2A]">Ratio:</strong> {caseItem.ratio}
                           </p>
                           <div className="pt-2 flex justify-end">
                             <button 
                               onClick={() => navigate('/dashboard/tools/legal-precedents')}
-                              className="inline-flex items-center gap-1 text-xs font-black text-[#C8A34D] hover:underline cursor-pointer"
+                              className="inline-flex items-center gap-1 text-xs font-black text-[#B88B2A] hover:underline cursor-pointer"
                             >
                               <span>View Precedent →</span>
                               <ExternalLink size={12} />
@@ -1220,7 +1220,7 @@ export default function KnowledgeHubWorkspace() {
 
                 {/* Layer 8: Timeline Evolution */}
                 <div className="space-y-2">
-                  <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                  <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                     ⏳ 8. Historical Timeline Evolution
                   </h3>
                   <div className="p-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold">
@@ -1231,12 +1231,12 @@ export default function KnowledgeHubWorkspace() {
                 {/* Layer 9: Related Sections */}
                 {activeSection.relatedSections && (
                   <div className="space-y-2">
-                    <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                    <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                       🔗 9. Cross-Referenced Related Provisions
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {activeSection.relatedSections.map((rel, rIdx) => (
-                        <span key={rIdx} className="px-3 py-1 rounded-lg bg-[#C8A34D]/15 border border-[#C8A34D]/30 text-[#C8A34D] text-xs font-bold">
+                        <span key={rIdx} className="px-3 py-1 rounded-lg bg-[#B88B2A]/15 border border-[#B88B2A]/30 text-[#B88B2A] text-xs font-bold">
                           {rel}
                         </span>
                       ))}
@@ -1247,13 +1247,13 @@ export default function KnowledgeHubWorkspace() {
                 {/* Layer 10: FAQs & MCQs */}
                 {activeSection.faqs && activeSection.faqs.length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                    <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                       ❓ 10. Frequently Asked Questions & Practice MCQs
                     </h3>
                     <div className="space-y-2 text-xs font-medium">
                       {activeSection.faqs.map((f, fIdx) => (
                         <div key={fIdx} className="p-3 rounded-xl bg-slate-500/10 space-y-1">
-                          <p className="font-bold text-[#C8A34D]">{f.q}</p>
+                          <p className="font-bold text-[#B88B2A]">{f.q}</p>
                           <p>{f.a}</p>
                         </div>
                       ))}
@@ -1264,10 +1264,10 @@ export default function KnowledgeHubWorkspace() {
                 {/* Layer 11: IPC vs BNS Equivalents */}
                 {activeSection.bnsEquivalent && (
                   <div className="space-y-2">
-                    <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                    <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                       🔄 11. Old Law ↔ New Law Statutory Mapping
                     </h3>
-                    <div className="p-3.5 rounded-xl border border-[#C8A34D]/40 bg-[#C8A34D]/10 text-xs font-bold flex items-center justify-between">
+                    <div className="p-3.5 rounded-xl border border-[#B88B2A]/40 bg-[#B88B2A]/10 text-xs font-bold flex items-center justify-between">
                       <span>Historical IPC: {activeSection.ipcEquivalent || 'N/A'}</span>
                       <span>↔</span>
                       <span>Current BNS: {activeSection.bnsEquivalent || 'N/A'}</span>
@@ -1277,7 +1277,7 @@ export default function KnowledgeHubWorkspace() {
 
                 {/* Layer 12: Suggested Reading */}
                 <div className="space-y-2">
-                  <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-wider">
+                  <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-wider">
                     📚 12. Suggested Commentary Reading
                   </h3>
                   <p className="text-xs font-medium opacity-80">
@@ -1299,14 +1299,14 @@ export default function KnowledgeHubWorkspace() {
             {/* Copilot Header */}
             <div className="p-4 border-b border-slate-200/80 dark:border-zinc-800/80 flex items-center justify-between bg-slate-50/80 dark:bg-zinc-900/60">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[#C8A34D] text-[#111111] flex items-center justify-center font-black">
+                <div className="w-7 h-7 rounded-lg bg-[#B88B2A] text-[#111111] flex items-center justify-center font-black">
                   <Sparkles size={15} />
                 </div>
                 <div>
                   <h3 className="text-xs font-black text-slate-900 dark:text-zinc-100">
                     Contextual AI Copilot
                   </h3>
-                  <p className="text-[10px] font-bold text-[#C8A34D] truncate max-w-[200px]">
+                  <p className="text-[10px] font-bold text-[#B88B2A] truncate max-w-[200px]">
                     Locked to: {activeSection.num}
                   </p>
                 </div>
@@ -1335,7 +1335,7 @@ export default function KnowledgeHubWorkspace() {
                   <button 
                     key={idx}
                     onClick={() => handleSendCopilot(`Execute quick action: ${chip}`)}
-                    className="px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-[#C8A34D]/20 border border-slate-200 dark:border-zinc-700 hover:border-[#C8A34D] text-slate-800 dark:text-zinc-200 hover:text-[#C8A34D] text-[10px] font-bold rounded-lg transition-all cursor-pointer"
+                    className="px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-[#B88B2A]/20 border border-slate-200 dark:border-zinc-700 hover:border-[#B88B2A] text-slate-800 dark:text-zinc-200 hover:text-[#B88B2A] text-[10px] font-bold rounded-lg transition-all cursor-pointer"
                   >
                     💡 {chip}
                   </button>
@@ -1348,12 +1348,12 @@ export default function KnowledgeHubWorkspace() {
               {copilotMessages.map((m) => (
                 <div key={m.id} className={`flex gap-2.5 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                   {m.sender === 'assistant' && (
-                    <div className="w-6 h-6 rounded-lg bg-[#C8A34D] text-[#111111] flex items-center justify-center font-black shrink-0 text-xs">
+                    <div className="w-6 h-6 rounded-lg bg-[#B88B2A] text-[#111111] flex items-center justify-center font-black shrink-0 text-xs">
                       ✨
                     </div>
                   )}
                   <div className="space-y-2 max-w-[85%]">
-                    <div className={`p-3 rounded-2xl text-xs leading-relaxed ${m.sender === 'user' ? 'bg-[#C8A34D]/20 text-slate-900 dark:text-zinc-100 border border-[#C8A34D]/30 font-medium' : 'bg-slate-100 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-800 whitespace-pre-line'}`}>
+                    <div className={`p-3 rounded-2xl text-xs leading-relaxed ${m.sender === 'user' ? 'bg-[#B88B2A]/20 text-slate-900 dark:text-zinc-100 border border-[#B88B2A]/30 font-medium' : 'bg-slate-100 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-800 whitespace-pre-line'}`}>
                       {m.text}
                     </div>
 
@@ -1364,7 +1364,7 @@ export default function KnowledgeHubWorkspace() {
                           <button
                             key={sIdx}
                             onClick={() => handleSendCopilot(sug)}
-                            className="block w-full text-left px-2.5 py-1 bg-white dark:bg-zinc-800 border border-[#C8A34D]/40 text-[#C8A34D] hover:bg-[#C8A34D]/15 text-[10px] font-bold rounded-lg transition-all cursor-pointer truncate"
+                            className="block w-full text-left px-2.5 py-1 bg-white dark:bg-zinc-800 border border-[#B88B2A]/40 text-[#B88B2A] hover:bg-[#B88B2A]/15 text-[10px] font-bold rounded-lg transition-all cursor-pointer truncate"
                           >
                             💡 {sug}
                           </button>
@@ -1377,7 +1377,7 @@ export default function KnowledgeHubWorkspace() {
 
               {isAiThinking && (
                 <div className="flex gap-2 items-center text-xs text-slate-400">
-                  <div className="w-2 h-2 rounded-full bg-[#C8A34D] animate-ping" />
+                  <div className="w-2 h-2 rounded-full bg-[#B88B2A] animate-ping" />
                   <span>Formulating legal analysis...</span>
                 </div>
               )}
@@ -1395,20 +1395,20 @@ export default function KnowledgeHubWorkspace() {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleSendCopilot();
                   }}
-                  className="w-full pl-3 pr-16 py-2 rounded-xl bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white"
+                  className="w-full pl-3 pr-16 py-2 rounded-xl bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white"
                 />
                 
                 <div className="absolute right-1.5 flex items-center gap-1">
                   <button 
                     onClick={handleVoiceToggle}
-                    className={`p-1.5 rounded-lg transition-colors ${isRecording ? 'bg-rose-500 text-white animate-pulse' : 'text-slate-400 hover:text-[#C8A34D]'}`}
+                    className={`p-1.5 rounded-lg transition-colors ${isRecording ? 'bg-rose-500 text-white animate-pulse' : 'text-slate-400 hover:text-[#B88B2A]'}`}
                     title="Voice Recording"
                   >
                     <Mic size={14} />
                   </button>
                   <button 
                     onClick={() => handleSendCopilot()}
-                    className="p-1.5 bg-[#C8A34D] text-[#111111] rounded-lg hover:bg-[#b08d3b] transition-all cursor-pointer font-black"
+                    className="p-1.5 bg-[#B88B2A] text-[#111111] rounded-lg hover:bg-[#b08d3b] transition-all cursor-pointer font-black"
                   >
                     <Send size={13} />
                   </button>

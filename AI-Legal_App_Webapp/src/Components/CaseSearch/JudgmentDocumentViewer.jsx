@@ -167,7 +167,7 @@ Generated via AI LEGAL™ Research Workspace`;
         
         {/* Left: In-Document Search & Navigator */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-white dark:bg-[#0B101D] border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 w-48 sm:w-64 focus-within:ring-2 focus-within:ring-[#C8A34D]">
+          <div className="flex items-center gap-1.5 bg-white dark:bg-[#0B101D] border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 w-48 sm:w-64 focus-within:ring-2 focus-within:ring-[#B88B2A]">
             <Search size={13} className="text-slate-400 shrink-0" />
             <input
               type="text"
@@ -216,7 +216,7 @@ Generated via AI LEGAL™ Research Workspace`;
           <button 
             onClick={() => scrollToSection('sec-header')}
             className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-              activeSection === 'sec-header' ? 'bg-[#C8A34D] text-slate-950 font-bold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+              activeSection === 'sec-header' ? 'bg-[#B88B2A] text-slate-950 font-bold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
             }`}
           >
             Header
@@ -224,7 +224,7 @@ Generated via AI LEGAL™ Research Workspace`;
           <button 
             onClick={() => scrollToSection('sec-ratio')}
             className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-              activeSection === 'sec-ratio' ? 'bg-[#C8A34D] text-slate-950 font-bold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+              activeSection === 'sec-ratio' ? 'bg-[#B88B2A] text-slate-950 font-bold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
             }`}
           >
             Ratio
@@ -232,7 +232,7 @@ Generated via AI LEGAL™ Research Workspace`;
           <button 
             onClick={() => scrollToSection('sec-coram')}
             className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-              activeSection === 'sec-coram' ? 'bg-[#C8A34D] text-slate-950 font-bold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+              activeSection === 'sec-coram' ? 'bg-[#B88B2A] text-slate-950 font-bold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
             }`}
           >
             Coram
@@ -240,7 +240,7 @@ Generated via AI LEGAL™ Research Workspace`;
           <button 
             onClick={() => scrollToSection('sec-text')}
             className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-              activeSection === 'sec-text' ? 'bg-[#C8A34D] text-slate-950 font-bold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+              activeSection === 'sec-text' ? 'bg-[#B88B2A] text-slate-950 font-bold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
             }`}
           >
             Judgment Text
@@ -315,7 +315,7 @@ Generated via AI LEGAL™ Research Workspace`;
         
         {/* 1. Official Court Banner */}
         <div id="sec-header" className="text-center space-y-2 border-b-2 border-slate-900 dark:border-amber-400/40 pb-6">
-          <div className="w-12 h-12 mx-auto rounded-full bg-amber-500/10 border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D]">
+          <div className="w-12 h-12 mx-auto rounded-full bg-amber-500/10 border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A]">
             <Landmark size={24} />
           </div>
           <h2 className="text-base sm:text-xl font-black uppercase tracking-widest text-slate-900 dark:text-white font-serif">
@@ -333,7 +333,7 @@ Generated via AI LEGAL™ Research Workspace`;
           </h1>
 
           <div className="flex flex-wrap items-center gap-2.5 pt-1">
-            <span className="px-3 py-1 rounded-lg text-xs font-mono font-bold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] dark:text-[#E5A93C] border border-[#C8A34D]/40">
+            <span className="px-3 py-1 rounded-lg text-xs font-mono font-bold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] dark:text-[#E5A93C] border border-[#B88B2A]/40">
               {judgment.citation}
             </span>
             {judgment.equivalentCitations && judgment.equivalentCitations.length > 0 && (
@@ -386,7 +386,7 @@ Generated via AI LEGAL™ Research Workspace`;
         </div>
 
         {/* 4. Binding Ratio Decidendi (Gold Callout) */}
-        <div id="sec-ratio" className="p-6 rounded-3xl bg-gradient-to-br from-amber-50/80 via-white to-amber-100/40 dark:from-[#1A1608] dark:via-[#111622] dark:to-[#171204] border-2 border-[#C8A34D] shadow-sm space-y-2">
+        <div id="sec-ratio" className="p-6 rounded-3xl bg-gradient-to-br from-amber-50/80 via-white to-amber-100/40 dark:from-[#1A1608] dark:via-[#111622] dark:to-[#171204] border-2 border-[#B88B2A] shadow-sm space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#B38628] dark:text-[#E5A93C]">
               <Scale size={16} />
@@ -397,7 +397,7 @@ Generated via AI LEGAL™ Research Workspace`;
                 navigator.clipboard.writeText(judgment.ratioDecidendi || '');
                 toast.success('Ratio copied to clipboard!');
               }}
-              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-[#B38628] hover:bg-slate-50 text-[11px] font-bold border border-[#C8A34D]/40 transition-all flex items-center gap-1 cursor-pointer"
+              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-[#B38628] hover:bg-slate-50 text-[11px] font-bold border border-[#B88B2A]/40 transition-all flex items-center gap-1 cursor-pointer"
             >
               <Copy size={11} />
               <span>Copy Ratio</span>
@@ -412,7 +412,7 @@ Generated via AI LEGAL™ Research Workspace`;
         {judgment.caseContext?.legalIssue && (
           <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
             <div className="flex items-center gap-2 font-black uppercase tracking-wider text-slate-500">
-              <FileText size={14} className="text-[#C8A34D]" />
+              <FileText size={14} className="text-[#B88B2A]" />
               <span>Questions of Law Determined</span>
             </div>
             <p className="text-slate-800 dark:text-slate-200 whitespace-pre-line leading-relaxed font-semibold">
@@ -433,7 +433,7 @@ Generated via AI LEGAL™ Research Workspace`;
           </div>
 
           <article
-            className="font-serif leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap select-text selection:bg-[#C8A34D]/30"
+            className="font-serif leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap select-text selection:bg-[#B88B2A]/30"
             style={{ fontSize: `${fontSize}px`, lineHeight: 1.88, letterSpacing: '0.01em' }}
           >
             {renderHighlightedContent(judgment.fullTextExcerpt || judgment.executiveSummary || 'Detailed judgment transcript loading...')}

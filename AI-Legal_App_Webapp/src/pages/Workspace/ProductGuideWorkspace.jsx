@@ -294,8 +294,8 @@ export default function ProductGuideWorkspace() {
           <div className="h-5 w-[1px] bg-slate-200 dark:bg-zinc-700" />
 
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#C8A34D]/10 flex items-center justify-center border border-[#C8A34D]/30 shadow-xs">
-              <BookOpen className="w-5 h-5 text-[#C8A34D]" />
+            <div className="w-10 h-10 rounded-xl bg-[#B88B2A]/10 flex items-center justify-center border border-[#B88B2A]/30 shadow-xs">
+              <BookOpen className="w-5 h-5 text-[#B88B2A]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -303,7 +303,7 @@ export default function ProductGuideWorkspace() {
                   <span>📖 AI Product Guide Assistant</span>
                 </h1>
                 {isAdmin && (
-                  <span className="px-2 py-0.5 rounded bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[10px] font-black uppercase tracking-wider">
+                  <span className="px-2 py-0.5 rounded bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 text-[10px] font-black uppercase tracking-wider">
                     {isSuperAdmin(user) ? 'SUPER ADMIN' : 'ADMIN'}
                   </span>
                 )}
@@ -334,7 +334,7 @@ export default function ProductGuideWorkspace() {
                 onClick={() => setActiveWorkspaceMode('chat')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                   activeWorkspaceMode === 'chat'
-                    ? 'bg-white dark:bg-zinc-900 text-[#C8A34D] shadow-xs'
+                    ? 'bg-white dark:bg-zinc-900 text-[#B88B2A] shadow-xs'
                     : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
@@ -345,7 +345,7 @@ export default function ProductGuideWorkspace() {
                 onClick={() => setActiveWorkspaceMode('knowledge')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                   activeWorkspaceMode === 'knowledge'
-                    ? 'bg-white dark:bg-zinc-900 text-[#C8A34D] shadow-xs'
+                    ? 'bg-white dark:bg-zinc-900 text-[#B88B2A] shadow-xs'
                     : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
@@ -360,7 +360,7 @@ export default function ProductGuideWorkspace() {
               onClick={() => { setRefreshing(true); loadDocuments(); }}
               className="p-2.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-xl border border-slate-200/80 dark:border-zinc-700 transition-all cursor-pointer"
             >
-              <RefreshCw className={`w-4 h-4 text-[#C8A34D] ${refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 text-[#B88B2A] ${refreshing ? 'animate-spin' : ''}`} />
             </button>
           )}
         </div>
@@ -375,7 +375,7 @@ export default function ProductGuideWorkspace() {
             {/* Chat Sub-Header */}
             <div className="p-4 border-b border-slate-200/80 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-900/50 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#C8A34D]" />
+                <Sparkles className="w-4 h-4 text-[#B88B2A]" />
                 <span className="font-extrabold text-xs uppercase tracking-wider text-slate-800 dark:text-white">AI LEGAL™ Guide Assistant</span>
               </div>
             </div>
@@ -392,7 +392,7 @@ export default function ProductGuideWorkspace() {
                       
                       {/* User Message Bubble */}
                       {!isGuide ? (
-                        <div className="bg-[#C8A34D] text-[#111111] font-semibold p-4 rounded-2xl rounded-br-none text-sm shadow-xs ml-auto">
+                        <div className="bg-[#B88B2A] text-[#111111] font-semibold p-4 rounded-2xl rounded-br-none text-sm shadow-xs ml-auto">
                           <p className="whitespace-pre-wrap">{msg.text}</p>
                         </div>
                       ) : (
@@ -415,7 +415,7 @@ export default function ProductGuideWorkspace() {
                             <div className="space-y-2.5 pt-2">
                               {parsed.steps.map((step, idx) => (
                                 <div key={idx} className="p-3 bg-white dark:bg-[#1E293B] rounded-xl border border-slate-200/70 dark:border-zinc-800 flex items-start gap-3 shadow-xs">
-                                  <div className="w-6 h-6 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
+                                  <div className="w-6 h-6 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] font-black text-xs flex items-center justify-center shrink-0 mt-0.5">
                                     {idx + 1}
                                   </div>
                                   <p className="text-xs font-semibold text-slate-700 dark:text-zinc-300 leading-relaxed">
@@ -446,7 +446,7 @@ export default function ProductGuideWorkspace() {
                             <div className="pt-2">
                               <button
                                 onClick={() => navigate(msg.navRoute)}
-                                className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-xs flex items-center gap-2 cursor-pointer group"
+                                className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-xs flex items-center gap-2 cursor-pointer group"
                               >
                                 <span>{msg.navLabel || 'Open Feature →'}</span>
                                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -463,7 +463,7 @@ export default function ProductGuideWorkspace() {
                                   <button
                                     key={i}
                                     onClick={() => handleSendChatMessage(qa.query)}
-                                    className="px-3 py-1.5 bg-white dark:bg-zinc-800 hover:bg-[#C8A34D]/10 hover:border-[#C8A34D] text-slate-700 dark:text-zinc-300 font-semibold rounded-xl text-xs border border-slate-200 dark:border-zinc-700 transition-all cursor-pointer text-left"
+                                    className="px-3 py-1.5 bg-white dark:bg-zinc-800 hover:bg-[#B88B2A]/10 hover:border-[#B88B2A] text-slate-700 dark:text-zinc-300 font-semibold rounded-xl text-xs border border-slate-200 dark:border-zinc-700 transition-all cursor-pointer text-left"
                                   >
                                     {qa.label}
                                   </button>
@@ -482,7 +482,7 @@ export default function ProductGuideWorkspace() {
               {chatThinking && (
                 <div className="flex justify-start">
                   <div className="bg-slate-100 dark:bg-zinc-800 p-4 rounded-2xl rounded-bl-none border border-slate-200/60 text-xs font-bold text-slate-400 flex items-center gap-2">
-                    <RefreshCw className="w-4 h-4 animate-spin text-[#C8A34D]" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#B88B2A]" />
                     <span>Searching AI LEGAL™ RAG Knowledge Base...</span>
                   </div>
                 </div>
@@ -497,7 +497,7 @@ export default function ProductGuideWorkspace() {
                 <button
                   key={idx}
                   onClick={() => handleSendChatMessage(qa.query)}
-                  className="px-3 py-1 bg-white dark:bg-zinc-800 hover:border-[#C8A34D] hover:text-[#C8A34D] text-slate-600 dark:text-zinc-300 font-medium rounded-lg text-xs border border-slate-200 dark:border-zinc-700 transition-colors shrink-0 cursor-pointer"
+                  className="px-3 py-1 bg-white dark:bg-zinc-800 hover:border-[#B88B2A] hover:text-[#B88B2A] text-slate-600 dark:text-zinc-300 font-medium rounded-lg text-xs border border-slate-200 dark:border-zinc-700 transition-colors shrink-0 cursor-pointer"
                 >
                   {qa.label}
                 </button>
@@ -511,12 +511,12 @@ export default function ProductGuideWorkspace() {
                 value={chatInput}
                 onChange={e => setChatInput(e.target.value)}
                 placeholder="Ask AI LEGAL™ Guide..."
-                className="flex-1 px-4 py-3 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-medium focus:outline-none focus:border-[#C8A34D]"
+                className="flex-1 px-4 py-3 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-medium focus:outline-none focus:border-[#B88B2A]"
               />
               <button
                 type="submit"
                 disabled={chatThinking || !chatInput.trim()}
-                className="px-5 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                className="px-5 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
                 <span>Send</span>
@@ -563,7 +563,7 @@ export default function ProductGuideWorkspace() {
             <div className="bg-white dark:bg-[#1E293B] rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
               <div>
                 <h2 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                  <UploadCloud className="w-5 h-5 text-[#C8A34D]" />
+                  <UploadCloud className="w-5 h-5 text-[#B88B2A]" />
                   <span>Upload Knowledge Document</span>
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
@@ -578,8 +578,8 @@ export default function ProductGuideWorkspace() {
                 onClick={() => fileInputRef.current?.click()}
                 className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
                   isDragOver
-                    ? 'border-[#C8A34D] bg-[#C8A34D]/10 scale-[0.99]'
-                    : 'border-slate-300 dark:border-zinc-700 bg-slate-50/50 dark:bg-zinc-900/50 hover:border-[#C8A34D]'
+                    ? 'border-[#B88B2A] bg-[#B88B2A]/10 scale-[0.99]'
+                    : 'border-slate-300 dark:border-zinc-700 bg-slate-50/50 dark:bg-zinc-900/50 hover:border-[#B88B2A]'
                 }`}
               >
                 <input
@@ -589,7 +589,7 @@ export default function ProductGuideWorkspace() {
                   className="hidden"
                   accept=".pdf,.docx,.doc,.txt,.md"
                 />
-                <div className="w-12 h-12 rounded-2xl bg-[#C8A34D]/10 text-[#C8A34D] flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#B88B2A]/10 text-[#B88B2A] flex items-center justify-center mx-auto mb-3">
                   <FileCode className="w-6 h-6" />
                 </div>
                 <p className="text-xs font-bold text-slate-800 dark:text-zinc-200">
@@ -609,7 +609,7 @@ export default function ProductGuideWorkspace() {
                   <button
                     onClick={handleUploadFile}
                     disabled={uploading}
-                    className="px-6 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="px-6 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     {uploading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
                     <span>{uploading ? uploadStep : 'Upload to Vector Store'}</span>
@@ -629,7 +629,7 @@ export default function ProductGuideWorkspace() {
 
               {loading ? (
                 <div className="p-8 text-center space-y-2">
-                  <RefreshCw className="w-6 h-6 text-[#C8A34D] animate-spin mx-auto" />
+                  <RefreshCw className="w-6 h-6 text-[#B88B2A] animate-spin mx-auto" />
                   <p className="text-xs font-bold text-slate-400">Loading Product Guide Knowledge Base...</p>
                 </div>
               ) : documents.length === 0 ? (
@@ -680,7 +680,7 @@ export default function ProductGuideWorkspace() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Terminal className="w-5 h-5 text-[#C8A34D]" />
+                    <Terminal className="w-5 h-5 text-[#B88B2A]" />
                     <span>Live RAG Search & Calibration Sandbox</span>
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Test statutory / feature queries against the active Product Guide vector index.</p>
@@ -693,12 +693,12 @@ export default function ProductGuideWorkspace() {
                   value={testQuery}
                   onChange={e => setTestQuery(e.target.value)}
                   placeholder="e.g. How do I create a case workspace in My Matters?"
-                  className="flex-1 px-4 py-3 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#C8A34D]"
+                  className="flex-1 px-4 py-3 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#B88B2A]"
                 />
                 <button
                   type="submit"
                   disabled={testLoading || !testQuery.trim()}
-                  className="px-6 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="px-6 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {testLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   <span>Test RAG Query</span>
@@ -720,7 +720,7 @@ export default function ProductGuideWorkspace() {
                 </div>
                 <div>
                   <h3 className="text-base font-black text-slate-900 dark:text-white truncate max-w-[280px]">{selectedDoc.filename}</h3>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#C8A34D]">{selectedDoc.category || 'PRODUCT_GUIDE'}</p>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#B88B2A]">{selectedDoc.category || 'PRODUCT_GUIDE'}</p>
                 </div>
               </div>
               <button onClick={() => setSelectedDoc(null)} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white">
@@ -742,7 +742,7 @@ export default function ProductGuideWorkspace() {
             <div className="flex gap-3">
               <button
                 onClick={() => { handleReindex(selectedDoc._id); setSelectedDoc(null); }}
-                className="flex-1 py-3 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs hover:bg-[#b08d3b] transition-all cursor-pointer"
+                className="flex-1 py-3 bg-[#B88B2A] text-[#111111] font-black rounded-xl text-xs hover:bg-[#b08d3b] transition-all cursor-pointer"
               >
                 Re-index Document
               </button>

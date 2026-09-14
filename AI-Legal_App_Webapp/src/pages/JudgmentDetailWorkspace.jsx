@@ -118,7 +118,7 @@ export default function JudgmentDetailWorkspace() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-100 dark:bg-[#080C14] flex flex-col items-center justify-center space-y-4">
-        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D] animate-pulse">
+        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A] animate-pulse">
           <Scale size={24} />
         </div>
         <p className="text-xs font-bold text-slate-600 dark:text-slate-300 font-mono">
@@ -142,7 +142,7 @@ export default function JudgmentDetailWorkspace() {
         </p>
         <button
           onClick={() => navigate('/case-search')}
-          className="px-4 py-2 rounded-xl bg-[#C8A34D] text-slate-950 font-bold text-xs hover:bg-[#B38628] transition-colors cursor-pointer"
+          className="px-4 py-2 rounded-xl bg-[#B88B2A] text-slate-950 font-bold text-xs hover:bg-[#B38628] transition-colors cursor-pointer"
         >
           ← Return to Case Search
         </button>
@@ -172,7 +172,7 @@ export default function JudgmentDetailWorkspace() {
                 <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight truncate">
                   {judgment.title}
                 </h1>
-                <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-50 dark:bg-amber-950/40 text-[#B38628] border border-[#C8A34D]/30 shrink-0">
+                <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-50 dark:bg-amber-950/40 text-[#B38628] border border-[#B88B2A]/30 shrink-0">
                   {judgment.citation}
                 </span>
               </div>
@@ -186,7 +186,7 @@ export default function JudgmentDetailWorkspace() {
           <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end">
             <button
               onClick={handleAddToCaseClick}
-              className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#C8A34D] hover:bg-[#B38628] text-slate-950 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#B88B2A] hover:bg-[#B38628] text-slate-950 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <Plus size={13} />
               <span>Add to Case</span>
@@ -241,7 +241,7 @@ export default function JudgmentDetailWorkspace() {
             {judgment.precedentsCited && judgment.precedentsCited.length > 0 && (
               <div className="bg-white dark:bg-[#0F1523] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center border border-[#C8A34D]/30">
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center border border-[#B88B2A]/30">
                     <Network size={16} />
                   </div>
                   <div>
@@ -267,7 +267,7 @@ export default function JudgmentDetailWorkspace() {
                         onClick={() => {
                           navigate('/case-search', { state: { initialQuery: cite } });
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-[#B38628] dark:text-amber-300 font-bold border border-[#C8A34D]/30 hover:bg-amber-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
+                        className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-[#B38628] dark:text-amber-300 font-bold border border-[#B88B2A]/30 hover:bg-amber-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
                       >
                         <span>Search Authority</span>
                         <ChevronRight size={12} />

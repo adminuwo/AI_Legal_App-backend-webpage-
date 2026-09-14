@@ -135,18 +135,18 @@ export default function LegalPrecedentsModal({ isOpen, onClose }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#C8A34D]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
+          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#B88B2A]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
         >
           {/* Header */}
-          <div className="px-8 py-5 bg-[#111111] border-b border-[#C8A34D]/30 flex items-center justify-between shrink-0 text-white">
+          <div className="px-8 py-5 bg-[#111111] border-b border-[#B88B2A]/30 flex items-center justify-between shrink-0 text-white">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D]">
+              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A]">
                 <BookOpen className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-xl font-extrabold tracking-tight flex items-center gap-2">
                   <span>Legal Precedents & Citations Search</span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 uppercase">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 uppercase">
                     Supreme Court & HCs DB
                   </span>
                 </h2>
@@ -166,24 +166,24 @@ export default function LegalPrecedentsModal({ isOpen, onClose }) {
             {/* Search Bar & Suggested Chips */}
             <div className="space-y-3">
               <div className="relative w-full">
-                <Search className="absolute left-4 top-3.5 w-4 h-4 text-[#C8A34D]" />
+                <Search className="absolute left-4 top-3.5 w-4 h-4 text-[#B88B2A]" />
                 <input
                   type="text"
                   placeholder="Search Supreme Court & High Court judgments, ratio decidendi, statutory sections..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-[#181818] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D] shadow-sm"
+                  className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-[#181818] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A] shadow-sm"
                 />
               </div>
 
               {/* Suggested Query Chips */}
               <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                <span className="text-[10px] font-black uppercase text-[#C8A34D] shrink-0">Popular:</span>
+                <span className="text-[10px] font-black uppercase text-[#B88B2A] shrink-0">Popular:</span>
                 {SUGGESTED_CHIPS.map(chip => (
                   <button
                     key={chip}
                     onClick={() => handleChipClick(chip)}
-                    className="px-3 py-1 rounded-xl bg-white dark:bg-[#181818] text-slate-600 dark:text-slate-300 hover:text-[#C8A34D] border border-slate-200 dark:border-slate-800 text-[11px] font-semibold cursor-pointer shrink-0"
+                    className="px-3 py-1 rounded-xl bg-white dark:bg-[#181818] text-slate-600 dark:text-slate-300 hover:text-[#B88B2A] border border-slate-200 dark:border-slate-800 text-[11px] font-semibold cursor-pointer shrink-0"
                   >
                     {chip}
                   </button>
@@ -199,7 +199,7 @@ export default function LegalPrecedentsModal({ isOpen, onClose }) {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
                     selectedCategory === cat
-                      ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md shadow-[#C8A34D]/20'
+                      ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md shadow-[#B88B2A]/20'
                       : 'bg-white dark:bg-[#181818] text-slate-400 hover:text-white border border-slate-200 dark:border-slate-800'
                   }`}
                 >
@@ -212,7 +212,7 @@ export default function LegalPrecedentsModal({ isOpen, onClose }) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Column: Result List */}
               <div className="lg:col-span-5 space-y-3">
-                <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Search Results ({filteredJudgments.length})</h4>
+                <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Search Results ({filteredJudgments.length})</h4>
                 {filteredJudgments.map(j => {
                   const isSelected = selectedJudgment.id === j.id;
                   return (
@@ -221,17 +221,17 @@ export default function LegalPrecedentsModal({ isOpen, onClose }) {
                       onClick={() => setSelectedJudgment(j)}
                       className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-white dark:bg-[#222222] border-[#C8A34D] ring-1 ring-[#C8A34D] shadow-lg'
-                          : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/40'
+                          ? 'bg-white dark:bg-[#222222] border-[#B88B2A] ring-1 ring-[#B88B2A] shadow-lg'
+                          : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/40'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <span className="text-xs font-bold text-slate-900 dark:text-white">{j.caseName}</span>
-                        <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 shrink-0">
+                        <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 shrink-0">
                           {j.relevance}% Match
                         </span>
                       </div>
-                      <p className="text-[11px] text-[#C8A34D] font-mono font-semibold">{j.citation} • {j.court}</p>
+                      <p className="text-[11px] text-[#B88B2A] font-mono font-semibold">{j.citation} • {j.court}</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2">{j.summary}</p>
                     </div>
                   );
@@ -240,21 +240,21 @@ export default function LegalPrecedentsModal({ isOpen, onClose }) {
 
               {/* Right Column: Precedent Dossier & AI Tools */}
               <div className="lg:col-span-7 space-y-4">
-                <div className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-[#C8A34D]/40 shadow-xl space-y-4">
+                <div className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-[#B88B2A]/40 shadow-xl space-y-4">
                   {/* Header */}
                   <div className="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800/80 pb-4">
                     <div>
                       <h3 className="text-base font-black text-slate-900 dark:text-white">{selectedJudgment.caseName}</h3>
-                      <p className="text-xs text-[#C8A34D] font-mono font-bold mt-0.5">{selectedJudgment.citation} • {selectedJudgment.court}</p>
+                      <p className="text-xs text-[#B88B2A] font-mono font-bold mt-0.5">{selectedJudgment.citation} • {selectedJudgment.court}</p>
                     </div>
-                    <button onClick={handleCopyCitation} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer shrink-0">
+                    <button onClick={handleCopyCitation} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer shrink-0">
                       <Copy className="w-3.5 h-3.5" /> Copy Citation
                     </button>
                   </div>
 
                   {/* Highlighted Ratio Decidendi Card */}
-                  <div className="p-4 rounded-2xl bg-[#111111] border border-[#C8A34D]/40 space-y-2">
-                    <div className="flex items-center gap-2 text-[#C8A34D]">
+                  <div className="p-4 rounded-2xl bg-[#111111] border border-[#B88B2A]/40 space-y-2">
+                    <div className="flex items-center gap-2 text-[#B88B2A]">
                       <Scale className="w-4 h-4" />
                       <span className="text-[10px] font-black uppercase tracking-widest">Binding Ratio Decidendi (Art 141)</span>
                     </div>
@@ -275,7 +275,7 @@ export default function LegalPrecedentsModal({ isOpen, onClose }) {
 
                   {/* 8 Specialized AI Operations */}
                   <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#C8A34D] block">8 One-Click AI Precedent Operations:</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#B88B2A] block">8 One-Click AI Precedent Operations:</span>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {[
                         { id: 'summarize', label: '📝 Summarize', fn: () => handleRunAiTool('summarize', 'Case Summary') },
@@ -299,7 +299,7 @@ export default function LegalPrecedentsModal({ isOpen, onClose }) {
 
                     {/* AI Output Area */}
                     {aiOutput && (
-                      <div className="p-4 rounded-2xl bg-[#111111] border border-[#C8A34D]/30 text-xs font-mono text-slate-200 leading-relaxed whitespace-pre-line">
+                      <div className="p-4 rounded-2xl bg-[#111111] border border-[#B88B2A]/30 text-xs font-mono text-slate-200 leading-relaxed whitespace-pre-line">
                         {aiOutput}
                       </div>
                     )}
@@ -310,17 +310,17 @@ export default function LegalPrecedentsModal({ isOpen, onClose }) {
           </div>
 
           {/* Footer Action Bar */}
-          <div className="px-8 py-4 bg-[#111111] border-t border-[#C8A34D]/30 flex items-center justify-between shrink-0">
+          <div className="px-8 py-4 bg-[#111111] border-t border-[#B88B2A]/30 flex items-center justify-between shrink-0">
             <button 
               onClick={handleCopyCitation}
-              className="px-4 py-2 rounded-xl bg-[#222222] text-[#C8A34D] border border-[#C8A34D]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[#222222] text-[#B88B2A] border border-[#B88B2A]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
             >
               <Copy className="w-4 h-4" /> Copy Official Citation
             </button>
 
             <button 
               onClick={() => toast.success('Exporting Courtroom Judgment Brief (PDF)...')}
-              className="px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+              className="px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
             >
               <Download className="w-4 h-4" /> Export Judgment Brief (PDF)
             </button>

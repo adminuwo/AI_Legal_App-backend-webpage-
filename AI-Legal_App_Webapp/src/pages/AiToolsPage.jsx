@@ -367,7 +367,7 @@ export default function AiToolsPage() {
     return { 
       status: 'AVAILABLE', 
       text: `${remaining}/${limit} ${plan === 'FREE' ? 'FREE' : 'LEFT'}`, 
-      badgeClass: 'bg-[#C8A34D]/15 text-[#C8A34D] border-[#C8A34D]/30 font-extrabold' 
+      badgeClass: 'bg-[#B88B2A]/15 text-[#B88B2A] border-[#B88B2A]/30 font-extrabold' 
     };
   };
 
@@ -417,10 +417,10 @@ export default function AiToolsPage() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] dark:bg-[#111111] pt-3 sm:pt-4 md:pt-6 pb-12 px-3 sm:px-6 md:px-12 w-full max-w-7xl mx-auto text-[#111111] dark:text-white font-sans space-y-4 sm:space-y-6 overflow-x-hidden min-w-0">
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 p-3.5 sm:p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#C8A34D]/30 shadow-sm w-full min-w-0 overflow-hidden">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 p-3.5 sm:p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#B88B2A]/30 shadow-sm w-full min-w-0 overflow-hidden">
         <div className="space-y-1 min-w-0 flex-1">
-          <div className="inline-flex max-w-full min-w-0 items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-[#C8A34D] text-[9.5px] sm:text-[11px] font-semibold">
-            <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C8A34D] shrink-0" />
+          <div className="inline-flex max-w-full min-w-0 items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-[#B88B2A] text-[9.5px] sm:text-[11px] font-semibold">
+            <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B88B2A] shrink-0" />
             <span className="truncate min-w-0">{selectedRole === 'student' ? 'Student AI Learning Suite • Rolex Minimalist Theme' : 'Advocate Enterprise AI Suite • Rolex Minimalist Theme'}</span>
           </div>
           <h1 className="text-lg sm:text-3xl font-black tracking-tight text-[#0F172A] dark:text-white truncate min-w-0">
@@ -447,19 +447,19 @@ export default function AiToolsPage() {
               className={`group p-3.5 sm:p-5 rounded-xl bg-white dark:bg-[#1E293B] border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md flex flex-col justify-between w-full min-w-0 overflow-hidden ${
                 usage.status === 'INSTITUTION_DISABLED'
                   ? 'opacity-50 grayscale-[40%] border-slate-300 dark:border-slate-800'
-                  : 'border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/60'
+                  : 'border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/60'
               }`}
             >
               <div className="min-w-0">
                 <div className="flex items-start justify-between gap-2 mb-2.5 min-w-0">
-                  <div className="p-2 sm:p-2.5 rounded-lg bg-[#C8A34D]/10 border border-[#C8A34D]/25 text-[#C8A34D] shrink-0">
-                    <IconComp className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-[#C8A34D]" />
+                  <div className="p-2 sm:p-2.5 rounded-lg bg-[#B88B2A]/10 border border-[#B88B2A]/25 text-[#B88B2A] shrink-0">
+                    <IconComp className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-[#B88B2A]" />
                   </div>
                   <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider border shrink-0 ${usage.badgeClass}`}>
                     {usage.text}
                   </span>
                 </div>
-                <h3 className="text-sm sm:text-base font-bold text-[#111111] dark:text-white group-hover:text-[#C8A34D] transition-colors leading-tight truncate">
+                <h3 className="text-sm sm:text-base font-bold text-[#111111] dark:text-white group-hover:text-[#B88B2A] transition-colors leading-tight truncate">
                   {t.title}
                 </h3>
                 <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400 leading-snug line-clamp-2">
@@ -478,7 +478,7 @@ export default function AiToolsPage() {
                 )}
               </div>
 
-              <div className="mt-3.5 sm:mt-4 pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold text-[#C8A34D]">
+              <div className="mt-3.5 sm:mt-4 pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold text-[#B88B2A]">
                 <span>Start</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform shrink-0" />
               </div>

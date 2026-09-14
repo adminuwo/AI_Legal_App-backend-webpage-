@@ -61,7 +61,7 @@ const DownloadQRCode = ({ value, label = "Scan with Camera", platform = "univers
   const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(value)}&color=000000&bgcolor=ffffff&margin=1`;
 
   return (
-    <div className="p-2 sm:p-3 bg-white rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center shrink-0 space-y-1.5 sm:space-y-2 group transition-all duration-200 hover:border-[#C8A34D]/50 hover:shadow-md max-w-[145px] sm:max-w-none">
+    <div className="p-2 sm:p-3 bg-white rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center shrink-0 space-y-1.5 sm:space-y-2 group transition-all duration-200 hover:border-[#B88B2A]/50 hover:shadow-md max-w-[145px] sm:max-w-none">
       <div className="p-1.5 sm:p-2 bg-white rounded-xl border border-slate-100 flex items-center justify-center">
         <img
           src={qrApiUrl}
@@ -75,8 +75,8 @@ const DownloadQRCode = ({ value, label = "Scan with Camera", platform = "univers
         />
       </div>
       <span className="text-[9px] sm:text-[11px] font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 pt-0.5 whitespace-nowrap">
-        {platform === 'ios' && <AppleStoreIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C8A34D] shrink-0" />}
-        {platform === 'android' && <GooglePlayIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C8A34D] shrink-0" />}
+        {platform === 'ios' && <AppleStoreIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B88B2A] shrink-0" />}
+        {platform === 'android' && <GooglePlayIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B88B2A] shrink-0" />}
         <span>{label}</span>
       </span>
     </div>
@@ -124,15 +124,15 @@ export default function MobileAppPage() {
   const getBenefitIcon = (iconName) => {
     switch (iconName) {
       case 'UserCheck':
-        return <UserCheck className="w-5 h-5 text-[#C8A34D]" />;
+        return <UserCheck className="w-5 h-5 text-[#B88B2A]" />;
       case 'Briefcase':
-        return <Briefcase className="w-5 h-5 text-[#C8A34D]" />;
+        return <Briefcase className="w-5 h-5 text-[#B88B2A]" />;
       case 'CreditCard':
-        return <CreditCard className="w-5 h-5 text-[#C8A34D]" />;
+        return <CreditCard className="w-5 h-5 text-[#B88B2A]" />;
       case 'RefreshCw':
-        return <RefreshCw className="w-5 h-5 text-[#C8A34D]" />;
+        return <RefreshCw className="w-5 h-5 text-[#B88B2A]" />;
       default:
-        return <ShieldCheck className="w-5 h-5 text-[#C8A34D]" />;
+        return <ShieldCheck className="w-5 h-5 text-[#B88B2A]" />;
     }
   };
 
@@ -140,9 +140,9 @@ export default function MobileAppPage() {
     if (!isRealStoreUrl(url)) {
       e.preventDefault();
       toast.custom((t) => (
-        <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white dark:bg-[#1E293B] shadow-lg rounded-2xl pointer-events-auto flex ring-1 ring-black ring-opacity-5 border border-[#C8A34D]/40 p-4`}>
+        <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white dark:bg-[#1E293B] shadow-lg rounded-2xl pointer-events-auto flex ring-1 ring-black ring-opacity-5 border border-[#B88B2A]/40 p-4`}>
           <div className="flex-1 w-0 flex items-center">
-            <div className="shrink-0 p-2 bg-[#C8A34D]/15 rounded-xl text-[#C8A34D]">
+            <div className="shrink-0 p-2 bg-[#B88B2A]/15 rounded-xl text-[#B88B2A]">
               <Smartphone className="w-5 h-5" />
             </div>
             <div className="ml-3 flex-1">
@@ -180,13 +180,13 @@ export default function MobileAppPage() {
       
       {/* 1. Page Header */}
       <header className="text-center space-y-4 max-w-3xl mx-auto pt-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30 text-[#C8A34D] text-xs font-bold uppercase tracking-wider">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-[#B88B2A] text-xs font-bold uppercase tracking-wider">
           <Smartphone className="w-3.5 h-3.5" />
           <span>CONNECTED ECOSYSTEM</span>
         </div>
         
         <h1 className="text-3xl md:text-5xl font-black tracking-tight text-[#111111] dark:text-white">
-          AI LEGAL™ <span className="text-[#C8A34D]">Mobile App</span>
+          AI LEGAL™ <span className="text-[#B88B2A]">Mobile App</span>
         </h1>
         
         <p className="text-base md:text-xl font-semibold text-slate-700 dark:text-slate-300">
@@ -240,14 +240,14 @@ export default function MobileAppPage() {
         <div className="pt-4 flex items-center justify-center gap-6 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
           <span className="font-semibold text-slate-700 dark:text-slate-300">Available on:</span>
           <div className="flex items-center gap-1.5 font-medium">
-            <CheckCircle2 className="w-4 h-4 text-[#C8A34D]" />
+            <CheckCircle2 className="w-4 h-4 text-[#B88B2A]" />
             <span>Android</span>
           </div>
           <div className="flex items-center gap-1.5 font-medium">
-            <CheckCircle2 className="w-4 h-4 text-[#C8A34D]" />
+            <CheckCircle2 className="w-4 h-4 text-[#B88B2A]" />
             <span>iOS</span>
           </div>
-          <div className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-[#C8A34D]">
+          <div className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-[#B88B2A]">
             Latest Version: v{storeConfig.version}
           </div>
         </div>
@@ -262,9 +262,9 @@ export default function MobileAppPage() {
           ].map((wf, idx) => (
             <div
               key={idx}
-              className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 flex items-center gap-1 sm:gap-1.5 shrink-0 transition-colors hover:border-[#C8A34D]/50"
+              className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 flex items-center gap-1 sm:gap-1.5 shrink-0 transition-colors hover:border-[#B88B2A]/50"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C8A34D] shrink-0"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#B88B2A] shrink-0"></span>
               <span className="text-[10px] sm:text-xs font-semibold sm:font-bold text-[#111111] dark:text-white whitespace-nowrap">{wf.label}</span>
             </div>
           ))}
@@ -286,9 +286,9 @@ export default function MobileAppPage() {
           {CONNECTED_ECOSYSTEM_BENEFITS.map((item) => (
             <div 
               key={item.id}
-              className="p-5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 flex items-start gap-4 shadow-2xs hover:border-[#C8A34D]/40 transition-colors"
+              className="p-5 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 flex items-start gap-4 shadow-2xs hover:border-[#B88B2A]/40 transition-colors"
             >
-              <div className="p-2.5 rounded-lg bg-[#C8A34D]/10 border border-[#C8A34D]/20 shrink-0 mt-0.5">
+              <div className="p-2.5 rounded-lg bg-[#B88B2A]/10 border border-[#B88B2A]/20 shrink-0 mt-0.5">
                 {getBenefitIcon(item.iconName)}
               </div>
               <div className="space-y-1">
@@ -307,7 +307,7 @@ export default function MobileAppPage() {
       {/* 5. QR Code Scan Section */}
       <section className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 max-w-4xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6 shadow-2xs">
         <div className="space-y-2 text-center lg:text-left">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#C8A34D]">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#B88B2A]">
             <QrCode className="w-4 h-4" />
             <span>Scan to Download</span>
           </div>
@@ -338,8 +338,8 @@ export default function MobileAppPage() {
       </section>
 
       {/* 6. Web ↔ Mobile Synchronization Information Card */}
-      <section className="bg-slate-100 dark:bg-[#1A1A1A] border border-[#C8A34D]/30 rounded-2xl p-5 md:p-6 max-w-4xl mx-auto flex items-start gap-4">
-        <div className="p-2 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] shrink-0 mt-0.5">
+      <section className="bg-slate-100 dark:bg-[#1A1A1A] border border-[#B88B2A]/30 rounded-2xl p-5 md:p-6 max-w-4xl mx-auto flex items-start gap-4">
+        <div className="p-2 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] shrink-0 mt-0.5">
           <ShieldCheck className="w-5 h-5" />
         </div>
         <div className="space-y-1">

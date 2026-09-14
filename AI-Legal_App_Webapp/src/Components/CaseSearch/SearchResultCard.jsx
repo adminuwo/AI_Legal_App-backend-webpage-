@@ -21,7 +21,7 @@ export default function SearchResultCard({
   };
 
   return (
-    <div className="bg-white dark:bg-[#111622] rounded-2xl border border-slate-200/85 dark:border-slate-800/80 p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-[#C8A34D]/60 dark:hover:border-[#C8A34D]/50 transition-all duration-200 group flex flex-col justify-between">
+    <div className="bg-white dark:bg-[#111622] rounded-2xl border border-slate-200/85 dark:border-slate-800/80 p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-[#B88B2A]/60 dark:hover:border-[#B88B2A]/50 transition-all duration-200 group flex flex-col justify-between">
       
       {/* Top Meta Line: Court Badge & Benchmark Citation */}
       <div>
@@ -31,7 +31,7 @@ export default function SearchResultCard({
               <Landmark size={11} />
               {judgment.court || 'Supreme Court of India'}
             </span>
-            <span className="text-[11px] font-mono font-bold text-[#B38628] dark:text-[#E5A93C] bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-[#C8A34D]/30">
+            <span className="text-[11px] font-mono font-bold text-[#B38628] dark:text-[#E5A93C] bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-[#B88B2A]/30">
               {judgment.citation || 'Official Citation'}
             </span>
           </div>
@@ -58,7 +58,7 @@ export default function SearchResultCard({
         </h3>
 
         {/* AI Relevance Indicator Bar */}
-        <div className="mt-3.5 p-3 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-[#C8A34D]/25 space-y-1.5">
+        <div className="mt-3.5 p-3 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-[#B88B2A]/25 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-1.5 text-[#B38628] dark:text-amber-300 font-extrabold uppercase tracking-wider text-[10px]">
               <Sparkles size={13} className="animate-pulse" />
@@ -85,7 +85,7 @@ export default function SearchResultCard({
 
         {/* Core Ratio Decidendi Snippet */}
         {judgment.ratioDecidendi && (
-          <div className="mt-3 text-xs text-slate-600 dark:text-slate-400 italic border-l-2 border-[#C8A34D] pl-3 py-0.5 line-clamp-2">
+          <div className="mt-3 text-xs text-slate-600 dark:text-slate-400 italic border-l-2 border-[#B88B2A] pl-3 py-0.5 line-clamp-2">
             <span className="font-bold text-slate-800 dark:text-slate-200 not-italic">Ratio: </span>
             "{judgment.ratioDecidendi}"
           </div>
@@ -107,7 +107,7 @@ export default function SearchResultCard({
           {(judgment.acts || []).slice(0, 2).map((act, idx) => (
             <span 
               key={idx}
-              className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-amber-50/50 dark:bg-amber-950/30 text-[#B38628] dark:text-amber-300 border border-[#C8A34D]/25"
+              className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-amber-50/50 dark:bg-amber-950/30 text-[#B38628] dark:text-amber-300 border border-[#B88B2A]/25"
             >
               {act}
             </span>
@@ -123,7 +123,7 @@ export default function SearchResultCard({
             onClick={() => onReadJudgment(judgment)}
             className="px-4 py-2 rounded-xl text-xs font-bold bg-[#111111] dark:bg-white text-white dark:text-slate-950 hover:bg-[#B38628] dark:hover:bg-[#E5A93C] dark:hover:text-black transition-all cursor-pointer flex items-center gap-2 shadow-xs"
           >
-            <Brain size={13} className="text-[#C8A34D] dark:text-[#B38628]" />
+            <Brain size={13} className="text-[#B88B2A] dark:text-[#B38628]" />
             <span>Read Judgment & AI Analysis</span>
             <ArrowRight size={13} />
           </button>

@@ -219,13 +219,13 @@ export default function PublicFooter() {
                 {/* 2-Option Popover Menu for Blog (Read Articles vs In-House Publishing) */}
                 {companyBlogDropdownOpen && (
                   <div
-                    className="absolute left-0 lg:left-auto lg:right-0 bottom-full mb-2.5 w-72 sm:w-80 rounded-2xl bg-[#0F172A] border border-[#C8A34D]/40 shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl"
+                    className="absolute left-0 lg:left-auto lg:right-0 bottom-full mb-2.5 w-72 sm:w-80 rounded-2xl bg-[#0F172A] border border-[#B88B2A]/40 shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl"
                   >
                     <div className="px-3 py-1.5 mb-1.5 border-b border-slate-800 flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-1">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] flex items-center gap-1">
                         <Sparkles size={11} /> AI LEGAL™ Journal
                       </span>
-                      <span className="text-[9px] bg-[#C8A34D]/15 text-[#C8A34D] px-1.5 py-0.5 rounded font-bold">
+                      <span className="text-[9px] bg-[#B88B2A]/15 text-[#B88B2A] px-1.5 py-0.5 rounded font-bold">
                         Company
                       </span>
                     </div>
@@ -239,15 +239,15 @@ export default function PublicFooter() {
                       }}
                       className="w-full text-left p-2.5 rounded-xl hover:bg-slate-800/80 transition-all flex items-start gap-3 group cursor-pointer"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="w-8 h-8 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                         <BookOpen size={16} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-white group-hover:text-[#C8A34D] transition-colors">
+                          <span className="text-xs font-bold text-white group-hover:text-[#B88B2A] transition-colors">
                             Explore Blog Articles
                           </span>
-                          <ArrowRight size={12} className="text-slate-500 group-hover:text-[#C8A34D] group-hover:translate-x-0.5 transition-all" />
+                          <ArrowRight size={12} className="text-slate-500 group-hover:text-[#B88B2A] group-hover:translate-x-0.5 transition-all" />
                         </div>
                         <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
                           Browse published articles, chamber guides & legal updates
@@ -262,20 +262,20 @@ export default function PublicFooter() {
                         setCompanyBlogDropdownOpen(false);
                         handleNavClick('/blog/publish');
                       }}
-                      className="w-full text-left p-2.5 rounded-xl hover:bg-amber-950/40 border border-transparent hover:border-[#C8A34D]/30 transition-all flex items-start gap-3 group cursor-pointer mt-1"
+                      className="w-full text-left p-2.5 rounded-xl hover:bg-amber-950/40 border border-transparent hover:border-[#B88B2A]/30 transition-all flex items-start gap-3 group cursor-pointer mt-1"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C8A34D] to-[#B38628] text-slate-950 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#B88B2A] to-[#B38628] text-slate-950 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
                         <PenTool size={15} className="stroke-[2.5]" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-white group-hover:text-[#C8A34D] transition-colors flex items-center gap-1.5">
+                          <span className="text-xs font-bold text-white group-hover:text-[#B88B2A] transition-colors flex items-center gap-1.5">
                             Post In-House Blog
                             <span className="text-[9px] bg-amber-400 text-slate-950 px-1.5 py-0.2 rounded font-black uppercase tracking-tight">
                               Studio
                             </span>
                           </span>
-                          <ArrowRight size={12} className="text-slate-500 group-hover:text-[#C8A34D] group-hover:translate-x-0.5 transition-all" />
+                          <ArrowRight size={12} className="text-slate-500 group-hover:text-[#B88B2A] group-hover:translate-x-0.5 transition-all" />
                         </div>
                         <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
                           In-House team workspace to write & publish new content

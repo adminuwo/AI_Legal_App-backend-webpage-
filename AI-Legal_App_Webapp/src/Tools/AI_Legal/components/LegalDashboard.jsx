@@ -112,7 +112,7 @@ const LegalDashboard = ({
       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-extrabold shadow-2xs border ${
         isReached 
           ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-900/40' 
-          : 'bg-[#C8A34D]/15 text-[#C8A34D] border-[#C8A34D]/30'
+          : 'bg-[#B88B2A]/15 text-[#B88B2A] border-[#B88B2A]/30'
       }`}>
         <span>📁 {used} / {limit} {isReached ? ' • Limit Reached' : 'Free'}</span>
       </span>
@@ -345,10 +345,10 @@ const LegalDashboard = ({
                 onBack();
               }
             }}
-            className={`p-2 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl transition-colors cursor-pointer text-[#C8A34D] ${!onBack ? 'lg:hidden' : ''}`}
+            className={`p-2 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl transition-colors cursor-pointer text-[#B88B2A] ${!onBack ? 'lg:hidden' : ''}`}
             title="Navigation Menu"
           >
-            <Menu className="w-5 h-5 stroke-[2.5] lg:hidden text-[#C8A34D]" />
+            <Menu className="w-5 h-5 stroke-[2.5] lg:hidden text-[#B88B2A]" />
             {onBack && <ArrowLeft size={18} className="hidden lg:block text-slate-600 dark:text-slate-300" />}
           </motion.button>
           <div>
@@ -375,7 +375,7 @@ const LegalDashboard = ({
         <div className="flex items-center gap-3">
           <button
             onClick={handleCreateCaseClick}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl font-black text-xs sm:text-sm transition-all shadow-md active:scale-95 whitespace-nowrap cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl font-black text-xs sm:text-sm transition-all shadow-md active:scale-95 whitespace-nowrap cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>+ Create</span>
@@ -387,13 +387,13 @@ const LegalDashboard = ({
       <div className="w-full px-4 sm:px-10 py-3 sm:py-4 border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-[#0F172A] flex flex-col lg:flex-row gap-3 justify-between items-stretch lg:items-center shrink-0">
         {/* Search Input */}
         <div className="relative flex-1 max-w-2xl">
-          <Search className="w-4 h-4 text-[#C8A34D] absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-[#B88B2A] absolute left-3.5 top-3" />
           <input
             type="text"
             placeholder="Search by case name, client, opponent, court, case number..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-slate-200/80 dark:border-slate-800 rounded-xl text-xs font-semibold placeholder-slate-400 focus:outline-none focus:border-[#C8A34D] focus:ring-1 focus:ring-[#C8A34D] bg-white dark:bg-[#1E293B] text-[#111111] dark:text-white transition-all shadow-xs"
+            className="w-full pl-10 pr-4 py-2 border border-slate-200/80 dark:border-slate-800 rounded-xl text-xs font-semibold placeholder-slate-400 focus:outline-none focus:border-[#B88B2A] focus:ring-1 focus:ring-[#B88B2A] bg-white dark:bg-[#1E293B] text-[#111111] dark:text-white transition-all shadow-xs"
           />
         </div>
 
@@ -479,14 +479,14 @@ const LegalDashboard = ({
           <div className="flex items-center border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#1E293B] rounded-xl p-1 shadow-xs gap-0.5 shrink-0">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-[#111111] dark:bg-[#333333] text-[#C8A34D]' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-[#111111] dark:bg-[#333333] text-[#B88B2A]' : 'text-slate-400 hover:text-slate-600'}`}
               title="Grid View"
             >
               <LayoutGrid size={15} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-[#111111] dark:bg-[#333333] text-[#C8A34D]' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-[#111111] dark:bg-[#333333] text-[#B88B2A]' : 'text-slate-400 hover:text-slate-600'}`}
               title="List View"
             >
               <List size={15} />
@@ -500,24 +500,24 @@ const LegalDashboard = ({
             onClick={() => setIsMobileFilterDrawerOpen(true)}
             className="flex-1 flex items-center justify-center gap-1.5 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl px-3 py-2 shadow-xs text-xs font-bold text-[#0F172A] dark:text-white"
           >
-            <Filter size={14} className="text-[#C8A34D]" />
+            <Filter size={14} className="text-[#B88B2A]" />
             <span>Filters</span>
             {(statusFilter !== 'All' || priorityFilter !== 'All' || courtFilter !== 'All' || typeFilter !== 'All') && (
-              <span className="w-2 h-2 rounded-full bg-[#C8A34D]" />
+              <span className="w-2 h-2 rounded-full bg-[#B88B2A]" />
             )}
           </button>
 
           <div className="flex items-center border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#1E293B] rounded-xl p-1 shadow-xs gap-0.5 shrink-0">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-[#111111] dark:bg-[#333333] text-[#C8A34D]' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-[#111111] dark:bg-[#333333] text-[#B88B2A]' : 'text-slate-400 hover:text-slate-600'}`}
               title="Grid View"
             >
               <LayoutGrid size={15} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-[#111111] dark:bg-[#333333] text-[#C8A34D]' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-[#111111] dark:bg-[#333333] text-[#B88B2A]' : 'text-slate-400 hover:text-slate-600'}`}
               title="List View"
             >
               <List size={15} />
@@ -538,18 +538,18 @@ const LegalDashboard = ({
                 return (
                   <div
                     key={c._id || c.id}
-                    className="relative bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl p-4 shadow-xs hover:border-[#C8A34D] hover:shadow-md transition-all flex flex-col justify-between group"
+                    className="relative bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl p-4 shadow-xs hover:border-[#B88B2A] hover:shadow-md transition-all flex flex-col justify-between group"
                   >
                     <div className="space-y-3">
                       {/* Card Header: Icon + Case Name + 3-Dot Menu */}
                       <div className="flex items-start justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
                         <div className="flex items-center gap-2 min-w-0">
-                          <div className="p-1.5 rounded-lg bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25 shrink-0">
+                          <div className="p-1.5 rounded-lg bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25 shrink-0">
                             <FolderOpen className="w-4 h-4" />
                           </div>
                           <h3 
                             onClick={() => handleOpenCase(c)}
-                            className="text-sm font-extrabold text-[#111111] dark:text-white hover:text-[#C8A34D] transition-colors cursor-pointer truncate"
+                            className="text-sm font-extrabold text-[#111111] dark:text-white hover:text-[#B88B2A] transition-colors cursor-pointer truncate"
                             title={c.name}
                           >
                             {c.name}
@@ -619,7 +619,7 @@ const LegalDashboard = ({
                       <div className="p-2 bg-slate-50/70 dark:bg-[#0F172A] border border-slate-100 dark:border-slate-800/80 rounded-lg text-xs">
                         <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Parties:</div>
                         <div className="font-extrabold text-[#111111] dark:text-white truncate">
-                          {c.clientName || 'Not set'} <span className="text-[#C8A34D] font-black text-[10px]">vs</span> {c.opponentName || c.accused || 'Not set'}
+                          {c.clientName || 'Not set'} <span className="text-[#B88B2A] font-black text-[10px]">vs</span> {c.opponentName || c.accused || 'Not set'}
                         </div>
                       </div>
 
@@ -635,7 +635,7 @@ const LegalDashboard = ({
                         </div>
                         <div>
                           <span className="text-[10px] font-bold text-slate-400 uppercase block">Next Hearing</span>
-                          <span className="font-bold text-[#C8A34D] truncate block">{hearingDate}</span>
+                          <span className="font-bold text-[#B88B2A] truncate block">{hearingDate}</span>
                         </div>
                         <div>
                           <span className="text-[10px] font-bold text-slate-400 uppercase block">Stage</span>
@@ -648,7 +648,7 @@ const LegalDashboard = ({
                     <div className="pt-3 border-t border-slate-100 dark:border-slate-800 mt-3">
                       <button
                         onClick={() => handleOpenCase(c)}
-                        className="w-full py-2 bg-slate-50 hover:bg-[#111111] dark:bg-[#0F172A] dark:hover:bg-[#333333] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D] text-[#111111] dark:text-white hover:text-[#C8A34D] rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                        className="w-full py-2 bg-slate-50 hover:bg-[#111111] dark:bg-[#0F172A] dark:hover:bg-[#333333] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A] text-[#111111] dark:text-white hover:text-[#B88B2A] rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                       >
                         <span>Open Workspace</span>
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -686,21 +686,21 @@ const LegalDashboard = ({
                           <tr key={c._id || c.id} className="hover:bg-slate-50/50 dark:hover:bg-[#0F172A]/50 transition-colors">
                             <td className="px-4 py-3.5 font-extrabold text-[#111111] dark:text-white">
                               <div className="flex items-center gap-2">
-                                <FolderOpen className="w-4 h-4 text-[#C8A34D] shrink-0" />
+                                <FolderOpen className="w-4 h-4 text-[#B88B2A] shrink-0" />
                                 <span 
                                   onClick={() => handleOpenCase(c)}
-                                  className="hover:text-[#C8A34D] transition-colors cursor-pointer"
+                                  className="hover:text-[#B88B2A] transition-colors cursor-pointer"
                                 >
                                   {c.name}
                                 </span>
                               </div>
                             </td>
                             <td className="px-4 py-3.5 font-semibold text-slate-700 dark:text-slate-300">
-                              <div>{c.clientName || 'Not set'} <span className="text-[#C8A34D] font-black text-[10px]">vs</span> {c.opponentName || c.accused || 'Not set'}</div>
+                              <div>{c.clientName || 'Not set'} <span className="text-[#B88B2A] font-black text-[10px]">vs</span> {c.opponentName || c.accused || 'Not set'}</div>
                             </td>
                             <td className="px-4 py-3.5 font-semibold text-slate-600 dark:text-slate-400">{c.caseType || 'Civil'}</td>
                             <td className="px-4 py-3.5 font-semibold text-slate-600 dark:text-slate-400">{c.courtName || 'District Court'}</td>
-                            <td className="px-4 py-3.5 font-bold text-[#C8A34D]">{hearingDate}</td>
+                            <td className="px-4 py-3.5 font-bold text-[#B88B2A]">{hearingDate}</td>
                             <td className="px-4 py-3.5 font-semibold text-slate-500">{c.stage || 'Pre-litigation'}</td>
                             <td className="px-4 py-3.5">{renderStatusPill(c.status)}</td>
                             <td className="px-4 py-3.5">{renderPriorityPill(c.priority)}</td>
@@ -757,7 +757,7 @@ const LegalDashboard = ({
                             <td className="px-4 py-3.5 text-right font-bold">
                               <button
                                 onClick={() => handleOpenCase(c)}
-                                className="text-[#C8A34D] hover:text-[#b08d3b] text-xs font-black inline-flex items-center gap-1 transition-colors cursor-pointer"
+                                className="text-[#B88B2A] hover:text-[#b08d3b] text-xs font-black inline-flex items-center gap-1 transition-colors cursor-pointer"
                               >
                                 <span>Open Workspace</span>
                                 <ChevronRight size={14} />
@@ -786,7 +786,7 @@ const LegalDashboard = ({
                           <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block">CASE NAME</span>
                           <h3 
                             onClick={() => handleOpenCase(c)}
-                            className="text-sm font-black text-[#0F172A] dark:text-white truncate cursor-pointer hover:text-[#C8A34D]"
+                            className="text-sm font-black text-[#0F172A] dark:text-white truncate cursor-pointer hover:text-[#B88B2A]"
                           >
                             {c.name}
                           </h3>
@@ -846,7 +846,7 @@ const LegalDashboard = ({
                       <div className="p-2.5 bg-slate-50 dark:bg-[#0F172A] rounded-xl border border-slate-100 dark:border-slate-800/80 text-xs">
                         <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Parties</div>
                         <div className="font-extrabold text-[#111111] dark:text-white truncate">
-                          {c.clientName || 'Not set'} <span className="text-[#C8A34D] font-black text-[10px]">vs</span> {c.opponentName || c.accused || 'Not set'}
+                          {c.clientName || 'Not set'} <span className="text-[#B88B2A] font-black text-[10px]">vs</span> {c.opponentName || c.accused || 'Not set'}
                         </div>
                       </div>
 
@@ -866,7 +866,7 @@ const LegalDashboard = ({
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
                           <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Next Hearing</span>
-                          <span className="font-bold text-[#C8A34D] truncate block">{hearingDate}</span>
+                          <span className="font-bold text-[#B88B2A] truncate block">{hearingDate}</span>
                         </div>
                         <div>
                           <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Stage</span>
@@ -890,7 +890,7 @@ const LegalDashboard = ({
                       <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
                         <button
                           onClick={() => handleOpenCase(c)}
-                          className="w-full py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
+                          className="w-full py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
                         >
                           <span>Open Workspace</span>
                           <ChevronRight size={14} />
@@ -905,7 +905,7 @@ const LegalDashboard = ({
         ) : searchQuery ? (
           /* 3C. Search No Results State */
           <div className="flex flex-col items-center justify-center min-h-[350px] text-center space-y-4 max-w-md mx-auto bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-8 shadow-xs">
-            <Search className="w-12 h-12 text-[#C8A34D]" />
+            <Search className="w-12 h-12 text-[#B88B2A]" />
             <div className="space-y-1">
               <h3 className="text-lg font-bold text-[#111111] dark:text-white">No cases match your search</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
@@ -922,7 +922,7 @@ const LegalDashboard = ({
         ) : (
           /* 3D. Empty Case Dossier State */
           <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-5 max-w-lg mx-auto bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-10 shadow-xs">
-            <div className="p-4 rounded-2xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25">
+            <div className="p-4 rounded-2xl bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25">
               <FolderOpen className="w-10 h-10" />
             </div>
             <div className="space-y-2">
@@ -937,7 +937,7 @@ const LegalDashboard = ({
             </div>
             <button
               onClick={handleCreateCaseClick}
-              className="px-6 py-3.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all shadow-md flex items-center justify-center gap-2 active:scale-95 cursor-pointer uppercase tracking-wider"
+              className="px-6 py-3.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all shadow-md flex items-center justify-center gap-2 active:scale-95 cursor-pointer uppercase tracking-wider"
             >
               <span>{(localStorage.getItem('user_selected_role') || 'advocate') === 'law_firm' ? 'CREATE FIRM CASE' : 'CREATE CASE FOLDER'}</span>
             </button>
@@ -1000,7 +1000,7 @@ const LegalDashboard = ({
               {/* Header */}
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-2">
-                  <Filter size={16} className="text-[#C8A34D]" />
+                  <Filter size={16} className="text-[#B88B2A]" />
                   <h3 className="text-sm font-black text-[#0F172A] dark:text-white">Filter & Sort Cases</h3>
                 </div>
                 <button
@@ -1101,7 +1101,7 @@ const LegalDashboard = ({
                 </button>
                 <button
                   onClick={() => setIsMobileFilterDrawerOpen(false)}
-                  className="flex-1 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-xs"
+                  className="flex-1 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-xs"
                 >
                   Apply Filters
                 </button>

@@ -160,16 +160,16 @@ const EnterpriseSetupPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans selection:bg-[#C8A34D] selection:text-black">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans selection:bg-[#B88B2A] selection:text-black">
       {/* Top Bar */}
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/enterprise')}>
-          <div className="w-10 h-10 rounded-xl bg-[#C8A34D]/10 border border-[#C8A34D]/30 flex items-center justify-center">
-            <Building2 className="w-5 h-5 text-[#C8A34D]" />
+          <div className="w-10 h-10 rounded-xl bg-[#B88B2A]/10 border border-[#B88B2A]/30 flex items-center justify-center">
+            <Building2 className="w-5 h-5 text-[#B88B2A]" />
           </div>
           <div>
             <h1 className="text-base font-black tracking-tight flex items-center gap-2">
-              AI LEGAL <span className="text-[#C8A34D] text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/30">ENTERPRISE SETUP</span>
+              AI LEGAL <span className="text-[#B88B2A] text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/30">ENTERPRISE SETUP</span>
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400">Institutional Workspace Activation Wizard</p>
           </div>
@@ -198,7 +198,7 @@ const EnterpriseSetupPage = () => {
                 <div
                   className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all z-10 ${
                     step === s.num
-                      ? 'bg-[#C8A34D] text-slate-950 ring-4 ring-[#C8A34D]/20 shadow-md'
+                      ? 'bg-[#B88B2A] text-slate-950 ring-4 ring-[#B88B2A]/20 shadow-md'
                       : step > s.num
                       ? 'bg-emerald-500 text-white'
                       : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
@@ -206,7 +206,7 @@ const EnterpriseSetupPage = () => {
                 >
                   {step > s.num ? <Check size={16} /> : s.num}
                 </div>
-                <span className={`text-[11px] font-semibold tracking-tight ${step === s.num ? 'text-[#C8A34D]' : 'text-slate-400'}`}>
+                <span className={`text-[11px] font-semibold tracking-tight ${step === s.num ? 'text-[#B88B2A]' : 'text-slate-400'}`}>
                   {s.label}
                 </span>
               </div>
@@ -214,7 +214,7 @@ const EnterpriseSetupPage = () => {
           </div>
           <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
             <div
-              className="bg-gradient-to-r from-[#C8A34D] to-[#E5C16C] h-full transition-all duration-300"
+              className="bg-gradient-to-r from-[#B88B2A] to-[#E5C16C] h-full transition-all duration-300"
               style={{ width: `${(step / 5) * 100}%` }}
             />
           </div>
@@ -227,7 +227,7 @@ const EnterpriseSetupPage = () => {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                  <Building2 className="text-[#C8A34D]" size={22} /> Step 1: Institution Details
+                  <Building2 className="text-[#B88B2A]" size={22} /> Step 1: Institution Details
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Enter official details for your Law School, University, or Educational Institution.
@@ -244,7 +244,7 @@ const EnterpriseSetupPage = () => {
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g. National Law University / RDVV"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -255,7 +255,7 @@ const EnterpriseSetupPage = () => {
                   <select
                     value={formData.institutionType}
                     onChange={e => setFormData({ ...formData, institutionType: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                   >
                     <option value="University">University</option>
                     <option value="Law College">Law College</option>
@@ -274,7 +274,7 @@ const EnterpriseSetupPage = () => {
                       value={formData.officialEmail}
                       onChange={e => setFormData({ ...formData, officialEmail: e.target.value })}
                       placeholder="admin@institution.edu.in"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
@@ -290,7 +290,7 @@ const EnterpriseSetupPage = () => {
                       value={formData.officialDomain}
                       onChange={e => setFormData({ ...formData, officialDomain: e.target.value })}
                       placeholder="rdvv.ac.in"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">Example: @rdvv.ac.in, @nlu.ac.in, @amity.edu</p>
@@ -304,7 +304,7 @@ const EnterpriseSetupPage = () => {
                     type="number"
                     value={formData.expectedSeats}
                     onChange={e => setFormData({ ...formData, expectedSeats: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -316,7 +316,7 @@ const EnterpriseSetupPage = () => {
                     type="number"
                     value={formData.facultyCount}
                     onChange={e => setFormData({ ...formData, facultyCount: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
               </div>
@@ -328,7 +328,7 @@ const EnterpriseSetupPage = () => {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                  <ShieldCheck className="text-[#C8A34D]" size={22} /> Step 2: Enterprise Administrator
+                  <ShieldCheck className="text-[#B88B2A]" size={22} /> Step 2: Enterprise Administrator
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Designate primary Enterprise Owner and University Admin for overall management.
@@ -344,7 +344,7 @@ const EnterpriseSetupPage = () => {
                     type="text"
                     value={formData.ownerName}
                     onChange={e => setFormData({ ...formData, ownerName: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -356,7 +356,7 @@ const EnterpriseSetupPage = () => {
                     type="email"
                     value={formData.ownerEmail}
                     onChange={e => setFormData({ ...formData, ownerEmail: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -367,7 +367,7 @@ const EnterpriseSetupPage = () => {
                   <select
                     value={formData.adminRole}
                     onChange={e => setFormData({ ...formData, adminRole: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                   >
                     <option value="Enterprise Owner">Enterprise Owner (Full Access)</option>
                     <option value="Enterprise Admin">University Admin (Management Access)</option>
@@ -382,7 +382,7 @@ const EnterpriseSetupPage = () => {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                  <Globe className="text-[#C8A34D]" size={22} /> Step 3: Domain Verification Status
+                  <Globe className="text-[#B88B2A]" size={22} /> Step 3: Domain Verification Status
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   The institutional domain MUST be verified before automatic student linking is activated.
@@ -408,7 +408,7 @@ const EnterpriseSetupPage = () => {
 
                 <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
                   <p className="text-xs font-bold text-slate-500">DNS TXT Record for Verification:</p>
-                  <code className="block p-2 rounded bg-slate-100 dark:bg-slate-950 text-xs font-mono text-[#C8A34D] select-all">
+                  <code className="block p-2 rounded bg-slate-100 dark:bg-slate-950 text-xs font-mono text-[#B88B2A] select-all">
                     {formData.verificationToken}
                   </code>
                 </div>
@@ -421,7 +421,7 @@ const EnterpriseSetupPage = () => {
                     <button
                       onClick={handleVerifyDomain}
                       disabled={loading}
-                      className="px-5 py-2 rounded-xl bg-[#C8A34D] hover:bg-[#B08D3E] text-slate-950 font-bold text-xs shadow-md"
+                      className="px-5 py-2 rounded-xl bg-[#B88B2A] hover:bg-[#B08D3E] text-slate-950 font-bold text-xs shadow-md"
                     >
                       {loading ? 'Verifying...' : 'Verify Domain Now'}
                     </button>
@@ -436,7 +436,7 @@ const EnterpriseSetupPage = () => {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                  <BookOpen className="text-[#C8A34D]" size={22} /> Step 4: Academic Structure Setup
+                  <BookOpen className="text-[#B88B2A]" size={22} /> Step 4: Academic Structure Setup
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Define Course → Year/Batch → Semester → Subjects tree for student alignment.
@@ -448,7 +448,7 @@ const EnterpriseSetupPage = () => {
                   <div key={cIdx} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Layers size={18} className="text-[#C8A34D]" /> {course.name} ({course.code})
+                        <Layers size={18} className="text-[#B88B2A]" /> {course.name} ({course.code})
                       </h4>
                       <span className="text-xs font-bold text-slate-400">{course.durationYears} Years Program</span>
                     </div>
@@ -477,7 +477,7 @@ const EnterpriseSetupPage = () => {
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                  <Settings className="text-[#C8A34D]" size={22} /> Step 5: Feature & Budget Configuration
+                  <Settings className="text-[#B88B2A]" size={22} /> Step 5: Feature & Budget Configuration
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Configure AI feature permissions, monthly usage quotas, and institutional budget rules.
@@ -498,7 +498,7 @@ const EnterpriseSetupPage = () => {
                           ...formData,
                           features: { ...formData.features, [featKey]: e.target.checked }
                         })}
-                        className="rounded accent-[#C8A34D]"
+                        className="rounded accent-[#B88B2A]"
                       />
                       {featKey.replace(/([AZ])/g, ' $1')}
                     </label>
@@ -515,7 +515,7 @@ const EnterpriseSetupPage = () => {
                     type="number"
                     value={formData.monthlyCredits}
                     onChange={e => setFormData({ ...formData, monthlyCredits: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -527,7 +527,7 @@ const EnterpriseSetupPage = () => {
                     type="number"
                     value={formData.monthlyBudget}
                     onChange={e => setFormData({ ...formData, monthlyBudget: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
               </div>
@@ -549,7 +549,7 @@ const EnterpriseSetupPage = () => {
             {step < 5 ? (
               <button
                 onClick={handleNext}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-extrabold text-xs hover:brightness-110 transition-all flex items-center gap-2 shadow-md"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-extrabold text-xs hover:brightness-110 transition-all flex items-center gap-2 shadow-md"
               >
                 Continue Step {step + 1} <ChevronRight size={16} />
               </button>
@@ -557,7 +557,7 @@ const EnterpriseSetupPage = () => {
               <button
                 onClick={handleCompleteSetup}
                 disabled={loading}
-                className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black text-xs hover:scale-105 transition-all flex items-center gap-2 shadow-lg shadow-[#C8A34D]/20 cursor-pointer"
+                className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black text-xs hover:scale-105 transition-all flex items-center gap-2 shadow-lg shadow-[#B88B2A]/20 cursor-pointer"
               >
                 <Sparkles size={16} /> {loading ? 'Activating Enterprise...' : 'Launch Enterprise Dashboard'}
               </button>

@@ -62,14 +62,14 @@ export default function StudentDashboardSection({ user, cases = [] }) {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center gap-1">
-                <GraduationCap className="w-3.5 h-3.5 text-[#C8A34D]" /> Law Student Portal
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center gap-1">
+                <GraduationCap className="w-3.5 h-3.5 text-[#B88B2A]" /> Law Student Portal
               </span>
               <button
                 onClick={() => setIsGuideOpen(true)}
-                className="text-xs text-[#C8A34D] hover:underline font-semibold flex items-center gap-1 bg-[#C8A34D]/5 px-2 py-0.5 rounded-md cursor-pointer"
+                className="text-xs text-[#B88B2A] hover:underline font-semibold flex items-center gap-1 bg-[#B88B2A]/5 px-2 py-0.5 rounded-md cursor-pointer"
               >
-                <Info className="w-3.5 h-3.5 text-[#C8A34D]" /> AI Legal<sup className="text-[9px] font-bold text-[#111827] dark:text-white ml-0.5">TM</sup> Product Guide
+                <Info className="w-3.5 h-3.5 text-[#B88B2A]" /> AI Legal<sup className="text-[9px] font-bold text-[#111827] dark:text-white ml-0.5">TM</sup> Product Guide
               </button>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-[#111827] dark:text-white tracking-tight">
@@ -85,13 +85,13 @@ export default function StudentDashboardSection({ user, cases = [] }) {
               onClick={() => setIsGuideOpen(true)}
               className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap"
             >
-              <Info className="w-4 h-4 text-[#C8A34D]" />
+              <Info className="w-4 h-4 text-[#B88B2A]" />
               <span>Product Guide</span>
             </button>
 
             <button
               onClick={() => navigate('/dashboard/tools/knowledge-hub')}
-              className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-white font-bold text-xs shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
+              className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-white font-bold text-xs shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
             >
               <BookOpen className="w-4 h-4" />
               <span>Knowledge Hub</span>
@@ -106,12 +106,12 @@ export default function StudentDashboardSection({ user, cases = [] }) {
         <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between space-y-2 sm:space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="p-1.5 sm:p-2 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/25">
+              <div className="p-1.5 sm:p-2 rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25">
                 <BarChart2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <span className="text-xs sm:text-sm font-bold text-[#111827] dark:text-white">Study Progress</span>
             </div>
-            <span className="text-xs font-bold text-[#C8A34D]">{studentDashboardData.progressPercent}%</span>
+            <span className="text-xs font-bold text-[#B88B2A]">{studentDashboardData.progressPercent}%</span>
           </div>
 
           <div className="space-y-1 text-[11px] sm:text-xs">
@@ -126,7 +126,7 @@ export default function StudentDashboardSection({ user, cases = [] }) {
           </div>
 
           <div className="w-full h-1.5 sm:h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-            <div className="h-full bg-[#C8A34D] rounded-full" style={{ width: `${studentDashboardData.progressPercent}%` }} />
+            <div className="h-full bg-[#B88B2A] rounded-full" style={{ width: `${studentDashboardData.progressPercent}%` }} />
           </div>
           <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">Usage Goal: {studentDashboardData.progressPercent}%</p>
         </div>
@@ -158,25 +158,25 @@ export default function StudentDashboardSection({ user, cases = [] }) {
       </div>
 
       {/* 3. CONTINUE LEARNING */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#C8A34D]/40 shadow-2xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#B88B2A]/40 shadow-2xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1.5 flex-1">
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 inline-flex items-center gap-1">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30 inline-flex items-center gap-1">
             <Clock className="w-3 h-3" /> CONTINUE LEARNING
           </span>
           <h3 className="text-lg font-bold text-[#111827] dark:text-white tracking-tight">
             Bharatiya Nyaya Sanhita (BNS) 2023
           </h3>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-            Key differences from IPC & Crimes Against Body • <span className="text-[#C8A34D] font-bold">{progressPercent > 0 ? `${progressPercent}%` : '0%'} Completed</span>
+            Key differences from IPC & Crimes Against Body • <span className="text-[#B88B2A] font-bold">{progressPercent > 0 ? `${progressPercent}%` : '0%'} Completed</span>
           </p>
           <div className="w-full max-w-md h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
-            <div className="h-full bg-[#C8A34D] rounded-full transition-all duration-300" style={{ width: `${progressPercent}%` }} />
+            <div className="h-full bg-[#B88B2A] rounded-full transition-all duration-300" style={{ width: `${progressPercent}%` }} />
           </div>
         </div>
 
         <button
           onClick={() => navigate('/dashboard/tools/knowledge-hub')}
-          className="px-5 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-white font-bold text-xs transition-all shadow-2xs flex items-center gap-2 shrink-0 cursor-pointer"
+          className="px-5 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-white font-bold text-xs transition-all shadow-2xs flex items-center gap-2 shrink-0 cursor-pointer"
         >
           <span>{progressPercent > 0 ? 'Resume Study' : 'Start Study'}</span>
           <ArrowRight className="w-4 h-4" />
@@ -189,13 +189,13 @@ export default function StudentDashboardSection({ user, cases = [] }) {
         <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
           <div
             onClick={() => navigate('/dashboard/tools/notes-maker')}
-            className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/50 transition-all cursor-pointer shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5 group"
+            className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A]/50 transition-all cursor-pointer shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5 group"
           >
-            <div className="p-2.5 sm:p-3 rounded-xl bg-[#C8A34D]/10 border border-[#C8A34D]/25 text-[#C8A34D] shrink-0">
+            <div className="p-2.5 sm:p-3 rounded-xl bg-[#B88B2A]/10 border border-[#B88B2A]/25 text-[#B88B2A] shrink-0">
               <Bookmark className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div className="flex-1">
-              <h4 className="text-xs sm:text-sm font-bold text-[#111827] dark:text-white group-hover:text-[#C8A34D] transition-colors">
+              <h4 className="text-xs sm:text-sm font-bold text-[#111827] dark:text-white group-hover:text-[#B88B2A] transition-colors">
                 AI Notes Workspace
               </h4>
               <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 line-clamp-2">Structure & summarize notes</p>
@@ -205,7 +205,7 @@ export default function StudentDashboardSection({ user, cases = [] }) {
 
           <div
             onClick={() => navigate('/dashboard/tools/quiz-practice')}
-            className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/50 transition-all cursor-pointer shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5 group"
+            className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A]/50 transition-all cursor-pointer shadow-2xs flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5 group"
           >
             <div className="p-2.5 sm:p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 text-emerald-600 dark:text-emerald-400 shrink-0">
               <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -238,7 +238,7 @@ export default function StudentDashboardSection({ user, cases = [] }) {
               title: 'Section 302 IPC vs Section 103 BNS Murder Rulings',
               path: '/dashboard/tools/knowledge-hub',
               icon: FileText,
-              color: 'text-[#C8A34D] bg-[#C8A34D]/10 border-[#C8A34D]/25',
+              color: 'text-[#B88B2A] bg-[#B88B2A]/10 border-[#B88B2A]/25',
             },
             {
               tag: 'LANDMARK JUDGMENT',
@@ -253,7 +253,7 @@ export default function StudentDashboardSection({ user, cases = [] }) {
               <div
                 key={idx}
                 onClick={() => navigate(ch.path)}
-                className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/40 transition-all cursor-pointer shadow-2xs flex items-center justify-between gap-3.5 group"
+                className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A]/40 transition-all cursor-pointer shadow-2xs flex items-center justify-between gap-3.5 group"
               >
                 <div className={`p-2.5 rounded-xl border shrink-0 ${ch.color}`}>
                   <IconC className="w-4.5 h-4.5" />
@@ -262,7 +262,7 @@ export default function StudentDashboardSection({ user, cases = [] }) {
                   <span className="text-[10px] font-extrabold tracking-wider uppercase text-slate-500 dark:text-slate-400">
                     {ch.tag}
                   </span>
-                  <h4 className="text-xs sm:text-sm font-bold text-[#111827] dark:text-white group-hover:text-[#C8A34D] transition-colors">
+                  <h4 className="text-xs sm:text-sm font-bold text-[#111827] dark:text-white group-hover:text-[#B88B2A] transition-colors">
                     {ch.title}
                   </h4>
                 </div>
@@ -303,7 +303,7 @@ export default function StudentDashboardSection({ user, cases = [] }) {
 
           <div className="p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 shadow-2xs">
             <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Hours Studied</span>
-            <div className="text-xl font-black text-[#C8A34D] mt-1">
+            <div className="text-xl font-black text-[#B88B2A] mt-1">
               {studentDashboardData.hoursStudied} hrs
             </div>
             <span className="text-[10px] text-slate-400">Calculated Activity</span>
@@ -314,7 +314,7 @@ export default function StudentDashboardSection({ user, cases = [] }) {
       {/* 7. AI RECOMMENDED TOPICS TODAY */}
       <div className="p-5 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-3">
         <h3 className="text-sm font-bold text-[#111827] dark:text-white flex items-center gap-2">
-          <Brain className="w-4.5 h-4.5 text-[#C8A34D]" />
+          <Brain className="w-4.5 h-4.5 text-[#B88B2A]" />
           <span>AI Recommended Topics Today</span>
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -340,10 +340,10 @@ export default function StudentDashboardSection({ user, cases = [] }) {
             <button
               key={idx}
               onClick={() => handleTopicClick(item.prompt)}
-              className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 hover:bg-[#C8A34D]/10 border border-slate-200/80 dark:border-slate-800 text-left text-xs text-slate-700 dark:text-slate-300 hover:text-[#C8A34D] hover:border-[#C8A34D]/40 transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 group"
+              className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 hover:bg-[#B88B2A]/10 border border-slate-200/80 dark:border-slate-800 text-left text-xs text-slate-700 dark:text-slate-300 hover:text-[#B88B2A] hover:border-[#B88B2A]/40 transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 group"
             >
-              <span className="font-semibold group-hover:text-[#C8A34D] transition-colors">• {item.title}</span>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#C8A34D] group-hover:translate-x-0.5 transition-all shrink-0" />
+              <span className="font-semibold group-hover:text-[#B88B2A] transition-colors">• {item.title}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#B88B2A] group-hover:translate-x-0.5 transition-all shrink-0" />
             </button>
           ))}
         </div>

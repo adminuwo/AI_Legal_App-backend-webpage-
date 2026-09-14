@@ -761,7 +761,7 @@ export const CaseWorkspace = ({
 
               <button
                 onClick={() => setIsTeamModalOpen(true)}
-                className="px-3.5 py-2 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 hover:bg-[#C8A34D]/25 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="px-3.5 py-2 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 hover:bg-[#B88B2A]/25 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 <Users size={14} /> Team Roster
               </button>
@@ -781,7 +781,7 @@ export const CaseWorkspace = ({
                     </div>
                     <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-[#1E293B] rounded-full"></span>
                   </div>
-                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-[#C8A34D] transition-colors">
+                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-[#B88B2A] transition-colors">
                     {member.name}
                   </span>
                 </div>
@@ -1013,7 +1013,7 @@ export const CaseWorkspace = ({
             <h1 className="text-base sm:text-xl font-black text-[#0F172A] dark:text-white uppercase tracking-wider">
               COURT DOCKET COMMAND CENTER
             </h1>
-            <p className="text-xs text-[#C8A34D] font-bold mt-0.5">
+            <p className="text-xs text-[#B88B2A] font-bold mt-0.5">
               {caseData.name || 'hddh'}
             </p>
           </div>
@@ -1033,7 +1033,7 @@ export const CaseWorkspace = ({
               });
               setIsAddHearingModalOpen(true);
             }}
-            className="px-4 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all cursor-pointer shadow-xs flex items-center gap-2 shrink-0"
+            className="px-4 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all cursor-pointer shadow-xs flex items-center gap-2 shrink-0"
           >
             <Calendar size={15} /> Schedule Hearing
           </button>
@@ -1042,8 +1042,8 @@ export const CaseWorkspace = ({
         {/* =========================================================================
             OPERATIONS REPORT CARD (MATCHING MOBILE SCREENSHOT 1 & 2)
         ========================================================================= */}
-        <div className="bg-white dark:bg-[#1E293B] border-2 border-[#C8A34D]/40 rounded-3xl p-5 shadow-xs space-y-3">
-          <h3 className="text-[10px] font-black text-[#C8A34D] uppercase tracking-widest">
+        <div className="bg-white dark:bg-[#1E293B] border-2 border-[#B88B2A]/40 rounded-3xl p-5 shadow-xs space-y-3">
+          <h3 className="text-[10px] font-black text-[#B88B2A] uppercase tracking-widest">
             OPERATIONS REPORT
           </h3>
 
@@ -1106,7 +1106,7 @@ export const CaseWorkspace = ({
                           });
                           setIsAddHearingModalOpen(true);
                         }}
-                        className="text-[10px] font-bold text-[#C8A34D] hover:underline cursor-pointer"
+                        className="text-[10px] font-bold text-[#B88B2A] hover:underline cursor-pointer"
                       >
                         Edit
                       </button>
@@ -1144,7 +1144,7 @@ export const CaseWorkspace = ({
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {upcomingHearings.map(h => (
-                <div key={h.id || h._id} className="p-4 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl space-y-2 shadow-xs hover:border-[#C8A34D] transition-colors">
+                <div key={h.id || h._id} className="p-4 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl space-y-2 shadow-xs hover:border-[#B88B2A] transition-colors">
                   <div className="flex justify-between items-start">
                     <span className="px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold text-[10px]">
                       📅 {h.date} • {h.time || '10:30 AM'}
@@ -1165,7 +1165,7 @@ export const CaseWorkspace = ({
                           });
                           setIsAddHearingModalOpen(true);
                         }}
-                        className="text-[10px] font-bold text-[#C8A34D] hover:underline cursor-pointer"
+                        className="text-[10px] font-bold text-[#B88B2A] hover:underline cursor-pointer"
                       >
                         Edit
                       </button>
@@ -1202,7 +1202,7 @@ export const CaseWorkspace = ({
                 value={hearingSearchQuery}
                 onChange={e => setHearingSearchQuery(e.target.value)}
                 placeholder="Search by court, judge, or advocate..."
-                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
               />
             </div>
 
@@ -1214,7 +1214,7 @@ export const CaseWorkspace = ({
                   onClick={() => setHearingFilterChip(chip)}
                   className={`px-4 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer ${
                     hearingFilterChip === chip
-                      ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
+                      ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
                       : 'bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100'
                   }`}
                 >
@@ -1276,7 +1276,7 @@ export const CaseWorkspace = ({
                   onClick={() => setSelectedCalendarDate(dateStr)}
                   className={`py-2 rounded-xl font-black transition-all relative cursor-pointer ${
                     isSelected
-                      ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
+                      ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
                       : isToday
                         ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30'
                         : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
@@ -1284,7 +1284,7 @@ export const CaseWorkspace = ({
                 >
                   <span>{dayNum}</span>
                   {hasHearing && (
-                    <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-[#111111]' : 'bg-[#C8A34D]'}`}></span>
+                    <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-[#111111]' : 'bg-[#B88B2A]'}`}></span>
                   )}
                 </button>
               );
@@ -1309,9 +1309,9 @@ export const CaseWorkspace = ({
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {selectedDateHearings.map(h => (
-                <div key={h.id || h._id} className="p-4 bg-white dark:bg-[#1E293B] border border-[#C8A34D] rounded-2xl space-y-2 shadow-xs">
+                <div key={h.id || h._id} className="p-4 bg-white dark:bg-[#1E293B] border border-[#B88B2A] rounded-2xl space-y-2 shadow-xs">
                   <div className="flex justify-between items-start">
-                    <span className="px-2 py-0.5 rounded bg-[#C8A34D]/15 text-[#C8A34D] font-bold text-[10px]">
+                    <span className="px-2 py-0.5 rounded bg-[#B88B2A]/15 text-[#B88B2A] font-bold text-[10px]">
                       {h.time || '10:30 AM'}
                     </span>
                     <div className="flex items-center gap-2">
@@ -1330,7 +1330,7 @@ export const CaseWorkspace = ({
                           });
                           setIsAddHearingModalOpen(true);
                         }}
-                        className="text-[10px] font-bold text-[#C8A34D] hover:underline cursor-pointer"
+                        className="text-[10px] font-bold text-[#B88B2A] hover:underline cursor-pointer"
                       >
                         Edit
                       </button>
@@ -1377,7 +1377,7 @@ export const CaseWorkspace = ({
                       type="date"
                       value={hearingFormState.date}
                       onChange={e => setHearingFormState({ ...hearingFormState, date: e.target.value })}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#C8A34D] focus:outline-none"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#B88B2A] focus:outline-none"
                     />
                   </div>
                   <div className="space-y-1">
@@ -1387,7 +1387,7 @@ export const CaseWorkspace = ({
                       value={hearingFormState.time}
                       onChange={e => setHearingFormState({ ...hearingFormState, time: e.target.value })}
                       placeholder="e.g. 10:30 AM"
-                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#C8A34D] focus:outline-none"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#B88B2A] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1399,7 +1399,7 @@ export const CaseWorkspace = ({
                     value={hearingFormState.courtName}
                     onChange={e => setHearingFormState({ ...hearingFormState, courtName: e.target.value })}
                     placeholder="e.g. High Court of Delhi"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#B88B2A] focus:outline-none"
                   />
                 </div>
 
@@ -1411,7 +1411,7 @@ export const CaseWorkspace = ({
                       value={hearingFormState.courtroom}
                       onChange={e => setHearingFormState({ ...hearingFormState, courtroom: e.target.value })}
                       placeholder="e.g. Courtroom No. 302"
-                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#C8A34D] focus:outline-none"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#B88B2A] focus:outline-none"
                     />
                   </div>
                   <div className="space-y-1">
@@ -1419,7 +1419,7 @@ export const CaseWorkspace = ({
                     <select
                       value={hearingFormState.purpose}
                       onChange={e => setHearingFormState({ ...hearingFormState, purpose: e.target.value })}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#C8A34D] focus:outline-none cursor-pointer"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#B88B2A] focus:outline-none cursor-pointer"
                     >
                       {['Final Arguments', 'Arguments', 'Evidence', 'Cross Examination', 'Examination-in-Chief', 'Orders', 'Filing', 'Admission', 'Preliminary Hearing', 'Other'].map(p => (
                         <option key={p} value={p}>{p}</option>
@@ -1435,7 +1435,7 @@ export const CaseWorkspace = ({
                     value={hearingFormState.judge}
                     onChange={e => setHearingFormState({ ...hearingFormState, judge: e.target.value })}
                     placeholder="e.g. Hon'ble Justice R.K. Sharma"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold focus:border-[#B88B2A] focus:outline-none"
                   />
                 </div>
 
@@ -1446,7 +1446,7 @@ export const CaseWorkspace = ({
                     value={hearingFormState.notes}
                     onChange={e => setHearingFormState({ ...hearingFormState, notes: e.target.value })}
                     placeholder="Key argument points, documents to carry..."
-                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-medium focus:border-[#C8A34D] focus:outline-none leading-relaxed"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-medium focus:border-[#B88B2A] focus:outline-none leading-relaxed"
                   />
                 </div>
               </div>
@@ -1462,7 +1462,7 @@ export const CaseWorkspace = ({
                 <button
                   type="button"
                   onClick={handleSaveHearing}
-                  className="px-6 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
+                  className="px-6 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
                 >
                   {editingHearing ? 'Save Changes' : 'Schedule Hearing'}
                 </button>
@@ -1723,7 +1723,7 @@ export const CaseWorkspace = ({
             </h1>
             <button
               onClick={handleOpenCreateModal}
-              className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
+              className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
             >
               <Plus size={14} /> Create Task
             </button>
@@ -1743,7 +1743,7 @@ export const CaseWorkspace = ({
             value={taskSearchQuery}
             onChange={e => setTaskSearchQuery(e.target.value)}
             placeholder="Search tasks..."
-            className="w-full pl-11 pr-4 py-3 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+            className="w-full pl-11 pr-4 py-3 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
           />
         </div>
 
@@ -1787,7 +1787,7 @@ export const CaseWorkspace = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5 uppercase tracking-wider">
-                <Sparkles size={14} className="text-[#C8A34D]" /> AI Suggestions
+                <Sparkles size={14} className="text-[#B88B2A]" /> AI Suggestions
               </h2>
               <button
                 onClick={() => setIsAiSuggestionsModalOpen(true)}
@@ -1799,7 +1799,7 @@ export const CaseWorkspace = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {aiSuggestedTasks.slice(0, 2).map((sugg) => (
-                <div key={sugg.id} className="p-4 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl space-y-2.5 shadow-xs hover:border-[#C8A34D] transition-colors">
+                <div key={sugg.id} className="p-4 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl space-y-2.5 shadow-xs hover:border-[#B88B2A] transition-colors">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="text-xs font-black text-slate-900 dark:text-white truncate flex-1">{sugg.title}</h3>
                     <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${
@@ -1821,7 +1821,7 @@ export const CaseWorkspace = ({
                     <span className="text-[10px] text-slate-400 font-bold">Due {sugg.deadline || 'Tomorrow'}</span>
                     <button
                       onClick={() => handleOpenAssignAiModal(sugg)}
-                      className="px-3 py-1.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] text-[10px] font-black rounded-xl transition-all cursor-pointer shadow-xs flex items-center gap-1"
+                      className="px-3 py-1.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] text-[10px] font-black rounded-xl transition-all cursor-pointer shadow-xs flex items-center gap-1"
                     >
                       <Plus size={12} /> Assign Task
                     </button>
@@ -1859,7 +1859,7 @@ export const CaseWorkspace = ({
                 return (
                   <div key={member.name} className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-2xl flex items-center justify-between border border-slate-100 dark:border-slate-800">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] flex items-center justify-center font-black text-xs">
+                      <div className="w-8 h-8 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] flex items-center justify-center font-black text-xs">
                         {member.shortName.split(' ').map(n => n[0]).join('')}
                       </div>
                       <div>
@@ -1868,7 +1868,7 @@ export const CaseWorkspace = ({
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-black text-[#C8A34D]">{activeCount} Active Tasks</span>
+                      <span className="text-xs font-black text-[#B88B2A]">{activeCount} Active Tasks</span>
                       <span className={`block text-[9px] font-bold ${activeCount > 3 ? 'text-rose-500' : 'text-emerald-500'}`}>
                         {statusLabel}
                       </span>
@@ -1886,7 +1886,7 @@ export const CaseWorkspace = ({
               </h2>
               <button
                 onClick={handleOpenCreateModal}
-                className="text-xs font-bold text-[#C8A34D] hover:underline flex items-center gap-0.5 cursor-pointer"
+                className="text-xs font-bold text-[#B88B2A] hover:underline flex items-center gap-0.5 cursor-pointer"
               >
                 <Plus size={14} /> Create
               </button>
@@ -1900,7 +1900,7 @@ export const CaseWorkspace = ({
                 </p>
                 <button
                   onClick={handleOpenCreateModal}
-                  className="px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all cursor-pointer shadow-xs inline-flex items-center gap-1.5"
+                  className="px-5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all cursor-pointer shadow-xs inline-flex items-center gap-1.5"
                 >
                   <Plus size={14} /> Create Task
                 </button>
@@ -1908,7 +1908,7 @@ export const CaseWorkspace = ({
             ) : (
               <div className="space-y-3">
                 {filteredTasks.map(t => (
-                  <div key={t.id || t._id} className="p-4 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl space-y-3 shadow-xs hover:border-[#C8A34D] transition-colors">
+                  <div key={t.id || t._id} className="p-4 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl space-y-3 shadow-xs hover:border-[#B88B2A] transition-colors">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-2.5 flex-1 min-w-0">
                         <button
@@ -1916,7 +1916,7 @@ export const CaseWorkspace = ({
                           className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 cursor-pointer ${
                             t.status === 'Completed'
                               ? 'bg-emerald-500 border-emerald-500 text-white'
-                              : 'border-slate-300 dark:border-slate-700 hover:border-[#C8A34D]'
+                              : 'border-slate-300 dark:border-slate-700 hover:border-[#B88B2A]'
                           }`}
                         >
                           {t.status === 'Completed' && <Check size={12} />}
@@ -1945,7 +1945,7 @@ export const CaseWorkspace = ({
 
                         <button
                           onClick={() => handleOpenEditModal(t)}
-                          className="text-[10px] font-bold text-[#C8A34D] hover:underline cursor-pointer"
+                          className="text-[10px] font-bold text-[#B88B2A] hover:underline cursor-pointer"
                         >
                           Edit
                         </button>
@@ -1981,7 +1981,7 @@ export const CaseWorkspace = ({
         ========================================================================= */}
         <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xs space-y-2">
           <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-[#C8A34D]" />
+            <Calendar className="w-4 h-4 text-[#B88B2A]" />
             <h3 className="text-xs font-black text-slate-900 dark:text-white">
               Next Hearing
             </h3>
@@ -1994,7 +1994,7 @@ export const CaseWorkspace = ({
           </p>
           <button
             onClick={() => setActiveTab('hearings')}
-            className="text-xs font-black text-[#C8A34D] hover:underline flex items-center gap-1 pt-1 cursor-pointer"
+            className="text-xs font-black text-[#B88B2A] hover:underline flex items-center gap-1 pt-1 cursor-pointer"
           >
             View Checklist &rarr;
           </button>
@@ -2012,7 +2012,7 @@ export const CaseWorkspace = ({
                 <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
                   {modalType === 'ASSIGN_AI' ? (
                     <>
-                      <Sparkles className="w-4 h-4 text-[#C8A34D]" /> Assign AI Suggested Task
+                      <Sparkles className="w-4 h-4 text-[#B88B2A]" /> Assign AI Suggested Task
                     </>
                   ) : modalType === 'EDIT' ? (
                     'Edit Case Task'
@@ -2039,7 +2039,7 @@ export const CaseWorkspace = ({
                     value={taskFormState.title}
                     onChange={e => setTaskFormState({ ...taskFormState, title: e.target.value })}
                     placeholder="Enter task title..."
-                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                   />
                 </div>
 
@@ -2053,7 +2053,7 @@ export const CaseWorkspace = ({
                     value={taskFormState.description}
                     onChange={e => setTaskFormState({ ...taskFormState, description: e.target.value })}
                     placeholder="Add specific instructions for the assigned advocate.."
-                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none leading-relaxed"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none leading-relaxed"
                   />
                 </div>
 
@@ -2078,11 +2078,11 @@ export const CaseWorkspace = ({
                           onClick={() => setTaskFormState({ ...taskFormState, assignee: adv.name })}
                           className={`p-3 rounded-2xl text-left border transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-amber-500/10 border-[#C8A34D] ring-1 ring-[#C8A34D]'
+                              ? 'bg-amber-500/10 border-[#B88B2A] ring-1 ring-[#B88B2A]'
                               : 'bg-slate-50 dark:bg-slate-900/80 border-slate-200 dark:border-slate-800 hover:border-slate-300'
                           }`}
                         >
-                          <p className={`text-xs font-black ${isSelected ? 'text-[#C8A34D]' : 'text-slate-900 dark:text-white'}`}>
+                          <p className={`text-xs font-black ${isSelected ? 'text-[#B88B2A]' : 'text-slate-900 dark:text-white'}`}>
                             {adv.shortName} <span className="text-[10px] text-slate-400 font-semibold">({activeCount} active)</span>
                           </p>
                           <p className="text-[10px] font-semibold text-slate-400 mt-0.5">{adv.role}</p>
@@ -2107,7 +2107,7 @@ export const CaseWorkspace = ({
                           onClick={() => setTaskFormState({ ...taskFormState, priority: prio === 'Urgent' ? 'Critical' : prio })}
                           className={`py-2 px-1 rounded-xl text-xs font-black text-center transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
+                              ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
                               : 'bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100'
                           }`}
                         >
@@ -2128,7 +2128,7 @@ export const CaseWorkspace = ({
                     value={taskFormState.deadline}
                     onChange={e => setTaskFormState({ ...taskFormState, deadline: e.target.value })}
                     placeholder="e.g. 28 July 2026 or 2026-07-28"
-                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                   />
                 </div>
               </div>
@@ -2145,7 +2145,7 @@ export const CaseWorkspace = ({
                 <button
                   type="button"
                   onClick={handleSaveTask}
-                  className="px-6 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
+                  className="px-6 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
                 >
                   Assign Task
                 </button>
@@ -2162,7 +2162,7 @@ export const CaseWorkspace = ({
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-2xl max-w-lg w-full space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles size={16} className="text-[#C8A34D]" /> All AI Task Suggestions
+                  <Sparkles size={16} className="text-[#B88B2A]" /> All AI Task Suggestions
                 </h3>
                 <button
                   onClick={() => setIsAiSuggestionsModalOpen(false)}
@@ -2186,7 +2186,7 @@ export const CaseWorkspace = ({
                           setIsAiSuggestionsModalOpen(false);
                           handleOpenAssignAiModal(sugg);
                         }}
-                        className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs rounded-xl cursor-pointer"
+                        className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs rounded-xl cursor-pointer"
                       >
                         + Assign Task
                       </button>
@@ -2223,7 +2223,7 @@ export const CaseWorkspace = ({
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setActiveTab('settings')}
-              className="px-3 py-1.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D] hover:bg-[#C8A34D]/25 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs whitespace-nowrap"
+              className="px-3 py-1.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A] hover:bg-[#B88B2A]/25 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs whitespace-nowrap"
             >
               <Edit2 size={13} /> Edit Case
             </button>
@@ -2234,7 +2234,7 @@ export const CaseWorkspace = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
           {/* Card 1: CASE INFORMATION */}
           <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-xs space-y-2.5">
-            <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">
+            <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">
               CASE INFORMATION
             </h3>
 
@@ -2279,9 +2279,9 @@ export const CaseWorkspace = ({
 
           {/* Card 2: PARTIES */}
           <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-xs space-y-2.5">
-            <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2 flex justify-between items-center">
+            <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2 flex justify-between items-center">
               <span>PARTIES</span>
-              <button onClick={() => setActiveTab('parties')} className="text-[10px] sm:text-[11px] font-bold text-[#C8A34D] hover:underline">View Parties →</button>
+              <button onClick={() => setActiveTab('parties')} className="text-[10px] sm:text-[11px] font-bold text-[#B88B2A] hover:underline">View Parties →</button>
             </h3>
 
             <div className="grid grid-cols-2 gap-y-2.5 sm:gap-y-3.5 gap-x-3 sm:gap-x-6 text-xs">
@@ -2307,7 +2307,7 @@ export const CaseWorkspace = ({
 
           {/* Card 3: IMPORTANT DATES */}
           <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-xs space-y-2.5">
-            <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">
+            <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">
               IMPORTANT DATES
             </h3>
 
@@ -2340,7 +2340,7 @@ export const CaseWorkspace = ({
 
           {/* Card 4: TEAM INFORMATION */}
           <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-xs space-y-2.5">
-            <h3 className="text-xs font-black text-[#C8A34D] uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">
+            <h3 className="text-xs font-black text-[#B88B2A] uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">
               TEAM INFORMATION
             </h3>
 
@@ -2358,7 +2358,7 @@ export const CaseWorkspace = ({
               </div>
               <div>
                 <span className="text-[10px] sm:text-[11px] font-medium text-slate-400 block mb-0.5">Assigned Team</span>
-                <button onClick={() => setIsTeamModalOpen(true)} className="font-bold text-[#C8A34D] hover:underline text-xs sm:text-sm flex items-center gap-1 cursor-pointer">
+                <button onClick={() => setIsTeamModalOpen(true)} className="font-bold text-[#B88B2A] hover:underline text-xs sm:text-sm flex items-center gap-1 cursor-pointer">
                   2 Members →
                 </button>
               </div>
@@ -2390,9 +2390,9 @@ export const CaseWorkspace = ({
           </div>
 
           {/* Card 5: ✨ AI Case Summary (Full Width Banner) */}
-          <div className="sm:col-span-2 bg-gradient-to-r from-amber-500/5 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-[#1E293B] dark:to-amber-950/20 border border-[#C8A34D]/40 rounded-2xl p-4 sm:p-6 shadow-xs space-y-2.5">
+          <div className="sm:col-span-2 bg-gradient-to-r from-amber-500/5 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-[#1E293B] dark:to-amber-950/20 border border-[#B88B2A]/40 rounded-2xl p-4 sm:p-6 shadow-xs space-y-2.5">
             <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-2">
-              <Sparkles size={16} className="text-[#C8A34D]" />
+              <Sparkles size={16} className="text-[#B88B2A]" />
               <span>AI Case Summary</span>
             </h3>
 
@@ -2616,7 +2616,7 @@ export const CaseWorkspace = ({
         {/* ─── Top Header Banner ─── */}
         <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-[#C8A34D]/15 text-[#C8A34D] rounded-xl border border-[#C8A34D]/30">
+            <div className="p-3 bg-[#B88B2A]/15 text-[#B88B2A] rounded-xl border border-[#B88B2A]/30">
               <History size={20} />
             </div>
             <div>
@@ -2642,7 +2642,7 @@ export const CaseWorkspace = ({
             <button
               onClick={handleGenerateTimeline}
               disabled={isExtracting}
-              className="px-4 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs cursor-pointer disabled:opacity-50"
+              className="px-4 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs cursor-pointer disabled:opacity-50"
             >
               <Sparkles size={14} />
               <span>{isExtracting ? "Extracting..." : "AI Extract"}</span>
@@ -2659,7 +2659,7 @@ export const CaseWorkspace = ({
             {!hasTimelineItems ? (
               /* Empty Timeline State */
               <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-10 text-center space-y-4 shadow-xs">
-                <div className="w-14 h-14 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] flex items-center justify-center mx-auto border border-[#C8A34D]/30">
+                <div className="w-14 h-14 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] flex items-center justify-center mx-auto border border-[#B88B2A]/30">
                   <History size={26} />
                 </div>
                 <div>
@@ -2678,7 +2678,7 @@ export const CaseWorkspace = ({
                   <button
                     onClick={handleGenerateTimeline}
                     disabled={isExtracting}
-                    className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] text-xs font-black rounded-xl transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                    className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] text-xs font-black rounded-xl transition-all cursor-pointer shadow-xs disabled:opacity-50"
                   >
                     ✨ Generate Timeline
                   </button>
@@ -2698,7 +2698,7 @@ export const CaseWorkspace = ({
                   const isAi = item.isAiGenerated || item.createdBy === 'AI';
 
                   return (
-                    <div key={item.id || idx} className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs relative space-y-2 hover:border-[#C8A34D]/50 transition-all">
+                    <div key={item.id || idx} className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs relative space-y-2 hover:border-[#B88B2A]/50 transition-all">
                       {/* Top Node Date & Badges */}
                       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
                         <div className="flex items-center gap-2">
@@ -2727,7 +2727,7 @@ export const CaseWorkspace = ({
                           </span>
 
                           {isAi && (
-                            <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-md text-[9px] font-mono font-bold uppercase flex items-center gap-1">
+                            <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-md text-[9px] font-mono font-bold uppercase flex items-center gap-1">
                               <Sparkles size={10} /> AI
                             </span>
                           )}
@@ -2782,7 +2782,7 @@ export const CaseWorkspace = ({
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
-                  <History size={18} className="text-[#C8A34D]" />
+                  <History size={18} className="text-[#B88B2A]" />
                   <span>{editIndex >= 0 ? "Edit Case Milestone" : "Add Case Milestone / Fact"}</span>
                 </h3>
                 <button onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); setEditIndex(-1); }} className="text-slate-400 hover:text-slate-600">
@@ -2798,7 +2798,7 @@ export const CaseWorkspace = ({
                     placeholder="e.g. Demand Notice Served on Defendant"
                     value={formTitle}
                     onChange={e => setFormTitle(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -2810,7 +2810,7 @@ export const CaseWorkspace = ({
                       placeholder="e.g. 2026-02-15 or Feb 2026"
                       value={formDate}
                       onChange={e => setFormDate(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
 
@@ -2819,7 +2819,7 @@ export const CaseWorkspace = ({
                     <select
                       value={formCategory}
                       onChange={e => setFormCategory(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     >
                       {['Document', 'Hearing', 'Evidence', 'Court Filing', 'Payment', 'Notice', 'Court Order', 'General'].map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -2834,7 +2834,7 @@ export const CaseWorkspace = ({
                     <select
                       value={formImportance}
                       onChange={e => setFormImportance(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     >
                       <option value="High">High Priority</option>
                       <option value="Medium">Medium Priority</option>
@@ -2849,7 +2849,7 @@ export const CaseWorkspace = ({
                       placeholder="e.g. demand_notice.pdf or Manual"
                       value={formSource}
                       onChange={e => setFormSource(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
@@ -2860,7 +2860,7 @@ export const CaseWorkspace = ({
                     id="formIsApproximateCheck"
                     checked={formIsApproximate}
                     onChange={e => setFormIsApproximate(e.target.checked)}
-                    className="rounded border-slate-300 text-[#C8A34D] focus:ring-[#C8A34D]"
+                    className="rounded border-slate-300 text-[#B88B2A] focus:ring-[#B88B2A]"
                   />
                   <label htmlFor="formIsApproximateCheck" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                     Is this date approximate? (* Approximate date)
@@ -2874,7 +2874,7 @@ export const CaseWorkspace = ({
                     placeholder="Enter factual context or details of this milestone..."
                     value={formDescription}
                     onChange={e => setFormDescription(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
               </div>
@@ -2888,7 +2888,7 @@ export const CaseWorkspace = ({
                 </button>
                 <button
                   onClick={handleSaveEvent}
-                  className="px-5 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer shadow-xs"
+                  className="px-5 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer shadow-xs"
                 >
                   {editIndex >= 0 ? "Update Event" : "Save Event"}
                 </button>
@@ -2942,7 +2942,7 @@ export const CaseWorkspace = ({
       switch (status) {
         case 'Upcoming':
         case 'Scheduled':
-          return { dot: 'bg-[#C8A34D]', badge: 'bg-[#C8A34D]/15 text-[#C8A34D] border-[#C8A34D]/30' };
+          return { dot: 'bg-[#B88B2A]', badge: 'bg-[#B88B2A]/15 text-[#B88B2A] border-[#B88B2A]/30' };
         case 'Completed':
           return { dot: 'bg-emerald-500', badge: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30' };
         case 'Adjourned':
@@ -3020,7 +3020,7 @@ export const CaseWorkspace = ({
       if (completedChecklistCount === totalChecklistCount && totalChecklistCount > 0) {
         return { title: 'Ready for Court', statusColor: 'text-emerald-600 dark:text-emerald-400', badgeBg: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' };
       } else if (completedChecklistCount > 0) {
-        return { title: 'Preparation In Progress', statusColor: 'text-[#C8A34D]', badgeBg: 'bg-[#C8A34D]/10 text-[#C8A34D] border-[#C8A34D]/30' };
+        return { title: 'Preparation In Progress', statusColor: 'text-[#B88B2A]', badgeBg: 'bg-[#B88B2A]/10 text-[#B88B2A] border-[#B88B2A]/30' };
       }
       return { title: 'Preparation Required', statusColor: 'text-amber-500', badgeBg: 'bg-amber-500/10 text-amber-500 border-amber-500/30' };
     };
@@ -3219,11 +3219,11 @@ export const CaseWorkspace = ({
         {/* ─── Top Header Banner ─── */}
         <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-[#C8A34D]/15 text-[#C8A34D] rounded-xl border border-[#C8A34D]/30">
+            <div className="p-3 bg-[#B88B2A]/15 text-[#B88B2A] rounded-xl border border-[#B88B2A]/30">
               <Gavel size={22} />
             </div>
             <div>
-              <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] rounded-md text-[10px] font-mono font-bold uppercase tracking-wider">
+              <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] rounded-md text-[10px] font-mono font-bold uppercase tracking-wider">
                 AI Court Hearing Assistant
               </span>
               <h2 className="text-xl font-black text-[#0F172A] dark:text-white mt-1">
@@ -3261,7 +3261,7 @@ export const CaseWorkspace = ({
 
             <button
               onClick={() => setIsOcrHearingPanelOpen(true)}
-              className="px-4 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs cursor-pointer"
+              className="px-4 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs cursor-pointer"
             >
               <Upload size={14} />
               <span>Upload Court Order</span>
@@ -3276,9 +3276,9 @@ export const CaseWorkspace = ({
           <div className="lg:col-span-2 space-y-6">
             
             {/* NEXT HEARING — PRIMARY SPOTLIGHT CARD */}
-            <div className="bg-white dark:bg-[#1E293B] border-2 border-[#C8A34D] rounded-2xl p-6 shadow-md relative overflow-hidden">
+            <div className="bg-white dark:bg-[#1E293B] border-2 border-[#B88B2A] rounded-2xl p-6 shadow-md relative overflow-hidden">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
-                <span className="text-xs font-black text-[#C8A34D] uppercase tracking-widest flex items-center gap-2">
+                <span className="text-xs font-black text-[#B88B2A] uppercase tracking-widest flex items-center gap-2">
                   <Calendar size={14} />
                   <span>NEXT HEARING SPOTLIGHT</span>
                 </span>
@@ -3982,7 +3982,7 @@ export const CaseWorkspace = ({
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
-                  <Gavel size={18} className="text-[#C8A34D]" />
+                  <Gavel size={18} className="text-[#B88B2A]" />
                   <span>{isHearingEditModalOpen ? "Edit Court Hearing" : "Schedule New Court Hearing"}</span>
                 </h3>
                 <button onClick={() => { setIsScheduleModalOpen(false); setIsHearingEditModalOpen(false); }} className="text-slate-400 hover:text-slate-600">
@@ -3998,7 +3998,7 @@ export const CaseWorkspace = ({
                     placeholder="e.g. Final Arguments on Interim Relief Application"
                     value={hearingForm.purpose}
                     onChange={e => setHearingForm({ ...hearingForm, purpose: e.target.value, stage: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -4009,7 +4009,7 @@ export const CaseWorkspace = ({
                       type="date"
                       value={hearingForm.date}
                       onChange={e => setHearingForm({ ...hearingForm, date: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
 
@@ -4020,7 +4020,7 @@ export const CaseWorkspace = ({
                       placeholder="e.g. 10:30 AM"
                       value={hearingForm.time}
                       onChange={e => setHearingForm({ ...hearingForm, time: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
@@ -4033,7 +4033,7 @@ export const CaseWorkspace = ({
                       placeholder="e.g. Courtroom No 4, Bench 2"
                       value={hearingForm.courtroom}
                       onChange={e => setHearingForm({ ...hearingForm, courtroom: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
 
@@ -4044,7 +4044,7 @@ export const CaseWorkspace = ({
                       placeholder="e.g. Hon’ble Justice R.K. Sharma"
                       value={hearingForm.judge}
                       onChange={e => setHearingForm({ ...hearingForm, judge: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
@@ -4057,7 +4057,7 @@ export const CaseWorkspace = ({
                       placeholder="e.g. High Court of Judicature"
                       value={hearingForm.courtName}
                       onChange={e => setHearingForm({ ...hearingForm, courtName: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
 
@@ -4066,7 +4066,7 @@ export const CaseWorkspace = ({
                     <select
                       value={hearingForm.reminder}
                       onChange={e => setHearingForm({ ...hearingForm, reminder: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     >
                       <option value="1 Day Before">1 Day Before</option>
                       <option value="2 Days Before">2 Days Before</option>
@@ -4082,7 +4082,7 @@ export const CaseWorkspace = ({
                     placeholder="Brief preparatory notes or hearing instructions..."
                     value={hearingForm.notes}
                     onChange={e => setHearingForm({ ...hearingForm, notes: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
               </div>
@@ -4096,7 +4096,7 @@ export const CaseWorkspace = ({
                 </button>
                 <button
                   onClick={handleSaveHearing}
-                  className="px-5 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer shadow-xs"
+                  className="px-5 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer shadow-xs"
                 >
                   {isHearingEditModalOpen ? "Update Hearing" : "Schedule Hearing"}
                 </button>
@@ -4111,7 +4111,7 @@ export const CaseWorkspace = ({
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
-                  <Upload size={18} className="text-[#C8A34D]" />
+                  <Upload size={18} className="text-[#B88B2A]" />
                   <span>Upload & Parse Court Order</span>
                 </h3>
                 <button onClick={() => setIsOcrHearingPanelOpen(false)} className="text-slate-400 hover:text-slate-600">
@@ -4124,8 +4124,8 @@ export const CaseWorkspace = ({
                   Upload a certified court order or proceeding document (PDF / Image). The AI Legal Assistant will parse court observations, order directives, and automatically extract/schedule the next hearing date.
                 </p>
 
-                <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-[#C8A34D] rounded-2xl p-6 text-center space-y-2 transition-all bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer">
-                  <div className="w-12 h-12 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] flex items-center justify-center mx-auto border border-[#C8A34D]/30">
+                <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-[#B88B2A] rounded-2xl p-6 text-center space-y-2 transition-all bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer">
+                  <div className="w-12 h-12 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] flex items-center justify-center mx-auto border border-[#B88B2A]/30">
                     <FileText size={22} />
                   </div>
                   <div>
@@ -4150,8 +4150,8 @@ export const CaseWorkspace = ({
                 </div>
 
                 {attachedHearingDoc && (
-                  <div className="p-3 bg-[#C8A34D]/10 border border-[#C8A34D]/30 rounded-xl flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#C8A34D] truncate mr-2">{attachedHearingDoc}</span>
+                  <div className="p-3 bg-[#B88B2A]/10 border border-[#B88B2A]/30 rounded-xl flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#B88B2A] truncate mr-2">{attachedHearingDoc}</span>
                     <button onClick={() => setAttachedHearingDoc('')} className="text-slate-400 hover:text-rose-500">
                       <X size={14} />
                     </button>
@@ -4175,7 +4175,7 @@ export const CaseWorkspace = ({
                     toast.success("Court order uploaded and processed into case timeline!");
                     setIsOcrHearingPanelOpen(false);
                   }}
-                  className="px-5 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer shadow-xs flex items-center gap-2"
+                  className="px-5 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer shadow-xs flex items-center gap-2"
                 >
                   <Sparkles size={14} />
                   <span>Extract & Schedule</span>
@@ -4260,7 +4260,7 @@ export const CaseWorkspace = ({
                   setPersonForm(prev => ({ ...prev, confirmedDuplicate: true }));
                   setTimeout(handleSavePerson, 100);
                 }}
-                className="px-2.5 py-1 bg-[#C8A34D] text-[#111111] text-[10px] font-black rounded-lg"
+                className="px-2.5 py-1 bg-[#B88B2A] text-[#111111] text-[10px] font-black rounded-lg"
               >
                 Add Anyway
               </button>
@@ -4392,7 +4392,7 @@ export const CaseWorkspace = ({
         {/* ─── Top Header Banner ─── */}
         <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-[#C8A34D]/15 text-[#C8A34D] rounded-xl border border-[#C8A34D]/30">
+            <div className="p-3 bg-[#B88B2A]/15 text-[#B88B2A] rounded-xl border border-[#B88B2A]/30">
               <Users size={22} />
             </div>
             <div>
@@ -4455,7 +4455,7 @@ export const CaseWorkspace = ({
 
             <button
               onClick={() => runPartiesDocExtraction(mockDocsList[0] || "plaint_recovery_suit.pdf")}
-              className="px-4 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs cursor-pointer"
+              className="px-4 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-xs cursor-pointer"
             >
               <Sparkles size={14} />
               <span>AI Auto-Extract</span>
@@ -4479,7 +4479,7 @@ export const CaseWorkspace = ({
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   activePartiesFilter === chip.id
                     ? 'bg-[#0F172A] dark:bg-white text-white dark:text-[#0F172A] shadow-xs'
-                    : 'bg-white dark:bg-[#1E293B] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]'
+                    : 'bg-white dark:bg-[#1E293B] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]'
                 }`}
               >
                 {chip.label}
@@ -4494,7 +4494,7 @@ export const CaseWorkspace = ({
               placeholder="Search case roster..."
               value={partiesSearch}
               onChange={e => setPartiesSearch(e.target.value)}
-              className="w-full text-xs font-medium pl-8 pr-8 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1E293B] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+              className="w-full text-xs font-medium pl-8 pr-8 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1E293B] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
             />
             {partiesSearch && (
               <button onClick={() => setPartiesSearch('')} className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600">
@@ -4507,7 +4507,7 @@ export const CaseWorkspace = ({
         {/* ─── UNIFIED ROSTER GRID ─── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Primary Client Card */}
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#C8A34D]/50 transition-all">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#B88B2A]/50 transition-all">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black flex items-center justify-center text-xs">
@@ -4539,7 +4539,7 @@ export const CaseWorkspace = ({
           </div>
 
           {/* Primary Opponent Card */}
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#C8A34D]/50 transition-all">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#B88B2A]/50 transition-all">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-black flex items-center justify-center text-xs">
@@ -4566,7 +4566,7 @@ export const CaseWorkspace = ({
 
           {/* Additional Co-Parties */}
           {additionalLitigants.filter(filterMatches).map((p) => (
-            <div key={p.id} className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 relative hover:border-[#C8A34D]/50 transition-all">
+            <div key={p.id} className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 relative hover:border-[#B88B2A]/50 transition-all">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black flex items-center justify-center text-xs">
@@ -4596,7 +4596,7 @@ export const CaseWorkspace = ({
           ))}
 
           {/* Opposing Counsel Card */}
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#C8A34D]/50 transition-all">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#B88B2A]/50 transition-all">
             <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-black flex items-center justify-center text-xs">
                 {getInitials(opposingLawyer || 'Counsel')}
@@ -4615,14 +4615,14 @@ export const CaseWorkspace = ({
 
           {/* Added Advocates */}
           {legalCounsel.filter(filterMatches).map((c) => (
-            <div key={c.id} className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#C8A34D]/50 transition-all">
+            <div key={c.id} className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#B88B2A]/50 transition-all">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 font-black flex items-center justify-center text-xs">
+                  <div className="w-10 h-10 rounded-xl bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 font-black flex items-center justify-center text-xs">
                     {getInitials(c.name)}
                   </div>
                   <div>
-                    <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-md text-[9px] font-mono font-bold uppercase">
+                    <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-md text-[9px] font-mono font-bold uppercase">
                       {c.counselType || 'ADVOCATE'}
                     </span>
                     <h4 className="text-sm font-black text-[#0F172A] dark:text-white mt-1">{c.name}</h4>
@@ -4644,7 +4644,7 @@ export const CaseWorkspace = ({
 
           {/* Witnesses & Experts */}
           {witnessesAndExperts.filter(filterMatches).map((w) => (
-            <div key={w.id} className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#C8A34D]/50 transition-all">
+            <div key={w.id} className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#B88B2A]/50 transition-all">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-black flex items-center justify-center text-xs">
@@ -4673,7 +4673,7 @@ export const CaseWorkspace = ({
           ))}
 
           {/* Presiding Court */}
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#C8A34D]/50 transition-all">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#B88B2A]/50 transition-all">
             <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-md text-[9px] font-mono font-bold uppercase">
               PRESIDING COURT
             </span>
@@ -4684,7 +4684,7 @@ export const CaseWorkspace = ({
           </div>
 
           {/* Presiding Judge */}
-          <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#C8A34D]/50 transition-all">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 hover:border-[#B88B2A]/50 transition-all">
             <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-md text-[9px] font-mono font-bold uppercase">
               PRESIDING JUDGE / BENCH
             </span>
@@ -4703,7 +4703,7 @@ export const CaseWorkspace = ({
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
-                  <Users size={18} className="text-[#C8A34D]" />
+                  <Users size={18} className="text-[#B88B2A]" />
                   <span>Add Person to Case Roster</span>
                 </h3>
                 <button onClick={() => setIsAddPersonModalOpen(false)} className="text-slate-400 hover:text-slate-600">
@@ -4719,7 +4719,7 @@ export const CaseWorkspace = ({
                     placeholder="e.g. Dr. Rajesh Kumar"
                     value={personForm.name}
                     onChange={e => setPersonForm({ ...personForm, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -4729,7 +4729,7 @@ export const CaseWorkspace = ({
                     <select
                       value={personForm.role}
                       onChange={e => setPersonForm({ ...personForm, role: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     >
                       {['Plaintiff / Petitioner', 'Defendant / Respondent', 'Complainant', 'Accused', 'Co-Petitioner', 'Co-Respondent', 'Witness', 'Expert Witness', 'Counsel / Advocate', 'Other'].map(r => (
                         <option key={r} value={r}>{r}</option>
@@ -4744,7 +4744,7 @@ export const CaseWorkspace = ({
                       placeholder="e.g. +91 98765 43210"
                       value={personForm.contact}
                       onChange={e => setPersonForm({ ...personForm, contact: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
@@ -4756,7 +4756,7 @@ export const CaseWorkspace = ({
                     placeholder="e.g. advocate@ai-legal.in"
                     value={personForm.email}
                     onChange={e => setPersonForm({ ...personForm, email: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -4767,7 +4767,7 @@ export const CaseWorkspace = ({
                       <select
                         value={personForm.witnessType}
                         onChange={e => setPersonForm({ ...personForm, witnessType: e.target.value })}
-                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                       >
                         <option value="Eye Witness">Eye Witness</option>
                         <option value="Expert Witness">Expert Witness</option>
@@ -4781,7 +4781,7 @@ export const CaseWorkspace = ({
                       <select
                         value={personForm.depositionStatus}
                         onChange={e => setPersonForm({ ...personForm, depositionStatus: e.target.value })}
-                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                       >
                         <option value="Pending">Pending</option>
                         <option value="Examined">Examined</option>
@@ -4799,7 +4799,7 @@ export const CaseWorkspace = ({
                     placeholder="Internal case notes or testimony summary..."
                     value={personForm.notes}
                     onChange={e => setPersonForm({ ...personForm, notes: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
               </div>
@@ -4813,7 +4813,7 @@ export const CaseWorkspace = ({
                 </button>
                 <button
                   onClick={handleSavePerson}
-                  className="px-5 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer shadow-xs"
+                  className="px-5 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer shadow-xs"
                 >
                   Save Person
                 </button>
@@ -4828,12 +4828,12 @@ export const CaseWorkspace = ({
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 font-black flex items-center justify-center text-xs">
+                  <div className="w-10 h-10 rounded-xl bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 font-black flex items-center justify-center text-xs">
                     {getInitials(selectedPerson.name)}
                   </div>
                   <div>
                     <h3 className="text-base font-black text-[#0F172A] dark:text-white">{selectedPerson.name}</h3>
-                    <span className="text-[10px] font-mono font-bold text-[#C8A34D] uppercase">{selectedPerson.role}</span>
+                    <span className="text-[10px] font-mono font-bold text-[#B88B2A] uppercase">{selectedPerson.role}</span>
                   </div>
                 </div>
                 <button onClick={() => { setIsPersonDetailModalOpen(false); setSelectedPerson(null); }} className="text-slate-400 hover:text-slate-600">
@@ -4845,7 +4845,7 @@ export const CaseWorkspace = ({
                 <p>Phone: <strong className="text-slate-900 dark:text-white">{selectedPerson.contact || 'N/A'}</strong></p>
                 <p>Email: <strong className="text-slate-900 dark:text-white">{selectedPerson.email || 'N/A'}</strong></p>
                 {selectedPerson.depositionStatus && (
-                  <p>Deposition Status: <strong className="text-[#C8A34D]">{selectedPerson.depositionStatus}</strong></p>
+                  <p>Deposition Status: <strong className="text-[#B88B2A]">{selectedPerson.depositionStatus}</strong></p>
                 )}
                 {selectedPerson.notes && (
                   <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -4910,7 +4910,7 @@ export const CaseWorkspace = ({
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-2xl w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
-                  <Edit2 size={18} className="text-[#C8A34D]" />
+                  <Edit2 size={18} className="text-[#B88B2A]" />
                   <span>Edit Primary Case Roster Entities</span>
                 </h3>
                 <button onClick={() => setIsEditRosterModalOpen(false)} className="text-slate-400 hover:text-slate-600">
@@ -4967,7 +4967,7 @@ export const CaseWorkspace = ({
 
                 {/* Judiciary Section */}
                 <div className="md:col-span-2 space-y-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800">
-                  <h4 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-wider text-[#C8A34D]">Judicial Metadata</h4>
+                  <h4 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-wider text-[#B88B2A]">Judicial Metadata</h4>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Presiding Court</label>
@@ -5000,7 +5000,7 @@ export const CaseWorkspace = ({
                 </button>
                 <button
                   onClick={handleSaveRosterForm}
-                  className="px-5 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider cursor-pointer shadow-xs"
+                  className="px-5 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider cursor-pointer shadow-xs"
                 >
                   Save Changes
                 </button>
@@ -5015,7 +5015,7 @@ export const CaseWorkspace = ({
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
-                  <Sparkles size={18} className="text-[#C8A34D]" />
+                  <Sparkles size={18} className="text-[#B88B2A]" />
                   <span>AI Extracted Roster Review</span>
                 </h3>
                 <button onClick={() => { setIsPartiesExtracting(false); setIsAiReviewModalOpen(false); }} className="text-slate-400 hover:text-slate-600">
@@ -5025,7 +5025,7 @@ export const CaseWorkspace = ({
 
               {isPartiesExtracting ? (
                 <div className="py-12 flex flex-col items-center justify-center space-y-3">
-                  <div className="w-8 h-8 rounded-full border-3 border-[#C8A34D]/20 border-t-[#C8A34D] animate-spin" />
+                  <div className="w-8 h-8 rounded-full border-3 border-[#B88B2A]/20 border-t-[#B88B2A] animate-spin" />
                   <p className="text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider animate-pulse">
                     {partiesExtractSteps[activePartiesExtractStep] || "Processing AI Document Extraction..."}
                   </p>
@@ -5042,7 +5042,7 @@ export const CaseWorkspace = ({
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-xs font-black text-[#0F172A] dark:text-white">{item.name}</span>
-                            <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] rounded-md text-[9px] font-mono font-bold">
+                            <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] rounded-md text-[9px] font-mono font-bold">
                               {item.role}
                             </span>
                           </div>
@@ -5054,7 +5054,7 @@ export const CaseWorkspace = ({
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleAcceptExtracted(item)}
-                            className="px-3 py-1.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] text-[10px] font-black rounded-lg transition-all cursor-pointer"
+                            className="px-3 py-1.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] text-[10px] font-black rounded-lg transition-all cursor-pointer"
                           >
                             Accept
                           </button>
@@ -5197,7 +5197,7 @@ export const CaseWorkspace = ({
 
           <button
             onClick={handleTriggerDocPick}
-            className="px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+            className="px-5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <Plus size={16} /> Upload Document
           </button>
@@ -5213,7 +5213,7 @@ export const CaseWorkspace = ({
               value={docSearchQuery}
               onChange={e => setDocSearchQuery(e.target.value)}
               placeholder="Search name, type, tags, date..."
-              className="w-full bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3 text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D]"
+              className="w-full bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3 text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A]"
             />
           </div>
 
@@ -5225,7 +5225,7 @@ export const CaseWorkspace = ({
                 onClick={() => setDocFilterCategory(cat)}
                 className={`px-4 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer ${
                   docFilterCategory === cat
-                    ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
+                    ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
                 }`}
               >
@@ -5245,7 +5245,7 @@ export const CaseWorkspace = ({
         {/* Content Section */}
         {filteredDocs.length === 0 ? (
           <div className="bg-white dark:bg-[#1E293B] border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center mx-auto text-3xl">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center mx-auto text-3xl">
               📁
             </div>
             <div className="space-y-1 max-w-sm mx-auto">
@@ -5258,7 +5258,7 @@ export const CaseWorkspace = ({
             </div>
             <button
               onClick={handleTriggerDocPick}
-              className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer shadow-xs inline-flex items-center gap-1"
+              className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer shadow-xs inline-flex items-center gap-1"
             >
               <Plus size={14} /> Upload Document
             </button>
@@ -5270,14 +5270,14 @@ export const CaseWorkspace = ({
               return (
                 <div
                   key={itemId}
-                  className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xs hover:border-[#C8A34D] transition-all space-y-3 flex flex-col justify-between"
+                  className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xs hover:border-[#B88B2A] transition-all space-y-3 flex flex-col justify-between"
                 >
                   <div className="space-y-2.5">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="p-3 bg-amber-500/10 text-[#C8A34D] rounded-2xl shrink-0">
+                      <div className="p-3 bg-amber-500/10 text-[#B88B2A] rounded-2xl shrink-0">
                         <FileText size={20} />
                       </div>
-                      <span className="px-2.5 py-1 bg-amber-500/10 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-[10px] font-black uppercase">
+                      <span className="px-2.5 py-1 bg-amber-500/10 text-[#B88B2A] border border-[#B88B2A]/30 rounded-xl text-[10px] font-black uppercase">
                         {item.category || 'Filing'}
                       </span>
                     </div>
@@ -5304,7 +5304,7 @@ export const CaseWorkspace = ({
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
                     <button
                       onClick={() => setPreviewDoc(item)}
-                      className="p-2 text-slate-400 hover:text-[#C8A34D] rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                      className="p-2 text-slate-400 hover:text-[#B88B2A] rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                       title="View Document"
                     >
                       <Eye size={16} />
@@ -5353,12 +5353,12 @@ export const CaseWorkspace = ({
                       value={docFormState.fileName}
                       onChange={e => setDocFormState({ ...docFormState, fileName: e.target.value })}
                       placeholder="Selected file name will appear here..."
-                      className="flex-1 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                      className="flex-1 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={handleTriggerDocPick}
-                      className="px-4 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-2xl text-xs font-black cursor-pointer shrink-0 transition-all shadow-xs flex items-center gap-1"
+                      className="px-4 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-2xl text-xs font-black cursor-pointer shrink-0 transition-all shadow-xs flex items-center gap-1"
                     >
                       <Upload size={14} /> Choose File
                     </button>
@@ -5380,7 +5380,7 @@ export const CaseWorkspace = ({
                           onClick={() => setDocFormState({ ...docFormState, category: cat })}
                           className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-amber-500/15 text-[#C8A34D] border border-[#C8A34D] shadow-xs'
+                              ? 'bg-amber-500/15 text-[#B88B2A] border border-[#B88B2A] shadow-xs'
                               : 'bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300'
                           }`}
                         >
@@ -5410,20 +5410,20 @@ export const CaseWorkspace = ({
                           onClick={() => setDocFormState({ ...docFormState, shareWith: opt.id })}
                           className={`w-full p-3.5 rounded-2xl text-left border transition-all cursor-pointer flex items-center justify-between ${
                             isSelected
-                              ? 'bg-amber-500/10 border-[#C8A34D] ring-1 ring-[#C8A34D]'
+                              ? 'bg-amber-500/10 border-[#B88B2A] ring-1 ring-[#B88B2A]'
                               : 'bg-slate-50 dark:bg-slate-900/80 border-slate-200 dark:border-slate-800 hover:border-slate-300'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-base">{opt.icon}</span>
                             <div>
-                              <p className={`text-xs font-bold ${isSelected ? 'text-[#C8A34D]' : 'text-slate-900 dark:text-white'}`}>
+                              <p className={`text-xs font-bold ${isSelected ? 'text-[#B88B2A]' : 'text-slate-900 dark:text-white'}`}>
                                 {opt.label}
                               </p>
                               <p className="text-[10px] font-semibold text-slate-400 mt-0.5">{opt.subtext}</p>
                             </div>
                           </div>
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#C8A34D] bg-[#C8A34D]' : 'border-slate-300'}`}>
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#B88B2A] bg-[#B88B2A]' : 'border-slate-300'}`}>
                             {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-[#111111]" />}
                           </div>
                         </button>
@@ -5447,7 +5447,7 @@ export const CaseWorkspace = ({
                           onClick={() => setDocFormState({ ...docFormState, teamAccessPreset: preset })}
                           className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-amber-500/15 text-[#C8A34D] border border-[#C8A34D]'
+                              ? 'bg-amber-500/15 text-[#B88B2A] border border-[#B88B2A]'
                               : 'bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300'
                           }`}
                         >
@@ -5471,7 +5471,7 @@ export const CaseWorkspace = ({
                 <button
                   type="button"
                   onClick={handleSaveDoc}
-                  className="px-6 py-2.5 rounded-2xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
+                  className="px-6 py-2.5 rounded-2xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
                 >
                   Upload & Share
                 </button>
@@ -5593,7 +5593,7 @@ export const CaseWorkspace = ({
 
           <button
             onClick={handleTriggerEvidencePick}
-            className="px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+            className="px-5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <Plus size={16} /> Upload
           </button>
@@ -5609,7 +5609,7 @@ export const CaseWorkspace = ({
               value={evidenceSearchQuery}
               onChange={e => setEvidenceSearchQuery(e.target.value)}
               placeholder="Search name, type, tags, date..."
-              className="w-full bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3 text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D]"
+              className="w-full bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3 text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A]"
             />
           </div>
 
@@ -5619,7 +5619,7 @@ export const CaseWorkspace = ({
               onClick={() => setEvidenceFilterCategory('All')}
               className={`px-4 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer ${
                 evidenceFilterCategory === 'All'
-                  ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
+                  ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
               }`}
             >
@@ -5630,7 +5630,7 @@ export const CaseWorkspace = ({
             <select
               value={evidenceFilterCategory}
               onChange={e => setEvidenceFilterCategory(e.target.value)}
-              className="px-3.5 py-2 rounded-2xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent focus:border-[#C8A34D] focus:outline-none cursor-pointer"
+              className="px-3.5 py-2 rounded-2xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent focus:border-[#B88B2A] focus:outline-none cursor-pointer"
             >
               <option value="All">Category: All</option>
               <option value="Document">Document</option>
@@ -5644,7 +5644,7 @@ export const CaseWorkspace = ({
             <select
               value={evidenceUploadedByFilter}
               onChange={e => setEvidenceUploadedByFilter(e.target.value)}
-              className="px-3.5 py-2 rounded-2xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent focus:border-[#C8A34D] focus:outline-none cursor-pointer"
+              className="px-3.5 py-2 rounded-2xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent focus:border-[#B88B2A] focus:outline-none cursor-pointer"
             >
               <option value="All">Uploaded By: All</option>
               <option value="Aditi">Adv. Aditi Lakhera</option>
@@ -5664,7 +5664,7 @@ export const CaseWorkspace = ({
         {/* Content Section: Empty State OR Exhibits Grid */}
         {filteredEvidence.length === 0 ? (
           <div className="bg-white dark:bg-[#1E293B] border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center mx-auto text-3xl">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center mx-auto text-3xl">
               📁
             </div>
             <div className="space-y-1 max-w-sm mx-auto">
@@ -5677,7 +5677,7 @@ export const CaseWorkspace = ({
             </div>
             <button
               onClick={handleTriggerEvidencePick}
-              className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer shadow-xs inline-flex items-center gap-1"
+              className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs cursor-pointer shadow-xs inline-flex items-center gap-1"
             >
               <Plus size={14} /> Upload Evidence
             </button>
@@ -5689,14 +5689,14 @@ export const CaseWorkspace = ({
               return (
                 <div
                   key={itemId}
-                  className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xs hover:border-[#C8A34D] transition-all space-y-3 flex flex-col justify-between"
+                  className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-xs hover:border-[#B88B2A] transition-all space-y-3 flex flex-col justify-between"
                 >
                   <div className="space-y-2.5">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="p-3 bg-amber-500/10 text-[#C8A34D] rounded-2xl shrink-0">
+                      <div className="p-3 bg-amber-500/10 text-[#B88B2A] rounded-2xl shrink-0">
                         {item.category === 'Images' ? <ImageIcon size={20} /> : item.category === 'Videos' ? <Film size={20} /> : <FileText size={20} />}
                       </div>
-                      <span className="px-2.5 py-1 bg-amber-500/10 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-[10px] font-black uppercase">
+                      <span className="px-2.5 py-1 bg-amber-500/10 text-[#B88B2A] border border-[#B88B2A]/30 rounded-xl text-[10px] font-black uppercase">
                         {item.category || item.type || 'Document'}
                       </span>
                     </div>
@@ -5723,7 +5723,7 @@ export const CaseWorkspace = ({
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
                     <button
                       onClick={() => setPreviewDoc(item)}
-                      className="p-2 text-slate-400 hover:text-[#C8A34D] rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                      className="p-2 text-slate-400 hover:text-[#B88B2A] rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                       title="View Preview"
                     >
                       <Eye size={16} />
@@ -5772,12 +5772,12 @@ export const CaseWorkspace = ({
                       value={evidenceFormState.fileName}
                       onChange={e => setEvidenceFormState({ ...evidenceFormState, fileName: e.target.value })}
                       placeholder="Selected evidence name will appear here..."
-                      className="flex-1 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                      className="flex-1 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={handleTriggerEvidencePick}
-                      className="px-4 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-2xl text-xs font-black cursor-pointer shrink-0 transition-all shadow-xs flex items-center gap-1"
+                      className="px-4 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-2xl text-xs font-black cursor-pointer shrink-0 transition-all shadow-xs flex items-center gap-1"
                     >
                       <Upload size={14} /> Choose File
                     </button>
@@ -5799,7 +5799,7 @@ export const CaseWorkspace = ({
                           onClick={() => setEvidenceFormState({ ...evidenceFormState, category: cat })}
                           className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-amber-500/15 text-[#C8A34D] border border-[#C8A34D] shadow-xs'
+                              ? 'bg-amber-500/15 text-[#B88B2A] border border-[#B88B2A] shadow-xs'
                               : 'bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300'
                           }`}
                         >
@@ -5829,20 +5829,20 @@ export const CaseWorkspace = ({
                           onClick={() => setEvidenceFormState({ ...evidenceFormState, shareWith: opt.id })}
                           className={`w-full p-3.5 rounded-2xl text-left border transition-all cursor-pointer flex items-center justify-between ${
                             isSelected
-                              ? 'bg-amber-500/10 border-[#C8A34D] ring-1 ring-[#C8A34D]'
+                              ? 'bg-amber-500/10 border-[#B88B2A] ring-1 ring-[#B88B2A]'
                               : 'bg-slate-50 dark:bg-slate-900/80 border-slate-200 dark:border-slate-800 hover:border-slate-300'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-base">{opt.icon}</span>
                             <div>
-                              <p className={`text-xs font-bold ${isSelected ? 'text-[#C8A34D]' : 'text-slate-900 dark:text-white'}`}>
+                              <p className={`text-xs font-bold ${isSelected ? 'text-[#B88B2A]' : 'text-slate-900 dark:text-white'}`}>
                                 {opt.label}
                               </p>
                               <p className="text-[10px] font-semibold text-slate-400 mt-0.5">{opt.subtext}</p>
                             </div>
                           </div>
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#C8A34D] bg-[#C8A34D]' : 'border-slate-300'}`}>
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#B88B2A] bg-[#B88B2A]' : 'border-slate-300'}`}>
                             {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-[#111111]" />}
                           </div>
                         </button>
@@ -5866,7 +5866,7 @@ export const CaseWorkspace = ({
                           onClick={() => setEvidenceFormState({ ...evidenceFormState, teamAccessPreset: preset })}
                           className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-amber-500/15 text-[#C8A34D] border border-[#C8A34D]'
+                              ? 'bg-amber-500/15 text-[#B88B2A] border border-[#B88B2A]'
                               : 'bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300'
                           }`}
                         >
@@ -5890,7 +5890,7 @@ export const CaseWorkspace = ({
                 <button
                   type="button"
                   onClick={handleSaveEvidence}
-                  className="px-6 py-2.5 rounded-2xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
+                  className="px-6 py-2.5 rounded-2xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
                 >
                   Upload & Share
                 </button>
@@ -6001,7 +6001,7 @@ export const CaseWorkspace = ({
               </div>
             </div>
             <div className="px-5 py-3 bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl text-center min-w-[110px]">
-              <div className="text-lg font-black text-[#C8A34D]">
+              <div className="text-lg font-black text-[#B88B2A]">
                 {defaultPrecedents.length}
               </div>
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -6017,26 +6017,26 @@ export const CaseWorkspace = ({
             onClick={() => setResearchSubTab('research')}
             className={`px-4 py-2 text-xs font-black transition-all cursor-pointer relative ${
               researchSubTab === 'research'
-                ? 'text-[#C8A34D]'
+                ? 'text-[#B88B2A]'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
             }`}
           >
             Research
             {researchSubTab === 'research' && (
-              <div className="absolute bottom-[-9px] left-0 right-0 h-0.5 bg-[#C8A34D] rounded-full" />
+              <div className="absolute bottom-[-9px] left-0 right-0 h-0.5 bg-[#B88B2A] rounded-full" />
             )}
           </button>
           <button
             onClick={() => setResearchSubTab('saved')}
             className={`px-4 py-2 text-xs font-black transition-all cursor-pointer relative ${
               researchSubTab === 'saved'
-                ? 'text-[#C8A34D]'
+                ? 'text-[#B88B2A]'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
             }`}
           >
             Saved ({rawSaved.length})
             {researchSubTab === 'saved' && (
-              <div className="absolute bottom-[-9px] left-0 right-0 h-0.5 bg-[#C8A34D] rounded-full" />
+              <div className="absolute bottom-[-9px] left-0 right-0 h-0.5 bg-[#B88B2A] rounded-full" />
             )}
           </button>
         </div>
@@ -6046,7 +6046,7 @@ export const CaseWorkspace = ({
           <div className="space-y-6">
             {/* RESEARCH THIS CASE BOX (Matching Mobile Screenshot 1) */}
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xs space-y-4">
-              <span className="text-[10px] font-black text-[#C8A34D] uppercase tracking-wider block">
+              <span className="text-[10px] font-black text-[#B88B2A] uppercase tracking-wider block">
                 RESEARCH THIS CASE
               </span>
               <div className="relative">
@@ -6055,7 +6055,7 @@ export const CaseWorkspace = ({
                   value={researchSearchQuery}
                   onChange={e => setResearchSearchQuery(e.target.value)}
                   placeholder="Enter case facts or search query..."
-                  className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                  className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                 />
               </div>
 
@@ -6068,7 +6068,7 @@ export const CaseWorkspace = ({
                       toast.success("Search complete! 3 precedents found.");
                     }, 500);
                   }}
-                  className="flex-1 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Search size={14} /> Search
                 </button>
@@ -6080,7 +6080,7 @@ export const CaseWorkspace = ({
                       toast.success("AI Research complete!");
                     }, 800);
                   }}
-                  className="flex-1 py-3 bg-white dark:bg-slate-800 border border-[#C8A34D] text-[#C8A34D] hover:bg-amber-500/10 font-black rounded-2xl text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 py-3 bg-white dark:bg-slate-800 border border-[#B88B2A] text-[#B88B2A] hover:bg-amber-500/10 font-black rounded-2xl text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Sparkles size={14} /> AI Research
                 </button>
@@ -6094,14 +6094,14 @@ export const CaseWorkspace = ({
                 <div className="space-y-2">
                   <button
                     onClick={() => setResearchSearchQuery("Case summary details are insufficient or unclear to extract legal issues.")}
-                    className="w-full text-left p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:border-[#C8A34D] transition-all cursor-pointer flex items-center gap-2"
+                    className="w-full text-left p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:border-[#B88B2A] transition-all cursor-pointer flex items-center gap-2"
                   >
                     <span>💡</span>
                     <span>Research: Case summary details are insufficient or unclear to extract legal issues.</span>
                   </button>
                   <button
                     onClick={() => setResearchSearchQuery("Landmark Supreme Court rulings on Civil & Commercial Procedures")}
-                    className="w-full text-left p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:border-[#C8A34D] transition-all cursor-pointer flex items-center gap-2"
+                    className="w-full text-left p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:border-[#B88B2A] transition-all cursor-pointer flex items-center gap-2"
                   >
                     <span>💡</span>
                     <span>Landmark Supreme Court rulings on Civil & Commercial Procedures</span>
@@ -6118,7 +6118,7 @@ export const CaseWorkspace = ({
 
               {isSearchingPrecedents ? (
                 <div className="p-12 text-center bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl space-y-3">
-                  <div className="w-8 h-8 rounded-full border-2 border-[#C8A34D] border-t-transparent animate-spin mx-auto" />
+                  <div className="w-8 h-8 rounded-full border-2 border-[#B88B2A] border-t-transparent animate-spin mx-auto" />
                   <p className="text-xs font-bold text-slate-500">Searching Legal Database & Supreme Court Precedents...</p>
                 </div>
               ) : (
@@ -6128,7 +6128,7 @@ export const CaseWorkspace = ({
                     return (
                       <div
                         key={item.id}
-                        className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xs hover:border-[#C8A34D] transition-all space-y-4"
+                        className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xs hover:border-[#B88B2A] transition-all space-y-4"
                       >
                         <h4 className="text-sm font-black text-slate-900 dark:text-white leading-snug">
                           {item.title}
@@ -6141,7 +6141,7 @@ export const CaseWorkspace = ({
 
                         <div className="space-y-2">
                           <div>
-                            <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] block">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] block">
                               RELEVANT LAW
                             </span>
                             <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5">
@@ -6150,7 +6150,7 @@ export const CaseWorkspace = ({
                           </div>
 
                           <div>
-                            <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] block">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] block">
                               KEY PRINCIPLE
                             </span>
                             <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed mt-0.5">
@@ -6159,8 +6159,8 @@ export const CaseWorkspace = ({
                           </div>
 
                           {item.aiRelevance && (
-                            <div className="p-3 bg-amber-500/10 border border-[#C8A34D]/30 rounded-2xl space-y-1">
-                              <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] block">
+                            <div className="p-3 bg-amber-500/10 border border-[#B88B2A]/30 rounded-2xl space-y-1">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] block">
                                 WHY IT MATTERS FOR THIS CASE
                               </span>
                               <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
@@ -6182,7 +6182,7 @@ export const CaseWorkspace = ({
                             className={`px-5 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-xs ${
                               isSaved
                                 ? 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
-                                : 'bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black'
+                                : 'bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black'
                             }`}
                           >
                             {isSaved ? '✓ Saved to Case' : '🔖 Save to Case'}
@@ -6202,7 +6202,7 @@ export const CaseWorkspace = ({
           <div className="space-y-4">
             {rawSaved.length === 0 ? (
               <div className="bg-white dark:bg-[#1E293B] border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-12 text-center space-y-3">
-                <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center mx-auto text-3xl">
+                <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center mx-auto text-3xl">
                   🔖
                 </div>
                 <h3 className="text-sm font-black text-slate-900 dark:text-white">
@@ -6282,7 +6282,7 @@ export const CaseWorkspace = ({
               </div>
 
               {/* AI Badge */}
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-[10px] font-black uppercase">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-[#B88B2A] border border-[#B88B2A]/30 rounded-xl text-[10px] font-black uppercase">
                 <Sparkles size={12} /> AI-ASSISTED RESEARCH
               </div>
 
@@ -6339,8 +6339,8 @@ export const CaseWorkspace = ({
                 </div>
 
                 {/* 6. AI CASE RELEVANCE (Gold Box) */}
-                <div className="p-4 bg-amber-500/10 border border-[#C8A34D]/40 rounded-2xl space-y-1.5">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A34D] block">
+                <div className="p-4 bg-amber-500/10 border border-[#B88B2A]/40 rounded-2xl space-y-1.5">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] block">
                     AI CASE RELEVANCE
                   </span>
                   <p className="text-slate-800 dark:text-slate-200 font-bold leading-relaxed">
@@ -6374,7 +6374,7 @@ export const CaseWorkspace = ({
                     handleSavePrecedent(selectedPrecedentDetail);
                     setSelectedPrecedentDetail(null);
                   }}
-                  className="px-6 py-2.5 rounded-2xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
+                  className="px-6 py-2.5 rounded-2xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
                 >
                   🔖 Save to Case
                 </button>
@@ -6690,7 +6690,7 @@ export const CaseWorkspace = ({
               </span>
             </div>
             <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-              <Activity size={20} className="text-[#C8A34D]" />
+              <Activity size={20} className="text-[#B88B2A]" />
               Recent Activity & Case Audit Timeline
             </h1>
             <p className="text-xs font-semibold text-slate-400">
@@ -6718,10 +6718,10 @@ export const CaseWorkspace = ({
                 <div
                   key={act.id || act._id}
                   onClick={() => setSelectedActivityDetail(act)}
-                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] transition-all cursor-pointer flex items-center justify-between gap-4"
+                  className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] transition-all cursor-pointer flex items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-[#C8A34D]/30 text-[#C8A34D] flex items-center justify-center text-lg shrink-0">
+                    <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-[#B88B2A]/30 text-[#B88B2A] flex items-center justify-center text-lg shrink-0">
                       {act.icon || '📊'}
                     </div>
                     <div>
@@ -6766,7 +6766,7 @@ export const CaseWorkspace = ({
                     <h3 className="text-lg font-black text-slate-900 dark:text-white">
                       Workspace Activity
                     </h3>
-                    <span className="w-6 h-6 rounded-full bg-[#C8A34D] text-[#111111] font-black text-xs flex items-center justify-center">
+                    <span className="w-6 h-6 rounded-full bg-[#B88B2A] text-[#111111] font-black text-xs flex items-center justify-center">
                       {filteredActivities.length}
                     </span>
                   </div>
@@ -6801,7 +6801,7 @@ export const CaseWorkspace = ({
                     value={activitySearchQuery}
                     onChange={e => setActivitySearchQuery(e.target.value)}
                     placeholder="Search activities by title, advocate, module, case..."
-                    className="w-full p-3 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-3 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                   />
                   <Search size={14} className="absolute left-3.5 top-3.5 text-slate-400" />
                 </div>
@@ -6814,7 +6814,7 @@ export const CaseWorkspace = ({
                       onClick={() => setActivityCategoryFilter(cat)}
                       className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         activityCategoryFilter === cat
-                          ? 'bg-[#C8A34D] text-[#111111]'
+                          ? 'bg-[#B88B2A] text-[#111111]'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                       }`}
                     >
@@ -6856,11 +6856,11 @@ export const CaseWorkspace = ({
                     {filteredActivities.map((act) => (
                       <div
                         key={act.id || act._id}
-                        className="p-4 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] transition-all space-y-3"
+                        className="p-4 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] transition-all space-y-3"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-[#C8A34D]/30 text-[#C8A34D] flex items-center justify-center text-lg shrink-0 mt-0.5">
+                            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-[#B88B2A]/30 text-[#B88B2A] flex items-center justify-center text-lg shrink-0 mt-0.5">
                               {act.icon || '📊'}
                             </div>
                             <div>
@@ -6933,7 +6933,7 @@ export const CaseWorkspace = ({
                   <p className="text-[11px] font-semibold text-slate-400 mt-0.5">
                     {selectedActivityDetail.version || 'Version 1.0 • reports'}
                   </p>
-                  <p className="text-xs font-bold text-[#C8A34D] mt-1">
+                  <p className="text-xs font-bold text-[#B88B2A] mt-1">
                     Generated by: {selectedActivityDetail.authorRole || 'Adv. Aditi Lakhera (SUPER_ADMIN)'}
                   </p>
                   <p className="text-[11px] font-semibold text-slate-400 mt-0.5">
@@ -6982,7 +6982,7 @@ export const CaseWorkspace = ({
                 <div className="text-center font-bold text-slate-400 text-[10px] overflow-hidden whitespace-nowrap">
                   ====================================================================
                 </div>
-                <div className="text-center font-bold uppercase text-xs tracking-widest text-[#C8A34D]">
+                <div className="text-center font-bold uppercase text-xs tracking-widest text-[#B88B2A]">
                   {selectedActivityDetail.title}
                 </div>
                 <div className="text-center font-bold text-slate-400 text-[10px] overflow-hidden whitespace-nowrap">
@@ -7053,7 +7053,7 @@ export const CaseWorkspace = ({
                 <button
                   type="button"
                   onClick={() => setSelectedActivityDetail(null)}
-                  className="px-6 py-2.5 rounded-2xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
+                  className="px-6 py-2.5 rounded-2xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all cursor-pointer shadow-xs"
                 >
                   Close Document
                 </button>
@@ -7399,7 +7399,7 @@ export const CaseWorkspace = ({
         <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-[10px] uppercase tracking-wider flex items-center gap-1">
+              <span className="px-2.5 py-1 bg-[#B88B2A] text-[#111111] font-black rounded-xl text-[10px] uppercase tracking-wider flex items-center gap-1">
                 <Sparkles size={12} /> AI HUB
               </span>
               <span className="text-xs font-bold text-slate-500">
@@ -7407,7 +7407,7 @@ export const CaseWorkspace = ({
               </span>
             </div>
             <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-              <Sparkles size={20} className="text-[#C8A34D]" />
+              <Sparkles size={20} className="text-[#B88B2A]" />
               Enterprise AI Quick Actions Hub
             </h1>
             <p className="text-xs font-semibold text-slate-400">
@@ -7422,18 +7422,18 @@ export const CaseWorkspace = ({
           {/* Tool 1: AI Draft Maker */}
           <div 
             onClick={() => handleLaunchTool('draft-maker')}
-            className="p-6 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D] rounded-3xl transition-all shadow-xs hover:shadow-md cursor-pointer flex flex-col justify-between space-y-4 group"
+            className="p-6 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A] rounded-3xl transition-all shadow-xs hover:shadow-md cursor-pointer flex flex-col justify-between space-y-4 group"
           >
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#C8A34D]/30 text-[#C8A34D] flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#B88B2A]/30 text-[#B88B2A] flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
                 📄
               </div>
               <div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center justify-between">
                   <span>AI Draft Maker</span>
-                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#C8A34D] transition-colors" />
+                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#B88B2A] transition-colors" />
                 </h3>
-                <p className="text-xs font-bold text-[#C8A34D] mt-0.5">
+                <p className="text-xs font-bold text-[#B88B2A] mt-0.5">
                   Generate court-ready legal drafts
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2 leading-relaxed">
@@ -7441,7 +7441,7 @@ export const CaseWorkspace = ({
                 </p>
               </div>
             </div>
-            <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 group-hover:bg-[#C8A34D] group-hover:text-[#111111] text-slate-700 dark:text-slate-200 font-black rounded-2xl text-xs transition-all cursor-pointer">
+            <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 group-hover:bg-[#B88B2A] group-hover:text-[#111111] text-slate-700 dark:text-slate-200 font-black rounded-2xl text-xs transition-all cursor-pointer">
               Launch Draft Maker →
             </button>
           </div>
@@ -7449,18 +7449,18 @@ export const CaseWorkspace = ({
           {/* Tool 2: AI Argument Builder */}
           <div 
             onClick={() => handleLaunchTool('argument-builder')}
-            className="p-6 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D] rounded-3xl transition-all shadow-xs hover:shadow-md cursor-pointer flex flex-col justify-between space-y-4 group"
+            className="p-6 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A] rounded-3xl transition-all shadow-xs hover:shadow-md cursor-pointer flex flex-col justify-between space-y-4 group"
           >
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#C8A34D]/30 text-[#C8A34D] flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#B88B2A]/30 text-[#B88B2A] flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
                 ⚡
               </div>
               <div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center justify-between">
                   <span>AI Argument Builder</span>
-                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#C8A34D] transition-colors" />
+                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#B88B2A] transition-colors" />
                 </h3>
-                <p className="text-xs font-bold text-[#C8A34D] mt-0.5">
+                <p className="text-xs font-bold text-[#B88B2A] mt-0.5">
                   Prepare court arguments & legal briefs
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2 leading-relaxed">
@@ -7468,7 +7468,7 @@ export const CaseWorkspace = ({
                 </p>
               </div>
             </div>
-            <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 group-hover:bg-[#C8A34D] group-hover:text-[#111111] text-slate-700 dark:text-slate-200 font-black rounded-2xl text-xs transition-all cursor-pointer">
+            <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 group-hover:bg-[#B88B2A] group-hover:text-[#111111] text-slate-700 dark:text-slate-200 font-black rounded-2xl text-xs transition-all cursor-pointer">
               Launch Argument Builder →
             </button>
           </div>
@@ -7476,18 +7476,18 @@ export const CaseWorkspace = ({
           {/* Tool 3: AI Cross Examination */}
           <div 
             onClick={() => handleLaunchTool('cross-examination')}
-            className="p-6 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D] rounded-3xl transition-all shadow-xs hover:shadow-md cursor-pointer flex flex-col justify-between space-y-4 group"
+            className="p-6 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A] rounded-3xl transition-all shadow-xs hover:shadow-md cursor-pointer flex flex-col justify-between space-y-4 group"
           >
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#C8A34D]/30 text-[#C8A34D] flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#B88B2A]/30 text-[#B88B2A] flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
                 🎯
               </div>
               <div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center justify-between">
                   <span>AI Cross Examination</span>
-                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#C8A34D] transition-colors" />
+                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#B88B2A] transition-colors" />
                 </h3>
-                <p className="text-xs font-bold text-[#C8A34D] mt-0.5">
+                <p className="text-xs font-bold text-[#B88B2A] mt-0.5">
                   Generate witness & trial examination questions
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2 leading-relaxed">
@@ -7495,7 +7495,7 @@ export const CaseWorkspace = ({
                 </p>
               </div>
             </div>
-            <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 group-hover:bg-[#C8A34D] group-hover:text-[#111111] text-slate-700 dark:text-slate-200 font-black rounded-2xl text-xs transition-all cursor-pointer">
+            <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 group-hover:bg-[#B88B2A] group-hover:text-[#111111] text-slate-700 dark:text-slate-200 font-black rounded-2xl text-xs transition-all cursor-pointer">
               Launch Cross Examination →
             </button>
           </div>
@@ -7503,18 +7503,18 @@ export const CaseWorkspace = ({
           {/* Tool 4: Case Progress Report */}
           <div 
             onClick={() => handleLaunchTool('progress-report')}
-            className="p-6 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D] rounded-3xl transition-all shadow-xs hover:shadow-md cursor-pointer flex flex-col justify-between space-y-4 group"
+            className="p-6 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A] rounded-3xl transition-all shadow-xs hover:shadow-md cursor-pointer flex flex-col justify-between space-y-4 group"
           >
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#C8A34D]/30 text-[#C8A34D] flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#B88B2A]/30 text-[#B88B2A] flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
                 📊
               </div>
               <div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center justify-between">
                   <span>Case Progress Report</span>
-                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#C8A34D] transition-colors" />
+                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#B88B2A] transition-colors" />
                 </h3>
-                <p className="text-xs font-bold text-[#C8A34D] mt-0.5">
+                <p className="text-xs font-bold text-[#B88B2A] mt-0.5">
                   AI case progress summary & audit
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2 leading-relaxed">
@@ -7522,7 +7522,7 @@ export const CaseWorkspace = ({
                 </p>
               </div>
             </div>
-            <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 group-hover:bg-[#C8A34D] group-hover:text-[#111111] text-slate-700 dark:text-slate-200 font-black rounded-2xl text-xs transition-all cursor-pointer">
+            <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 group-hover:bg-[#B88B2A] group-hover:text-[#111111] text-slate-700 dark:text-slate-200 font-black rounded-2xl text-xs transition-all cursor-pointer">
               Generate Progress Report →
             </button>
           </div>
@@ -7530,18 +7530,18 @@ export const CaseWorkspace = ({
           {/* Tool 5: AI Copilot */}
           <div 
             onClick={() => handleLaunchTool('copilot')}
-            className="p-6 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D] rounded-3xl transition-all shadow-xs hover:shadow-md cursor-pointer flex flex-col justify-between space-y-4 group md:col-span-2 lg:col-span-2"
+            className="p-6 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A] rounded-3xl transition-all shadow-xs hover:shadow-md cursor-pointer flex flex-col justify-between space-y-4 group md:col-span-2 lg:col-span-2"
           >
             <div className="space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#C8A34D]/30 text-[#C8A34D] flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-[#B88B2A]/30 text-[#B88B2A] flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
                 ✨
               </div>
               <div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center justify-between">
                   <span>AI Copilot Assistant</span>
-                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#C8A34D] transition-colors" />
+                  <ChevronRight size={16} className="text-slate-400 group-hover:text-[#B88B2A] transition-colors" />
                 </h3>
-                <p className="text-xs font-bold text-[#C8A34D] mt-0.5">
+                <p className="text-xs font-bold text-[#B88B2A] mt-0.5">
                   Ask anything about this case workspace
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2 leading-relaxed">
@@ -7549,7 +7549,7 @@ export const CaseWorkspace = ({
                 </p>
               </div>
             </div>
-            <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 group-hover:bg-[#C8A34D] group-hover:text-[#111111] text-slate-700 dark:text-slate-200 font-black rounded-2xl text-xs transition-all cursor-pointer">
+            <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 group-hover:bg-[#B88B2A] group-hover:text-[#111111] text-slate-700 dark:text-slate-200 font-black rounded-2xl text-xs transition-all cursor-pointer">
               Launch AI Copilot →
             </button>
           </div>
@@ -7565,7 +7565,7 @@ export const CaseWorkspace = ({
               <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3 gap-3">
                 <div>
                   <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                    <Sparkles size={18} className="text-[#C8A34D]" />
+                    <Sparkles size={18} className="text-[#B88B2A]" />
                     {activeQuickTool === 'draft-maker' ? 'Enterprise Legal Draft Generator' : quickToolTitle}
                   </h3>
                   <p className="text-xs font-semibold text-slate-400 mt-0.5">
@@ -7646,7 +7646,7 @@ export const CaseWorkspace = ({
                       <h4 className="text-sm font-black text-slate-900 dark:text-white">
                         Select Legal Draft Template
                       </h4>
-                      <span className="text-xs font-bold text-[#C8A34D]">
+                      <span className="text-xs font-bold text-[#B88B2A]">
                         Selected: {qaDraftType}
                       </span>
                     </div>
@@ -7658,7 +7658,7 @@ export const CaseWorkspace = ({
                         value={qaSearchQuery}
                         onChange={e => setQaSearchQuery(e.target.value)}
                         placeholder="Search Draft..."
-                        className="w-full p-3 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                        className="w-full p-3 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                       />
                       <Search size={15} className="absolute left-3.5 top-3.5 text-slate-400" />
                     </div>
@@ -7674,7 +7674,7 @@ export const CaseWorkspace = ({
 
                         return (
                           <div key={catGroup.category} className="space-y-2">
-                            <span className="text-[11px] font-black text-[#C8A34D] flex items-center gap-1.5">
+                            <span className="text-[11px] font-black text-[#B88B2A] flex items-center gap-1.5">
                               📁 {catGroup.category} ({filteredItems.length})
                             </span>
                             <div className="flex flex-wrap gap-2">
@@ -7690,7 +7690,7 @@ export const CaseWorkspace = ({
                                     }}
                                     className={`px-3.5 py-1.5 rounded-2xl text-xs transition-all cursor-pointer ${
                                       isSelected
-                                        ? 'bg-[#C8A34D] text-[#111111] font-black shadow-xs ring-2 ring-[#C8A34D]/30'
+                                        ? 'bg-[#B88B2A] text-[#111111] font-black shadow-xs ring-2 ring-[#B88B2A]/30'
                                         : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                                     }`}
                                   >
@@ -7787,7 +7787,7 @@ export const CaseWorkspace = ({
                         value={qaDraftInstructions}
                         onChange={e => setQaDraftInstructions(e.target.value)}
                         placeholder="Add specific facts, monetary amounts, or clause instructions..."
-                        className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none resize-none"
+                        className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none resize-none"
                       />
                     </div>
                   </div>
@@ -7802,7 +7802,7 @@ export const CaseWorkspace = ({
                       <label className="text-[10px] font-bold uppercase text-slate-400 tracking-wider block">
                         Select Court Argument Type
                       </label>
-                      <span className="text-[11px] font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-2 py-0.5 rounded-md">
+                      <span className="text-[11px] font-bold text-[#B88B2A] bg-[#B88B2A]/10 px-2 py-0.5 rounded-md">
                         Active: {qaArgumentType}
                       </span>
                     </div>
@@ -7832,7 +7832,7 @@ export const CaseWorkspace = ({
                           onClick={() => setQaArgumentType(a)}
                           className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
                             qaArgumentType === a
-                              ? 'bg-[#C8A34D] text-[#111111] font-black shadow-xs ring-2 ring-[#C8A34D]/30'
+                              ? 'bg-[#B88B2A] text-[#111111] font-black shadow-xs ring-2 ring-[#B88B2A]/30'
                               : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
                           }`}
                         >
@@ -7898,7 +7898,7 @@ export const CaseWorkspace = ({
                       <label className="text-[10px] font-bold uppercase text-slate-400 tracking-wider block">
                         Select Question Type
                       </label>
-                      <span className="text-[11px] font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-2 py-0.5 rounded-md">
+                      <span className="text-[11px] font-bold text-[#B88B2A] bg-[#B88B2A]/10 px-2 py-0.5 rounded-md">
                         Active: {qaCrossExamType}
                       </span>
                     </div>
@@ -7924,7 +7924,7 @@ export const CaseWorkspace = ({
                           onClick={() => setQaCrossExamType(c)}
                           className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
                             qaCrossExamType === c
-                              ? 'bg-[#C8A34D] text-[#111111] font-black shadow-xs ring-2 ring-[#C8A34D]/30'
+                              ? 'bg-[#B88B2A] text-[#111111] font-black shadow-xs ring-2 ring-[#B88B2A]/30'
                               : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
                           }`}
                         >
@@ -7972,7 +7972,7 @@ export const CaseWorkspace = ({
                         onClick={() => setQaReportFormat(fmt)}
                         className={`flex-1 py-2.5 rounded-2xl text-xs font-bold cursor-pointer transition-all ${
                           qaReportFormat === fmt
-                            ? 'bg-[#C8A34D] text-[#111111] shadow-xs font-black'
+                            ? 'bg-[#B88B2A] text-[#111111] shadow-xs font-black'
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                         }`}
                       >
@@ -8006,12 +8006,12 @@ export const CaseWorkspace = ({
                           <button
                             key={promptTitle}
                             onClick={() => handleSendCopilotMessage(`Please ${promptTitle.toLowerCase()} for case "${caseData.name || 'hddh'}".`)}
-                            className="p-3.5 bg-slate-50 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D] dark:hover:border-[#C8A34D] rounded-2xl text-left flex items-center gap-3 transition-all cursor-pointer group shadow-xs hover:shadow-md"
+                            className="p-3.5 bg-slate-50 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A] dark:hover:border-[#B88B2A] rounded-2xl text-left flex items-center gap-3 transition-all cursor-pointer group shadow-xs hover:shadow-md"
                           >
-                            <div className="p-2 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] shrink-0">
+                            <div className="p-2 rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] shrink-0">
                               <MessageSquare size={16} />
                             </div>
-                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#C8A34D] transition-colors">
+                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#B88B2A] transition-colors">
                               {promptTitle}
                             </span>
                           </button>
@@ -8032,7 +8032,7 @@ export const CaseWorkspace = ({
                             <div
                               className={`max-w-[85%] p-3.5 rounded-2xl text-xs font-medium leading-relaxed whitespace-pre-wrap ${
                                 msg.sender === 'user'
-                                  ? 'bg-[#C8A34D] text-[#111111] font-bold rounded-tr-none shadow-xs'
+                                  ? 'bg-[#B88B2A] text-[#111111] font-bold rounded-tr-none shadow-xs'
                                   : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-tl-none shadow-xs'
                               }`}
                             >
@@ -8055,9 +8055,9 @@ export const CaseWorkspace = ({
                                 <button
                                   key={chip}
                                   onClick={() => handleSendCopilotMessage(`Please ${chip.toLowerCase()} for case "${caseData.name || 'hddh'}".`)}
-                                  className="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#C8A34D] text-slate-700 dark:text-slate-300 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                                  className="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#B88B2A] text-slate-700 dark:text-slate-300 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
                                 >
-                                  <Sparkles size={11} className="text-[#C8A34D]" />
+                                  <Sparkles size={11} className="text-[#B88B2A]" />
                                   {chip}
                                 </button>
                               ))}
@@ -8074,7 +8074,7 @@ export const CaseWorkspace = ({
                   <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                     <button
                       onClick={() => toast.success("Select case document from vault to attach...")}
-                      className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-[#C8A34D] hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer transition-all"
+                      className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-[#B88B2A] hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer transition-all"
                       title="Attach Case Document"
                     >
                       <Paperclip size={18} />
@@ -8085,11 +8085,11 @@ export const CaseWorkspace = ({
                       onChange={e => setCopilotInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleSendCopilotMessage()}
                       placeholder="Ask anything about this case..."
-                      className="flex-1 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                      className="flex-1 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                     />
                     <button
                       onClick={() => handleSendCopilotMessage()}
-                      className="p-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl cursor-pointer shrink-0 transition-all shadow-xs flex items-center justify-center"
+                      className="p-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl cursor-pointer shrink-0 transition-all shadow-xs flex items-center justify-center"
                       title="Send Message"
                     >
                       <Send size={18} />
@@ -8103,7 +8103,7 @@ export const CaseWorkspace = ({
                 <button
                   onClick={handleExecuteTool}
                   disabled={quickToolLoading}
-                  className="w-full py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all cursor-pointer shadow-xs flex items-center justify-center gap-2 mt-4"
+                  className="w-full py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all cursor-pointer shadow-xs flex items-center justify-center gap-2 mt-4"
                 >
                   {quickToolLoading ? (
                     <span>Generating with Gemini AI...</span>
@@ -8132,7 +8132,7 @@ export const CaseWorkspace = ({
                         rows={12}
                         value={quickToolOutput}
                         onChange={(e) => setQuickToolOutput(e.target.value)}
-                        className="w-full p-3 font-mono text-xs text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:border-[#C8A34D] focus:outline-none"
+                        className="w-full p-3 font-mono text-xs text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:border-[#B88B2A] focus:outline-none"
                       />
                     ) : (
                       <div className="font-serif text-xs text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap max-h-80 overflow-y-auto custom-scrollbar p-2 select-text">
@@ -8148,7 +8148,7 @@ export const CaseWorkspace = ({
                       onClick={() => setIsQuickToolEditing(!isQuickToolEditing)}
                       className={`py-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                         isQuickToolEditing
-                          ? 'bg-[#C8A34D] text-[#111111] border-[#C8A34D]'
+                          ? 'bg-[#B88B2A] text-[#111111] border-[#B88B2A]'
                           : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
                       }`}
                     >
@@ -8263,7 +8263,7 @@ export const CaseWorkspace = ({
                       toast.success("Document saved & attached to Case Workspace & Recent Activity!");
                       setIsQuickToolModalOpen(false);
                     }}
-                    className="w-full py-3.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
+                    className="w-full py-3.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-2xl text-xs transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
                   >
                     <span>💾</span> Save & Attach to Case Workspace
                   </button>
@@ -8616,7 +8616,7 @@ Through Counsel
         {!uploadedContract && !isAnalyzingContract && (
           <div className="space-y-6">
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs text-center space-y-4">
-              <div className="flex items-center gap-2 text-[#C8A34D]">
+              <div className="flex items-center gap-2 text-[#B88B2A]">
                 <FileSignature size={20} />
                 <h4 className="text-xs font-black uppercase tracking-widest text-[#0F172A] dark:text-white">Contract Intelligence Locker</h4>
               </div>
@@ -8629,9 +8629,9 @@ Through Counsel
               />
               <div 
                 onClick={() => document.getElementById('contract-uploader').click()}
-                className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-[#C8A34D] rounded-xl p-10 cursor-pointer transition-all bg-slate-50/50 dark:bg-slate-900/50 flex flex-col items-center justify-center space-y-3 group"
+                className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-[#B88B2A] rounded-xl p-10 cursor-pointer transition-all bg-slate-50/50 dark:bg-slate-900/50 flex flex-col items-center justify-center space-y-3 group"
               >
-                <div className="p-3 bg-[#C8A34D]/15 text-[#C8A34D] rounded-xl border border-[#C8A34D]/30 group-hover:scale-105 transition-transform">
+                <div className="p-3 bg-[#B88B2A]/15 text-[#B88B2A] rounded-xl border border-[#B88B2A]/30 group-hover:scale-105 transition-transform">
                   <Upload size={28} />
                 </div>
                 <div>
@@ -8652,7 +8652,7 @@ Through Counsel
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
               <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest mb-4 flex items-center justify-between">
                 <span>Uploaded Case Contracts & Agreements</span>
-                <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] rounded text-[10px] font-mono font-bold">
+                <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] rounded text-[10px] font-mono font-bold">
                   {caseData.contracts?.length || 0} Files
                 </span>
               </h3>
@@ -8662,7 +8662,7 @@ Through Counsel
                   {caseData.contracts.map((item, i) => (
                     <div key={i} className="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-2xl gap-4 group">
                       <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-white dark:bg-[#1E293B] rounded-xl border border-slate-200 dark:border-slate-800 text-[#C8A34D]">
+                        <div className="p-2.5 bg-white dark:bg-[#1E293B] rounded-xl border border-slate-200 dark:border-slate-800 text-[#B88B2A]">
                           <FileSignature size={18} />
                         </div>
                         <div>
@@ -8676,7 +8676,7 @@ Through Counsel
                       <div className="flex items-center gap-2">
                         <button 
                           onClick={() => setUploadedContract({ ...defaultContractData, name: item.name })} 
-                          className="p-2 text-slate-400 hover:text-[#C8A34D] transition-colors cursor-pointer"
+                          className="p-2 text-slate-400 hover:text-[#B88B2A] transition-colors cursor-pointer"
                           title="Open Contract Intelligence Analysis"
                         >
                           <Eye size={15} />
@@ -8722,9 +8722,9 @@ Through Counsel
                   setUploadedContract(null);
                   setIsContractLinked(false);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl text-xs font-black text-[#0F172A] dark:text-white hover:text-[#C8A34D] hover:border-[#C8A34D] transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl text-xs font-black text-[#0F172A] dark:text-white hover:text-[#B88B2A] hover:border-[#B88B2A] transition-all cursor-pointer shadow-xs"
               >
-                <ArrowLeft size={14} className="text-[#C8A34D]" />
+                <ArrowLeft size={14} className="text-[#B88B2A]" />
                 <span>Back to Contract List</span>
               </button>
 
@@ -8736,7 +8736,7 @@ Through Counsel
             {/* Header / Actions Card */}
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-[#C8A34D]/15 text-[#C8A34D] rounded-xl border border-[#C8A34D]/30 shrink-0">
+                <div className="p-3 bg-[#B88B2A]/15 text-[#B88B2A] rounded-xl border border-[#B88B2A]/30 shrink-0">
                   <FileSignature size={22} />
                 </div>
                 <div>
@@ -8754,7 +8754,7 @@ Through Counsel
                   className={`px-3.5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer ${
                     isContractLinked 
                       ? 'bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 cursor-not-allowed'
-                      : 'bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111]'
+                      : 'bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111]'
                   }`}
                 >
                   <Sparkles size={13} className={isContractLinked ? 'text-slate-400' : 'text-[#111111] animate-pulse'} />
@@ -9385,7 +9385,7 @@ Through Counsel
               <h2 className="text-base font-black text-[#0F172A] dark:text-white uppercase tracking-wider">
                 ARGUMENT BUILDER
               </h2>
-              <span className="px-2.5 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-full text-[9px] font-mono font-bold">
+              <span className="px-2.5 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-full text-[9px] font-mono font-bold">
                 AI Courtroom Strategy Engine
               </span>
             </div>
@@ -9397,7 +9397,7 @@ Through Counsel
           <div className="flex flex-wrap items-center gap-2 w-full md:w-auto shrink-0 relative">
             <button
               onClick={handleAutoAnalyzeArguments}
-              className="px-3.5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Sparkles size={13} className="text-[#111111] animate-pulse" /> Auto-Analyze & Sync
             </button>
@@ -9406,7 +9406,7 @@ Through Counsel
               onClick={() => setIsPreparingHearing(true)}
               className="px-3.5 py-2.5 bg-[#0F172A] dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-[#0F172A] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Gavel size={13} className="text-[#C8A34D]" /> Prepare For Hearing
+              <Gavel size={13} className="text-[#B88B2A]" /> Prepare For Hearing
             </button>
 
             {/* Export / More Menu */}
@@ -9423,19 +9423,19 @@ Through Counsel
                     onClick={() => handleExportArguments('txt')} 
                     className="w-full text-left px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
                   >
-                    <FileText size={13} className="text-[#C8A34D]" /> Export Text Dossier
+                    <FileText size={13} className="text-[#B88B2A]" /> Export Text Dossier
                   </button>
                   <button 
                     onClick={() => handleExportArguments('json')} 
                     className="w-full text-left px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
                   >
-                    <FileDigit size={13} className="text-[#C8A34D]" /> Export JSON Data
+                    <FileDigit size={13} className="text-[#B88B2A]" /> Export JSON Data
                   </button>
                   <button 
                     onClick={triggerPrint} 
                     className="w-full text-left px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
                   >
-                    <Printer size={13} className="text-[#C8A34D]" /> Print Strategy Dossier
+                    <Printer size={13} className="text-[#B88B2A]" /> Print Strategy Dossier
                   </button>
                 </div>
               )}
@@ -9447,8 +9447,8 @@ Through Counsel
         {isAnalyzingArguments && (
           <div className="py-12 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center space-y-4 shadow-xs animate-in fade-in duration-300">
             <div className="relative flex items-center justify-center">
-              <div className="w-12 h-12 rounded-full border-3 border-[#C8A34D]/20 border-t-[#C8A34D] animate-spin" />
-              <Sparkles size={16} className="absolute text-[#C8A34D] animate-pulse" />
+              <div className="w-12 h-12 rounded-full border-3 border-[#B88B2A]/20 border-t-[#B88B2A] animate-spin" />
+              <Sparkles size={16} className="absolute text-[#B88B2A] animate-pulse" />
             </div>
             <div className="text-center space-y-1">
               <div className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest animate-pulse">
@@ -9467,7 +9467,7 @@ Through Counsel
             {/* 1. TOP DYNAMIC METRICS BAR */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl p-4 flex items-center gap-3.5 shadow-xs">
-                <div className="w-10 h-10 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center font-black text-xs shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center font-black text-xs shrink-0">
                   {hasArgs ? `${strengthScore}%` : '—'}
                 </div>
                 <div>
@@ -9479,7 +9479,7 @@ Through Counsel
               </div>
 
               <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl p-4 flex items-center gap-3.5 shadow-xs">
-                <div className="w-10 h-10 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center font-black text-xs shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center font-black text-xs shrink-0">
                   {researchCoverage}
                 </div>
                 <div>
@@ -9491,7 +9491,7 @@ Through Counsel
               </div>
 
               <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl p-4 flex items-center gap-3.5 shadow-xs">
-                <div className="w-10 h-10 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center font-black text-xs shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center font-black text-xs shrink-0">
                   {evidenceMapsCount}
                 </div>
                 <div>
@@ -9501,7 +9501,7 @@ Through Counsel
               </div>
 
               <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl p-4 flex items-center gap-3.5 shadow-xs">
-                <div className="w-10 h-10 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center font-black text-xs shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center font-black text-xs shrink-0">
                   {activeSubmissionsCount}
                 </div>
                 <div>
@@ -9526,8 +9526,8 @@ Through Counsel
                   onClick={() => setArgumentsActiveSubTab(tab.id)}
                   className={`px-3.5 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                     argumentsActiveSubTab === tab.id
-                      ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-[#C8A34D]'
+                      ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-[#B88B2A]'
                   }`}
                 >
                   {tab.name}
@@ -9549,7 +9549,7 @@ Through Counsel
                       <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest">
                         TRIAL STRATEGY POSITION
                       </h3>
-                      <span className="px-2.5 py-1 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-lg text-[9px] font-mono font-bold uppercase tracking-wider">
+                      <span className="px-2.5 py-1 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-lg text-[9px] font-mono font-bold uppercase tracking-wider">
                         ADVOCATE CORE DRAFT
                       </span>
                     </div>
@@ -9597,7 +9597,7 @@ Through Counsel
                         <div key={arg.id || idx} className="p-4 bg-slate-50/50 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl space-y-3">
                           <div className="flex justify-between items-start gap-2">
                             <div>
-                              <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded text-[9px] font-mono font-bold uppercase tracking-wide">
+                              <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded text-[9px] font-mono font-bold uppercase tracking-wide">
                                 ARGUMENT {idx + 1} • {arg.category || 'Core Claim'}
                               </span>
                               <h4 className="text-xs font-black text-[#0F172A] dark:text-white mt-1.5">
@@ -9624,7 +9624,7 @@ Through Counsel
                               <div className="flex flex-wrap gap-1">
                                 {(arg.supportingEvidence || ['Loan Deed Ex. P-1', 'Bank Statement Ex. P-2']).map((ev, i) => (
                                   <span key={i} className="px-2 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded font-semibold flex items-center gap-1">
-                                    <FileText size={10} className="text-[#C8A34D]" /> {ev}
+                                    <FileText size={10} className="text-[#B88B2A]" /> {ev}
                                   </span>
                                 ))}
                               </div>
@@ -9636,7 +9636,7 @@ Through Counsel
                               </span>
                               <div className="flex flex-wrap gap-1">
                                 {(arg.supportingLaws || ['CPC Order 37', 'Kailash Nath Associates v. DDA']).map((l, i) => (
-                                  <span key={i} className="px-2 py-0.5 bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 rounded font-semibold flex items-center gap-1">
+                                  <span key={i} className="px-2 py-0.5 bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30 rounded font-semibold flex items-center gap-1">
                                     <BookOpen size={10} /> {l}
                                   </span>
                                 ))}
@@ -9696,11 +9696,11 @@ Through Counsel
                         <div key={idx} className="space-y-1.5">
                           <div className="flex justify-between items-center text-[11px]">
                             <span className="font-bold text-[#0F172A] dark:text-white">{item.title}</span>
-                            <span className="font-mono font-black text-[#C8A34D]">{item.probability}%</span>
+                            <span className="font-mono font-black text-[#B88B2A]">{item.probability}%</span>
                           </div>
                           <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                             <div 
-                              className="bg-[#C8A34D] h-full rounded-full transition-all duration-500" 
+                              className="bg-[#B88B2A] h-full rounded-full transition-all duration-500" 
                               style={{ width: `${item.probability}%` }}
                             />
                           </div>
@@ -9733,10 +9733,10 @@ Through Counsel
 
                 <div className="space-y-6">
                   {filteredPetitioner.map((item, idx) => (
-                    <div key={item.id || idx} className="border border-slate-200/80 dark:border-slate-800 rounded-xl p-5 hover:border-[#C8A34D] transition-colors space-y-4 bg-slate-50/50 dark:bg-[#0F172A]">
+                    <div key={item.id || idx} className="border border-slate-200/80 dark:border-slate-800 rounded-xl p-5 hover:border-[#B88B2A] transition-colors space-y-4 bg-slate-50/50 dark:bg-[#0F172A]">
                       <div className="flex justify-between items-start gap-2">
                         <div>
-                          <span className="px-2.5 py-1 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded text-[9px] font-mono font-bold uppercase tracking-wider block w-fit">
+                          <span className="px-2.5 py-1 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded text-[9px] font-mono font-bold uppercase tracking-wider block w-fit">
                             SUBMISSION {idx + 1} • {item.category}
                           </span>
                           <h4 className="text-xs font-black text-[#0F172A] dark:text-white mt-2">
@@ -9762,7 +9762,7 @@ Through Counsel
                           <div className="flex flex-wrap gap-1">
                             {(item.supportingEvidence || []).map((ev, i) => (
                               <span key={i} className="px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded font-semibold flex items-center gap-1 shadow-xs">
-                                <FileText size={10} className="text-[#C8A34D]" /> {ev}
+                                <FileText size={10} className="text-[#B88B2A]" /> {ev}
                               </span>
                             ))}
                           </div>
@@ -9774,7 +9774,7 @@ Through Counsel
                           </span>
                           <div className="flex flex-wrap gap-1">
                             {(item.supportingLaws || []).map((l, i) => (
-                              <span key={i} className="px-2 py-1 bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 rounded font-semibold flex items-center gap-1">
+                              <span key={i} className="px-2 py-1 bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30 rounded font-semibold flex items-center gap-1">
                                 <BookOpen size={10} /> {l}
                               </span>
                             ))}
@@ -9833,8 +9833,8 @@ Through Counsel
                         &quot;{item.description}&quot;
                       </p>
 
-                      <div className="bg-[#C8A34D]/10 border border-[#C8A34D]/30 rounded-xl p-4 space-y-1">
-                        <span className="text-[8px] font-mono font-bold text-[#C8A34D] uppercase tracking-widest block">
+                      <div className="bg-[#B88B2A]/10 border border-[#B88B2A]/30 rounded-xl p-4 space-y-1">
+                        <span className="text-[8px] font-mono font-bold text-[#B88B2A] uppercase tracking-widest block">
                           OUR ADVOCATE REBUTTAL
                         </span>
                         <p className="text-xs text-[#0F172A] dark:text-white font-bold leading-relaxed">
@@ -9873,7 +9873,7 @@ Through Counsel
                         </div>
                         <div className="text-right shrink-0">
                           <span className="text-[8px] font-mono font-bold text-slate-400 uppercase block">AI Confidence</span>
-                          <span className="text-xs font-black font-mono text-[#C8A34D]">{item.probability}%</span>
+                          <span className="text-xs font-black font-mono text-[#B88B2A]">{item.probability}%</span>
                         </div>
                       </div>
 
@@ -9883,7 +9883,7 @@ Through Counsel
 
                       <div className="space-y-3 pt-3 border-t border-slate-200/60 dark:border-slate-800">
                         <div>
-                          <span className="text-[8px] font-mono font-bold text-[#C8A34D] uppercase tracking-widest block mb-1">
+                          <span className="text-[8px] font-mono font-bold text-[#B88B2A] uppercase tracking-widest block mb-1">
                             LEGAL REBUTTAL PROTOCOL
                           </span>
                           <p className="text-xs text-[#0F172A] dark:text-white font-bold leading-relaxed">
@@ -9905,7 +9905,7 @@ Through Counsel
                               navigator.clipboard.writeText("My Lord, the objection raised by opposing counsel lacks foundation as governed by statutory mandate and explicit Clause 14 agreement.");
                               toast.success("Court wording copied to clipboard!");
                             }}
-                            className="p-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-[#C8A34D] hover:border-[#C8A34D] rounded-lg transition-all shrink-0 cursor-pointer"
+                            className="p-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-[#B88B2A] hover:border-[#B88B2A] rounded-lg transition-all shrink-0 cursor-pointer"
                             title="Copy Wording"
                           >
                             <Copy size={12} />
@@ -9935,11 +9935,11 @@ Through Counsel
                     <div className="space-y-6 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-200 dark:before:bg-slate-800">
                       {trialSeq.map((item, idx) => (
                         <div key={idx} className="relative pl-8 flex gap-4">
-                          <div className="absolute left-[3px] top-[2px] w-4 h-4 rounded-full bg-white dark:bg-[#1E293B] border-2 border-[#C8A34D] flex items-center justify-center font-black text-[8px] text-[#C8A34D]">
+                          <div className="absolute left-[3px] top-[2px] w-4 h-4 rounded-full bg-white dark:bg-[#1E293B] border-2 border-[#B88B2A] flex items-center justify-center font-black text-[8px] text-[#B88B2A]">
                             {item.step || idx + 1}
                           </div>
                           <div>
-                            <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded text-[8px] font-mono font-bold uppercase tracking-wider">
+                            <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded text-[8px] font-mono font-bold uppercase tracking-wider">
                               {item.status || 'Step'} Focus
                             </span>
                             <h4 className="text-xs font-black text-[#0F172A] dark:text-white mt-1">
@@ -9979,7 +9979,7 @@ Through Counsel
                       <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest">
                         CROSS-EXAMINATION QUESTIONS
                       </h3>
-                      <span className="text-[9px] font-mono text-[#C8A34D] font-bold">
+                      <span className="text-[9px] font-mono text-[#B88B2A] font-bold">
                         {crossQuestionsList.length} Questions
                       </span>
                     </div>
@@ -9993,7 +9993,7 @@ Through Counsel
                               navigator.clipboard.writeText(q);
                               toast.success("Question copied!");
                             }}
-                            className="p-1 text-slate-400 hover:text-[#C8A34D] shrink-0 cursor-pointer"
+                            className="p-1 text-slate-400 hover:text-[#B88B2A] shrink-0 cursor-pointer"
                             title="Copy Question"
                           >
                             <Copy size={11} />
@@ -10010,7 +10010,7 @@ Through Counsel
                         value={newQuestionText}
                         onChange={e => setNewQuestionText(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleAddCrossQuestion()}
-                        className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                        className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                       />
                       <button
                         onClick={handleAddCrossQuestion}
@@ -10044,11 +10044,11 @@ Through Counsel
                       onClick={() => handleExportArguments('txt')}
                       className="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-black uppercase tracking-wider shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
                     >
-                      <Download size={12} className="text-[#C8A34D]" /> Export Dossier
+                      <Download size={12} className="text-[#B88B2A]" /> Export Dossier
                     </button>
                     <button
                       onClick={triggerPrint}
-                      className="px-3.5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <Printer size={12} /> Print Binder
                     </button>
@@ -10057,13 +10057,13 @@ Through Counsel
 
                 {/* UPCOMING HEARING METADATA CARD */}
                 {nextHearing && (
-                  <div className="bg-[#C8A34D]/10 border border-[#C8A34D]/30 rounded-2xl p-6 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div className="bg-[#B88B2A]/10 border border-[#B88B2A]/30 rounded-2xl p-6 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-[#C8A34D] text-[#111111] rounded-xl shrink-0">
+                      <div className="p-3 bg-[#B88B2A] text-[#111111] rounded-xl shrink-0">
                         <Calendar size={20} />
                       </div>
                       <div>
-                        <span className="text-[9px] font-mono font-bold text-[#C8A34D] uppercase tracking-widest block">
+                        <span className="text-[9px] font-mono font-bold text-[#B88B2A] uppercase tracking-widest block">
                           NEXT UPCOMING HEARING
                         </span>
                         <h4 className="text-sm font-black text-[#0F172A] dark:text-white">
@@ -10074,7 +10074,7 @@ Through Counsel
                         </p>
                       </div>
                     </div>
-                    <span className="px-3 py-1 bg-white dark:bg-slate-900 border border-[#C8A34D]/30 text-[#0F172A] dark:text-white rounded-xl text-xs font-mono font-bold uppercase tracking-wider">
+                    <span className="px-3 py-1 bg-white dark:bg-slate-900 border border-[#B88B2A]/30 text-[#0F172A] dark:text-white rounded-xl text-xs font-mono font-bold uppercase tracking-wider">
                       {nextHearing.purpose || 'Arguments & Issues Framing'}
                     </span>
                   </div>
@@ -10084,7 +10084,7 @@ Through Counsel
                 <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
                   <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h4 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-2">
-                      <FileSignature size={16} className="text-[#C8A34D]" />
+                      <FileSignature size={16} className="text-[#B88B2A]" />
                       FINAL COURTROOM STRATEGY & ORAL SCRIPT
                     </h4>
                     {editingScript ? (
@@ -10114,7 +10114,7 @@ Through Counsel
                         }}
                         className="px-3 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
                       >
-                        <Edit2 size={12} className="text-[#C8A34D]" /> Edit Script
+                        <Edit2 size={12} className="text-[#B88B2A]" /> Edit Script
                       </button>
                     )}
                   </div>
@@ -10124,7 +10124,7 @@ Through Counsel
                       rows={6}
                       value={scriptEditText}
                       onChange={e => setScriptEditText(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 text-xs font-mono font-medium text-[#0F172A] dark:text-white leading-relaxed focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 text-xs font-mono font-medium text-[#0F172A] dark:text-white leading-relaxed focus:outline-none focus:border-[#B88B2A]"
                     />
                   ) : (
                     <div className="p-5 bg-slate-50/70 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl space-y-2">
@@ -10156,7 +10156,7 @@ Through Counsel
                       <div key={idx} className="p-4 bg-slate-50/50 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl space-y-2">
                         <div className="flex justify-between items-start">
                           <h4 className="text-xs font-black text-[#0F172A] dark:text-white">{law.name} ({law.year})</h4>
-                          <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[8px] font-mono font-bold uppercase rounded">
+                          <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 text-[8px] font-mono font-bold uppercase rounded">
                             {law.court}
                           </span>
                         </div>
@@ -10183,7 +10183,7 @@ Through Counsel
             <div className="bg-white dark:bg-[#1E293B] border-l border-slate-200 dark:border-slate-800 w-full max-w-3xl h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
               <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-[#0F172A] shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-[#C8A34D]/15 text-[#C8A34D] rounded-xl">
+                  <div className="p-2 bg-[#B88B2A]/15 text-[#B88B2A] rounded-xl">
                     <Gavel size={18} />
                   </div>
                   <div>
@@ -10201,13 +10201,13 @@ Through Counsel
                     onClick={() => handleExportArguments('txt')}
                     className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shadow-xs cursor-pointer"
                   >
-                    <Download size={12} className="text-[#C8A34D]" /> Export
+                    <Download size={12} className="text-[#B88B2A]" /> Export
                   </button>
                   <button 
                     onClick={triggerPrint}
                     className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shadow-xs cursor-pointer"
                   >
-                    <Printer size={12} className="text-[#C8A34D]" /> Print
+                    <Printer size={12} className="text-[#B88B2A]" /> Print
                   </button>
                   <button 
                     onClick={() => setIsPreparingHearing(false)} 
@@ -10248,7 +10248,7 @@ Through Counsel
                     <div className="space-y-2">
                       {trialSeq.map((seq, i) => (
                         <div key={i} className="flex gap-3 text-xs">
-                          <span className="font-mono font-bold text-[#C8A34D]">{i + 1}.</span>
+                          <span className="font-mono font-bold text-[#B88B2A]">{i + 1}.</span>
                           <span className="font-bold text-[#0F172A] dark:text-white">{seq.title} — <span className="font-normal text-slate-500">{seq.detail}</span></span>
                         </div>
                       ))}
@@ -10340,7 +10340,7 @@ Through Counsel
         {/* Header Action Banner */}
         <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-[#C8A34D]/15 text-[#C8A34D] rounded-xl border border-[#C8A34D]/30">
+            <div className="p-3 bg-[#B88B2A]/15 text-[#B88B2A] rounded-xl border border-[#B88B2A]/30">
               <Sparkles size={20} />
             </div>
             <div>
@@ -10353,7 +10353,7 @@ Through Counsel
           <button 
             onClick={handleRunAiAnalysis}
             disabled={isLoadingAnalysis}
-            className="px-4 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider shadow-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 disabled:opacity-50"
+            className="px-4 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs uppercase tracking-wider shadow-xs transition-all flex items-center gap-2 cursor-pointer shrink-0 disabled:opacity-50"
           >
             <Sparkles size={14} />
             <span>{isLoadingAnalysis ? "Analyzing Case..." : "Run AI Analysis"}</span>
@@ -10390,7 +10390,7 @@ Through Counsel
           </div>
         ) : (
           <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center space-y-3">
-            <div className="w-12 h-12 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] flex items-center justify-center mx-auto">
               <Sparkles size={22} />
             </div>
             <h3 className="text-sm font-black text-[#0F172A] dark:text-white uppercase tracking-wider">No AI Analysis Generated Yet</h3>
@@ -10400,7 +10400,7 @@ Through Counsel
             <button 
               onClick={handleRunAiAnalysis}
               disabled={isLoadingAnalysis}
-              className="px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer"
+              className="px-5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer"
             >
               Run AI Analysis
             </button>
@@ -10435,11 +10435,11 @@ Through Counsel
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
               <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">3. KEY FACTS</h3>
               <div>
-                <span className="text-[10px] font-mono font-bold text-[#C8A34D] uppercase tracking-wider block mb-2">Confirmed / Available Facts</span>
+                <span className="text-[10px] font-mono font-bold text-[#B88B2A] uppercase tracking-wider block mb-2">Confirmed / Available Facts</span>
                 {data.keyFacts?.confirmedFacts && data.keyFacts.confirmedFacts.length > 0 ? (
                   <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
                     {data.keyFacts.confirmedFacts.map((f, idx) => (
-                      <li key={idx} className="flex items-start gap-2"><span className="text-[#C8A34D] font-bold">•</span><span>{f}</span></li>
+                      <li key={idx} className="flex items-start gap-2"><span className="text-[#B88B2A] font-bold">•</span><span>{f}</span></li>
                     ))}
                   </ul>
                 ) : (
@@ -10492,7 +10492,7 @@ Through Counsel
                   {data.keyLegalIssues.map((iss, idx) => (
                     <div key={idx} className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 p-3.5 rounded-xl space-y-1">
                       <div className="text-xs font-black text-[#0F172A] dark:text-white flex items-center gap-2">
-                        <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] rounded-md text-[10px] font-mono font-bold">Issue {iss.issueNumber || idx + 1}</span>
+                        <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] rounded-md text-[10px] font-mono font-bold">Issue {iss.issueNumber || idx + 1}</span>
                         <span>{iss.issue}</span>
                       </div>
                       {iss.explanation && <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium pl-2">{iss.explanation}</p>}
@@ -10513,7 +10513,7 @@ Through Counsel
                   ) : <span className="italic text-slate-400">Pleadings sections mapped.</span>}
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono font-bold text-[#C8A34D] uppercase tracking-wider block mb-2">AI Suggested (Verify before use)</span>
+                  <span className="text-[10px] font-mono font-bold text-[#B88B2A] uppercase tracking-wider block mb-2">AI Suggested (Verify before use)</span>
                   {data.applicableLaws?.aiSuggestedVerification && data.applicableLaws.aiSuggestedVerification.length > 0 ? (
                     <ul className="space-y-1">{data.applicableLaws.aiSuggestedVerification.map((l, i) => <li key={i}>• {l}</li>)}</ul>
                   ) : <span className="italic text-slate-400">No additional suggested laws.</span>}
@@ -10528,7 +10528,7 @@ Through Counsel
                 <div className="space-y-3">
                   {data.relevantPrecedents.map((prec, idx) => (
                     <div key={idx} className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 p-4 rounded-xl space-y-1">
-                      <div className="text-xs font-black text-[#C8A34D]">{prec.caseName}</div>
+                      <div className="text-xs font-black text-[#B88B2A]">{prec.caseName}</div>
                       <div className="text-[10px] text-slate-400 font-bold">{prec.court} ({prec.year})</div>
                       <p className="text-xs text-slate-700 dark:text-slate-300 font-medium mt-1">Relevance: {prec.relevance}</p>
                     </div>
@@ -10571,7 +10571,7 @@ Through Counsel
                   ) : <span className="italic text-slate-400">Claims formulated.</span>}
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono font-bold text-[#C8A34D] uppercase tracking-wider block mb-1">Supporting Submissions</span>
+                  <span className="text-[10px] font-mono font-bold text-[#B88B2A] uppercase tracking-wider block mb-1">Supporting Submissions</span>
                   {data.argumentAnalysis?.supportingArguments && data.argumentAnalysis.supportingArguments.length > 0 ? (
                     <ul className="space-y-1">{data.argumentAnalysis.supportingArguments.map((a, i) => <li key={i}>• {a}</li>)}</ul>
                   ) : <span className="italic text-slate-400">Supporting arguments logged.</span>}
@@ -10635,7 +10635,7 @@ Through Counsel
                 <button onClick={() => setActiveTab('documents')} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer">
                   + Upload Document
                 </button>
-                <button onClick={() => setActiveTab('evidence')} className="px-3 py-1.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-lg text-xs font-bold transition-all cursor-pointer">
+                <button onClick={() => setActiveTab('evidence')} className="px-3 py-1.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-lg text-xs font-bold transition-all cursor-pointer">
                   + Add Evidence
                 </button>
               </div>
@@ -10648,7 +10648,7 @@ Through Counsel
                 <ul className="space-y-2 text-xs font-semibold text-slate-800 dark:text-slate-200">
                   {data.recommendedNextSteps.map((step, idx) => (
                     <li key={idx} className="flex items-start gap-2 bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
-                      <span className="font-mono text-[#C8A34D] font-black">{idx + 1}.</span>
+                      <span className="font-mono text-[#B88B2A] font-black">{idx + 1}.</span>
                       <span>{step}</span>
                     </li>
                   ))}
@@ -11007,7 +11007,7 @@ Through Counsel
               <h2 className="text-base font-black text-[#0F172A] dark:text-white uppercase tracking-wider">
                 TASKS & WORKFLOW
               </h2>
-              <span className="px-2.5 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-full text-[9px] font-mono font-bold">
+              <span className="px-2.5 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-full text-[9px] font-mono font-bold">
                 Case Action Center
               </span>
             </div>
@@ -11019,7 +11019,7 @@ Through Counsel
           <div className="flex flex-wrap items-center gap-2 w-full md:w-auto shrink-0">
             <button
               onClick={() => setIsCreateTaskModalOpen(true)}
-              className="px-3.5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Plus size={14} /> New Task
             </button>
@@ -11028,7 +11028,7 @@ Through Counsel
               onClick={handleTriggerAiSuggestTasks}
               className="px-3.5 py-2.5 bg-[#0F172A] dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-[#0F172A] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Sparkles size={13} className="text-[#C8A34D] animate-pulse" /> AI Suggest Tasks
+              <Sparkles size={13} className="text-[#B88B2A] animate-pulse" /> AI Suggest Tasks
             </button>
           </div>
         </div>
@@ -11056,7 +11056,7 @@ Through Counsel
           </div>
 
           <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl p-4 flex items-center gap-3.5 shadow-xs">
-            <div className="w-10 h-10 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center font-black text-sm shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center font-black text-sm shrink-0">
               {upcomingCount}
             </div>
             <div>
@@ -11080,8 +11080,8 @@ Through Counsel
         {isAiSuggestingTasks && (
           <div className="py-12 bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center space-y-4 shadow-xs animate-in fade-in duration-300">
             <div className="relative flex items-center justify-center">
-              <div className="w-12 h-12 rounded-full border-3 border-[#C8A34D]/20 border-t-[#C8A34D] animate-spin" />
-              <Sparkles size={16} className="absolute text-[#C8A34D] animate-pulse" />
+              <div className="w-12 h-12 rounded-full border-3 border-[#B88B2A]/20 border-t-[#B88B2A] animate-spin" />
+              <Sparkles size={16} className="absolute text-[#B88B2A] animate-pulse" />
             </div>
             <div className="text-center space-y-1">
               <div className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest animate-pulse">
@@ -11113,8 +11113,8 @@ Through Counsel
                     onClick={() => setTaskFilterTab(tab.id)}
                     className={`px-3.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                       taskFilterTab === tab.id
-                        ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
-                        : 'text-slate-600 dark:text-slate-400 hover:text-[#C8A34D]'
+                        ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-[#B88B2A]'
                     }`}
                   >
                     {tab.name}
@@ -11131,14 +11131,14 @@ Through Counsel
                     placeholder="Search tasks..."
                     value={taskSearchQuery}
                     onChange={e => setTaskSearchQuery(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
                 <select
                   value={taskPriorityFilter}
                   onChange={e => setTaskPriorityFilter(e.target.value)}
-                  className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D] cursor-pointer"
+                  className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A] cursor-pointer"
                 >
                   <option value="All">All Priorities</option>
                   <option value="Critical">Critical</option>
@@ -11202,7 +11202,7 @@ Through Counsel
                       </div>
                       <button
                         onClick={() => setIsCreateTaskModalOpen(true)}
-                        className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
+                        className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
                       >
                         + Create First Task
                       </button>
@@ -11220,7 +11220,7 @@ Through Counsel
                             className={`p-4 border rounded-xl transition-colors space-y-3 ${
                               isDone
                                 ? 'bg-slate-50/60 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800/80 opacity-75'
-                                : 'bg-white dark:bg-[#0F172A] border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]'
+                                : 'bg-white dark:bg-[#0F172A] border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A]'
                             }`}
                           >
                             <div className="flex items-start justify-between gap-3">
@@ -11231,7 +11231,7 @@ Through Counsel
                                   className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all mt-0.5 shrink-0 cursor-pointer ${
                                     isDone
                                       ? 'bg-emerald-600 border-emerald-600 text-white'
-                                      : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-[#C8A34D]'
+                                      : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-[#B88B2A]'
                                   }`}
                                 >
                                   {isDone && <Check size={12} />}
@@ -11288,7 +11288,7 @@ Through Counsel
                             <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-[10px] text-slate-400 font-medium">
                               <div className="flex items-center gap-4">
                                 <span className="flex items-center gap-1 font-mono font-bold text-slate-600 dark:text-slate-300">
-                                  <Clock size={11} className="text-[#C8A34D]" /> Due: {t.deadline || 'Upcoming'}
+                                  <Clock size={11} className="text-[#B88B2A]" /> Due: {t.deadline || 'Upcoming'}
                                 </span>
 
                                 <span className="flex items-center gap-1 font-mono">
@@ -11296,7 +11296,7 @@ Through Counsel
                                 </span>
 
                                 {subtasksArr.length > 0 && (
-                                  <span className="font-mono font-bold text-[#C8A34D]">
+                                  <span className="font-mono font-bold text-[#B88B2A]">
                                     Subtasks: {checkedSts}/{subtasksArr.length}
                                   </span>
                                 )}
@@ -11326,12 +11326,12 @@ Through Counsel
                 <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-3">
                   <div className="flex items-center justify-between text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-wider">
                     <span>CASE TASK COMPLETION PROGRESS</span>
-                    <span className="font-mono text-[#C8A34D]">{progressPercent}%</span>
+                    <span className="font-mono text-[#B88B2A]">{progressPercent}%</span>
                   </div>
 
                   <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                     <div 
-                      className="bg-[#C8A34D] h-full rounded-full transition-all duration-500"
+                      className="bg-[#B88B2A] h-full rounded-full transition-all duration-500"
                       style={{ width: `${progressPercent}%` }}
                     />
                   </div>
@@ -11351,7 +11351,7 @@ Through Counsel
                 <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-[#C8A34D]" /> ✨ AI SUGGESTED TASKS
+                      <Sparkles size={14} className="text-[#B88B2A]" /> ✨ AI SUGGESTED TASKS
                     </h3>
                     <span className="text-[9px] font-mono text-slate-400 font-bold">Context Grounded</span>
                   </div>
@@ -11378,7 +11378,7 @@ Through Counsel
                           </span>
                           <button
                             onClick={() => handleAddAiSuggestionToTasks(sug)}
-                            className="px-2.5 py-1 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-lg text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                            className="px-2.5 py-1 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-lg text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer"
                           >
                             + Add to My Tasks
                           </button>
@@ -11421,7 +11421,7 @@ Through Counsel
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-150">
               <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
                 <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                  <Plus size={14} className="text-[#C8A34D]" /> CREATE CASE TASK
+                  <Plus size={14} className="text-[#B88B2A]" /> CREATE CASE TASK
                 </h3>
                 <button 
                   onClick={() => setIsCreateTaskModalOpen(false)} 
@@ -11439,7 +11439,7 @@ Through Counsel
                     placeholder="Task Title (e.g. Draft written response)"
                     value={newCreatedTask.title}
                     onChange={e => setNewCreatedTask({ ...newCreatedTask, title: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -11450,7 +11450,7 @@ Through Counsel
                     placeholder="Detail task requirements..."
                     value={newCreatedTask.description}
                     onChange={e => setNewCreatedTask({ ...newCreatedTask, description: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -11460,7 +11460,7 @@ Through Counsel
                     <select
                       value={newCreatedTask.priority}
                       onChange={e => setNewCreatedTask({ ...newCreatedTask, priority: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     >
                       <option value="Critical">Critical</option>
                       <option value="High">High</option>
@@ -11474,7 +11474,7 @@ Through Counsel
                     <select
                       value={newCreatedTask.deadline}
                       onChange={e => setNewCreatedTask({ ...newCreatedTask, deadline: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     >
                       <option value="Today">Today</option>
                       <option value="Tomorrow">Tomorrow</option>
@@ -11492,7 +11492,7 @@ Through Counsel
                       type="text"
                       value={newCreatedTask.assignee}
                       onChange={e => setNewCreatedTask({ ...newCreatedTask, assignee: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
 
@@ -11501,7 +11501,7 @@ Through Counsel
                     <select
                       value={newCreatedTask.relatedModule}
                       onChange={e => setNewCreatedTask({ ...newCreatedTask, relatedModule: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     >
                       <option value="Hearings">Hearings</option>
                       <option value="Evidence Vault">Evidence Vault</option>
@@ -11522,7 +11522,7 @@ Through Counsel
                 </button>
                 <button
                   onClick={handleCreateNewCustomTask}
-                  className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
+                  className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
                 >
                   Create Task
                 </button>
@@ -11539,7 +11539,7 @@ Through Counsel
               {/* Drawer Header */}
               <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-[#0F172A] shrink-0">
                 <div>
-                  <span className="text-[9px] font-mono font-bold text-[#C8A34D] uppercase tracking-widest block">
+                  <span className="text-[9px] font-mono font-bold text-[#B88B2A] uppercase tracking-widest block">
                     TASK WORKSPACE DETAILS
                   </span>
                   <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest mt-0.5">
@@ -11609,7 +11609,7 @@ Through Counsel
                           type="checkbox"
                           checked={st.checked}
                           onChange={() => handleToggleSubtaskItem(selectedTaskDetail, st.id)}
-                          className="w-4 h-4 rounded text-[#C8A34D] cursor-pointer"
+                          className="w-4 h-4 rounded text-[#B88B2A] cursor-pointer"
                         />
                         <span className={`text-xs font-semibold ${st.checked ? 'line-through text-slate-400' : 'text-[#0F172A] dark:text-white'}`}>
                           {st.title}
@@ -11626,7 +11626,7 @@ Through Counsel
                       value={newSubtaskInput}
                       onChange={e => setNewSubtaskInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleAddSubtaskToTask(selectedTaskDetail)}
-                      className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                     <button
                       onClick={() => handleAddSubtaskToTask(selectedTaskDetail)}
@@ -11647,7 +11647,7 @@ Through Counsel
                     {(selectedTaskDetail.comments || []).map((c, i) => (
                       <div key={i} className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl space-y-1">
                         <div className="flex justify-between items-center text-[10px]">
-                          <span className="font-bold text-[#C8A34D]">{c.author} ({c.role})</span>
+                          <span className="font-bold text-[#B88B2A]">{c.author} ({c.role})</span>
                           <span className="text-slate-400 font-mono">{c.timestamp}</span>
                         </div>
                         <p className="text-xs text-[#0F172A] dark:text-white font-medium">{c.text}</p>
@@ -11662,11 +11662,11 @@ Through Counsel
                       value={taskCommentInput}
                       onChange={e => setTaskCommentInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleAddCommentToTask(selectedTaskDetail)}
-                      className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                     <button
                       onClick={() => handleAddCommentToTask(selectedTaskDetail)}
-                      className="px-3 py-2 bg-[#C8A34D] text-[#111111] font-black rounded-xl text-xs uppercase cursor-pointer"
+                      className="px-3 py-2 bg-[#B88B2A] text-[#111111] font-black rounded-xl text-xs uppercase cursor-pointer"
                     >
                       Send
                     </button>
@@ -11682,7 +11682,7 @@ Through Counsel
                   <div className="space-y-2 pl-2">
                     {(selectedTaskDetail.timeline || []).map((tl, i) => (
                       <div key={i} className="flex gap-3 text-xs">
-                        <span className="text-[#C8A34D] font-mono text-[10px] font-bold">• {tl.time}:</span>
+                        <span className="text-[#B88B2A] font-mono text-[10px] font-bold">• {tl.time}:</span>
                         <span className="text-slate-600 dark:text-slate-300 font-semibold">{tl.action}</span>
                       </div>
                     ))}
@@ -12084,17 +12084,17 @@ Through Counsel
           key={noteObj._id || noteObj.id}
           className={`p-4 border rounded-xl space-y-3 transition-all ${
             noteObj.pinned
-              ? 'bg-amber-50/40 dark:bg-amber-950/20 border-[#C8A34D]/60 dark:border-[#C8A34D]/40 shadow-xs'
+              ? 'bg-amber-50/40 dark:bg-amber-950/20 border-[#B88B2A]/60 dark:border-[#B88B2A]/40 shadow-xs'
               : isAi
                 ? 'bg-slate-50/70 dark:bg-[#0F172A] border-slate-200/80 dark:border-slate-800'
-                : 'bg-white dark:bg-[#0F172A] border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]'
+                : 'bg-white dark:bg-[#0F172A] border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A]'
           }`}
         >
           {/* Card Top Metadata Header */}
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800/80 pb-2.5">
             <div className="flex flex-wrap items-center gap-2">
               {isAi ? (
-                <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 text-[8px] font-mono font-bold uppercase rounded-md flex items-center gap-1">
+                <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 text-[8px] font-mono font-bold uppercase rounded-md flex items-center gap-1">
                   <Sparkles size={9} /> AI Generated
                 </span>
               ) : isVoice ? (
@@ -12108,7 +12108,7 @@ Through Counsel
               )}
 
               {/* Category Pill */}
-              <span className="px-2.5 py-0.5 bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/20 text-[9px] font-mono font-bold uppercase rounded-full">
+              <span className="px-2.5 py-0.5 bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20 text-[9px] font-mono font-bold uppercase rounded-full">
                 {noteObj.category || 'General Notes'}
               </span>
             </div>
@@ -12129,7 +12129,7 @@ Through Counsel
             className="space-y-1.5 cursor-pointer"
           >
             <h4 className="text-xs font-black text-[#0F172A] dark:text-white flex items-center gap-2">
-              {noteObj.pinned && <Pin size={12} className="text-[#C8A34D] shrink-0" />}
+              {noteObj.pinned && <Pin size={12} className="text-[#B88B2A] shrink-0" />}
               <span>{noteObj.title}</span>
             </h4>
             <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed line-clamp-3 whitespace-pre-line">
@@ -12158,7 +12158,7 @@ Through Counsel
               <button
                 onClick={() => handleTogglePinNote(noteObj)}
                 className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                  noteObj.pinned ? 'text-[#C8A34D] bg-[#C8A34D]/10' : 'text-slate-400 hover:text-slate-600 dark:hover:text-white'
+                  noteObj.pinned ? 'text-[#B88B2A] bg-[#B88B2A]/10' : 'text-slate-400 hover:text-slate-600 dark:hover:text-white'
                 }`}
                 title={noteObj.pinned ? "Unpin Note" : "Pin Note"}
               >
@@ -12175,7 +12175,7 @@ Through Counsel
 
               <button
                 onClick={() => setActiveAiImproveNote(noteObj)}
-                className="p-1.5 text-[#C8A34D] hover:bg-[#C8A34D]/10 rounded-lg transition-colors cursor-pointer flex items-center gap-1 text-[9px]"
+                className="p-1.5 text-[#B88B2A] hover:bg-[#B88B2A]/10 rounded-lg transition-colors cursor-pointer flex items-center gap-1 text-[9px]"
                 title="Improve with AI"
               >
                 <Sparkles size={11} /> AI
@@ -12212,7 +12212,7 @@ Through Counsel
               <h2 className="text-base font-black text-[#0F172A] dark:text-white uppercase tracking-wider">
                 CASE NOTES
               </h2>
-              <span className="px-2.5 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-full text-[9px] font-mono font-bold">
+              <span className="px-2.5 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-full text-[9px] font-mono font-bold">
                 Legal Notebook Workspace
               </span>
             </div>
@@ -12235,7 +12235,7 @@ Through Counsel
                 });
                 setIsCreateNoteModalOpen(true);
               }}
-              className="px-3.5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Plus size={14} /> New Note
             </button>
@@ -12251,7 +12251,7 @@ Through Counsel
               onClick={() => handleTriggerAiNoteAction('summarize')}
               className="px-3.5 py-2.5 bg-[#0F172A] dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-[#0F172A] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Sparkles size={13} className="text-[#C8A34D]" /> AI Assist
+              <Sparkles size={13} className="text-[#B88B2A]" /> AI Assist
             </button>
           </div>
         </div>
@@ -12269,7 +12269,7 @@ Through Counsel
           </div>
 
           <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl p-4 flex items-center gap-3.5 shadow-xs">
-            <div className="w-10 h-10 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center font-black text-sm shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center font-black text-sm shrink-0">
               {pinnedCount}
             </div>
             <div>
@@ -12318,8 +12318,8 @@ Through Counsel
                 onClick={() => setNoteFilterChip(chip)}
                 className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                   noteFilterChip === chip
-                    ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-[#C8A34D]'
+                    ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-[#B88B2A]'
                 }`}
               >
                 {chip}
@@ -12335,7 +12335,7 @@ Through Counsel
               placeholder="Search notes, tags, author..."
               value={noteSearchQuery}
               onChange={e => setNoteSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
             />
           </div>
         </div>
@@ -12351,9 +12351,9 @@ Through Counsel
               <div className="bg-white dark:bg-[#1E293B] border border-amber-200/80 dark:border-amber-900/40 rounded-2xl p-6 shadow-xs space-y-4">
                 <div className="flex items-center justify-between pb-2 border-b border-amber-100 dark:border-amber-900/40">
                   <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                    <Pin size={13} className="text-[#C8A34D]" /> PINNED NOTES ({pinnedNotesList.length})
+                    <Pin size={13} className="text-[#B88B2A]" /> PINNED NOTES ({pinnedNotesList.length})
                   </h3>
-                  <span className="text-[9px] font-mono text-[#C8A34D] font-bold">Stays at Top</span>
+                  <span className="text-[9px] font-mono text-[#B88B2A] font-bold">Stays at Top</span>
                 </div>
                 <div className="space-y-3">
                   {pinnedNotesList.map(renderSingleNoteCard)}
@@ -12385,7 +12385,7 @@ Through Counsel
                   </div>
                   <button
                     onClick={() => setNoteFilterChip('All')}
-                    className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
+                    className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
                   >
                     Clear Filters
                   </button>
@@ -12396,7 +12396,7 @@ Through Counsel
                   {/* TODAY */}
                   {todayGroup.length > 0 && (
                     <div className="space-y-3">
-                      <span className="text-[10px] font-mono font-bold text-[#C8A34D] uppercase tracking-widest block pb-1 border-b border-slate-100 dark:border-slate-800">
+                      <span className="text-[10px] font-mono font-bold text-[#B88B2A] uppercase tracking-widest block pb-1 border-b border-slate-100 dark:border-slate-800">
                         TODAY
                       </span>
                       {todayGroup.map(renderSingleNoteCard)}
@@ -12446,7 +12446,7 @@ Through Counsel
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-[#C8A34D]" /> ✨ AI NOTE ASSISTANT
+                  <Sparkles size={14} className="text-[#B88B2A]" /> ✨ AI NOTE ASSISTANT
                 </h3>
                 <span className="text-[9px] font-mono text-slate-400 font-bold">4 One-Click Actions</span>
               </div>
@@ -12465,18 +12465,18 @@ Through Counsel
                       disabled={isProcessing}
                       onClick={() => handleTriggerAiNoteAction(action.id)}
                       className={`w-full text-left p-3 bg-slate-50/70 dark:bg-[#0F172A] hover:bg-amber-50/60 dark:hover:bg-slate-800/90 border rounded-xl transition-all space-y-0.5 cursor-pointer group ${
-                        isProcessing ? 'border-[#C8A34D] ring-2 ring-[#C8A34D]/20' : 'border-slate-200/80 dark:border-slate-800 hover:border-[#C8A34D]/50'
+                        isProcessing ? 'border-[#B88B2A] ring-2 ring-[#B88B2A]/20' : 'border-slate-200/80 dark:border-slate-800 hover:border-[#B88B2A]/50'
                       }`}
                     >
-                      <div className="flex items-center justify-between text-xs font-bold text-[#0F172A] dark:text-white group-hover:text-[#C8A34D]">
+                      <div className="flex items-center justify-between text-xs font-bold text-[#0F172A] dark:text-white group-hover:text-[#B88B2A]">
                         <span className="flex items-center gap-1.5">
-                          {isProcessing && <Sparkles size={13} className="text-[#C8A34D] animate-spin" />}
+                          {isProcessing && <Sparkles size={13} className="text-[#B88B2A] animate-spin" />}
                           {action.title}
                         </span>
                         {isProcessing ? (
-                          <span className="text-[9px] font-mono text-[#C8A34D] font-bold">Synthesizing...</span>
+                          <span className="text-[9px] font-mono text-[#B88B2A] font-bold">Synthesizing...</span>
                         ) : (
-                          <ChevronRight size={13} className="text-slate-400 group-hover:text-[#C8A34D] group-hover:translate-x-0.5 transition-transform" />
+                          <ChevronRight size={13} className="text-slate-400 group-hover:text-[#B88B2A] group-hover:translate-x-0.5 transition-transform" />
                         )}
                       </div>
                       <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
@@ -12499,7 +12499,7 @@ Through Counsel
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 w-full max-w-xl rounded-2xl p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-150">
               <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
                 <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                  <Edit2 size={14} className="text-[#C8A34D]" />
+                  <Edit2 size={14} className="text-[#B88B2A]" />
                   {isEditNoteModalOpen ? 'EDIT CASE NOTE' : 'CREATE CASE NOTE'}
                 </h3>
                 <button 
@@ -12522,7 +12522,7 @@ Through Counsel
                     placeholder="Note Title (e.g. Hearing Preparation Notes)"
                     value={noteFormState.title}
                     onChange={e => setNoteFormState({ ...noteFormState, title: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -12532,7 +12532,7 @@ Through Counsel
                     <select
                       value={noteFormState.category}
                       onChange={e => setNoteFormState({ ...noteFormState, category: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D] cursor-pointer"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A] cursor-pointer"
                     >
                       <option value="General Notes">General Notes</option>
                       <option value="Hearing Notes">Hearing Notes</option>
@@ -12550,7 +12550,7 @@ Through Counsel
                     <select
                       value={noteFormState.priority}
                       onChange={e => setNoteFormState({ ...noteFormState, priority: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D] cursor-pointer"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A] cursor-pointer"
                     >
                       <option value="Critical">Critical</option>
                       <option value="High">High Priority</option>
@@ -12567,7 +12567,7 @@ Through Counsel
                     placeholder="strategy, hearing, 65b, evidence"
                     value={noteFormState.tags}
                     onChange={e => setNoteFormState({ ...noteFormState, tags: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -12584,7 +12584,7 @@ Through Counsel
                         setNoteFormState({ ...noteFormState, content: generated });
                         toast.success("AI draft content injected!");
                       }}
-                      className="text-[#C8A34D] hover:underline font-mono text-[9px] font-bold flex items-center gap-1 cursor-pointer"
+                      className="text-[#B88B2A] hover:underline font-mono text-[9px] font-bold flex items-center gap-1 cursor-pointer"
                     >
                       <Sparkles size={10} /> Auto-Draft with AI
                     </button>
@@ -12594,7 +12594,7 @@ Through Counsel
                     placeholder="Write detailed legal notes, research citations, or meeting notes..."
                     value={noteFormState.content}
                     onChange={e => setNoteFormState({ ...noteFormState, content: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 font-medium text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D] leading-relaxed"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 font-medium text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A] leading-relaxed"
                   />
                 </div>
               </div>
@@ -12605,7 +12605,7 @@ Through Counsel
                     type="checkbox"
                     checked={noteFormState.pinned}
                     onChange={e => setNoteFormState({ ...noteFormState, pinned: e.target.checked })}
-                    className="w-4 h-4 rounded text-[#C8A34D]"
+                    className="w-4 h-4 rounded text-[#B88B2A]"
                   />
                   <span>Pin Note to Top (📌)</span>
                 </label>
@@ -12623,7 +12623,7 @@ Through Counsel
                   </button>
                   <button
                     onClick={handleSaveNoteModalForm}
-                    className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
+                    className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
                   >
                     Save Note
                   </button>
@@ -12666,7 +12666,7 @@ Through Counsel
                       onClick={() => setVoiceLanguage(lang.id)}
                       className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition-colors cursor-pointer ${
                         voiceLanguage === lang.id
-                          ? 'bg-[#C8A34D] text-[#111111]'
+                          ? 'bg-[#B88B2A] text-[#111111]'
                           : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                       }`}
                     >
@@ -12683,7 +12683,7 @@ Through Counsel
                   className={`w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-md cursor-pointer ${
                     isVoiceRecording
                       ? 'bg-rose-600 text-white animate-pulse ring-8 ring-rose-600/20'
-                      : 'bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111]'
+                      : 'bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111]'
                   }`}
                 >
                   <Mic size={24} />
@@ -12701,7 +12701,7 @@ Through Counsel
                   placeholder="Transcribed dictation text will appear here in real-time..."
                   value={voiceTranscriptText}
                   onChange={e => setVoiceTranscriptText(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -12714,7 +12714,7 @@ Through Counsel
                 </button>
                 <button
                   onClick={handleSaveVoiceNoteToCase}
-                  className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
+                  className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
                 >
                   Save to Case Notes
                 </button>
@@ -12729,7 +12729,7 @@ Through Counsel
             <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-150">
               <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
                 <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-[#C8A34D]" /> ✨ IMPROVE NOTE WITH AI
+                  <Sparkles size={14} className="text-[#B88B2A]" /> ✨ IMPROVE NOTE WITH AI
                 </h3>
                 <button 
                   onClick={() => setActiveAiImproveNote(null)}
@@ -12745,7 +12745,7 @@ Through Counsel
 
               {isAiImprovingNote ? (
                 <div className="py-8 flex flex-col items-center justify-center space-y-2">
-                  <div className="w-8 h-8 rounded-full border-2 border-[#C8A34D]/20 border-t-[#C8A34D] animate-spin" />
+                  <div className="w-8 h-8 rounded-full border-2 border-[#B88B2A]/20 border-t-[#B88B2A] animate-spin" />
                   <span className="text-xs font-mono font-bold text-slate-400 animate-pulse">Enhancing Legal Writing...</span>
                 </div>
               ) : (
@@ -12761,7 +12761,7 @@ Through Counsel
                       onClick={() => handleExecuteAiImprovement(option.id)}
                       className="p-3 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl text-left space-y-1 transition-all cursor-pointer group"
                     >
-                      <h4 className="text-xs font-bold text-[#0F172A] dark:text-white group-hover:text-[#C8A34D]">
+                      <h4 className="text-xs font-bold text-[#0F172A] dark:text-white group-hover:text-[#B88B2A]">
                         {option.title}
                       </h4>
                       <p className="text-[10px] text-slate-500 font-medium">
@@ -12792,7 +12792,7 @@ Through Counsel
               <div className="flex justify-between items-start pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 bg-[#C8A34D]/10 text-[#C8A34D] text-[9px] font-mono font-bold uppercase rounded-full">
+                    <span className="px-2.5 py-0.5 bg-[#B88B2A]/10 text-[#B88B2A] text-[9px] font-mono font-bold uppercase rounded-full">
                       {selectedNoteDetail.category || 'General Notes'}
                     </span>
                     <span className="text-[9px] font-mono text-slate-400 font-bold">
@@ -12826,14 +12826,14 @@ Through Counsel
                     onClick={() => handleExportNoteItem(selectedNoteDetail)}
                     className="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                   >
-                    <Download size={12} className="text-[#C8A34D]" /> Export Text
+                    <Download size={12} className="text-[#B88B2A]" /> Export Text
                   </button>
                   <button
                     onClick={() => {
                       handleOpenEditModal(selectedNoteDetail);
                       setSelectedNoteDetail(null);
                     }}
-                    className="px-3.5 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
+                    className="px-3.5 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
                   >
                     Edit Note
                   </button>
@@ -12852,11 +12852,11 @@ Through Counsel
               {/* Header */}
               <div className="flex justify-between items-center pb-3 border-b border-amber-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
-                  <Sparkles size={16} className="text-[#C8A34D]" />
+                  <Sparkles size={16} className="text-[#B88B2A]" />
                   <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest">
                     ✨ AI SYNTHESIZED CASE NOTE
                   </h3>
-                  <span className="px-2 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-full text-[9px] font-mono font-bold">
+                  <span className="px-2 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-full text-[9px] font-mono font-bold">
                     Grounded in Case
                   </span>
                 </div>
@@ -12878,7 +12878,7 @@ Through Counsel
                     type="text"
                     value={aiNoteOutputData.title}
                     onChange={e => setAiNoteOutputData(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -12888,7 +12888,7 @@ Through Counsel
                   <select
                     value={aiNoteOutputData.category}
                     onChange={e => setAiNoteOutputData(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                   >
                     {[
                       'General Notes',
@@ -12915,7 +12915,7 @@ Through Counsel
                   value={aiNoteOutputData.content}
                   onChange={e => setAiNoteOutputData(prev => ({ ...prev, content: e.target.value }))}
                   rows={9}
-                  className="flex-1 w-full bg-slate-50/70 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs font-mono text-[#0F172A] dark:text-white leading-relaxed focus:outline-none focus:border-[#C8A34D] resize-none"
+                  className="flex-1 w-full bg-slate-50/70 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs font-mono text-[#0F172A] dark:text-white leading-relaxed focus:outline-none focus:border-[#B88B2A] resize-none"
                 />
               </div>
 
@@ -12928,7 +12928,7 @@ Through Counsel
                   }}
                   className="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer w-full sm:w-auto justify-center"
                 >
-                  <Copy size={13} className="text-[#C8A34D]" /> Copy Content
+                  <Copy size={13} className="text-[#B88B2A]" /> Copy Content
                 </button>
 
                 <div className="flex gap-2 w-full sm:w-auto justify-end">
@@ -12961,7 +12961,7 @@ Through Counsel
                       setIsAiNoteOutputModalOpen(false);
                       toast.success(`✨ Saved "${aiNoteOutputData.title}" to Case Notebook!`);
                     }}
-                    className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
                   >
                     <Plus size={14} /> Add to Case Notebook
                   </button>
@@ -13642,7 +13642,7 @@ Through Counsel
               <h2 className="text-base font-black text-[#0F172A] dark:text-white uppercase tracking-wider">
                 COURT ORDERS & JUDGMENTS
               </h2>
-              <span className="px-2.5 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-full text-[9px] font-mono font-bold">
+              <span className="px-2.5 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-full text-[9px] font-mono font-bold">
                 Decree & Directive Repository
               </span>
             </div>
@@ -13673,13 +13673,13 @@ Through Counsel
                 });
                 setIsAddOrderModalOpen(true);
               }}
-              className="px-3.5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Plus size={14} /> Log Court Order
             </button>
 
             <label className="px-3.5 py-2.5 bg-[#0F172A] dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-[#0F172A] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
-              <Upload size={14} className="text-[#C8A34D]" /> Upload Order PDF
+              <Upload size={14} className="text-[#B88B2A]" /> Upload Order PDF
               <input
                 type="file"
                 accept=".pdf,.png,.jpg,.jpeg,.docx"
@@ -13693,7 +13693,7 @@ Through Counsel
         {/* B. TOP METRICS CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-xl p-4 flex items-center gap-3.5 shadow-xs">
-            <div className="w-10 h-10 rounded-lg bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center font-black text-sm shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center font-black text-sm shrink-0">
               {totalOrdersCount}
             </div>
             <div>
@@ -13752,8 +13752,8 @@ Through Counsel
                 onClick={() => setOrderFilterChip(chip)}
                 className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                   orderFilterChip === chip
-                    ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-[#C8A34D]'
+                    ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-[#B88B2A]'
                 }`}
               >
                 {chip}
@@ -13770,14 +13770,14 @@ Through Counsel
                 placeholder="Search orders, court, judge..."
                 value={orderSearchQuery}
                 onChange={e => setOrderSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
               />
             </div>
 
             <select
               value={orderSortOrder}
               onChange={e => setOrderSortOrder(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D] cursor-pointer shrink-0"
+              className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A] cursor-pointer shrink-0"
             >
               <option value="Newest First">Newest First</option>
               <option value="Oldest First">Oldest First</option>
@@ -13789,7 +13789,7 @@ Through Counsel
         <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-              <FileCheck size={14} className="text-[#C8A34D]" /> JUDICIAL ORDERS REPOSITORY ({filteredOrders.length})
+              <FileCheck size={14} className="text-[#B88B2A]" /> JUDICIAL ORDERS REPOSITORY ({filteredOrders.length})
             </h3>
             <span className="text-[10px] font-mono text-slate-400 font-bold">
               Official Case Decrees
@@ -13810,7 +13810,7 @@ Through Counsel
               <div className="flex justify-center gap-2 pt-2">
                 <button
                   onClick={() => setIsAddOrderModalOpen(true)}
-                  className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
+                  className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer"
                 >
                   Log Court Order
                 </button>
@@ -13827,7 +13827,7 @@ Through Counsel
                   >
                     <div className="space-y-2">
                       <div className="flex justify-between items-start gap-2">
-                        <span className="px-2.5 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-full text-[9px] font-mono font-bold uppercase">
+                        <span className="px-2.5 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-full text-[9px] font-mono font-bold uppercase">
                           {ord.metadata?.orderType || 'Interim Order'}
                         </span>
                         <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-400">
@@ -13840,12 +13840,12 @@ Through Counsel
                         onClick={() => setSelectedCourtOrder(ord)}
                         className="cursor-pointer space-y-1"
                       >
-                        <h4 className="text-xs font-black text-[#0F172A] dark:text-white group-hover:text-[#C8A34D] transition-colors flex items-center justify-between">
+                        <h4 className="text-xs font-black text-[#0F172A] dark:text-white group-hover:text-[#B88B2A] transition-colors flex items-center justify-between">
                           <span>{ord.name || ord.metadata?.orderType || 'Court Order'}</span>
-                          <ChevronRight size={14} className="text-slate-400 group-hover:text-[#C8A34D] group-hover:translate-x-0.5 transition-transform shrink-0" />
+                          <ChevronRight size={14} className="text-slate-400 group-hover:text-[#B88B2A] group-hover:translate-x-0.5 transition-transform shrink-0" />
                         </h4>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5">
-                          <Building size={11} className="text-[#C8A34D] shrink-0" />
+                          <Building size={11} className="text-[#B88B2A] shrink-0" />
                           <span>{ord.metadata?.courtName || 'District Court'}</span>
                           {ord.metadata?.judgeName && (
                             <>
@@ -13881,7 +13881,7 @@ Through Counsel
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => setSelectedCourtOrder(ord)}
-                          className="px-2.5 py-1 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-lg text-[10px] font-black uppercase cursor-pointer"
+                          className="px-2.5 py-1 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-lg text-[10px] font-black uppercase cursor-pointer"
                         >
                           View Order
                         </button>
@@ -13920,7 +13920,7 @@ Through Counsel
                 <X size={18} />
               </button>
 
-              <div className="w-16 h-16 rounded-2xl bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 flex items-center justify-center mx-auto shadow-xs">
+              <div className="w-16 h-16 rounded-2xl bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 flex items-center justify-center mx-auto shadow-xs">
                 <Sparkles size={28} className="animate-spin" />
               </div>
 
@@ -13937,7 +13937,7 @@ Through Counsel
               <div className="space-y-2">
                 <div className="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
                   <div 
-                    className="bg-[#C8A34D] h-full transition-all duration-300 rounded-full"
+                    className="bg-[#B88B2A] h-full transition-all duration-300 rounded-full"
                     style={{ width: `${orderOcrProgress}%` }}
                   />
                 </div>
@@ -13959,7 +13959,7 @@ Through Counsel
                     key={idx}
                     className={`p-2 rounded-lg border ${
                       orderOcrStep === idx
-                        ? 'bg-[#C8A34D]/15 text-[#C8A34D] border-[#C8A34D]/40 font-black'
+                        ? 'bg-[#B88B2A]/15 text-[#B88B2A] border-[#B88B2A]/40 font-black'
                         : orderOcrStep > idx
                           ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/40'
                           : 'bg-slate-50 dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'
@@ -13981,7 +13981,7 @@ Through Counsel
               
               <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
                 <h3 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                  <FileCheck size={14} className="text-[#C8A34D]" />
+                  <FileCheck size={14} className="text-[#B88B2A]" />
                   {isEditOrderModalOpen ? "EDIT COURT ORDER DETAILS" : "LOG NEW COURT ORDER"}
                 </h3>
                 <button
@@ -14006,7 +14006,7 @@ Through Counsel
                     placeholder="e.g. Interim Stay Order on Property Possession"
                     value={orderFormState.title}
                     onChange={e => setOrderFormState(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                   />
                 </div>
 
@@ -14020,7 +14020,7 @@ Through Counsel
                       placeholder="e.g. High Court of Delhi"
                       value={orderFormState.courtName}
                       onChange={e => setOrderFormState(prev => ({ ...prev, courtName: e.target.value }))}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
 
@@ -14033,7 +14033,7 @@ Through Counsel
                       placeholder="e.g. Justice R. K. Sharma"
                       value={orderFormState.judgeName}
                       onChange={e => setOrderFormState(prev => ({ ...prev, judgeName: e.target.value }))}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
@@ -14046,7 +14046,7 @@ Through Counsel
                     <select
                       value={orderFormState.orderType}
                       onChange={e => setOrderFormState(prev => ({ ...prev, orderType: e.target.value }))}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     >
                       {['Interim Order', 'Final Judgment', 'Bail Order', 'Stay Order', 'Decree'].map(t => (
                         <option key={t} value={t}>{t}</option>
@@ -14062,7 +14062,7 @@ Through Counsel
                       type="date"
                       value={orderFormState.orderDate}
                       onChange={e => setOrderFormState(prev => ({ ...prev, orderDate: e.target.value }))}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
 
@@ -14074,7 +14074,7 @@ Through Counsel
                       type="date"
                       value={orderFormState.nextHearingDate}
                       onChange={e => setOrderFormState(prev => ({ ...prev, nextHearingDate: e.target.value }))}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
@@ -14087,7 +14087,7 @@ Through Counsel
                     <select
                       value={orderFormState.bench}
                       onChange={e => setOrderFormState(prev => ({ ...prev, bench: e.target.value }))}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     >
                       {['Single Bench', 'Division Bench', 'Full Bench'].map(b => (
                         <option key={b} value={b}>{b}</option>
@@ -14104,7 +14104,7 @@ Through Counsel
                       placeholder="e.g. W.P.(C) 4012/2026"
                       value={orderFormState.caseNumber}
                       onChange={e => setOrderFormState(prev => ({ ...prev, caseNumber: e.target.value }))}
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 font-semibold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
                 </div>
@@ -14118,7 +14118,7 @@ Through Counsel
                     placeholder="Enter court observations, directives, and required compliance instructions..."
                     value={orderFormState.notesText}
                     onChange={e => setOrderFormState(prev => ({ ...prev, notesText: e.target.value }))}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 font-medium text-[#0F172A] dark:text-white focus:outline-none focus:border-[#C8A34D] resize-none"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 font-medium text-[#0F172A] dark:text-white focus:outline-none focus:border-[#B88B2A] resize-none"
                   />
                 </div>
               </div>
@@ -14136,7 +14136,7 @@ Through Counsel
                 </button>
                 <button
                   onClick={handleSaveManualOrderModal}
-                  className="px-4 py-2 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs cursor-pointer"
+                  className="px-4 py-2 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs cursor-pointer"
                 >
                   {isEditOrderModalOpen ? "Update Order" : "Save Order"}
                 </button>
@@ -14155,7 +14155,7 @@ Through Counsel
               <div className="flex justify-between items-start pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30 rounded-full text-[9px] font-mono font-bold uppercase">
+                    <span className="px-2.5 py-0.5 bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 rounded-full text-[9px] font-mono font-bold uppercase">
                       {selectedCourtOrder.metadata?.orderType || 'Interim Order'}
                     </span>
                     <span className="text-[10px] font-mono text-slate-400">
@@ -14177,7 +14177,7 @@ Through Counsel
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     onClick={() => handleReanalyzeOrder(selectedCourtOrder)}
-                    className="px-3 py-1.5 bg-[#C8A34D]/15 hover:bg-[#C8A34D]/25 text-[#C8A34D] border border-[#C8A34D]/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    className="px-3 py-1.5 bg-[#B88B2A]/15 hover:bg-[#B88B2A]/25 text-[#B88B2A] border border-[#B88B2A]/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
                   >
                     <RotateCw size={12} /> Re-Analyze
                   </button>
@@ -14192,7 +14192,7 @@ Through Counsel
 
               {/* 1. ORDER METADATA MATRIX */}
               <div className="bg-slate-50/70 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 space-y-3">
-                <h4 className="text-[10px] font-mono font-bold text-[#C8A34D] uppercase tracking-widest">
+                <h4 className="text-[10px] font-mono font-bold text-[#B88B2A] uppercase tracking-widest">
                   ORDER METADATA MATRIX
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
@@ -14222,7 +14222,7 @@ Through Counsel
                   </div>
                   <div>
                     <span className="text-[9px] font-mono text-slate-400 block">Next Listing Date</span>
-                    <strong className="text-[#C8A34D] font-black">{selectedCourtOrder.metadata?.nextHearingDate || 'Not Scheduled'}</strong>
+                    <strong className="text-[#B88B2A] font-black">{selectedCourtOrder.metadata?.nextHearingDate || 'Not Scheduled'}</strong>
                   </div>
                   <div>
                     <span className="text-[9px] font-mono text-slate-400 block">Stage of Case</span>
@@ -14234,7 +14234,7 @@ Through Counsel
               {/* 2. EXECUTIVE SUMMARY & KEY DIRECTIVES */}
               <div className="space-y-3">
                 <h4 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-[#C8A34D]" /> EXECUTIVE SUMMARY & KEY DIRECTIVES
+                  <Sparkles size={14} className="text-[#B88B2A]" /> EXECUTIVE SUMMARY & KEY DIRECTIVES
                 </h4>
                 <div className="p-4 bg-amber-50/40 dark:bg-[#0F172A] border border-amber-200/60 dark:border-slate-800 rounded-xl space-y-2 text-xs">
                   <p className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
@@ -14244,7 +14244,7 @@ Through Counsel
                     <ul className="space-y-1 pt-2 border-t border-amber-200/40 dark:border-slate-800">
                       {selectedCourtOrder.aiSummary.keyPoints.map((kp, idx) => (
                         <li key={idx} className="text-slate-600 dark:text-slate-300 font-medium flex items-start gap-1.5">
-                          <span className="text-[#C8A34D] font-bold">•</span>
+                          <span className="text-[#B88B2A] font-bold">•</span>
                           <span>{kp}</span>
                         </li>
                       ))}
@@ -14257,7 +14257,7 @@ Through Counsel
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <h4 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                    <CheckCircle2 size={14} className="text-[#C8A34D]" /> COURT DIRECTIVES & COMPLIANCE TRACKER
+                    <CheckCircle2 size={14} className="text-[#B88B2A]" /> COURT DIRECTIVES & COMPLIANCE TRACKER
                   </h4>
                   <span className="text-[10px] font-mono text-slate-400 font-bold">Actionable Tasks</span>
                 </div>
@@ -14291,7 +14291,7 @@ Through Counsel
                           className={`px-3 py-1.5 rounded-xl text-[10px] font-mono font-bold uppercase transition-all cursor-pointer ${
                             comp.status === 'Completed'
                               ? 'bg-emerald-100 text-emerald-700 border border-emerald-300'
-                              : 'bg-[#C8A34D] text-[#111111] hover:bg-[#b08d3b]'
+                              : 'bg-[#B88B2A] text-[#111111] hover:bg-[#b08d3b]'
                           }`}
                         >
                           {comp.status === 'Completed' ? '✓ Completed' : 'Mark Complete'}
@@ -14305,14 +14305,14 @@ Through Counsel
               {/* 4. AI SUGGESTED INTEGRATIONS (Sync to Case) */}
               <div className="space-y-3">
                 <h4 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-[#C8A34D]" /> AI SUGGESTED CASE WORKSPACE INTEGRATIONS
+                  <Sparkles size={14} className="text-[#B88B2A]" /> AI SUGGESTED CASE WORKSPACE INTEGRATIONS
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                   {/* Suggested Tasks */}
                   {selectedCourtOrder.suggestedTasks && selectedCourtOrder.suggestedTasks.length > 0 && (
                     <div className="p-3 bg-slate-50/70 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl space-y-2">
-                      <span className="text-[10px] font-mono font-bold text-[#C8A34D] uppercase">AI Suggested Tasks</span>
+                      <span className="text-[10px] font-mono font-bold text-[#B88B2A] uppercase">AI Suggested Tasks</span>
                       {selectedCourtOrder.suggestedTasks.map((st, idx) => (
                         <div key={idx} className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
                           <span className="font-semibold text-[#0F172A] dark:text-white text-[11px] line-clamp-1">{st.title}</span>
@@ -14320,7 +14320,7 @@ Through Counsel
                             disabled={st.accepted}
                             onClick={() => handlePromoteOrderSuggestion(selectedCourtOrder._id || selectedCourtOrder.id, 'task', idx)}
                             className={`px-2.5 py-1 rounded text-[9px] font-mono font-bold uppercase transition-all cursor-pointer shrink-0 ${
-                              st.accepted ? 'bg-slate-200 text-slate-500' : 'bg-[#C8A34D] text-[#111111]'
+                              st.accepted ? 'bg-slate-200 text-slate-500' : 'bg-[#B88B2A] text-[#111111]'
                             }`}
                           >
                             {st.accepted ? '✓ Added' : '+ Accept to Tasks'}
@@ -14333,7 +14333,7 @@ Through Counsel
                   {/* Suggested Timeline Events */}
                   {selectedCourtOrder.suggestedTimeline && selectedCourtOrder.suggestedTimeline.length > 0 && (
                     <div className="p-3 bg-slate-50/70 dark:bg-[#0F172A] border border-slate-200/80 dark:border-slate-800 rounded-xl space-y-2">
-                      <span className="text-[10px] font-mono font-bold text-[#C8A34D] uppercase">Suggested Timeline Event</span>
+                      <span className="text-[10px] font-mono font-bold text-[#B88B2A] uppercase">Suggested Timeline Event</span>
                       {selectedCourtOrder.suggestedTimeline.map((stl, idx) => (
                         <div key={idx} className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
                           <span className="font-semibold text-[#0F172A] dark:text-white text-[11px] line-clamp-1">{stl.title}</span>
@@ -14356,10 +14356,10 @@ Through Counsel
               {/* 5. AI RISK & VULNERABILITY ANALYSIS */}
               <div className="p-4 bg-slate-900 text-white rounded-2xl space-y-3 shadow-md">
                 <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-black text-[#C8A34D] uppercase tracking-widest flex items-center gap-1.5">
+                  <h4 className="text-xs font-black text-[#B88B2A] uppercase tracking-widest flex items-center gap-1.5">
                     <ShieldAlert size={14} /> AI RISK & VULNERABILITY ANALYSIS
                   </h4>
-                  <span className="px-2 py-0.5 bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/40 rounded text-[8px] font-mono font-bold uppercase">
+                  <span className="px-2 py-0.5 bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/40 rounded text-[8px] font-mono font-bold uppercase">
                     AI ANALYSIS — VERIFY BEFORE RELIANCE
                   </span>
                 </div>
@@ -14384,7 +14384,7 @@ Through Counsel
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <h4 className="text-xs font-black text-[#0F172A] dark:text-white uppercase tracking-widest flex items-center gap-1.5">
-                    <FileText size={14} className="text-[#C8A34D]" /> OCR TEXT TRANSCRIPT
+                    <FileText size={14} className="text-[#B88B2A]" /> OCR TEXT TRANSCRIPT
                   </h4>
                   <button
                     onClick={() => {
@@ -14475,7 +14475,7 @@ Through Counsel
                   </span>
                   <span className={`px-1.5 py-0.5 rounded-full text-[8px] font-mono font-bold uppercase tracking-wider border shrink-0 ${
                     caseData.priority === 'Urgent' || caseData.priority === 'Critical' || caseData.priority === 'High' ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/40' :
-                    'bg-[#C8A34D]/10 text-[#C8A34D] border-[#C8A34D]/30'
+                    'bg-[#B88B2A]/10 text-[#B88B2A] border-[#B88B2A]/30'
                   }`}>
                     {caseData.priority || 'Medium'}
                   </span>
@@ -14491,11 +14491,11 @@ Through Counsel
                     onClick={() => setIsAiPanelExpanded(!isAiPanelExpanded)}
                     className={`px-3 py-1.5 rounded-lg text-[11px] font-black transition-all border shadow-2xs flex items-center gap-1 cursor-pointer whitespace-nowrap shrink-0 ${
                       isAiPanelExpanded 
-                        ? 'bg-[#C8A34D] border-[#C8A34D] text-[#111111] hover:bg-[#b08d3b]' 
-                        : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-[#C8A34D] bg-[#C8A34D]/10 border-[#C8A34D]/30'
+                        ? 'bg-[#B88B2A] border-[#B88B2A] text-[#111111] hover:bg-[#b08d3b]' 
+                        : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-[#B88B2A] bg-[#B88B2A]/10 border-[#B88B2A]/30'
                     }`}
                   >
-                    <Sparkles size={12} className={isAiPanelExpanded ? 'text-[#111111]' : 'text-[#C8A34D]'} />
+                    <Sparkles size={12} className={isAiPanelExpanded ? 'text-[#111111]' : 'text-[#B88B2A]'} />
                     {isAiPanelExpanded ? 'Hide AI' : 'Show AI'}
                   </button>
                 )}
@@ -14538,11 +14538,11 @@ Through Counsel
                     onClick={() => setIsAiPanelExpanded(!isAiPanelExpanded)}
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all border shadow-2xs flex items-center gap-1 cursor-pointer whitespace-nowrap shrink-0 ${
                       isAiPanelExpanded 
-                        ? 'bg-[#C8A34D] border-[#C8A34D] text-[#111111] hover:bg-[#b08d3b]' 
-                        : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-[#C8A34D] bg-[#C8A34D]/10 border-[#C8A34D]/30'
+                        ? 'bg-[#B88B2A] border-[#B88B2A] text-[#111111] hover:bg-[#b08d3b]' 
+                        : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-[#B88B2A] bg-[#B88B2A]/10 border-[#B88B2A]/30'
                     }`}
                   >
-                    <Sparkles size={11} className={isAiPanelExpanded ? 'text-[#111111]' : 'text-[#C8A34D]'} />
+                    <Sparkles size={11} className={isAiPanelExpanded ? 'text-[#111111]' : 'text-[#B88B2A]'} />
                     {isAiPanelExpanded ? 'Hide AI' : 'Show AI'}
                   </button>
                 )}
@@ -14574,7 +14574,7 @@ Through Counsel
             e.currentTarget.scrollLeft += e.deltaY;
           }
         }}
-        className="shrink-0 border-b border-slate-200 dark:border-slate-800 bg-[#F8FAFC] dark:bg-[#0F172A] px-2.5 sm:px-6 pt-2 pb-2.5 overflow-x-auto scrollbar-thin scrollbar-thumb-[#C8A34D] scrollbar-track-slate-200 dark:scrollbar-track-slate-800/60 flex items-center gap-1.5 select-none scroll-smooth w-full min-w-0"
+        className="shrink-0 border-b border-slate-200 dark:border-slate-800 bg-[#F8FAFC] dark:bg-[#0F172A] px-2.5 sm:px-6 pt-2 pb-2.5 overflow-x-auto scrollbar-thin scrollbar-thumb-[#B88B2A] scrollbar-track-slate-200 dark:scrollbar-track-slate-800/60 flex items-center gap-1.5 select-none scroll-smooth w-full min-w-0"
       >
         {tabs.map((t) => {
           const isActive = activeTab === t.id;
@@ -14584,8 +14584,8 @@ Through Counsel
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black transition-all duration-200 shrink-0 select-none cursor-pointer whitespace-nowrap ${
                 isActive 
-                  ? 'bg-[#C8A34D] text-[#111111] border border-[#C8A34D] shadow-xs' 
-                  : 'text-slate-600 dark:text-slate-400 hover:text-[#C8A34D] dark:hover:text-[#C8A34D] hover:bg-slate-100 dark:hover:bg-slate-800'
+                  ? 'bg-[#B88B2A] text-[#111111] border border-[#B88B2A] shadow-xs' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-[#B88B2A] dark:hover:text-[#B88B2A] hover:bg-slate-100 dark:hover:bg-slate-800'
               }`}
             >
               <t.icon size={13} className={`shrink-0 ${isActive ? 'text-[#111111]' : 'text-slate-400'}`} />
@@ -14835,8 +14835,8 @@ Through Counsel
             </div>
 
             {/* CASE TEAM SUMMARY Card */}
-            <div className="bg-gradient-to-br from-amber-500/5 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-[#1E293B] dark:to-amber-950/20 border border-[#C8A34D]/50 rounded-2xl p-3 sm:p-4 space-y-2.5 sm:space-y-3">
-              <h3 className="text-[10px] font-black text-[#C8A34D] uppercase tracking-widest">
+            <div className="bg-gradient-to-br from-amber-500/5 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-[#1E293B] dark:to-amber-950/20 border border-[#B88B2A]/50 rounded-2xl p-3 sm:p-4 space-y-2.5 sm:space-y-3">
+              <h3 className="text-[10px] font-black text-[#B88B2A] uppercase tracking-widest">
                 CASE TEAM SUMMARY
               </h3>
 
@@ -14861,7 +14861,7 @@ Through Counsel
 
               <div className="flex items-center justify-between text-xs pt-0.5">
                 <span className="font-bold text-slate-600 dark:text-slate-400">Assigned to this Case</span>
-                <span className="font-black text-[#C8A34D]">3 Members</span>
+                <span className="font-black text-[#B88B2A]">3 Members</span>
               </div>
             </div>
 
@@ -14872,9 +14872,9 @@ Through Counsel
               </h4>
 
               {/* Member 1: Aditi Lakhera (Lead) */}
-              <div className="bg-slate-50 dark:bg-slate-900/60 border border-[#C8A34D]/40 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-2.5 sm:gap-3 shadow-2xs">
+              <div className="bg-slate-50 dark:bg-slate-900/60 border border-[#B88B2A]/40 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-2.5 sm:gap-3 shadow-2xs">
                 <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] font-black flex items-center justify-center text-xs sm:text-sm border border-[#C8A34D]/40 shrink-0">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] font-black flex items-center justify-center text-xs sm:text-sm border border-[#B88B2A]/40 shrink-0">
                     AL
                   </div>
                   <div className="min-w-0">
@@ -14882,7 +14882,7 @@ Through Counsel
                       <span className="font-black text-slate-800 dark:text-white text-xs truncate">Aditi Lakhera</span>
                       <span className="px-1.5 py-0.2 bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-300 dark:border-amber-700 rounded text-[9px] font-bold">👑 Lead</span>
                     </div>
-                    <div className="text-[11px] font-bold text-[#C8A34D] mt-0.5">Lead Advocate</div>
+                    <div className="text-[11px] font-bold text-[#B88B2A] mt-0.5">Lead Advocate</div>
                     <div className="text-[10px] text-slate-400 font-medium truncate">Managing Partner • Corporate Law</div>
                   </div>
                 </div>
@@ -14897,7 +14897,7 @@ Through Counsel
                   </div>
                   <div className="min-w-0">
                     <div className="font-black text-slate-800 dark:text-white text-xs truncate">Advocate</div>
-                    <div className="text-[11px] font-bold text-[#C8A34D] mt-0.5">Assigned Advocate</div>
+                    <div className="text-[11px] font-bold text-[#B88B2A] mt-0.5">Assigned Advocate</div>
                     <div className="text-[10px] text-slate-400 font-medium truncate">Associate Advocate • Civil & Criminal</div>
                   </div>
                 </div>
@@ -14912,7 +14912,7 @@ Through Counsel
                   </div>
                   <div className="min-w-0">
                     <div className="font-black text-slate-800 dark:text-white text-xs truncate">Aditi</div>
-                    <div className="text-[11px] font-bold text-[#C8A34D] mt-0.5">Junior Advocate</div>
+                    <div className="text-[11px] font-bold text-[#B88B2A] mt-0.5">Junior Advocate</div>
                     <div className="text-[10px] text-slate-400 font-medium truncate">Junior Advocate • Civil Litigation</div>
                   </div>
                 </div>
@@ -14925,7 +14925,7 @@ Through Counsel
               onClick={() => {
                 toast.success("Case team editor opened!");
               }}
-              className="w-full py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+              className="w-full py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
             >
               <UserPlus size={15} /> Edit Case Team
             </button>

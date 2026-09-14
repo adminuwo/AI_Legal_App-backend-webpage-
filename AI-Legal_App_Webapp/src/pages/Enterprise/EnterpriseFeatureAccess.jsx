@@ -93,7 +93,7 @@ const EnterpriseFeatureAccess = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <GraduationCap className="text-[#C8A34D]" size={24} /> Student AI Suite Feature Access Control
+            <GraduationCap className="text-[#B88B2A]" size={24} /> Student AI Suite Feature Access Control
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Enable or disable specific student AI tools across Web App & Mobile App at Institution, Batch, Semester, or Student levels.
@@ -102,7 +102,7 @@ const EnterpriseFeatureAccess = () => {
 
         <button
           onClick={handleSavePolicies}
-          className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-black shadow-md hover:brightness-110 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+          className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-black shadow-md hover:brightness-110 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
         >
           <Save size={15} /> Save Student Feature Rules
         </button>
@@ -147,17 +147,17 @@ const EnterpriseFeatureAccess = () => {
             onClick={() => handleToggle(item.key)}
             className={`p-4 rounded-2xl border transition-all cursor-pointer select-none space-y-2.5 shadow-2xs ${
               features[item.key]
-                ? 'bg-white dark:bg-slate-900 border-[#C8A34D]/50 shadow-xs ring-1 ring-[#C8A34D]/20'
+                ? 'bg-white dark:bg-slate-900 border-[#B88B2A]/50 shadow-xs ring-1 ring-[#B88B2A]/20'
                 : 'bg-slate-50/70 dark:bg-slate-950/70 border-slate-200 dark:border-slate-800 opacity-55'
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[9px] font-black uppercase tracking-wider text-[#C8A34D] px-2 py-0.5 rounded-full bg-[#C8A34D]/10 border border-[#C8A34D]/20">
+              <span className="text-[9px] font-black uppercase tracking-wider text-[#B88B2A] px-2 py-0.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/20">
                 {item.category}
               </span>
               <div
                 className={`w-9 h-5 rounded-full p-0.5 transition-colors ${
-                  features[item.key] ? 'bg-[#C8A34D]' : 'bg-slate-300 dark:bg-slate-700'
+                  features[item.key] ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'
                 }`}
               >
                 <div

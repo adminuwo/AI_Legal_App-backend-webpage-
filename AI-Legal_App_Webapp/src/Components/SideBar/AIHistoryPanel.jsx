@@ -672,7 +672,7 @@ const AIHistoryPanel = ({
                         onClick={() => onSelectSession(session)}
                         className={`group relative flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${
                           active
-                            ? `bg-white dark:bg-[#121321] border-[#C8A34D] text-slate-900 dark:text-white shadow-xs`
+                            ? `bg-white dark:bg-[#121321] border-[#B88B2A] text-slate-900 dark:text-white shadow-xs`
                             : `bg-slate-50/70 hover:bg-white dark:bg-zinc-900/20 dark:hover:bg-zinc-800/40 border-slate-200/60 dark:border-zinc-800/60`
                         }`}
                       >
@@ -691,12 +691,12 @@ const AIHistoryPanel = ({
                                   if (e.key === 'Enter') handleRename(session.sessionId);
                                   if (e.key === 'Escape') setRenameSessionId(null);
                                 }}
-                                className="w-full px-2 py-1 border border-[#C8A34D] rounded-lg text-xs bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-100 outline-none font-semibold"
+                                className="w-full px-2 py-1 border border-[#B88B2A] rounded-lg text-xs bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-100 outline-none font-semibold"
                                 autoFocus
                               />
                               <button
                                 onClick={() => handleRename(session.sessionId)}
-                                className="px-2.5 py-1 bg-[#C8A34D] text-[#111] rounded-lg text-xs font-black cursor-pointer"
+                                className="px-2.5 py-1 bg-[#B88B2A] text-[#111] rounded-lg text-xs font-black cursor-pointer"
                               >
                                 Save
                               </button>
@@ -711,7 +711,7 @@ const AIHistoryPanel = ({
                                   {new Date(session.lastModified).toLocaleDateString([], { month: 'short', day: 'numeric' })} • {new Date(session.lastModified).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                                 {session.projectId?.name && (
-                                  <span className="text-[#C8A34D] truncate max-w-[100px]">
+                                  <span className="text-[#B88B2A] truncate max-w-[100px]">
                                     • {session.projectId.name}
                                   </span>
                                 )}

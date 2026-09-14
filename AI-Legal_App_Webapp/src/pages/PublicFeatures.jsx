@@ -423,17 +423,17 @@ export default function PublicFeatures() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF7] dark:bg-[#070A12] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#C8A34D]/25 selection:text-[#111111]">
+    <div className="min-h-screen bg-[#FFFDF7] dark:bg-[#070A12] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#B88B2A]/25 selection:text-[#111111]">
       {/* Top Header Navbar */}
       <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           <div onClick={() => navigate('/')} className="flex items-center gap-2.5 cursor-pointer select-none group">
             <div className="relative flex items-center justify-center">
-              <div className="absolute inset-0 bg-[#C8A34D]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-[#B88B2A]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
               <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-9 h-9 sm:w-10 sm:h-10 object-contain relative" />
             </div>
             <span className="text-lg sm:text-xl font-black tracking-tight text-[#0F172A] dark:text-white flex items-center">
-              AI LEGAL<span className="text-[10px] text-[#C8A34D] font-extrabold ml-0.5">TM</span>
+              AI LEGAL<span className="text-[10px] text-[#B88B2A] font-extrabold ml-0.5">TM</span>
             </span>
           </div>
 
@@ -441,7 +441,7 @@ export default function PublicFeatures() {
             <button onClick={() => navigate('/')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Home
             </button>
-            <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
+            <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
               Features
             </span>
             <button onClick={() => navigate('/blog')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
@@ -466,7 +466,7 @@ export default function PublicFeatures() {
             <ThemeToggle />
             <button
               onClick={() => navigate('/post-judgment')}
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
             >
               <Plus size={14} className="text-[#B38628] stroke-[2.5]" />
               <span>Post your judgement</span>
@@ -475,14 +475,14 @@ export default function PublicFeatures() {
             {isAuthenticated ? (
               <button
                 onClick={() => navigate('/dashboard')}
-                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
               >
                 Dashboard →
               </button>
             ) : (
               <button
                 onClick={() => navigate('/signup')}
-                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
               >
                 Get Started
               </button>
@@ -518,7 +518,7 @@ export default function PublicFeatures() {
                 >
                   Home
                 </button>
-                <span className="text-left px-3.5 py-2 rounded-xl bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 font-bold">
+                <span className="text-left px-3.5 py-2 rounded-xl bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 font-bold">
                   Features
                 </span>
                 <button
@@ -556,7 +556,7 @@ export default function PublicFeatures() {
               <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2.5">
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate('/post-judgment'); }}
-                  className="w-full py-2.5 rounded-full text-xs font-bold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 rounded-full text-xs font-bold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5"
                 >
                   <Plus size={14} className="stroke-[2.5]" />
                   <span>Post your judgement</span>
@@ -564,7 +564,7 @@ export default function PublicFeatures() {
                 {isAuthenticated ? (
                   <button
                     onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
-                    className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-center shadow-md shadow-[#C8A34D]/30"
+                    className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-center shadow-md shadow-[#B88B2A]/30"
                   >
                     Go to Dashboard →
                   </button>
@@ -578,7 +578,7 @@ export default function PublicFeatures() {
                     </button>
                     <button
                       onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}
-                      className="py-2.5 bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#C8A34D]/30"
+                      className="py-2.5 bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#B88B2A]/30"
                     >
                       Get Started
                     </button>
@@ -595,8 +595,8 @@ export default function PublicFeatures() {
         <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[550px] h-[300px] bg-[#E5A93C]/5 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="max-w-4xl space-y-6 relative z-10">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest uppercase text-[#E5A93C] dark:text-[#C8A34D]">
-            <span className="w-4 h-[2px] bg-[#E5A93C] dark:bg-[#C8A34D] inline-block" />
+          <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest uppercase text-[#E5A93C] dark:text-[#B88B2A]">
+            <span className="w-4 h-[2px] bg-[#E5A93C] dark:bg-[#B88B2A] inline-block" />
             THE AI LEGAL™ LITIGATION SUITE
           </div>
 
@@ -952,7 +952,7 @@ export default function PublicFeatures() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-[#E5A93C]/5 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="max-w-3xl mx-auto space-y-6 relative z-10">
-          <span className="text-xs font-black uppercase tracking-widest text-[#E5A93C] dark:text-[#C8A34D] block">
+          <span className="text-xs font-black uppercase tracking-widest text-[#E5A93C] dark:text-[#B88B2A] block">
             CHAMBER SCALING
           </span>
 

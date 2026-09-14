@@ -344,13 +344,13 @@ export default function ContractAnalyzerWorkspace() {
           <style>
             @page { size: A4; margin: 18mm 20mm; }
             body { font-family: 'Times New Roman', Times, serif; font-size: 10.5pt; line-height: 1.5; color: #111; }
-            .header { text-align: center; border-bottom: 2px solid #C8A34D; padding-bottom: 8px; margin-bottom: 16px; }
+            .header { text-align: center; border-bottom: 2px solid #B88B2A; padding-bottom: 8px; margin-bottom: 16px; }
             .header h1 { font-size: 16pt; margin: 0; text-transform: uppercase; }
             .header p { font-size: 9pt; font-family: Arial, sans-serif; color: #555; margin-top: 3px; }
             .table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
             .table td { border: 1px solid #444; padding: 6px 8px; font-size: 9.5pt; }
             .table td strong { font-family: Arial, sans-serif; text-transform: uppercase; color: #444; font-size: 8pt; display: block; }
-            .sec { font-family: Arial, sans-serif; font-size: 10.5pt; font-weight: bold; text-transform: uppercase; background: #f4f4f4; border-left: 4px solid #C8A34D; padding: 4px 8px; margin: 14px 0 6px 0; }
+            .sec { font-family: Arial, sans-serif; font-size: 10.5pt; font-weight: bold; text-transform: uppercase; background: #f4f4f4; border-left: 4px solid #B88B2A; padding: 4px 8px; margin: 14px 0 6px 0; }
             .box { border: 1px solid #ccc; padding: 8px; background: #fafafa; font-size: 10pt; margin-bottom: 10px; }
             .red-box { border: 1px solid #e53e3e; background: #fff5f5; padding: 8px; margin-bottom: 8px; }
             .green-box { border: 1px solid #38a169; background: #f0fff4; padding: 8px; margin-bottom: 8px; }
@@ -480,13 +480,13 @@ export default function ContractAnalyzerWorkspace() {
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => navigate('/dashboard/tools')}
-              className="p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-600 dark:text-slate-300 hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-xs font-bold shadow-sm shrink-0"
+              className="p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-600 dark:text-slate-300 hover:bg-[#B88B2A] hover:text-[#111111] transition-all cursor-pointer border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-xs font-bold shadow-sm shrink-0"
               title="Back to AI Tools Suite"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="hidden sm:inline">Back to AI Tools</span>
             </button>
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D] shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A] shrink-0">
               <FileCheck className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -494,7 +494,7 @@ export default function ContractAnalyzerWorkspace() {
                 <h1 className="text-base sm:text-xl font-black tracking-tight text-slate-900 dark:text-white truncate">
                   Contract Analyzer
                 </h1>
-                <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0">
+                <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0">
                   Redline & Risk Audit
                 </span>
               </div>
@@ -508,7 +508,7 @@ export default function ContractAnalyzerWorkspace() {
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
             <button
               onClick={handleOpenSavedReports}
-              className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 text-[#C8A34D] text-[11px] sm:text-xs font-bold hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer flex items-center gap-1.5 shadow-sm shrink-0 whitespace-nowrap"
+              className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 text-[#B88B2A] text-[11px] sm:text-xs font-bold hover:bg-[#B88B2A] hover:text-[#111111] transition-all cursor-pointer flex items-center gap-1.5 shadow-sm shrink-0 whitespace-nowrap"
               title="View Saved Contract Audits"
             >
               <HardDrive className="w-3.5 h-3.5" /> Saved Reports
@@ -536,8 +536,8 @@ export default function ContractAnalyzerWorkspace() {
             <div className="lg:col-span-2 space-y-6">
               
               {/* Upload Dropzone */}
-              <div className="p-8 rounded-3xl bg-white dark:bg-[#111622] border-2 border-dashed border-[#C8A34D]/40 hover:border-[#C8A34D] transition-colors text-center space-y-4 shadow-sm relative overflow-hidden">
-                <div className="w-16 h-16 rounded-3xl bg-[#C8A34D]/15 text-[#C8A34D] flex items-center justify-center mx-auto">
+              <div className="p-8 rounded-3xl bg-white dark:bg-[#111622] border-2 border-dashed border-[#B88B2A]/40 hover:border-[#B88B2A] transition-colors text-center space-y-4 shadow-sm relative overflow-hidden">
+                <div className="w-16 h-16 rounded-3xl bg-[#B88B2A]/15 text-[#B88B2A] flex items-center justify-center mx-auto">
                   <Upload className="w-8 h-8" />
                 </div>
 
@@ -560,7 +560,7 @@ export default function ContractAnalyzerWorkspace() {
 
                 <label
                   htmlFor="contract-upload-input"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md"
                 >
                   <Upload className="w-4 h-4" /> Browse Document File
                 </label>
@@ -587,12 +587,12 @@ export default function ContractAnalyzerWorkspace() {
               {/* Agreement Category Classification */}
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
                 <label className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-[#C8A34D]" /> Select Agreement Category
+                  <Layers className="w-4 h-4 text-[#B88B2A]" /> Select Agreement Category
                 </label>
                 <select
                   value={contractCategory}
                   onChange={(e) => setContractCategory(e.target.value)}
-                  className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                  className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                 >
                   {CONTRACT_CATEGORIES.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -607,7 +607,7 @@ export default function ContractAnalyzerWorkspace() {
               {/* Link to Active Case */}
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <Gavel className="w-4 h-4 text-[#C8A34D]" /> Link to Active Advocate Case
+                  <Gavel className="w-4 h-4 text-[#B88B2A]" /> Link to Active Advocate Case
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   Optionally attach this contract audit report to your client's active litigation matter dossier.
@@ -615,7 +615,7 @@ export default function ContractAnalyzerWorkspace() {
 
                 {isLoadingCases ? (
                   <div className="p-4 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                    <RefreshCw className="w-4 h-4 animate-spin text-[#C8A34D]" /> Loading Advocate Cases...
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#B88B2A]" /> Loading Advocate Cases...
                   </div>
                 ) : (
                   <select
@@ -624,7 +624,7 @@ export default function ContractAnalyzerWorkspace() {
                       const found = advocateCases.find(c => c._id === e.target.value);
                       setSelectedCase(found || null);
                     }}
-                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                   >
                     <option value="">Independent Contract Review (Unlinked)</option>
                     {advocateCases.map(c => (
@@ -634,8 +634,8 @@ export default function ContractAnalyzerWorkspace() {
                 )}
 
                 {selectedCase && (
-                  <div className="p-3.5 rounded-2xl bg-[#C8A34D]/10 border border-[#C8A34D]/30 space-y-1 text-xs">
-                    <span className="font-extrabold text-[#C8A34D] block">{selectedCase.name}</span>
+                  <div className="p-3.5 rounded-2xl bg-[#B88B2A]/10 border border-[#B88B2A]/30 space-y-1 text-xs">
+                    <span className="font-extrabold text-[#B88B2A] block">{selectedCase.name}</span>
                     <span className="text-[11px] text-slate-600 dark:text-slate-400 block">{selectedCase.courtName || 'District Court'}</span>
                   </div>
                 )}
@@ -644,7 +644,7 @@ export default function ContractAnalyzerWorkspace() {
               {/* Pre-Analysis Review Box */}
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#C8A34D]" /> Document Review & Status
+                  <ShieldCheck className="w-4 h-4 text-[#B88B2A]" /> Document Review & Status
                 </h3>
 
                 <div className="space-y-2 text-xs">
@@ -665,7 +665,7 @@ export default function ContractAnalyzerWorkspace() {
                 <button
                   onClick={handleStartAnalysis}
                   disabled={!contractName}
-                  className="w-full py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
+                  className="w-full py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
                 >
                   <Sparkles className="w-4 h-4" /> Analyze Contract
                 </button>
@@ -679,7 +679,7 @@ export default function ContractAnalyzerWorkspace() {
         {/* STEP 2: 9-STAGE EXTRACTION & AUDIT PIPELINE */}
         {step === 'SCAN' && (
           <div className="max-w-3xl mx-auto p-8 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-6 text-center shadow-lg">
-            <div className="w-16 h-16 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] flex items-center justify-center mx-auto animate-pulse">
+            <div className="w-16 h-16 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] flex items-center justify-center mx-auto animate-pulse">
               <RefreshCw className="w-8 h-8 animate-spin" />
             </div>
 
@@ -695,7 +695,7 @@ export default function ContractAnalyzerWorkspace() {
             {/* Progress Bar */}
             <div className="w-full bg-slate-100 dark:bg-[#1A2333] h-3 rounded-full overflow-hidden">
               <div
-                className="bg-[#C8A34D] h-full transition-all duration-300 rounded-full"
+                className="bg-[#B88B2A] h-full transition-all duration-300 rounded-full"
                 style={{ width: `${scanProgress}%` }}
               />
             </div>
@@ -720,7 +720,7 @@ export default function ContractAnalyzerWorkspace() {
                     <span className="font-semibold text-slate-800 dark:text-slate-200">{stageLabel}</span>
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
                       isDone ? 'bg-emerald-500/15 text-emerald-500' :
-                      isCurrent ? 'bg-[#C8A34D]/20 text-[#C8A34D] animate-pulse' :
+                      isCurrent ? 'bg-[#B88B2A]/20 text-[#B88B2A] animate-pulse' :
                       'text-slate-400'
                     }`}>
                       {isDone ? 'COMPLETED' : isCurrent ? 'PROCESSING' : 'PENDING'}
@@ -750,19 +750,19 @@ export default function ContractAnalyzerWorkspace() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleSaveReport}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold hover:bg-[#C8A34D] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold hover:bg-[#B88B2A] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  <Gavel className="w-3.5 h-3.5 text-[#C8A34D]" /> Save Report
+                  <Gavel className="w-3.5 h-3.5 text-[#B88B2A]" /> Save Report
                 </button>
                 <button
                   onClick={handleExportRedlineSheet}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold hover:bg-[#C8A34D] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold hover:bg-[#B88B2A] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1.5"
                 >
                   <Copy className="w-3.5 h-3.5" /> Export Redlines
                 </button>
                 <button
                   onClick={handleExportAuditPDF}
-                  className="px-4 py-1.5 rounded-xl bg-[#C8A34D] text-[#111111] font-extrabold text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
+                  className="px-4 py-1.5 rounded-xl bg-[#B88B2A] text-[#111111] font-extrabold text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
                 >
                   <Download className="w-3.5 h-3.5" /> Export Audit PDF
                 </button>
@@ -828,7 +828,7 @@ export default function ContractAnalyzerWorkspace() {
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
                   GOVERNING LAW & FORUM
                 </span>
-                <span className="text-xs font-extrabold text-[#C8A34D] block truncate">
+                <span className="text-xs font-extrabold text-[#B88B2A] block truncate">
                   {analysisResult.governingLaw}
                 </span>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -840,7 +840,7 @@ export default function ContractAnalyzerWorkspace() {
 
             {/* SECTION 1: EXECUTIVE VERDICT & SUMMARY */}
             <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
-              <h3 className="text-xs font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-2">
+              <h3 className="text-xs font-black uppercase tracking-wider text-[#B88B2A] flex items-center gap-2">
                 <Scale className="w-4 h-4" /> Executive Legal Verdict & Summary
               </h3>
               <p className="text-sm font-bold text-slate-900 dark:text-white leading-relaxed">
@@ -862,7 +862,7 @@ export default function ContractAnalyzerWorkspace() {
               {/* Parties & Contract Term Matrix */}
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <User className="w-4 h-4 text-[#C8A34D]" /> Contracting Parties & Term Matrix
+                  <User className="w-4 h-4 text-[#B88B2A]" /> Contracting Parties & Term Matrix
                 </h3>
 
                 <div className="space-y-3">
@@ -870,7 +870,7 @@ export default function ContractAnalyzerWorkspace() {
                     <div key={idx} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs space-y-1">
                       <div className="flex items-center justify-between">
                         <span className="font-extrabold text-slate-900 dark:text-white">{p.name}</span>
-                        <span className="px-2 py-0.5 rounded bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-bold">{p.role}</span>
+                        <span className="px-2 py-0.5 rounded bg-[#B88B2A]/20 text-[#B88B2A] text-[10px] font-bold">{p.role}</span>
                       </div>
                       <p className="text-slate-500 dark:text-slate-400 text-[11px]">{p.obligation}</p>
                     </div>
@@ -900,7 +900,7 @@ export default function ContractAnalyzerWorkspace() {
               {/* Financial Terms & Liabilities */}
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-[#C8A34D]" /> Financial Terms & Liabilities
+                  <DollarSign className="w-4 h-4 text-[#B88B2A]" /> Financial Terms & Liabilities
                 </h3>
 
                 <div className="space-y-2.5 text-xs">
@@ -940,7 +940,7 @@ export default function ContractAnalyzerWorkspace() {
                     </div>
                     <h4 className="font-black text-slate-900 dark:text-white">{r.title}</h4>
                     <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">{r.explanation}</p>
-                    <div className="pt-2 border-t border-slate-200 dark:border-slate-800 text-[11px] text-[#C8A34D] font-bold">
+                    <div className="pt-2 border-t border-slate-200 dark:border-slate-800 text-[11px] text-[#B88B2A] font-bold">
                       💡 Suggested Action: {r.action}
                     </div>
                   </div>
@@ -971,11 +971,11 @@ export default function ContractAnalyzerWorkspace() {
             <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <Edit3 className="w-4 h-4 text-[#C8A34D]" /> Redline & Clause Improvement Suggestions
+                  <Edit3 className="w-4 h-4 text-[#B88B2A]" /> Redline & Clause Improvement Suggestions
                 </h3>
                 <button
                   onClick={handleExportRedlineSheet}
-                  className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-[#C8A34D] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1"
+                  className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-[#B88B2A] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1"
                 >
                   <Copy className="w-3.5 h-3.5" /> Copy Redlines
                 </button>
@@ -984,7 +984,7 @@ export default function ContractAnalyzerWorkspace() {
               <div className="space-y-4">
                 {analysisResult.redlines.map((red) => (
                   <div key={red.id} className="p-5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-3">
-                    <h4 className="font-black text-xs text-[#C8A34D]">{red.title}</h4>
+                    <h4 className="font-black text-xs text-[#B88B2A]">{red.title}</h4>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                       {/* Original Clause */}
@@ -1011,18 +1011,18 @@ export default function ContractAnalyzerWorkspace() {
               {/* Negotiation Strategy */}
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-[#C8A34D]" /> Negotiation Strategy & Talking Points
+                  <Zap className="w-4 h-4 text-[#B88B2A]" /> Negotiation Strategy & Talking Points
                 </h3>
 
                 <div className="space-y-3">
                   {analysisResult.negotiationStrategy.map((neg, idx) => (
                     <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
                       <div className="flex items-center justify-between">
-                        <span className="font-extrabold text-[#C8A34D]">{neg.point}</span>
+                        <span className="font-extrabold text-[#B88B2A]">{neg.point}</span>
                         <span className="text-slate-400 text-[10px]">Issue: {neg.issue}</span>
                       </div>
                       <p className="text-slate-700 dark:text-slate-300 text-[11px]"><strong>Recommended Position:</strong> {neg.position}</p>
-                      <div className="p-2.5 rounded-xl bg-[#C8A34D]/10 border border-[#C8A34D]/30 italic text-[11px] text-slate-800 dark:text-slate-200">
+                      <div className="p-2.5 rounded-xl bg-[#B88B2A]/10 border border-[#B88B2A]/30 italic text-[11px] text-slate-800 dark:text-slate-200">
                         {neg.talkingPoint}
                       </div>
                     </div>
@@ -1033,21 +1033,21 @@ export default function ContractAnalyzerWorkspace() {
               {/* Interactive Contract AI Copilot */}
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm flex flex-col justify-between">
                 <div>
-                  <h3 className="text-xs font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <h3 className="text-xs font-black uppercase tracking-wider text-[#B88B2A] flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                     <Sparkles className="w-4 h-4" /> Contract AI Copilot Assistant
                   </h3>
 
                   <div className="mt-3 space-y-3 max-h-[300px] overflow-y-auto pr-1">
                     {copilotMessages.map((msg) => (
                       <div key={msg.id} className={`p-3.5 rounded-2xl text-xs ${
-                        msg.role === 'user' ? 'bg-[#C8A34D] text-[#111] font-bold ml-6' : 'bg-slate-50 dark:bg-[#1A2333] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 mr-6'
+                        msg.role === 'user' ? 'bg-[#B88B2A] text-[#111] font-bold ml-6' : 'bg-slate-50 dark:bg-[#1A2333] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 mr-6'
                       }`}>
                         <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                       </div>
                     ))}
 
                     {isCopilotThinking && (
-                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] text-xs text-[#C8A34D] flex items-center gap-2">
+                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] text-xs text-[#B88B2A] flex items-center gap-2">
                         <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                         <span>Analyzing contract context...</span>
                       </div>
@@ -1061,12 +1061,12 @@ export default function ContractAnalyzerWorkspace() {
                     value={copilotInput}
                     onChange={(e) => setCopilotInput(e.target.value)}
                     placeholder="Ask AI Copilot about this contract..."
-                    className="flex-1 p-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs focus:border-[#C8A34D] focus:outline-none"
+                    className="flex-1 p-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs focus:border-[#B88B2A] focus:outline-none"
                   />
                   <button
                     type="submit"
                     disabled={isCopilotThinking}
-                    className="px-3.5 py-2.5 rounded-xl bg-[#C8A34D] text-[#111] font-bold text-xs hover:bg-[#b8933d] transition-all cursor-pointer"
+                    className="px-3.5 py-2.5 rounded-xl bg-[#B88B2A] text-[#111] font-bold text-xs hover:bg-[#b8933d] transition-all cursor-pointer"
                   >
                     Ask
                   </button>
@@ -1083,10 +1083,10 @@ export default function ContractAnalyzerWorkspace() {
       {/* SAVED REPORTS VAULT MODAL */}
       {isSavedReportsOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#111622] border-2 border-[#C8A34D] w-full max-w-2xl rounded-3xl p-6 space-y-5 shadow-2xl relative overflow-hidden">
+          <div className="bg-white dark:bg-[#111622] border-2 border-[#B88B2A] w-full max-w-2xl rounded-3xl p-6 space-y-5 shadow-2xl relative overflow-hidden">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <HardDrive className="w-5 h-5 text-[#C8A34D]" />
+                <HardDrive className="w-5 h-5 text-[#B88B2A]" />
                 <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
                   Saved Contract Risk Audit Reports ({savedReportsList.length})
                 </h3>
@@ -1107,11 +1107,11 @@ export default function ContractAnalyzerWorkspace() {
             ) : (
               <div className="max-h-[380px] overflow-y-auto space-y-3 pr-1">
                 {savedReportsList.map((item) => (
-                  <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 hover:border-[#C8A34D]/50 transition-colors">
+                  <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 hover:border-[#B88B2A]/50 transition-colors">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-extrabold text-xs text-slate-900 dark:text-white">{item.name}</h4>
-                        <span className="px-2 py-0.5 rounded bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-bold">{item.type}</span>
+                        <span className="px-2 py-0.5 rounded bg-[#B88B2A]/20 text-[#B88B2A] text-[10px] font-bold">{item.type}</span>
                         <span className="px-2 py-0.5 rounded bg-rose-500/15 text-rose-500 text-[10px] font-bold">{item.riskRating}</span>
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -1121,7 +1121,7 @@ export default function ContractAnalyzerWorkspace() {
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => handleLoadSavedReport(item)}
-                        className="px-3 py-1.5 rounded-xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer flex items-center gap-1"
+                        className="px-3 py-1.5 rounded-xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer flex items-center gap-1"
                       >
                         <Eye className="w-3.5 h-3.5" /> View Audit
                       </button>

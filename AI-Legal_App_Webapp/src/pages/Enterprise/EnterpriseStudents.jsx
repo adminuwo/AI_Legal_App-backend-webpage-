@@ -153,7 +153,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <GraduationCap className="text-[#C8A34D]" size={26} /> Student Management
+            <GraduationCap className="text-[#B88B2A]" size={26} /> Student Management
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Manage institutional student invitations, bulk CSV imports, and authorized feature access.
@@ -170,7 +170,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
 
           <button
             onClick={() => setShowInviteModal(true)}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2"
           >
             <Plus size={16} /> Invite Student
           </button>
@@ -186,7 +186,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search student name, email or ID..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:outline-none focus:border-[#C8A34D]"
+            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:outline-none focus:border-[#B88B2A]"
           />
         </div>
 
@@ -230,7 +230,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
                   <tr key={student._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#C8A34D]/10 text-[#C8A34D] font-bold text-xs flex items-center justify-center border border-[#C8A34D]/20">
+                        <div className="w-9 h-9 rounded-full bg-[#B88B2A]/10 text-[#B88B2A] font-bold text-xs flex items-center justify-center border border-[#B88B2A]/20">
                           {student.name?.charAt(0) || 'S'}
                         </div>
                         <div>
@@ -268,7 +268,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
                     <td className="py-4 px-6 text-right">
                       <button
                         onClick={() => setSelectedStudentProfile(student)}
-                        className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 hover:bg-[#C8A34D]/20 hover:text-[#C8A34D] font-bold text-[11px] transition-all flex items-center gap-1.5 ml-auto"
+                        className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 hover:bg-[#B88B2A]/20 hover:text-[#B88B2A] font-bold text-[11px] transition-all flex items-center gap-1.5 ml-auto"
                       >
                         <Eye size={14} /> Profile
                       </button>
@@ -287,7 +287,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Plus size={20} className="text-[#C8A34D]" /> Invite Individual Student
+                <Plus size={20} className="text-[#B88B2A]" /> Invite Individual Student
               </h3>
               <button onClick={() => setShowInviteModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
@@ -303,7 +303,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
                   value={inviteForm.name}
                   onChange={e => setInviteForm({ ...inviteForm, name: e.target.value })}
                   placeholder="e.g. Aarav Sharma"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -317,7 +317,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
                   value={inviteForm.email}
                   onChange={e => setInviteForm({ ...inviteForm, email: e.target.value })}
                   placeholder="student@gmail.com or student@rdvv.ac.in (Domain optional)"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#B88B2A]"
                 />
                 <p className="text-[10px] text-slate-400 mt-1">
                   💡 <strong>College Domain Email</strong> = Auto-linked automatically (No invite link needed). <strong>Normal Email</strong> = Invitation link sent to email.
@@ -389,7 +389,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md"
                 >
                   Send Invitation
                 </button>
@@ -405,7 +405,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
           <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <FileSpreadsheet size={20} className="text-[#C8A34D]" /> Bulk Student Import (CSV)
+                <FileSpreadsheet size={20} className="text-[#B88B2A]" /> Bulk Student Import (CSV)
               </h3>
               <button onClick={() => setShowBulkModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
@@ -420,7 +420,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
               rows={6}
               value={bulkCsvText}
               onChange={e => setBulkCsvText(e.target.value)}
-              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-mono text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D]"
+              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-mono text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A]"
             />
 
             <div className="flex items-center justify-between text-xs pt-2">
@@ -434,7 +434,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
                 </button>
                 <button
                   onClick={handleBulkSubmit}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md"
                 >
                   Confirm Import
                 </button>
@@ -450,7 +450,7 @@ Rohan Gupta,rohan.g@rdvv.ac.in,STD-1003,BA LLB,2025-2030,Year 1,Semester 1`);
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] font-black text-sm flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] font-black text-sm flex items-center justify-center">
                   {selectedStudentProfile.name?.charAt(0)}
                 </div>
                 <div>

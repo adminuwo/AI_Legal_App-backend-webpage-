@@ -8,14 +8,14 @@ export default function CaseInfoPanel({ judgment }) {
     <div className="bg-white dark:bg-[#0F1523] border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
       <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center border border-[#C8A34D]/30">
+          <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center border border-[#B88B2A]/30">
             <Scale size={16} />
           </div>
           <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
             Case Information & Coram
           </h3>
         </div>
-        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] border border-[#C8A34D]/30">
+        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] border border-[#B88B2A]/30">
           Official Record
         </span>
       </div>
@@ -128,7 +128,7 @@ export default function CaseInfoPanel({ judgment }) {
             Subjects:
           </span>
           {judgment.subjectTags.map((tag, idx) => (
-            <span key={idx} className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] border border-[#C8A34D]/30">
+            <span key={idx} className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] border border-[#B88B2A]/30">
               {tag}
             </span>
           ))}

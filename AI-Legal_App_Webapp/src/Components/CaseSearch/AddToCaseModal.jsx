@@ -97,7 +97,7 @@ export default function AddToCaseModal({
         {/* Header */}
         <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#C8A34D]/15 text-[#B38628] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#B88B2A]/15 text-[#B38628] flex items-center justify-center">
               <Briefcase size={16} />
             </div>
             <div>
@@ -122,7 +122,7 @@ export default function AddToCaseModal({
         <div className="p-5 space-y-4">
           {!isAuthenticated ? (
             <div className="text-center py-6 space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-[#C8A34D] flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-[#B88B2A] flex items-center justify-center mx-auto">
                 <Bookmark size={22} />
               </div>
               <h4 className="text-sm font-bold text-slate-900 dark:text-white">
@@ -158,7 +158,7 @@ export default function AddToCaseModal({
                     placeholder="Search your cases..."
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#C8A34D] mb-2"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#B88B2A] mb-2"
                   />
                 </div>
 
@@ -173,7 +173,7 @@ export default function AddToCaseModal({
                           onClick={() => setSelectedCaseId(c._id)}
                           className={`p-3 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between ${
                             isSelected
-                              ? 'bg-amber-50/80 dark:bg-amber-950/40 border-[#C8A34D] text-[#B38628] dark:text-amber-300'
+                              ? 'bg-amber-50/80 dark:bg-amber-950/40 border-[#B88B2A] text-[#B38628] dark:text-amber-300'
                               : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-700 dark:text-slate-300'
                           }`}
                         >
@@ -184,7 +184,7 @@ export default function AddToCaseModal({
                             </div>
                           </div>
                           {isSelected && (
-                            <div className="w-5 h-5 rounded-full bg-[#C8A34D] text-slate-950 flex items-center justify-center shrink-0">
+                            <div className="w-5 h-5 rounded-full bg-[#B88B2A] text-slate-950 flex items-center justify-center shrink-0">
                               <Check size={12} strokeWidth={3} />
                             </div>
                           )}
@@ -218,7 +218,7 @@ export default function AddToCaseModal({
             <button
               onClick={handleAdd}
               disabled={isSubmitting || !selectedCaseId}
-              className="px-5 py-2 rounded-xl text-xs font-bold bg-[#C8A34D] hover:bg-[#B38628] text-slate-950 disabled:opacity-40 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-5 py-2 rounded-xl text-xs font-bold bg-[#B88B2A] hover:bg-[#B38628] text-slate-950 disabled:opacity-40 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               {isSubmitting ? 'Attaching...' : 'Add to Case'}
               <ArrowRight size={13} />

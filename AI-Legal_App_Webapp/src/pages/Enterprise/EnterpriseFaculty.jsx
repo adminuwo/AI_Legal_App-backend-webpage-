@@ -79,7 +79,7 @@ const EnterpriseFaculty = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Users className="text-[#C8A34D]" size={24} /> Faculty & Coordinator Management
+            <Users className="text-[#B88B2A]" size={24} /> Faculty & Coordinator Management
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Assign academic roles, course groups, and subject coordination permissions.
@@ -88,7 +88,7 @@ const EnterpriseFaculty = () => {
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-black shadow-md hover:brightness-110 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+          className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-black shadow-md hover:brightness-110 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
         >
           <Plus size={15} /> Add Faculty Member
         </button>
@@ -97,10 +97,10 @@ const EnterpriseFaculty = () => {
       {/* Faculty Cards Grid - COMPACT CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
         {facultyList.map(member => (
-          <div key={member._id} className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2.5 hover:border-[#C8A34D]/40 transition-all">
+          <div key={member._id} className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2.5 hover:border-[#B88B2A]/40 transition-all">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] font-extrabold text-xs flex items-center justify-center border border-[#C8A34D]/30 shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] font-extrabold text-xs flex items-center justify-center border border-[#B88B2A]/30 shrink-0">
                   {member.name?.charAt(0) || 'F'}
                 </div>
                 <div>
@@ -113,7 +113,7 @@ const EnterpriseFaculty = () => {
             <div className="space-y-1.5 text-[11px] pt-1.5 border-t border-slate-100 dark:border-slate-800/60">
               <div className="flex justify-between items-center">
                 <span className="text-slate-400">Role:</span>
-                <span className="font-extrabold text-[#C8A34D] uppercase text-[9px] tracking-wider px-2 py-0.5 rounded bg-[#C8A34D]/10 border border-[#C8A34D]/20">
+                <span className="font-extrabold text-[#B88B2A] uppercase text-[9px] tracking-wider px-2 py-0.5 rounded bg-[#B88B2A]/10 border border-[#B88B2A]/20">
                   {member.role}
                 </span>
               </div>
@@ -147,7 +147,7 @@ const EnterpriseFaculty = () => {
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Plus size={18} className="text-[#C8A34D]" /> Add Faculty Member
+                <Plus size={18} className="text-[#B88B2A]" /> Add Faculty Member
               </h3>
               <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={18} />
@@ -223,7 +223,7 @@ const EnterpriseFaculty = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md"
                 >
                   Add Faculty
                 </button>

@@ -410,7 +410,7 @@ export default function Landing() {
   const currentSolution = solutionsData[activeSolutionTab];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#C8A34D]/25 selection:text-[#111111]">
+    <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#B88B2A]/25 selection:text-[#111111]">
 
       {/* =========================================================================
           SECTION 3: TOP NAVIGATION (CLAW-INSPIRED ARCHITECTURE)
@@ -426,7 +426,7 @@ export default function Landing() {
             className="flex items-center gap-2.5 cursor-pointer group select-none"
           >
             <div className="relative flex items-center justify-center">
-              <div className="absolute inset-0 bg-[#C8A34D]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-[#B88B2A]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
               <img 
                 src="/logo/logo_transparent.png" 
                 alt="AI LEGAL Logo" 
@@ -435,7 +435,7 @@ export default function Landing() {
             </div>
             <span className="text-lg sm:text-xl font-black tracking-tight text-[#0F172A] dark:text-white flex items-center">
               AI LEGAL
-              <span className="text-[10px] align-super text-[#C8A34D] font-extrabold ml-0.5">TM</span>
+              <span className="text-[10px] align-super text-[#B88B2A] font-extrabold ml-0.5">TM</span>
             </span>
           </div>
 
@@ -443,7 +443,7 @@ export default function Landing() {
           <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-slate-300">
             <button 
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 transition-all cursor-pointer shadow-2xs"
+              className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 transition-all cursor-pointer shadow-2xs"
             >
               Home
             </button>
@@ -492,7 +492,7 @@ export default function Landing() {
             {/* Post Judgement Shortcut */}
             <button
               onClick={() => navigate('/post-judgment')}
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
             >
               <Plus size={14} className="text-[#B38628] stroke-[2.5]" />
               <span>Post your judgement</span>
@@ -502,13 +502,13 @@ export default function Landing() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigate('/dashboard')}
-                  className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                  className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
                 >
                   Dashboard →
                 </button>
                 <div 
                   onClick={() => navigate('/dashboard/settings')}
-                  className="w-7.5 h-7.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-[#C8A34D]/40 text-[#B38628] dark:text-amber-400 font-bold text-xs flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
+                  className="w-7.5 h-7.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-[#B88B2A]/40 text-[#B38628] dark:text-amber-400 font-bold text-xs flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
                   title={user?.name || 'Profile'}
                 >
                   {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
@@ -517,7 +517,7 @@ export default function Landing() {
             ) : (
               <button
                 onClick={() => navigate('/signup')}
-                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
               >
                 Get Started
               </button>
@@ -549,7 +549,7 @@ export default function Landing() {
               <div className="flex flex-col space-y-1.5 text-sm font-semibold text-slate-700 dark:text-slate-200">
                 <button 
                   onClick={() => { setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  className="text-left px-3.5 py-2 rounded-xl bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 font-bold"
+                  className="text-left px-3.5 py-2 rounded-xl bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 font-bold"
                 >
                   Home
                 </button>
@@ -594,7 +594,7 @@ export default function Landing() {
               <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2.5">
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate('/post-judgment'); }}
-                  className="w-full py-2.5 rounded-full text-xs font-bold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 rounded-full text-xs font-bold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5"
                 >
                   <Plus size={14} className="stroke-[2.5]" />
                   <span>Post your judgement</span>
@@ -602,7 +602,7 @@ export default function Landing() {
                 {isAuthenticated ? (
                   <button
                     onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
-                    className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-center shadow-md shadow-[#C8A34D]/30"
+                    className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-center shadow-md shadow-[#B88B2A]/30"
                   >
                     Go to Dashboard →
                   </button>
@@ -616,7 +616,7 @@ export default function Landing() {
                     </button>
                     <button
                       onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}
-                      className="py-2.5 bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#C8A34D]/30"
+                      className="py-2.5 bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#B88B2A]/30"
                     >
                       Get Started
                     </button>
@@ -634,7 +634,7 @@ export default function Landing() {
       ========================================================================= */}
       <section 
         id="hero" 
-        className="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-24 border-b border-slate-200/80 dark:border-slate-800/80 bg-[#F8FAFC] dark:bg-[#070A12] bg-[radial-gradient(#CBD5E1_1.25px,transparent_1.25px)] dark:bg-[radial-gradient(rgba(200,163,77,0.18)_1.25px,transparent_1.25px)] bg-[size:24px_24px]"
+        className="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-24 border-b border-slate-200/80 dark:border-slate-800/80 bg-[#F8FAFC] dark:bg-[#070A12] bg-[radial-gradient(#CBD5E1_1.25px,transparent_1.25px)] dark:bg-[radial-gradient(rgba(184,139,42,0.18)_1.25px,transparent_1.25px)] bg-[size:24px_24px]"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
@@ -667,7 +667,7 @@ export default function Landing() {
               <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
                 <button
                   onClick={() => handleProtectedAction('/dashboard')}
-                  className="px-7 py-3.5 bg-gradient-to-b from-[#D4AF37] to-[#C8A34D] hover:brightness-105 active:scale-98 text-[#111111] text-sm font-black rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer group"
+                  className="px-7 py-3.5 bg-gradient-to-b from-[#D4AF37] to-[#B88B2A] hover:brightness-105 active:scale-98 text-[#111111] text-sm font-black rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer group"
                 >
                   <span>Go to Dashboard</span>
                   <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
@@ -677,7 +677,7 @@ export default function Landing() {
                   onClick={() => setIsDownloadModalOpen(true)}
                   className="px-7 py-3.5 bg-white dark:bg-[#0B0F19] hover:bg-slate-100 dark:hover:bg-slate-800/90 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-sm font-bold rounded-xl shadow-2xs transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Smartphone size={16} className="text-[#C8A34D]" />
+                  <Smartphone size={16} className="text-[#B88B2A]" />
                   <span>Download App</span>
                 </button>
               </div>
@@ -686,7 +686,7 @@ export default function Landing() {
             {/* RIGHT COLUMN: DASHBOARD SCREENSHOT (NO ENTER OVERLAY) */}
             <div className="lg:col-span-6 relative group mt-6 lg:mt-0">
               {/* Ambient Back Glow */}
-              <div className="absolute -inset-1.5 bg-gradient-to-r from-[#C8A34D]/25 via-[#D4AF37]/15 to-[#C8A34D]/25 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 transition duration-500 -z-10" />
+              <div className="absolute -inset-1.5 bg-gradient-to-r from-[#B88B2A]/25 via-[#D4AF37]/15 to-[#B88B2A]/25 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 transition duration-500 -z-10" />
               
               {/* macOS-style Window Frame */}
               <div 
@@ -706,7 +706,7 @@ export default function Landing() {
                   </div>
 
                   <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900 border border-slate-700/60 text-[10px] text-slate-400 font-mono">
-                    <Lock size={9} className="text-[#C8A34D]" />
+                    <Lock size={9} className="text-[#B88B2A]" />
                     <span className="text-slate-300">app.ailegal.in/dashboard</span>
                   </div>
 
@@ -771,13 +771,13 @@ export default function Landing() {
       ========================================================================= */}
       <section className="py-20 sm:py-28 bg-[#070B14] dark:bg-[#050810] border-b border-slate-800 px-4 sm:px-6 lg:px-8 text-white relative overflow-hidden">
         {/* Subtle Ambient Radial Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[#C8A34D]/5 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[#B88B2A]/5 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10">
           
           {/* Section Header — Matching Screenshot 1 */}
           <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-16">
-            <span className="text-xs font-black uppercase tracking-widest text-[#E5A93C] dark:text-[#C8A34D]">
+            <span className="text-xs font-black uppercase tracking-widest text-[#E5A93C] dark:text-[#B88B2A]">
               WHAT WE OFFER
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mt-2.5 tracking-tight">
@@ -824,7 +824,7 @@ export default function Landing() {
             {/* CARD 3: Indian Legal Database */}
             <div className="bg-white dark:bg-[#0F172A] rounded-3xl p-7 sm:p-8 border border-slate-200 dark:border-slate-800/80 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-[#C8A34D] flex items-center justify-center group-hover:scale-105 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-[#B88B2A] flex items-center justify-center group-hover:scale-105 transition-transform">
                   <Scale size={24} className="stroke-[2.2]" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 tracking-tight">
@@ -916,9 +916,9 @@ export default function Landing() {
               </p>
 
               {/* Arrow to Step 2 (Desktop only) */}
-              <div className="hidden md:flex items-center absolute top-9 sm:top-10 -right-6 lg:-right-10 text-[#F59E0B] dark:text-[#C8A34D] w-12 lg:w-20 justify-center">
-                <div className="w-full h-0.5 bg-[#F59E0B]/60 dark:bg-[#C8A34D]/60 relative">
-                  <span className="absolute right-0 -top-1 border-t-2 border-r-2 border-[#F59E0B] dark:border-[#C8A34D] w-2.5 h-2.5 rotate-45" />
+              <div className="hidden md:flex items-center absolute top-9 sm:top-10 -right-6 lg:-right-10 text-[#F59E0B] dark:text-[#B88B2A] w-12 lg:w-20 justify-center">
+                <div className="w-full h-0.5 bg-[#F59E0B]/60 dark:bg-[#B88B2A]/60 relative">
+                  <span className="absolute right-0 -top-1 border-t-2 border-r-2 border-[#F59E0B] dark:border-[#B88B2A] w-2.5 h-2.5 rotate-45" />
                 </div>
               </div>
             </div>
@@ -939,9 +939,9 @@ export default function Landing() {
               </p>
 
               {/* Arrow to Step 3 (Desktop only) */}
-              <div className="hidden md:flex items-center absolute top-9 sm:top-10 -right-6 lg:-right-10 text-[#F59E0B] dark:text-[#C8A34D] w-12 lg:w-20 justify-center">
-                <div className="w-full h-0.5 bg-[#F59E0B]/60 dark:bg-[#C8A34D]/60 relative">
-                  <span className="absolute right-0 -top-1 border-t-2 border-r-2 border-[#F59E0B] dark:border-[#C8A34D] w-2.5 h-2.5 rotate-45" />
+              <div className="hidden md:flex items-center absolute top-9 sm:top-10 -right-6 lg:-right-10 text-[#F59E0B] dark:text-[#B88B2A] w-12 lg:w-20 justify-center">
+                <div className="w-full h-0.5 bg-[#F59E0B]/60 dark:bg-[#B88B2A]/60 relative">
+                  <span className="absolute right-0 -top-1 border-t-2 border-r-2 border-[#F59E0B] dark:border-[#B88B2A] w-2.5 h-2.5 rotate-45" />
                 </div>
               </div>
             </div>
@@ -978,7 +978,7 @@ export default function Landing() {
           
           {/* Header Matching User Reference Screenshot */}
           <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-16">
-            <span className="text-xs font-black uppercase tracking-widest text-[#E5A93C] dark:text-[#C8A34D] block mb-2">
+            <span className="text-xs font-black uppercase tracking-widest text-[#E5A93C] dark:text-[#B88B2A] block mb-2">
               HAPPY CLIENTS
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0F172A] dark:text-white tracking-tight">
@@ -1119,12 +1119,12 @@ export default function Landing() {
       ========================================================================= */}
       <section className="py-20 sm:py-28 bg-[#FFFDF9] dark:bg-[#070A12] border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         {/* Subtle Ambient Radial Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] bg-[#C8A34D]/5 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] bg-[#B88B2A]/5 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Section Heading — Why Choose Us */}
           <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-18">
-            <span className="text-xs font-black uppercase tracking-widest text-[#E5A93C] dark:text-[#C8A34D] block mb-2.5">
+            <span className="text-xs font-black uppercase tracking-widest text-[#E5A93C] dark:text-[#B88B2A] block mb-2.5">
               WHY CHOOSE US
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0F172A] dark:text-white tracking-tight">
@@ -1145,7 +1145,7 @@ export default function Landing() {
                   className="bg-white dark:bg-[#0F172A] rounded-[2rem] sm:rounded-3xl p-8 sm:p-9 border border-slate-200/90 dark:border-slate-800/90 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col items-center text-center group relative"
                 >
                   {/* Clean Minimalist Centered Icon (matching screenshot style) */}
-                  <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 flex items-center justify-center group-hover:text-[#C8A34D] group-hover:scale-110 group-hover:bg-[#C8A34D]/10 transition-all duration-300 mb-2">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 flex items-center justify-center group-hover:text-[#B88B2A] group-hover:scale-110 group-hover:bg-[#B88B2A]/10 transition-all duration-300 mb-2">
                     <Icon size={26} className="stroke-[1.6]" />
                   </div>
 

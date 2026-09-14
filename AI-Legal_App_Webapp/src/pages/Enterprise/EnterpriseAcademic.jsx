@@ -194,7 +194,7 @@ const EnterpriseAcademic = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Layers className="text-[#C8A34D]" size={26} /> Academic Structure Hierarchy
+            <Layers className="text-[#B88B2A]" size={26} /> Academic Structure Hierarchy
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Configure Courses, Batches, Semesters, and Subject curriculum maps dynamically.
@@ -203,7 +203,7 @@ const EnterpriseAcademic = () => {
 
         <button
           onClick={() => setShowAddCourseModal(true)}
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2"
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 text-xs font-extrabold shadow-md hover:brightness-110 transition-all flex items-center gap-2"
         >
           <Plus size={16} /> Create New Course
         </button>
@@ -215,7 +215,7 @@ const EnterpriseAcademic = () => {
           <div key={course._id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#C8A34D]/10 text-[#C8A34D] font-extrabold text-sm flex items-center justify-center border border-[#C8A34D]/30">
+                <div className="w-10 h-10 rounded-2xl bg-[#B88B2A]/10 text-[#B88B2A] font-extrabold text-sm flex items-center justify-center border border-[#B88B2A]/30">
                   <BookOpen size={20} />
                 </div>
                 <div>
@@ -248,7 +248,7 @@ const EnterpriseAcademic = () => {
                 <div key={bIdx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                      <ChevronRight size={16} className="text-[#C8A34D]" /> Batch {batch.name} ({batch.year})
+                      <ChevronRight size={16} className="text-[#B88B2A]" /> Batch {batch.name} ({batch.year})
                     </span>
                   </div>
 
@@ -260,7 +260,7 @@ const EnterpriseAcademic = () => {
                           
                           <button
                             onClick={() => openAddSubject(course._id, bIdx, sIdx, sem.name)}
-                            className="px-2.5 py-1 rounded-lg bg-[#C8A34D]/10 hover:bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg bg-[#B88B2A]/10 hover:bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer"
                           >
                             <PlusCircle size={12} /> Add Subject
                           </button>
@@ -300,7 +300,7 @@ const EnterpriseAcademic = () => {
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Plus size={20} className="text-[#C8A34D]" /> Add New Course
+                <Plus size={20} className="text-[#B88B2A]" /> Add New Course
               </h3>
               <button onClick={() => setShowAddCourseModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
@@ -315,7 +315,7 @@ const EnterpriseAcademic = () => {
                   value={newCourseName}
                   onChange={e => setNewCourseName(e.target.value)}
                   placeholder="e.g. BBA LLB (Hons) / B.Com LLB"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -351,7 +351,7 @@ const EnterpriseAcademic = () => {
                 </button>
                 <button
                   onClick={handleCreateCourse}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md"
                 >
                   Create Course
                 </button>
@@ -367,7 +367,7 @@ const EnterpriseAcademic = () => {
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <PlusCircle size={20} className="text-[#C8A34D]" /> Add Subject to {targetSemester?.semName}
+                <PlusCircle size={20} className="text-[#B88B2A]" /> Add Subject to {targetSemester?.semName}
               </h3>
               <button onClick={() => setShowAddSubjectModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
@@ -382,7 +382,7 @@ const EnterpriseAcademic = () => {
                   value={newSubjectName}
                   onChange={e => setNewSubjectName(e.target.value)}
                   placeholder="e.g. Administrative Law / Company Law"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#C8A34D]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-semibold focus:outline-none focus:border-[#B88B2A]"
                 />
               </div>
 
@@ -406,7 +406,7 @@ const EnterpriseAcademic = () => {
                 </button>
                 <button
                   onClick={handleAddSubjectSubmit}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#C8A34D] to-[#B08D3E] text-slate-950 font-black shadow-md"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B08D3E] text-slate-950 font-black shadow-md"
                 >
                   Add Subject
                 </button>

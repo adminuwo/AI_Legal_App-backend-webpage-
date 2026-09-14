@@ -93,18 +93,18 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#C8A34D]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
+          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#B88B2A]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
         >
           {/* Header */}
-          <div className="px-8 py-5 bg-[#111111] border-b border-[#C8A34D]/30 flex items-center justify-between shrink-0 text-white">
+          <div className="px-8 py-5 bg-[#111111] border-b border-[#B88B2A]/30 flex items-center justify-between shrink-0 text-white">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D]">
+              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A]">
                 <Gavel className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-xl font-extrabold tracking-tight flex items-center gap-2">
                   <span>Courtroom Argument Builder</span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 uppercase">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 uppercase">
                     Hearing Intelligence Engine
                   </span>
                 </h2>
@@ -132,9 +132,9 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                 onClick={() => { if (step.num < currentStep) setCurrentStep(step.num); }}
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-xl cursor-pointer transition-all ${
                   currentStep === step.num
-                    ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md shadow-[#C8A34D]/20'
+                    ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md shadow-[#B88B2A]/20'
                     : currentStep > step.num
-                    ? 'text-[#C8A34D]'
+                    ? 'text-[#B88B2A]'
                     : 'text-slate-500'
                 }`}
               >
@@ -161,7 +161,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                     <select
                       value={selectedCaseType}
                       onChange={(e) => setSelectedCaseType(e.target.value)}
-                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#C8A34D] focus:outline-none"
+                      className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#B88B2A] focus:outline-none"
                     >
                       {CASE_TYPES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
@@ -174,7 +174,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                         type="text" 
                         value={formData.courtName}
                         onChange={(e) => setFormData({ ...formData, courtName: e.target.value })}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                       />
                     </div>
                     <div>
@@ -183,7 +183,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                         type="text" 
                         value={formData.presidingJudge}
                         onChange={(e) => setFormData({ ...formData, presidingJudge: e.target.value })}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                        className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                       />
                     </div>
                   </div>
@@ -198,8 +198,8 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                           onClick={() => setSelectedStyle(style.id)}
                           className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
                             selectedStyle === style.id
-                              ? 'bg-white dark:bg-[#222222] border-[#C8A34D] ring-1 ring-[#C8A34D]'
-                              : 'bg-slate-50 dark:bg-[#111111] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/40'
+                              ? 'bg-white dark:bg-[#222222] border-[#B88B2A] ring-1 ring-[#B88B2A]'
+                              : 'bg-slate-50 dark:bg-[#111111] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/40'
                           }`}
                         >
                           <span className="text-xs font-bold text-slate-900 dark:text-white block">{style.label}</span>
@@ -212,8 +212,8 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                   {/* Upload */}
                   <div>
                     <label className="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Upload Pleadings & Exhibits</label>
-                    <label className="border-2 border-dashed border-[#C8A34D]/40 hover:border-[#C8A34D] bg-slate-50 dark:bg-[#111111] p-6 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all">
-                      <Upload className="w-6 h-6 text-[#C8A34D] mb-1" />
+                    <label className="border-2 border-dashed border-[#B88B2A]/40 hover:border-[#B88B2A] bg-slate-50 dark:bg-[#111111] p-6 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all">
+                      <Upload className="w-6 h-6 text-[#B88B2A] mb-1" />
                       <span className="text-xs font-bold text-slate-900 dark:text-white">Upload pleadings, return memos, notices or affidavits</span>
                       <span className="text-[9px] text-slate-400 mt-0.5">PDF, DOCX, JPG supported</span>
                       <input type="file" multiple onChange={handleExhibitUpload} className="hidden" />
@@ -227,19 +227,19 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
             {currentStep === 2 && (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-6 my-12">
                 <div className="relative w-24 h-24 flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border-4 border-[#C8A34D]/20 animate-ping" />
-                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#C8A34D] flex items-center justify-center text-[#C8A34D]">
+                  <div className="absolute inset-0 rounded-full border-4 border-[#B88B2A]/20 animate-ping" />
+                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#B88B2A] flex items-center justify-center text-[#B88B2A]">
                     <Sparkles className="w-8 h-8 animate-spin" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <h3 className="text-xl font-black text-slate-900 dark:text-white">Building Court Preparation Intelligence</h3>
-                  <p className="text-xs font-mono text-[#C8A34D]">{progressStatus}</p>
+                  <p className="text-xs font-mono text-[#B88B2A]">{progressStatus}</p>
                 </div>
 
                 <div className="w-full max-w-md bg-slate-200 dark:bg-[#222222] h-2 rounded-full overflow-hidden">
-                  <div className="bg-[#C8A34D] h-full transition-all duration-300" style={{ width: `${generationProgress}%` }} />
+                  <div className="bg-[#B88B2A] h-full transition-all duration-300" style={{ width: `${generationProgress}%` }} />
                 </div>
               </div>
             )}
@@ -254,7 +254,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                   </div>
                   <button 
                     onClick={() => setCurrentStep(4)}
-                    className="px-4 py-2 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md"
+                    className="px-4 py-2 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md"
                   >
                     Open 6 Intelligence Tools <ArrowRight className="w-4 h-4" />
                   </button>
@@ -288,11 +288,11 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-xs font-bold text-slate-900 dark:text-white">{card.title}</span>
-                            <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30">
+                            <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30">
                               {card.pct}% Confidence
                             </span>
                           </div>
-                          {isOpen ? <ChevronUp className="w-4 h-4 text-[#C8A34D]" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                          {isOpen ? <ChevronUp className="w-4 h-4 text-[#B88B2A]" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                         </div>
 
                         {isOpen && (
@@ -316,10 +316,10 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                     <p className="text-xs text-slate-500 dark:text-slate-400">Interactive courtroom tools for oral submissions, bench inquiries & strategy.</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={handleCopyNotes} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer">
+                    <button onClick={handleCopyNotes} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer">
                       <Copy className="w-3.5 h-3.5" /> Copy Notes
                     </button>
-                    <button onClick={handleExportBrief} className="px-3 py-1.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md">
+                    <button onClick={handleExportBrief} className="px-3 py-1.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md">
                       <Download className="w-3.5 h-3.5" /> Export PDF
                     </button>
                   </div>
@@ -340,7 +340,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                       onClick={() => setActiveIntelTab(tab.id)}
                       className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
                         activeIntelTab === tab.id
-                          ? 'bg-[#111111] text-[#C8A34D] border border-[#C8A34D]/40 font-black shadow-md'
+                          ? 'bg-[#111111] text-[#B88B2A] border border-[#B88B2A]/40 font-black shadow-md'
                           : 'bg-white dark:bg-[#181818] text-slate-400 hover:text-white border border-slate-200 dark:border-slate-800'
                       }`}
                     >
@@ -353,9 +353,9 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
                 <div className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
                   {activeIntelTab === 'oral-notes' && (
                     <div className="space-y-4">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Courtroom Oral Speaking Draft</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Courtroom Oral Speaking Draft</h4>
                       <div className="p-4 bg-slate-50 dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs font-mono leading-relaxed text-slate-900 dark:text-slate-200">
-                        <p className="font-bold text-[#C8A34D] mb-2">"My Lord, complainant presents a clear statutory breach under Section 138 NI Act..."</p>
+                        <p className="font-bold text-[#B88B2A] mb-2">"My Lord, complainant presents a clear statutory breach under Section 138 NI Act..."</p>
                         <p>1. Cheque signature is admitted by accused, triggering mandatory presumption under Sec 139.</p>
                         <p>2. Bank return memo Exhibit P-2 confirms "Funds Insufficient".</p>
                         <p>3. Demand notice was delivered on 12th May 2026 without response.</p>
@@ -365,11 +365,11 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
 
                   {activeIntelTab === 'judge-questions' && (
                     <div className="space-y-4">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Anticipated Bench Inquiries & Live Answers</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Anticipated Bench Inquiries & Live Answers</h4>
                       <div className="p-4 bg-slate-50 dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
-                        <div className="flex items-center justify-between text-xs font-bold text-[#C8A34D]">
+                        <div className="flex items-center justify-between text-xs font-bold text-[#B88B2A]">
                           <span>Q1: Was the cheque issued for a legally enforceable debt?</span>
-                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#C8A34D]/20">98% Confidence</span>
+                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#B88B2A]/20">98% Confidence</span>
                         </div>
                         <p className="text-xs text-slate-700 dark:text-slate-300">Answer: Yes My Lord. Invoices & ledger statement Exhibit P-4 establish ongoing commercial debt.</p>
                       </div>
@@ -378,9 +378,9 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
 
                   {activeIntelTab === 'opponent-strat' && (
                     <div className="space-y-4">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Opposing Counsel Strategy & Counter-Rebuttals</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Opposing Counsel Strategy & Counter-Rebuttals</h4>
                       <div className="p-4 bg-slate-50 dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 space-y-2">
-                        <p className="font-bold text-[#C8A34D]">Opponent Assertion: Security Cheque Defense (Likelihood: 35%)</p>
+                        <p className="font-bold text-[#B88B2A]">Opponent Assertion: Security Cheque Defense (Likelihood: 35%)</p>
                         <p>Rebuttal: Cite Rangappa v. Sri Mohan (SC) holding Sec 139 presumption covers security cheques.</p>
                       </div>
                     </div>
@@ -388,7 +388,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
 
                   {activeIntelTab === 'weakness-analysis' && (
                     <div className="space-y-4">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Case Vulnerability Audit</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Case Vulnerability Audit</h4>
                       <div className="p-4 bg-slate-50 dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 space-y-2">
                         <div className="flex items-center gap-2">
                           <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-mono text-[9px] font-bold">MEDIUM RISK</span>
@@ -401,7 +401,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
 
                   {activeIntelTab === 'winning-strat' && (
                     <div className="space-y-4">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Trial Strategy & Execution Roadmap</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Trial Strategy & Execution Roadmap</h4>
                       <div className="p-4 bg-slate-50 dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 space-y-1">
                         <p>Stage 1: Pre-trial admission of cheque signature.</p>
                         <p>Stage 2: Cross-examine defense witness on lack of notice reply.</p>
@@ -412,7 +412,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
 
                   {activeIntelTab === 'hearing-checklist' && (
                     <div className="space-y-4">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Tomorrow Hearing Checklist</h4>
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Tomorrow Hearing Checklist</h4>
                       <div className="p-4 bg-slate-50 dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 space-y-2">
                         <p className="flex items-center gap-2 text-emerald-400">✔ Original Cheque (Ex P-1)</p>
                         <p className="flex items-center gap-2 text-emerald-400">✔ Bank Return Memo (Ex P-2)</p>
@@ -426,7 +426,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
           </div>
 
           {/* Footer Action Bar */}
-          <div className="px-8 py-4 bg-[#111111] border-t border-[#C8A34D]/30 flex items-center justify-between shrink-0">
+          <div className="px-8 py-4 bg-[#111111] border-t border-[#B88B2A]/30 flex items-center justify-between shrink-0">
             {currentStep > 1 && currentStep !== 2 ? (
               <button 
                 onClick={() => setCurrentStep(prev => prev - 1)}
@@ -439,7 +439,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
             {currentStep === 1 && (
               <button 
                 onClick={startCompilation}
-                className="px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                className="px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
               >
                 <Sparkles className="w-4 h-4" /> Compile Court Intelligence
               </button>
@@ -448,7 +448,7 @@ export default function LegalArgumentBuilderModal({ isOpen, onClose }) {
             {currentStep === 3 && (
               <button 
                 onClick={() => setCurrentStep(4)}
-                className="px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                className="px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
               >
                 Open 6 Intelligence Tools <ArrowRight className="w-4 h-4" />
               </button>

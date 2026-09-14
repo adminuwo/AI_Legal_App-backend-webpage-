@@ -168,7 +168,7 @@ export default function PostJudgment() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#060D0B] text-slate-800 dark:text-slate-100 font-sans selection:bg-[#C8A34D]/30 selection:text-slate-950 dark:selection:text-white transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#060D0B] text-slate-800 dark:text-slate-100 font-sans selection:bg-[#B88B2A]/30 selection:text-slate-950 dark:selection:text-white transition-colors duration-300">
       
       {/* ─── Top Header (Matching Public Website Standard) ─── */}
       <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#07130F]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-emerald-950/60 transition-colors shadow-xs shrink-0">
@@ -176,7 +176,7 @@ export default function PostJudgment() {
           
           {/* Brand Logo & Name */}
           <div onClick={() => navigate('/')} className="flex items-center gap-2.5 cursor-pointer select-none group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#C8A34D] to-[#B38628] flex items-center justify-center shadow-md shadow-[#C8A34D]/25 p-1">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#B88B2A] to-[#B38628] flex items-center justify-center shadow-md shadow-[#B88B2A]/25 p-1">
               <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
@@ -215,14 +215,14 @@ export default function PostJudgment() {
           <div className="hidden lg:flex items-center gap-2.5">
             <ThemeToggle />
             
-            <span className="px-3.5 py-1.5 rounded-full text-xs font-bold border border-[#C8A34D]/60 bg-amber-50 text-[#966b1a] dark:bg-[#C8A34D]/20 dark:border-[#C8A34D] dark:text-amber-300 flex items-center gap-1.5 shadow-2xs">
-              <Plus size={14} className="text-[#C8A34D] stroke-[2.5]" />
+            <span className="px-3.5 py-1.5 rounded-full text-xs font-bold border border-[#B88B2A]/60 bg-amber-50 text-[#966b1a] dark:bg-[#B88B2A]/20 dark:border-[#B88B2A] dark:text-amber-300 flex items-center gap-1.5 shadow-2xs">
+              <Plus size={14} className="text-[#B88B2A] stroke-[2.5]" />
               <span>Post your judgement</span>
             </span>
 
             <button
               onClick={() => navigate('/signup')}
-              className="px-4 py-1.5 rounded-full text-xs font-bold text-slate-950 bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/25"
+              className="px-4 py-1.5 rounded-full text-xs font-bold text-slate-950 bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/25"
             >
               Get Started
             </button>
@@ -296,13 +296,13 @@ export default function PostJudgment() {
               </div>
 
               <div className="pt-3 border-t border-slate-100 dark:border-emerald-950 flex flex-col gap-2.5">
-                <span className="w-full py-2.5 rounded-full text-xs font-bold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5">
+                <span className="w-full py-2.5 rounded-full text-xs font-bold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5">
                   <Plus size={14} className="stroke-[2.5]" />
                   <span>Post your judgement (Active)</span>
                 </span>
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}
-                  className="w-full py-2.5 bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#C8A34D]/30"
+                  className="w-full py-2.5 bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#B88B2A]/30"
                 >
                   Get Started
                 </button>
@@ -324,7 +324,7 @@ export default function PostJudgment() {
           {/* Headline Block Matching CLAW Reference */}
           <div className="text-center space-y-3 mb-8">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 text-[10px] sm:text-[11px] font-black tracking-widest text-emerald-700 dark:text-emerald-400 uppercase shadow-2xs">
-              <Sparkles className="w-3 h-3 text-[#C8A34D]" />
+              <Sparkles className="w-3 h-3 text-[#B88B2A]" />
               <span>HAVE YOUR WIN TOLD</span>
             </div>
 
@@ -359,7 +359,7 @@ export default function PostJudgment() {
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-slate-950 transition-all shadow-md cursor-pointer"
+                    className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-slate-950 transition-all shadow-md cursor-pointer"
                   >
                     Submit Another Judgement
                   </button>
@@ -387,7 +387,7 @@ export default function PostJudgment() {
                       value={advocateName}
                       onChange={(e) => setAdvocateName(e.target.value)}
                       placeholder="Adv. Full Name"
-                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#C8A34D] focus:ring-2 focus:ring-[#C8A34D]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
+                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#B88B2A] focus:ring-2 focus:ring-[#B88B2A]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
                       required
                     />
                   </div>
@@ -401,7 +401,7 @@ export default function PostJudgment() {
                       value={enrolmentNumber}
                       onChange={(e) => setEnrolmentNumber(e.target.value)}
                       placeholder="e.g. MAH/1123/2019"
-                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#C8A34D] focus:ring-2 focus:ring-[#C8A34D]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
+                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#B88B2A] focus:ring-2 focus:ring-[#B88B2A]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
                       required
                     />
                   </div>
@@ -455,7 +455,7 @@ export default function PostJudgment() {
                         if (e.dataTransfer.files?.[0]) handlePhotoSelect(e.dataTransfer.files[0]);
                       }}
                       className={`flex items-center gap-2.5 py-3 px-4 rounded-xl bg-slate-50 dark:bg-[#12251F] border cursor-pointer transition-all ${
-                        isPhotoDragOver ? 'border-[#C8A34D] bg-amber-50/50 dark:bg-[#162D26]' : 'border-slate-200 dark:border-emerald-900/60 hover:border-[#C8A34D] dark:hover:border-emerald-700'
+                        isPhotoDragOver ? 'border-[#B88B2A] bg-amber-50/50 dark:bg-[#162D26]' : 'border-slate-200 dark:border-emerald-900/60 hover:border-[#B88B2A] dark:hover:border-emerald-700'
                       }`}
                     >
                       <Camera className="w-4 h-4 text-slate-400 dark:text-emerald-400 shrink-0" />
@@ -475,7 +475,7 @@ export default function PostJudgment() {
                       value={instagramId}
                       onChange={(e) => setInstagramId(e.target.value)}
                       placeholder="@yourhandle"
-                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#C8A34D] focus:ring-2 focus:ring-[#C8A34D]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
+                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#B88B2A] focus:ring-2 focus:ring-[#B88B2A]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
                     />
                   </div>
 
@@ -488,7 +488,7 @@ export default function PostJudgment() {
                       value={linkedinUrl}
                       onChange={(e) => setLinkedinUrl(e.target.value)}
                       placeholder="linkedin.com/in/..."
-                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#C8A34D] focus:ring-2 focus:ring-[#C8A34D]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
+                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#B88B2A] focus:ring-2 focus:ring-[#B88B2A]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
                     />
                   </div>
                 </div>
@@ -504,7 +504,7 @@ export default function PostJudgment() {
                       value={whatsappNumber}
                       onChange={(e) => setWhatsappNumber(e.target.value)}
                       placeholder="So we can reach you"
-                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#C8A34D] focus:ring-2 focus:ring-[#C8A34D]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
+                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#B88B2A] focus:ring-2 focus:ring-[#B88B2A]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
                       required
                     />
                   </div>
@@ -518,7 +518,7 @@ export default function PostJudgment() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
-                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#C8A34D] focus:ring-2 focus:ring-[#C8A34D]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
+                      className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#B88B2A] focus:ring-2 focus:ring-[#B88B2A]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
                       required
                     />
                   </div>
@@ -534,7 +534,7 @@ export default function PostJudgment() {
                     value={twitterUrl}
                     onChange={(e) => setTwitterUrl(e.target.value)}
                     placeholder="x.com/yourhandle"
-                    className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#C8A34D] focus:ring-2 focus:ring-[#C8A34D]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#B88B2A] focus:ring-2 focus:ring-[#B88B2A]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all font-medium"
                   />
                 </div>
 
@@ -585,11 +585,11 @@ export default function PostJudgment() {
                       }}
                       className={`p-6 sm:p-8 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
                         isPdfDragOver 
-                          ? 'border-[#C8A34D] bg-amber-50/60 dark:bg-[#162D26]' 
-                          : 'border-slate-300 dark:border-emerald-800/70 bg-slate-50/80 dark:bg-[#12251F]/60 hover:border-[#C8A34D] hover:bg-amber-50/20 dark:hover:bg-[#12251F]'
+                          ? 'border-[#B88B2A] bg-amber-50/60 dark:bg-[#162D26]' 
+                          : 'border-slate-300 dark:border-emerald-800/70 bg-slate-50/80 dark:bg-[#12251F]/60 hover:border-[#B88B2A] hover:bg-amber-50/20 dark:hover:bg-[#12251F]'
                       }`}
                     >
-                      <Upload className="w-6 h-6 text-[#C8A34D] dark:text-emerald-400 stroke-[2]" />
+                      <Upload className="w-6 h-6 text-[#B88B2A] dark:text-emerald-400 stroke-[2]" />
                       <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-emerald-200 text-center">
                         Drag your judgement PDFs here
                       </p>
@@ -610,7 +610,7 @@ export default function PostJudgment() {
                     value={matter}
                     onChange={(e) => setMatter(e.target.value)}
                     placeholder="One line on what you won. Or let our editors write it."
-                    className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#C8A34D] focus:ring-2 focus:ring-[#C8A34D]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all resize-none font-medium leading-relaxed"
+                    className="w-full bg-slate-50 dark:bg-[#12251F] border border-slate-200 dark:border-emerald-900/60 rounded-xl py-2.5 px-3.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-emerald-100/30 focus:outline-none focus:border-[#B88B2A] focus:ring-2 focus:ring-[#B88B2A]/20 focus:bg-white dark:focus:bg-[#12251F] transition-all resize-none font-medium leading-relaxed"
                   />
                 </div>
 
@@ -621,7 +621,7 @@ export default function PostJudgment() {
                     id="consent-check"
                     checked={consentGiven}
                     onChange={(e) => setConsentGiven(e.target.checked)}
-                    className="mt-1 w-4 h-4 rounded border-slate-300 dark:border-emerald-800 accent-[#C8A34D] cursor-pointer shrink-0"
+                    className="mt-1 w-4 h-4 rounded border-slate-300 dark:border-emerald-800 accent-[#B88B2A] cursor-pointer shrink-0"
                   />
                   <label htmlFor="consent-check" className="text-xs text-slate-600 dark:text-emerald-100/70 leading-relaxed cursor-pointer select-none font-medium">
                     I consent to AI Legal featuring this win across its channels: YouTube, Instagram, LinkedIn, X, the website, and AI answer engines.
@@ -632,7 +632,7 @@ export default function PostJudgment() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 rounded-xl font-black text-xs sm:text-sm uppercase tracking-wider bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-slate-950 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#C8A34D]/25 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                  className="w-full py-3.5 rounded-xl font-black text-xs sm:text-sm uppercase tracking-wider bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-slate-950 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#B88B2A]/25 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-2"
                 >
                   {isSubmitting ? (
                     <>

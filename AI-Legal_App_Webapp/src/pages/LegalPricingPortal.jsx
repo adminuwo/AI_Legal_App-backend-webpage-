@@ -12,7 +12,7 @@ const LegalPricingPortal = () => {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-[#F4F6FA]">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-4 border-[#C8A34D]/30 border-t-[#C8A34D] rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-[#B88B2A]/30 border-t-[#B88B2A] rounded-full animate-spin" />
         <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Loading AI Legal™ Portal...</span>
       </div>
     </div>

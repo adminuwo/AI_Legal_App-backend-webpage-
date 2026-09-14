@@ -181,7 +181,7 @@ The Court applied the doctrine of harmonious construction to ensure these provis
           <button
             key={idx}
             onClick={() => handleSendMessage(prompt)}
-            className="px-2.5 py-1 rounded-full text-[10.5px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-950/80 border border-[#C8A34D]/30 transition-all whitespace-nowrap cursor-pointer shrink-0"
+            className="px-2.5 py-1 rounded-full text-[10.5px] font-semibold bg-amber-50 dark:bg-amber-950/40 text-[#B38628] dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-950/80 border border-[#B88B2A]/30 transition-all whitespace-nowrap cursor-pointer shrink-0"
           >
             {prompt}
           </button>
@@ -197,14 +197,14 @@ The Court applied the doctrine of harmonious construction to ensure these provis
               <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
                 isUser 
                   ? 'bg-slate-800 text-white' 
-                  : 'bg-[#C8A34D]/20 text-[#B38628] dark:text-[#E5A93C]'
+                  : 'bg-[#B88B2A]/20 text-[#B38628] dark:text-[#E5A93C]'
               }`}>
                 {isUser ? <User size={12} /> : <Bot size={12} />}
               </div>
 
               <div className={`p-3.5 rounded-2xl max-w-[88%] text-xs leading-relaxed ${
                 isUser
-                  ? 'bg-[#111827] text-white dark:bg-[#C8A34D] dark:text-slate-950 rounded-tr-xs font-semibold'
+                  ? 'bg-[#111827] text-white dark:bg-[#B88B2A] dark:text-slate-950 rounded-tr-xs font-semibold'
                   : 'bg-white dark:bg-[#131A29] text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-800 rounded-tl-xs shadow-xs'
               }`}>
                 {isUser ? (
@@ -227,7 +227,7 @@ The Court applied the doctrine of harmonious construction to ensure these provis
                           <h5 className="text-xs font-bold text-slate-900 dark:text-white mb-1 mt-1.5" {...props} />
                         ),
                         blockquote: ({ node, ...props }) => (
-                          <blockquote className="border-l-3 border-[#C8A34D] pl-3 py-2 my-2 bg-amber-500/10 dark:bg-amber-950/30 text-slate-900 dark:text-slate-100 font-serif italic text-xs leading-relaxed rounded-r-xl" {...props} />
+                          <blockquote className="border-l-3 border-[#B88B2A] pl-3 py-2 my-2 bg-amber-500/10 dark:bg-amber-950/30 text-slate-900 dark:text-slate-100 font-serif italic text-xs leading-relaxed rounded-r-xl" {...props} />
                         ),
                         p: ({ node, ...props }) => <p className="mb-2 last:mb-0 leading-relaxed text-xs text-slate-800 dark:text-slate-200" {...props} />,
                         strong: ({ node, ...props }) => <strong className="font-bold text-slate-950 dark:text-white" {...props} />,
@@ -235,7 +235,7 @@ The Court applied the doctrine of harmonious construction to ensure these provis
                         ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-1 my-2 pl-1 text-xs" {...props} />,
                         li: ({ node, ...props }) => (
                           <li className="flex items-start gap-1.5 text-xs text-slate-800 dark:text-slate-200 leading-relaxed">
-                            <span className="text-[#C8A34D] font-bold shrink-0 mt-0.5">•</span>
+                            <span className="text-[#B88B2A] font-bold shrink-0 mt-0.5">•</span>
                             <span className="flex-1">{props.children}</span>
                           </li>
                         )
@@ -252,7 +252,7 @@ The Court applied the doctrine of harmonious construction to ensure these provis
 
         {isLoading && (
           <div className="flex items-center gap-2 text-slate-400 text-xs italic pl-9">
-            <Sparkles size={12} className="animate-spin text-[#C8A34D]" />
+            <Sparkles size={12} className="animate-spin text-[#B88B2A]" />
             <span>Analyzing judicial record...</span>
           </div>
         )}
@@ -262,7 +262,7 @@ The Court applied the doctrine of harmonious construction to ensure these provis
 
       {/* Input Box */}
       <div className="p-3 bg-white dark:bg-[#111622] border-t border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-2 bg-slate-50 dark:bg-[#0A0E17] border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 focus-within:border-[#C8A34D] transition-colors">
+        <div className="flex items-center gap-2 bg-slate-50 dark:bg-[#0A0E17] border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 focus-within:border-[#B88B2A] transition-colors">
           <input
             type="text"
             placeholder="Ask anything about this judgment..."
@@ -274,7 +274,7 @@ The Court applied the doctrine of harmonious construction to ensure these provis
           <button
             onClick={() => handleSendMessage()}
             disabled={!inputText.trim() || isLoading}
-            className="p-1.5 rounded-lg bg-[#C8A34D] text-slate-950 hover:bg-[#B38628] disabled:opacity-30 transition-all cursor-pointer"
+            className="p-1.5 rounded-lg bg-[#B88B2A] text-slate-950 hover:bg-[#B38628] disabled:opacity-30 transition-all cursor-pointer"
           >
             <Send size={13} />
           </button>

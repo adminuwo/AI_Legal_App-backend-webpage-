@@ -107,18 +107,18 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#C8A34D]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
+          className="w-full max-w-5xl h-[90vh] bg-white dark:bg-[#111111] border border-[#B88B2A]/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-white"
         >
           {/* Header */}
-          <div className="px-8 py-5 bg-[#111111] border-b border-[#C8A34D]/30 flex items-center justify-between shrink-0 text-white">
+          <div className="px-8 py-5 bg-[#111111] border-b border-[#B88B2A]/30 flex items-center justify-between shrink-0 text-white">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D]">
+              <div className="w-10 h-10 rounded-2xl bg-[#222222] border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A]">
                 <Gavel className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-xl font-extrabold tracking-tight flex items-center gap-2">
                   <span>AI Mock Courtroom Simulator</span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] border border-[#C8A34D]/30 uppercase">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/30 uppercase">
                     Interactive Trial Simulator
                   </span>
                 </h2>
@@ -146,9 +146,9 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
                 onClick={() => { if (step.num < currentStep) setCurrentStep(step.num); }}
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-xl cursor-pointer transition-all ${
                   currentStep === step.num
-                    ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md shadow-[#C8A34D]/20'
+                    ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md shadow-[#B88B2A]/20'
                     : currentStep > step.num
-                    ? 'text-[#C8A34D]'
+                    ? 'text-[#B88B2A]'
                     : 'text-slate-500'
                 }`}
               >
@@ -180,8 +180,8 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
                       onClick={() => setHearingMode(m.id)}
                       className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                         hearingMode === m.id
-                          ? 'bg-white dark:bg-[#222222] border-[#C8A34D] ring-1 ring-[#C8A34D] shadow-md'
-                          : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#C8A34D]/40'
+                          ? 'bg-white dark:bg-[#222222] border-[#B88B2A] ring-1 ring-[#B88B2A] shadow-md'
+                          : 'bg-white dark:bg-[#181818] border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/40'
                       }`}
                     >
                       <span className="text-xs font-bold text-slate-900 dark:text-white block">{m.label}</span>
@@ -197,7 +197,7 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
                       <select
                         value={selectedCourt}
                         onChange={(e) => setSelectedCourt(e.target.value)}
-                        className="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#C8A34D] focus:outline-none"
+                        className="w-full mt-1 px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#B88B2A] focus:outline-none"
                       >
                         {COURTS.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
@@ -222,19 +222,19 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
             {currentStep === 2 && (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-6 my-12">
                 <div className="relative w-24 h-24 flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border-4 border-[#C8A34D]/20 animate-ping" />
-                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#C8A34D] flex items-center justify-center text-[#C8A34D]">
+                  <div className="absolute inset-0 rounded-full border-4 border-[#B88B2A]/20 animate-ping" />
+                  <div className="w-20 h-20 rounded-full bg-[#111111] border-2 border-[#B88B2A] flex items-center justify-center text-[#B88B2A]">
                     <Sparkles className="w-8 h-8 animate-spin" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <h3 className="text-xl font-black text-slate-900 dark:text-white">Connecting to AI Judicial Bench</h3>
-                  <p className="text-xs font-mono text-[#C8A34D]">{progressStatus}</p>
+                  <p className="text-xs font-mono text-[#B88B2A]">{progressStatus}</p>
                 </div>
 
                 <div className="w-full max-w-md bg-slate-200 dark:bg-[#222222] h-2 rounded-full overflow-hidden">
-                  <div className="bg-[#C8A34D] h-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
+                  <div className="bg-[#B88B2A] h-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
                 </div>
               </div>
             )}
@@ -249,7 +249,7 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
                       key={st}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-all ${
                         activeStageIdx === idx
-                          ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md'
+                          ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md'
                           : activeStageIdx > idx
                           ? 'text-emerald-400'
                           : 'text-slate-500'
@@ -264,7 +264,7 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div className="p-3 bg-white dark:bg-[#181818] rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
                     <span className="text-[9px] font-bold text-slate-400 uppercase">Advocacy</span>
-                    <h4 className="text-lg font-black text-[#C8A34D] mt-0.5">{scores.advocacy}%</h4>
+                    <h4 className="text-lg font-black text-[#B88B2A] mt-0.5">{scores.advocacy}%</h4>
                   </div>
                   <div className="p-3 bg-white dark:bg-[#181818] rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
                     <span className="text-[9px] font-bold text-slate-400 uppercase">Bench Satisfaction</span>
@@ -276,7 +276,7 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
                   </div>
                   <div className="p-3 bg-white dark:bg-[#181818] rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
                     <span className="text-[9px] font-bold text-slate-400 uppercase">Persuasiveness</span>
-                    <h4 className="text-lg font-black text-[#C8A34D] mt-0.5">{scores.persuasiveness}%</h4>
+                    <h4 className="text-lg font-black text-[#B88B2A] mt-0.5">{scores.persuasiveness}%</h4>
                   </div>
                 </div>
 
@@ -287,21 +287,21 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
                       key={m.id}
                       className={`p-3 rounded-2xl border text-xs max-w-2xl ${
                         m.sender === 'judge'
-                          ? 'bg-[#111111] border-[#C8A34D]/40 text-slate-200 mr-auto'
+                          ? 'bg-[#111111] border-[#B88B2A]/40 text-slate-200 mr-auto'
                           : m.sender === 'opponent'
                           ? 'bg-rose-950/20 border-rose-500/30 text-rose-200 mr-auto'
-                          : 'bg-[#222222] border-[#C8A34D]/60 text-white ml-auto'
+                          : 'bg-[#222222] border-[#B88B2A]/60 text-white ml-auto'
                       }`}
                     >
-                      <span className="text-[10px] font-black uppercase text-[#C8A34D] block mb-1">{m.name}</span>
+                      <span className="text-[10px] font-black uppercase text-[#B88B2A] block mb-1">{m.name}</span>
                       <p className="leading-relaxed font-sans">{m.text}</p>
                     </div>
                   ))}
                 </div>
 
                 {/* Real-time Strategy Coach */}
-                <div className="p-4 rounded-2xl bg-[#111111] border border-[#C8A34D]/30 text-xs space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#C8A34D]">AI Strategy Coach Tip:</span>
+                <div className="p-4 rounded-2xl bg-[#111111] border border-[#B88B2A]/30 text-xs space-y-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[#B88B2A]">AI Strategy Coach Tip:</span>
                   <p className="text-slate-300 font-sans">"My Lord, under Section 139 NI Act, once cheque signature is admitted, mandatory statutory presumption applies in favor of complainant."</p>
                 </div>
 
@@ -313,9 +313,9 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
                     value={userInput}
                     onChange={(e) => setUserInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage(); }}
-                    className="flex-1 px-4 py-3 rounded-2xl bg-white dark:bg-[#181818] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D]"
+                    className="flex-1 px-4 py-3 rounded-2xl bg-white dark:bg-[#181818] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A]"
                   />
-                  <button onClick={handleSendMessage} className="p-3 rounded-2xl bg-[#C8A34D] text-[#111111] cursor-pointer">
+                  <button onClick={handleSendMessage} className="p-3 rounded-2xl bg-[#B88B2A] text-[#111111] cursor-pointer">
                     <Send className="w-4 h-4" />
                   </button>
                   <button onClick={handleEndHearing} className="px-4 py-3 rounded-2xl bg-rose-600 text-white text-xs font-black cursor-pointer">
@@ -328,22 +328,22 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
             {/* STEP 4: VERDICT & SCORECARD */}
             {currentStep === 4 && (
               <div className="space-y-6 max-w-4xl mx-auto text-center">
-                <div className="p-6 bg-[#111111] border border-[#C8A34D]/40 rounded-3xl space-y-3">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#C8A34D]">Final Judicial Decree Issued</span>
+                <div className="p-6 bg-[#111111] border border-[#B88B2A]/40 rounded-3xl space-y-3">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[#B88B2A]">Final Judicial Decree Issued</span>
                   <h3 className="text-xl font-black text-white">"PETITION ALLOWED IN FULL WITH COMPENSATION"</h3>
                   <p className="text-xs text-slate-300 font-mono">Hon'ble Metropolitan Magistrate Court ruled in favor of complainant under Sec 138 NI Act awarding double cheque compensation of Rs 50,00,000.</p>
                 </div>
 
                 <div className="p-6 bg-white dark:bg-[#181818] rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-[#C8A34D]">Advocacy Performance Scorecard</h4>
+                  <h4 className="text-xs font-black uppercase tracking-widest text-[#B88B2A]">Advocacy Performance Scorecard</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
                     <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800">
                       <span className="text-slate-400 block">Legal Reasoning</span>
-                      <span className="text-lg font-black text-[#C8A34D]">92%</span>
+                      <span className="text-lg font-black text-[#B88B2A]">92%</span>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800">
                       <span className="text-slate-400 block">Precedent Usage</span>
-                      <span className="text-lg font-black text-[#C8A34D]">88%</span>
+                      <span className="text-lg font-black text-[#B88B2A]">88%</span>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#111111] border border-slate-200 dark:border-slate-800">
                       <span className="text-slate-400 block">Evidence Handling</span>
@@ -360,11 +360,11 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
           </div>
 
           {/* Footer Action Bar */}
-          <div className="px-8 py-4 bg-[#111111] border-t border-[#C8A34D]/30 flex items-center justify-between shrink-0">
+          <div className="px-8 py-4 bg-[#111111] border-t border-[#B88B2A]/30 flex items-center justify-between shrink-0">
             {currentStep === 1 && (
               <button 
                 onClick={startCourtroomSession}
-                className="ml-auto px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                className="ml-auto px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
               >
                 <Sparkles className="w-4 h-4" /> Enter AI Mock Courtroom
               </button>
@@ -374,14 +374,14 @@ export default function LegalMockCourtroomModal({ isOpen, onClose }) {
               <div className="flex items-center justify-between w-full">
                 <button 
                   onClick={handleCopyTranscript}
-                  className="px-4 py-2 rounded-xl bg-[#222222] text-[#C8A34D] border border-[#C8A34D]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#222222] text-[#B88B2A] border border-[#B88B2A]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
                 >
                   <Copy className="w-4 h-4" /> Copy Transcript
                 </button>
 
                 <button 
                   onClick={handleExportReport}
-                  className="px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#C8A34D]/20"
+                  className="px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#B88B2A]/20"
                 >
                   <Download className="w-4 h-4" /> Export Performance Report (PDF)
                 </button>

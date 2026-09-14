@@ -30,7 +30,7 @@ export default function JudgmentAIAnalysisTab({ judgment }) {
       </div>
 
       {/* 1. Ratio Decidendi (Highest Importance Gold Box) */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/30 dark:to-slate-900 border-2 border-[#C8A34D] shadow-sm space-y-2.5 relative">
+      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/30 dark:to-slate-900 border-2 border-[#B88B2A] shadow-sm space-y-2.5 relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#B38628] dark:text-[#E5A93C]">
             <Scale size={15} />
@@ -38,7 +38,7 @@ export default function JudgmentAIAnalysisTab({ judgment }) {
           </div>
           <button
             onClick={copyRatio}
-            className="px-2.5 py-1 rounded-lg bg-white/80 dark:bg-black/40 text-[#B38628] hover:bg-white text-[11px] font-bold border border-[#C8A34D]/40 transition-all flex items-center gap-1 cursor-pointer"
+            className="px-2.5 py-1 rounded-lg bg-white/80 dark:bg-black/40 text-[#B38628] hover:bg-white text-[11px] font-bold border border-[#B88B2A]/40 transition-all flex items-center gap-1 cursor-pointer"
           >
             <Copy size={12} />
             <span>Copy Ratio</span>
@@ -52,7 +52,7 @@ export default function JudgmentAIAnalysisTab({ judgment }) {
       {/* 2. Executive Summary */}
       <section className="bg-white dark:bg-[#111622] p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
         <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-400">
-          <Sparkles size={14} className="text-[#C8A34D]" />
+          <Sparkles size={14} className="text-[#B88B2A]" />
           <span>1. Executive Summary</span>
         </div>
         <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -63,7 +63,7 @@ export default function JudgmentAIAnalysisTab({ judgment }) {
       {/* 3. Facts of the Case */}
       <section className="bg-white dark:bg-[#111622] p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
         <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-400">
-          <FileText size={14} className="text-[#C8A34D]" />
+          <FileText size={14} className="text-[#B88B2A]" />
           <span>2. Material Facts & Background</span>
         </div>
         <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -74,7 +74,7 @@ export default function JudgmentAIAnalysisTab({ judgment }) {
       {/* 4. Legal Issues Framed */}
       <section className="bg-white dark:bg-[#111622] p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
         <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-400">
-          <HelpCircle size={14} className="text-[#C8A34D]" />
+          <HelpCircle size={14} className="text-[#B88B2A]" />
           <span>3. Questions of Law (Legal Issues)</span>
         </div>
         <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-semibold">
@@ -108,7 +108,7 @@ export default function JudgmentAIAnalysisTab({ judgment }) {
       {/* 6. Court's Reasoning */}
       <section className="bg-white dark:bg-[#111622] p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
         <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-400">
-          <Scale size={14} className="text-[#C8A34D]" />
+          <Scale size={14} className="text-[#B88B2A]" />
           <span>4. Judicial Reasoning & Statutory Analysis</span>
         </div>
         <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -144,7 +144,7 @@ export default function JudgmentAIAnalysisTab({ judgment }) {
       {judgment.keyParagraphs && judgment.keyParagraphs.length > 0 && (
         <section className="bg-white dark:bg-[#111622] p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
           <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-400">
-            <Quote size={14} className="text-[#C8A34D]" />
+            <Quote size={14} className="text-[#B88B2A]" />
             <span>7. Crucial Paragraphs for Citation</span>
           </div>
           <div className="space-y-3">

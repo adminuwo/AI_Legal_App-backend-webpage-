@@ -33,7 +33,7 @@ export default function SearchModeSelector({ activeMode, onSelectMode }) {
               <Icon size={12} className={isActive ? 'text-[#B38628] dark:text-[#E5A93C]' : 'text-slate-400'} />
               <span>{mode.label}</span>
               {mode.id === 'AI' && (
-                <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-[#C8A34D]/20 text-[#B38628] dark:text-[#E5A93C] uppercase tracking-wider">
+                <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-[#B88B2A]/20 text-[#B38628] dark:text-[#E5A93C] uppercase tracking-wider">
                   AI
                 </span>
               )}

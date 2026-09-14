@@ -491,11 +491,11 @@ const POLICY_DOCUMENTS = {
                 onClick={() => setActiveCategory(cat.id)}
                 className={`px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 sm:gap-2 shadow-xs min-h-[38px] ${
                   isActive
-                    ? 'bg-white dark:bg-[#1E293B] border-2 border-[#C8A34D] text-[#C8A34D] shadow-sm ring-2 ring-[#C8A34D]/20'
-                    : 'bg-white/90 dark:bg-[#1E293B]/90 border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:border-[#C8A34D]/50 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-white dark:bg-[#1E293B] border-2 border-[#B88B2A] text-[#B88B2A] shadow-sm ring-2 ring-[#B88B2A]/20'
+                    : 'bg-white/90 dark:bg-[#1E293B]/90 border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:border-[#B88B2A]/50 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                <Icon size={15} className={isActive ? 'text-[#C8A34D]' : 'text-slate-400'} />
+                <Icon size={15} className={isActive ? 'text-[#B88B2A]' : 'text-slate-400'} />
                 <span>{cat.label}</span>
               </button>
             );
@@ -615,7 +615,7 @@ const POLICY_DOCUMENTS = {
                 </div>
                 <button 
                   onClick={() => handleToggle('general', 'showGuideTips', generalSettings.showGuideTips !== false)}
-                  className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${generalSettings.showGuideTips !== false ? 'bg-[#C8A34D]' : 'bg-slate-300 dark:bg-slate-700'}`}
+                  className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${generalSettings.showGuideTips !== false ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform duration-300 ${generalSettings.showGuideTips !== false ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
@@ -697,7 +697,7 @@ const POLICY_DOCUMENTS = {
                 </div>
                 <button 
                   onClick={() => handleToggle('notifications', 'hearingReminder', notifPrefs.hearingReminder !== false)}
-                  className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.hearingReminder !== false ? 'bg-[#C8A34D]' : 'bg-slate-300 dark:bg-slate-700'}`}
+                  className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.hearingReminder !== false ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform duration-300 ${notifPrefs.hearingReminder !== false ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
@@ -710,7 +710,7 @@ const POLICY_DOCUMENTS = {
                 </div>
                 <button 
                   onClick={() => handleToggle('notifications', 'pushNotif', notifPrefs.pushNotif !== false)}
-                  className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.pushNotif !== false ? 'bg-[#C8A34D]' : 'bg-slate-300 dark:bg-slate-700'}`}
+                  className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.pushNotif !== false ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform duration-300 ${notifPrefs.pushNotif !== false ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
@@ -723,7 +723,7 @@ const POLICY_DOCUMENTS = {
                 </div>
                 <button 
                   onClick={() => handleToggle('notifications', 'draftCompleted', notifPrefs.draftCompleted !== false)}
-                  className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.draftCompleted !== false ? 'bg-[#C8A34D]' : 'bg-slate-300 dark:bg-slate-700'}`}
+                  className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.draftCompleted !== false ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform duration-300 ${notifPrefs.draftCompleted !== false ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
@@ -736,7 +736,7 @@ const POLICY_DOCUMENTS = {
                 </div>
                 <button 
                   onClick={() => handleToggle('notifications', 'emailNotif', notifPrefs.emailNotif !== false)}
-                  className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.emailNotif !== false ? 'bg-[#C8A34D]' : 'bg-slate-300 dark:bg-slate-700'}`}
+                  className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.emailNotif !== false ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform duration-300 ${notifPrefs.emailNotif !== false ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
@@ -762,26 +762,26 @@ const POLICY_DOCUMENTS = {
                   placeholder="Current Password"
                   value={passwordForm.currentPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                  className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border-none rounded-xl sm:rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-[#C8A34D]"
+                  className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border-none rounded-xl sm:rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-[#B88B2A]"
                 />
                 <input
                   type="password"
                   placeholder="New Password"
                   value={passwordForm.newPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                  className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border-none rounded-xl sm:rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-[#C8A34D]"
+                  className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border-none rounded-xl sm:rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-[#B88B2A]"
                 />
                 <input
                   type="password"
                   placeholder="Confirm New Password"
                   value={passwordForm.confirmPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                  className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border-none rounded-xl sm:rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-[#C8A34D]"
+                  className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border-none rounded-xl sm:rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-[#B88B2A]"
                 />
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl sm:rounded-2xl text-xs shadow-xs transition-all cursor-pointer mt-2"
+                  className="w-full py-3.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl sm:rounded-2xl text-xs shadow-xs transition-all cursor-pointer mt-2"
                 >
                   Update Password
                 </button>
@@ -876,9 +876,9 @@ const POLICY_DOCUMENTS = {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1 sm:pt-2">
               <button
                 onClick={() => navigate('/dashboard/guide')}
-                className="p-4 sm:p-5 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl text-center space-y-2 hover:border-[#C8A34D] border border-transparent transition-all cursor-pointer group"
+                className="p-4 sm:p-5 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl text-center space-y-2 hover:border-[#B88B2A] border border-transparent transition-all cursor-pointer group"
               >
-                <div className="w-10 h-10 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] flex items-center justify-center mx-auto text-lg group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] flex items-center justify-center mx-auto text-lg group-hover:scale-110 transition-transform">
                   ✨
                 </div>
                 <h4 className="text-xs font-black text-slate-900 dark:text-white">AI App Guide</h4>
@@ -886,7 +886,7 @@ const POLICY_DOCUMENTS = {
 
               <button
                 onClick={() => setIsFeatureModalOpen(true)}
-                className="p-4 sm:p-5 bg-slate-100 dark:bg-slate-900 rounded-2xl text-center space-y-2 hover:border-[#C8A34D] border border-transparent transition-all cursor-pointer group"
+                className="p-4 sm:p-5 bg-slate-100 dark:bg-slate-900 rounded-2xl text-center space-y-2 hover:border-[#B88B2A] border border-transparent transition-all cursor-pointer group"
               >
                 <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto text-lg group-hover:scale-110 transition-transform">
                   💡
@@ -899,7 +899,7 @@ const POLICY_DOCUMENTS = {
             <div className="space-y-3 pt-2">
               <div
                 onClick={() => setIsBugModalOpen(true)}
-                className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-between gap-3 cursor-pointer hover:border-[#C8A34D] border border-transparent transition-all group"
+                className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-between gap-3 cursor-pointer hover:border-[#B88B2A] border border-transparent transition-all group"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500 shrink-0">🐛</div>
@@ -908,12 +908,12 @@ const POLICY_DOCUMENTS = {
                     <p className="text-[11px] font-semibold text-slate-400 truncate sm:whitespace-normal">Attach device diagnostic logs and submit error tickets to support</p>
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-slate-400 group-hover:text-[#C8A34D] transition-colors shrink-0" />
+                <ChevronRight size={16} className="text-slate-400 group-hover:text-[#B88B2A] transition-colors shrink-0" />
               </div>
 
               <div
                 onClick={() => navigate('/privacy-policy')}
-                className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-between gap-3 cursor-pointer hover:border-[#C8A34D] border border-transparent transition-all group"
+                className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-between gap-3 cursor-pointer hover:border-[#B88B2A] border border-transparent transition-all group"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500 shrink-0">🛡️</div>
@@ -922,12 +922,12 @@ const POLICY_DOCUMENTS = {
                     <p className="text-[11px] font-semibold text-slate-400 truncate sm:whitespace-normal">Read data encryption standards, non-sale guidelines, and retention policies</p>
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-slate-400 group-hover:text-[#C8A34D] transition-colors shrink-0" />
+                <ChevronRight size={16} className="text-slate-400 group-hover:text-[#B88B2A] transition-colors shrink-0" />
               </div>
 
               <div
                 onClick={() => navigate('/terms-of-service')}
-                className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-between gap-3 cursor-pointer hover:border-[#C8A34D] border border-transparent transition-all group"
+                className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-between gap-3 cursor-pointer hover:border-[#B88B2A] border border-transparent transition-all group"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500 shrink-0">📜</div>
@@ -936,12 +936,12 @@ const POLICY_DOCUMENTS = {
                     <p className="text-[11px] font-semibold text-slate-400 truncate sm:whitespace-normal">View user license agreements, subscriber terms, and jurisdiction rules</p>
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-slate-400 group-hover:text-[#C8A34D] transition-colors shrink-0" />
+                <ChevronRight size={16} className="text-slate-400 group-hover:text-[#B88B2A] transition-colors shrink-0" />
               </div>
 
               <div
                 onClick={() => setActivePolicyKey('disclaimer')}
-                className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-between gap-3 cursor-pointer hover:border-[#C8A34D] border border-transparent transition-all group"
+                className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-between gap-3 cursor-pointer hover:border-[#B88B2A] border border-transparent transition-all group"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500 shrink-0">⚠️</div>
@@ -950,7 +950,7 @@ const POLICY_DOCUMENTS = {
                     <p className="text-[11px] font-semibold text-slate-400 truncate sm:whitespace-normal">Algorithmic limits, advisory scope, and precedent verification rules</p>
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-slate-400 group-hover:text-[#C8A34D] transition-colors shrink-0" />
+                <ChevronRight size={16} className="text-slate-400 group-hover:text-[#B88B2A] transition-colors shrink-0" />
               </div>
             </div>
           </div>
@@ -980,7 +980,7 @@ const POLICY_DOCUMENTS = {
                 <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#C8A34D]/10 text-[#C8A34D] border border-[#C8A34D]/30 text-[10px] font-black uppercase">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30 text-[10px] font-black uppercase">
                         {doc.version}
                       </span>
                       <span className="text-[10px] font-bold text-slate-400">Last Updated: {doc.lastUpdated}</span>
@@ -1006,7 +1006,7 @@ const POLICY_DOCUMENTS = {
                   <div className="space-y-5">
                     {doc.sections.map((sec) => (
                       <div key={sec.id} className="space-y-2 border-b border-slate-100 dark:border-slate-800/80 pb-4 last:border-0">
-                        <h3 className="text-xs font-black text-[#C8A34D] tracking-wide uppercase">{sec.title}</h3>
+                        <h3 className="text-xs font-black text-[#B88B2A] tracking-wide uppercase">{sec.title}</h3>
                         <p className="text-xs font-medium text-slate-600 dark:text-slate-300 leading-relaxed text-justify">
                           {sec.content}
                         </p>
@@ -1020,7 +1020,7 @@ const POLICY_DOCUMENTS = {
                   <span className="text-[10px] font-bold text-slate-400">AI LEGAL™ Compliance & Legal Framework</span>
                   <button
                     onClick={() => setActivePolicyKey(null)}
-                    className="px-6 py-2.5 rounded-xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all shadow-xs cursor-pointer"
+                    className="px-6 py-2.5 rounded-xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs transition-all shadow-xs cursor-pointer"
                   >
                     I Understand
                   </button>
@@ -1066,7 +1066,7 @@ const POLICY_DOCUMENTS = {
                 </button>
                 <button
                   onClick={dialogConfig.action}
-                  className="flex-1 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                  className="flex-1 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer"
                 >
                   Confirm
                 </button>
@@ -1149,7 +1149,7 @@ const POLICY_DOCUMENTS = {
                         attachments: []
                       });
                     }}
-                    className="px-8 py-3 rounded-2xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs shadow-md transition-all cursor-pointer"
+                    className="px-8 py-3 rounded-2xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs shadow-md transition-all cursor-pointer"
                   >
                     Back to Settings
                   </button>
@@ -1165,7 +1165,7 @@ const POLICY_DOCUMENTS = {
                       value={bugForm.title}
                       onChange={(e) => setBugForm({ ...bugForm, title: e.target.value })}
                       placeholder="Example: Crash while generating contract"
-                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
 
@@ -1176,7 +1176,7 @@ const POLICY_DOCUMENTS = {
                       <select
                         value={bugForm.screenName}
                         onChange={(e) => setBugForm({ ...bugForm, screenName: e.target.value })}
-                        className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D] cursor-pointer [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#1E293B] dark:[&>option]:text-white"
+                        className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A] cursor-pointer [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#1E293B] dark:[&>option]:text-white"
                       >
                         {['AI Chat', 'Draft Maker', 'Evidence Analysis', 'Contract Review', 'Case Predictor', 'Strategy Engine', 'Knowledge Hub', 'Mock Courtroom', 'Settings', 'Other'].map(opt => (
                           <option key={opt} value={opt} className="bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white">{opt}</option>
@@ -1198,7 +1198,7 @@ const POLICY_DOCUMENTS = {
                                 isSel
                                   ? sev === 'Critical'
                                     ? 'bg-rose-600 text-white shadow-xs'
-                                    : 'bg-[#C8A34D] text-[#111111] shadow-xs'
+                                    : 'bg-[#B88B2A] text-[#111111] shadow-xs'
                                   : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                               }`}
                             >
@@ -1218,7 +1218,7 @@ const POLICY_DOCUMENTS = {
                       value={bugForm.description}
                       onChange={(e) => setBugForm({ ...bugForm, description: e.target.value })}
                       placeholder="Describe what happened, error messages, or unexpected behaviors..."
-                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D] resize-none"
+                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A] resize-none"
                     />
                   </div>
 
@@ -1230,7 +1230,7 @@ const POLICY_DOCUMENTS = {
                       value={bugForm.steps}
                       onChange={(e) => setBugForm({ ...bugForm, steps: e.target.value })}
                       placeholder="1. Open Draft Maker&#10;2. Click Generate&#10;3. System shows error..."
-                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D] resize-none"
+                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A] resize-none"
                     />
                   </div>
 
@@ -1282,7 +1282,7 @@ const POLICY_DOCUMENTS = {
                       <button
                         type="button"
                         onClick={() => setBugForm({ ...bugForm, includeLogs: !bugForm.includeLogs })}
-                        className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 ${bugForm.includeLogs ? 'bg-[#C8A34D]' : 'bg-slate-300 dark:bg-slate-700'}`}
+                        className={`w-11 h-6 rounded-full p-0.5 transition-all duration-300 ${bugForm.includeLogs ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                       >
                         <div className={`w-5 h-5 rounded-full bg-white transition-transform duration-300 ${bugForm.includeLogs ? 'translate-x-5' : 'translate-x-0'}`} />
                       </button>
@@ -1379,7 +1379,7 @@ const POLICY_DOCUMENTS = {
 
                   <div className="p-4 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-xs mx-auto space-y-1">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Reference Request ID</span>
-                    <span className="text-sm font-black text-[#C8A34D] tracking-wider font-mono">{featureRefId}</span>
+                    <span className="text-sm font-black text-[#B88B2A] tracking-wider font-mono">{featureRefId}</span>
                   </div>
 
                   <button
@@ -1396,7 +1396,7 @@ const POLICY_DOCUMENTS = {
                         attachments: []
                       });
                     }}
-                    className="px-8 py-3 rounded-2xl bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black text-xs shadow-md transition-all cursor-pointer"
+                    className="px-8 py-3 rounded-2xl bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black text-xs shadow-md transition-all cursor-pointer"
                   >
                     Back to Settings
                   </button>
@@ -1412,7 +1412,7 @@ const POLICY_DOCUMENTS = {
                       value={featureForm.title}
                       onChange={(e) => setFeatureForm({ ...featureForm, title: e.target.value })}
                       placeholder="Example: Automated Hearing Summary PDF"
-                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D]"
+                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A]"
                     />
                   </div>
 
@@ -1423,7 +1423,7 @@ const POLICY_DOCUMENTS = {
                       <select
                         value={featureForm.category}
                         onChange={(e) => setFeatureForm({ ...featureForm, category: e.target.value })}
-                        className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D] cursor-pointer [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#1E293B] dark:[&>option]:text-white"
+                        className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A] cursor-pointer [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#1E293B] dark:[&>option]:text-white"
                       >
                         {['New AI Feature', 'Legal Research', 'AI Assistant', 'Automation', 'Document Intelligence', 'Voice & OCR', 'Knowledge Hub', 'Courtroom Tools', 'Productivity', 'Security', 'UI / UX', 'Performance', 'Other'].map(opt => (
                           <option key={opt} value={opt} className="bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white">{opt}</option>
@@ -1436,7 +1436,7 @@ const POLICY_DOCUMENTS = {
                       <select
                         value={featureForm.whoBenefit}
                         onChange={(e) => setFeatureForm({ ...featureForm, whoBenefit: e.target.value })}
-                        className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#C8A34D] cursor-pointer [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#1E293B] dark:[&>option]:text-white"
+                        className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#B88B2A] cursor-pointer [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#1E293B] dark:[&>option]:text-white"
                       >
                         {['Advocates', 'Judges', 'Law Students', 'Law Firms', 'Corporate Legal Teams', 'Litigants', 'Everyone'].map(opt => (
                           <option key={opt} value={opt} className="bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white">{opt}</option>
@@ -1458,7 +1458,7 @@ const POLICY_DOCUMENTS = {
                             onClick={() => setFeatureForm({ ...featureForm, priority: prio })}
                             className={`py-2 rounded-xl text-[10px] font-black transition-all cursor-pointer text-center ${
                               isSel
-                                ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
+                                ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
                                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                             }`}
                           >
@@ -1477,7 +1477,7 @@ const POLICY_DOCUMENTS = {
                       value={featureForm.description}
                       onChange={(e) => setFeatureForm({ ...featureForm, description: e.target.value })}
                       placeholder="Describe the functionality you would like to see..."
-                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D] resize-none"
+                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A] resize-none"
                     />
                   </div>
 
@@ -1489,7 +1489,7 @@ const POLICY_DOCUMENTS = {
                       value={featureForm.whyNeeded}
                       onChange={(e) => setFeatureForm({ ...featureForm, whyNeeded: e.target.value })}
                       placeholder="Explain how this suggestion benefits active advocate litigation..."
-                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C8A34D] resize-none"
+                      className="w-full p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#B88B2A] resize-none"
                     />
                   </div>
 
@@ -1505,7 +1505,7 @@ const POLICY_DOCUMENTS = {
                     <button
                       type="submit"
                       disabled={submittingFeature}
-                      className="px-6 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
+                      className="px-6 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-black rounded-xl text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
                     >
                       {submittingFeature ? 'Submitting...' : 'Submit Feature Request'}
                     </button>

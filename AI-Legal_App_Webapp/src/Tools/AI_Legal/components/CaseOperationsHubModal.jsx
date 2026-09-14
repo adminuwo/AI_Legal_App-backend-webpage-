@@ -116,10 +116,10 @@ export const CaseOperationsHubModal = ({
           {/* 2. Scrollable Body */}
           <div className="overflow-y-auto custom-scrollbar flex-1 space-y-5 pr-1">
             {/* Firm Team Members Card */}
-            <div className="p-4 rounded-2xl border-2 border-[#C8A34D]/60 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent dark:bg-amber-500/10 shadow-xs">
+            <div className="p-4 rounded-2xl border-2 border-[#B88B2A]/60 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent dark:bg-amber-500/10 shadow-xs">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-[#C8A34D]/20 text-[#C8A34D]">
+                  <div className="p-2 rounded-xl bg-[#B88B2A]/20 text-[#B88B2A]">
                     <Users className="w-5 h-5" />
                   </div>
                   <span className="font-extrabold text-base text-slate-900 dark:text-white">
@@ -135,20 +135,20 @@ export const CaseOperationsHubModal = ({
                       onLaunchInviteTeam();
                     }
                   }}
-                  className="px-3 py-1 rounded-full bg-[#C8A34D]/15 hover:bg-[#C8A34D]/25 text-[#C8A34D] text-xs font-black transition-all cursor-pointer border border-[#C8A34D]/30"
+                  className="px-3 py-1 rounded-full bg-[#B88B2A]/15 hover:bg-[#B88B2A]/25 text-[#B88B2A] text-xs font-black transition-all cursor-pointer border border-[#B88B2A]/30"
                 >
                   View Directory →
                 </button>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-[#C8A34D]/20 text-center">
+              <div className="flex items-center justify-between pt-3 border-t border-[#B88B2A]/20 text-center">
                 <button
                   type="button"
                   onClick={() => {
                     onClose();
                     if (onLaunchViewDirectory) onLaunchViewDirectory('all');
                   }}
-                  className="flex-1 hover:bg-[#C8A34D]/10 py-1 rounded-xl transition-all cursor-pointer"
+                  className="flex-1 hover:bg-[#B88B2A]/10 py-1 rounded-xl transition-all cursor-pointer"
                 >
                   <div className="text-xl font-black text-slate-900 dark:text-white">
                     {isLoadingMembers ? '...' : totalMembers}
@@ -157,7 +157,7 @@ export const CaseOperationsHubModal = ({
                     Total Members
                   </div>
                 </button>
-                <div className="w-[1px] h-7 bg-[#C8A34D]/20" />
+                <div className="w-[1px] h-7 bg-[#B88B2A]/20" />
                 <button
                   type="button"
                   onClick={() => {
@@ -173,7 +173,7 @@ export const CaseOperationsHubModal = ({
                     Active
                   </div>
                 </button>
-                <div className="w-[1px] h-7 bg-[#C8A34D]/20" />
+                <div className="w-[1px] h-7 bg-[#B88B2A]/20" />
                 <button
                   type="button"
                   onClick={() => {
@@ -205,17 +205,17 @@ export const CaseOperationsHubModal = ({
                     onClose();
                     onLaunchCreateCase();
                   }}
-                  className="w-full p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] hover:border-[#C8A34D] transition-all cursor-pointer flex items-center justify-between gap-3.5 shadow-xs group text-left"
+                  className="w-full p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] hover:border-[#B88B2A] transition-all cursor-pointer flex items-center justify-between gap-3.5 shadow-xs group text-left"
                 >
-                  <div className="w-12 h-12 rounded-full bg-[#FEF3C7] dark:bg-amber-500/20 border border-[#C8A34D]/40 flex items-center justify-center shrink-0 text-[#C8A34D]">
+                  <div className="w-12 h-12 rounded-full bg-[#FEF3C7] dark:bg-amber-500/20 border border-[#B88B2A]/40 flex items-center justify-center shrink-0 text-[#B88B2A]">
                     <FolderOpen className="w-6 h-6" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-extrabold text-base text-slate-900 dark:text-white group-hover:text-[#C8A34D] transition-colors">
+                      <span className="font-extrabold text-base text-slate-900 dark:text-white group-hover:text-[#B88B2A] transition-colors">
                         Create New Case
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-[#C8A34D]/15 text-[#C8A34D] text-[10px] font-black border border-[#C8A34D]/30 shrink-0">
+                      <span className="px-2 py-0.5 rounded-md bg-[#B88B2A]/15 text-[#B88B2A] text-[10px] font-black border border-[#B88B2A]/30 shrink-0">
                         Step Wizard
                       </span>
                     </div>
@@ -223,7 +223,7 @@ export const CaseOperationsHubModal = ({
                       Create a new legal case, assign advocates, link clients and initialize the AI workspace.
                     </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-[#C8A34D] shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  <ChevronRight className="w-5 h-5 text-[#B88B2A] shrink-0 group-hover:translate-x-0.5 transition-transform" />
                 </button>
 
                 {/* Module 2: Invite Team Member */}
@@ -232,17 +232,17 @@ export const CaseOperationsHubModal = ({
                     onClose();
                     onLaunchInviteTeam();
                   }}
-                  className="w-full p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] hover:border-[#C8A34D] transition-all cursor-pointer flex items-center justify-between gap-3.5 shadow-xs group text-left"
+                  className="w-full p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] hover:border-[#B88B2A] transition-all cursor-pointer flex items-center justify-between gap-3.5 shadow-xs group text-left"
                 >
-                  <div className="w-12 h-12 rounded-full bg-[#FEF3C7] dark:bg-amber-500/20 border border-[#C8A34D]/40 flex items-center justify-center shrink-0 text-[#C8A34D]">
+                  <div className="w-12 h-12 rounded-full bg-[#FEF3C7] dark:bg-amber-500/20 border border-[#B88B2A]/40 flex items-center justify-center shrink-0 text-[#B88B2A]">
                     <UserPlus className="w-6 h-6" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-extrabold text-base text-slate-900 dark:text-white group-hover:text-[#C8A34D] transition-colors">
+                      <span className="font-extrabold text-base text-slate-900 dark:text-white group-hover:text-[#B88B2A] transition-colors">
                         Invite Team Member
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-[#C8A34D]/15 text-[#C8A34D] text-[10px] font-black border border-[#C8A34D]/30 shrink-0">
+                      <span className="px-2 py-0.5 rounded-md bg-[#B88B2A]/15 text-[#B88B2A] text-[10px] font-black border border-[#B88B2A]/30 shrink-0">
                         Firm Roster
                       </span>
                     </div>
@@ -250,7 +250,7 @@ export const CaseOperationsHubModal = ({
                       Invite advocates and legal staff to join your firm's AI LEGAL workspace.
                     </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-[#C8A34D] shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  <ChevronRight className="w-5 h-5 text-[#B88B2A] shrink-0 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>
             </div>
@@ -272,7 +272,7 @@ export const CaseOperationsHubModal = ({
                       className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-between text-left cursor-pointer"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <Briefcase className="w-4 h-4 text-[#C8A34D] shrink-0" />
+                        <Briefcase className="w-4 h-4 text-[#B88B2A] shrink-0" />
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
                             {c.name}

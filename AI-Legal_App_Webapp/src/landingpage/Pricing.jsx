@@ -602,17 +602,17 @@ export default function Pricing() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F6FA] dark:bg-[#070A12] text-[#111827] dark:text-slate-100 font-sans selection:bg-[#C8A34D]/25 selection:text-[#111111]">
+    <div className="min-h-screen bg-[#F4F6FA] dark:bg-[#070A12] text-[#111827] dark:text-slate-100 font-sans selection:bg-[#B88B2A]/25 selection:text-[#111111]">
       {/* Top Header */}
       <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           <div onClick={() => navigate('/')} className="flex items-center gap-2.5 cursor-pointer select-none group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#C8A34D] to-[#B38628] flex items-center justify-center shadow-md shadow-[#C8A34D]/30 p-1">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#B88B2A] to-[#B38628] flex items-center justify-center shadow-md shadow-[#B88B2A]/30 p-1">
               <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
               <span className="text-lg sm:text-xl font-extrabold tracking-tight text-[#111827] dark:text-white flex items-center">
-                AI Legal<span className="text-[10px] text-[#B38628] dark:text-[#C8A34D] font-extrabold ml-0.5">™</span>
+                AI Legal<span className="text-[10px] text-[#B38628] dark:text-[#B88B2A] font-extrabold ml-0.5">™</span>
               </span>
             </div>
           </div>
@@ -627,7 +627,7 @@ export default function Pricing() {
             <button onClick={() => navigate('/blog')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Blog
             </button>
-            <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300">
+            <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300">
               Pricing
             </span>
             <button onClick={() => navigate('/case-search')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
@@ -646,7 +646,7 @@ export default function Pricing() {
             <ThemeToggle />
             <button
               onClick={() => navigate('/post-judgment')}
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] hover:bg-amber-100/60 dark:bg-amber-950/30 dark:border-amber-700/50 dark:text-amber-300 dark:hover:bg-amber-950/70 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
             >
               <Plus size={14} className="text-[#B38628] stroke-[2.5]" />
               <span>Post your judgement</span>
@@ -655,14 +655,14 @@ export default function Pricing() {
             {isAuthenticated ? (
               <button
                 onClick={() => navigate('/dashboard')}
-                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
               >
                 Dashboard →
               </button>
             ) : (
               <button
                 onClick={() => navigate('/signup')}
-                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#C8A34D]/30"
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/30"
               >
                 Get Started
               </button>
@@ -710,7 +710,7 @@ export default function Pricing() {
                 >
                   Blog
                 </button>
-                <span className="text-left px-3.5 py-2 rounded-xl bg-[#C8A34D]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 font-bold">
+                <span className="text-left px-3.5 py-2 rounded-xl bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 font-bold">
                   Pricing
                 </span>
                 <button
@@ -736,7 +736,7 @@ export default function Pricing() {
               <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2.5">
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate('/post-judgment'); }}
-                  className="w-full py-2.5 rounded-full text-xs font-bold border border-[#C8A34D]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 rounded-full text-xs font-bold border border-[#B88B2A]/50 bg-amber-50/50 text-[#B38628] dark:bg-amber-950/40 dark:text-amber-300 flex items-center justify-center gap-1.5"
                 >
                   <Plus size={14} className="stroke-[2.5]" />
                   <span>Post your judgement</span>
@@ -744,7 +744,7 @@ export default function Pricing() {
                 {isAuthenticated ? (
                   <button
                     onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
-                    className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-center shadow-md shadow-[#C8A34D]/30"
+                    className="w-full py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-center shadow-md shadow-[#B88B2A]/30"
                   >
                     Go to Dashboard →
                   </button>
@@ -758,7 +758,7 @@ export default function Pricing() {
                     </button>
                     <button
                       onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}
-                      className="py-2.5 bg-gradient-to-r from-[#C8A34D] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#C8A34D]/30"
+                      className="py-2.5 bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-white font-bold rounded-full text-center text-xs shadow-md shadow-[#B88B2A]/30"
                     >
                       Get Started
                     </button>
@@ -773,12 +773,12 @@ export default function Pricing() {
       {/* Hero Section (Compact) */}
       <section className="pt-6 sm:pt-8 pb-3 sm:pb-4 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
         <div className="max-w-3xl mx-auto space-y-2 relative z-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#B38628] dark:text-[#E5C16C] text-[11px] font-bold tracking-wide">
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B38628] dark:text-[#E5C16C] text-[11px] font-bold tracking-wide">
             <Sparkles size={12} /> AI-Powered Legal Platform
           </div>
           
           <h1 className="text-2xl sm:text-3xl font-black text-[#111827] dark:text-white tracking-tight">
-            Choose Your <span className="bg-gradient-to-r from-[#C8A34D] to-[#B38628] bg-clip-text text-transparent">AI Legal</span> Plan
+            Choose Your <span className="bg-gradient-to-r from-[#B88B2A] to-[#B38628] bg-clip-text text-transparent">AI Legal</span> Plan
           </h1>
           
           <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-normal">
@@ -829,8 +829,8 @@ export default function Pricing() {
             onClick={() => setSelectedSegment('advocate')}
             className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
               selectedSegment === 'advocate'
-                ? 'bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-white border-transparent shadow-xs'
-                : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#C8A34D] hover:text-[#B38628]'
+                ? 'bg-gradient-to-r from-[#B88B2A] to-[#B38628] text-white border-transparent shadow-xs'
+                : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#B88B2A] hover:text-[#B38628]'
             }`}
           >
             <span>⚖️ Advocate</span>
@@ -841,8 +841,8 @@ export default function Pricing() {
             onClick={() => setSelectedSegment('student')}
             className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
               selectedSegment === 'student'
-                ? 'bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-white border-transparent shadow-xs'
-                : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#C8A34D] hover:text-[#B38628]'
+                ? 'bg-gradient-to-r from-[#B88B2A] to-[#B38628] text-white border-transparent shadow-xs'
+                : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#B88B2A] hover:text-[#B38628]'
             }`}
           >
             <span>🎓 Student</span>
@@ -853,13 +853,13 @@ export default function Pricing() {
             onClick={() => setSelectedSegment('lawfirm')}
             className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
               selectedSegment === 'lawfirm'
-                ? 'bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-white border-transparent shadow-xs'
-                : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#C8A34D] hover:text-[#B38628]'
+                ? 'bg-gradient-to-r from-[#B88B2A] to-[#B38628] text-white border-transparent shadow-xs'
+                : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#B88B2A] hover:text-[#B38628]'
             }`}
           >
             <span>🏛️ Law Firm</span>
             <span className={`text-[8px] font-extrabold px-1 py-0.5 rounded tracking-wider ${
-              selectedSegment === 'lawfirm' ? 'bg-white/30 text-white' : 'bg-[#C8A34D]/15 text-[#B38628]'
+              selectedSegment === 'lawfirm' ? 'bg-white/30 text-white' : 'bg-[#B88B2A]/15 text-[#B38628]'
             }`}>
               TEAM
             </span>
@@ -870,13 +870,13 @@ export default function Pricing() {
             onClick={() => setSelectedSegment('combo')}
             className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
               selectedSegment === 'combo'
-                ? 'bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-white border-transparent shadow-xs'
-                : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#C8A34D] hover:text-[#B38628]'
+                ? 'bg-gradient-to-r from-[#B88B2A] to-[#B38628] text-white border-transparent shadow-xs'
+                : 'bg-white dark:bg-[#0B1120] border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-[#B88B2A] hover:text-[#B38628]'
             }`}
           >
             <span>✨ Combo</span>
             <span className={`text-[8px] font-extrabold px-1 py-0.5 rounded tracking-wider ${
-              selectedSegment === 'combo' ? 'bg-white/30 text-white' : 'bg-[#C8A34D]/15 text-[#B38628]'
+              selectedSegment === 'combo' ? 'bg-white/30 text-white' : 'bg-[#B88B2A]/15 text-[#B38628]'
             }`}>
               SAVE MORE
             </span>
@@ -900,13 +900,13 @@ export default function Pricing() {
                 key={plan.id}
                 className={`bg-white dark:bg-[#0B1120] rounded-2xl p-7 flex flex-col justify-between relative transition-all duration-200 ${
                   plan.popular
-                    ? 'border-2 border-[#C8A34D] shadow-xl shadow-[#C8A34D]/15 ring-1 ring-[#C8A34D]/40'
-                    : 'border border-slate-200 dark:border-slate-800 shadow-sm hover:border-[#C8A34D]/60 hover:shadow-md'
+                    ? 'border-2 border-[#B88B2A] shadow-xl shadow-[#B88B2A]/15 ring-1 ring-[#B88B2A]/40'
+                    : 'border border-slate-200 dark:border-slate-800 shadow-sm hover:border-[#B88B2A]/60 hover:shadow-md'
                 }`}
               >
                 {/* Popular Ribbon */}
                 {tagText && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-b-xl rounded-t-sm bg-gradient-to-r from-[#C8A34D] to-[#B38628] text-white text-[10px] font-extrabold uppercase tracking-wider shadow-md whitespace-nowrap">
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-b-xl rounded-t-sm bg-gradient-to-r from-[#B88B2A] to-[#B38628] text-white text-[10px] font-extrabold uppercase tracking-wider shadow-md whitespace-nowrap">
                     ⭐ {tagText}
                   </div>
                 )}
@@ -914,7 +914,7 @@ export default function Pricing() {
                 <div className="space-y-4">
                   {/* Top Badge & Savings Tag */}
                   <div className="flex items-center justify-between gap-2 pt-1">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-extrabold bg-[#C8A34D]/10 text-[#B38628] dark:text-[#E5C16C]">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-extrabold bg-[#B88B2A]/10 text-[#B38628] dark:text-[#E5C16C]">
                       {plan.badge}
                     </span>
                     {plan.savingsBadge && (

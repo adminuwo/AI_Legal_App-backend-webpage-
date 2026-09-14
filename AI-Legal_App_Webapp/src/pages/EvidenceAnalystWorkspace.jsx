@@ -345,13 +345,13 @@ export default function EvidenceAnalystWorkspace() {
           <style>
             @page { size: A4; margin: 18mm 20mm; }
             body { font-family: 'Times New Roman', Times, serif; font-size: 10.5pt; line-height: 1.5; color: #111; }
-            .banner { text-align: center; border-bottom: 2px solid #C8A34D; padding-bottom: 8px; margin-bottom: 14px; }
+            .banner { text-align: center; border-bottom: 2px solid #B88B2A; padding-bottom: 8px; margin-bottom: 14px; }
             .banner h1 { font-size: 16pt; margin: 0; text-transform: uppercase; }
             .banner p { font-size: 9pt; font-family: Arial, sans-serif; color: #555; margin-top: 3px; }
             .table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
             .table td { border: 1px solid #444; padding: 6px 8px; font-size: 9.5pt; }
             .table td strong { font-family: Arial, sans-serif; text-transform: uppercase; color: #444; font-size: 8pt; display: block; }
-            .sec { font-family: Arial, sans-serif; font-size: 10.5pt; font-weight: bold; text-transform: uppercase; background: #f4f4f4; border-left: 4px solid #C8A34D; padding: 4px 8px; margin: 12px 0 6px 0; }
+            .sec { font-family: Arial, sans-serif; font-size: 10.5pt; font-weight: bold; text-transform: uppercase; background: #f4f4f4; border-left: 4px solid #B88B2A; padding: 4px 8px; margin: 12px 0 6px 0; }
             .box { border: 1px solid #ccc; padding: 8px; background: #fafafa; font-size: 10pt; white-space: pre-wrap; }
           </style>
         </head>
@@ -451,13 +451,13 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => navigate('/dashboard/tools')}
-              className="p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-600 dark:text-slate-300 hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-xs font-bold shadow-sm shrink-0"
+              className="p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-600 dark:text-slate-300 hover:bg-[#B88B2A] hover:text-[#111111] transition-all cursor-pointer border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-xs font-bold shadow-sm shrink-0"
               title="Back to AI Tools Suite"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="hidden sm:inline">Back to AI Tools</span>
             </button>
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D] shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A] shrink-0">
               <ShieldCheck className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -465,7 +465,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                 <h1 className="text-base sm:text-xl font-black tracking-tight text-slate-900 dark:text-white truncate">
                   Evidence Analyst
                 </h1>
-                <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0">
+                <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0">
                   Digital Forensics & BSA 65B
                 </span>
               </div>
@@ -479,7 +479,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
             <button
               onClick={handleOpenSavedReports}
-              className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 text-[#C8A34D] text-[11px] sm:text-xs font-bold hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer flex items-center gap-1.5 shadow-sm shrink-0 whitespace-nowrap"
+              className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 text-[#B88B2A] text-[11px] sm:text-xs font-bold hover:bg-[#B88B2A] hover:text-[#111111] transition-all cursor-pointer flex items-center gap-1.5 shadow-sm shrink-0 whitespace-nowrap"
               title="View Saved Forensic Reports"
             >
               <HardDrive className="w-3.5 h-3.5" /> Saved Reports
@@ -506,7 +506,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
             {/* Top Info Banner */}
             <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-2 shadow-sm">
               <h2 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                <Layers className="w-5 h-5 text-[#C8A34D]" />
+                <Layers className="w-5 h-5 text-[#B88B2A]" />
                 Select Digital Evidence Source
               </h2>
               <p className="text-xs text-slate-600 dark:text-slate-400">
@@ -526,20 +526,20 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                     <button
                       key={src.id}
                       onClick={() => handleSelectSourceType(src.id)}
-                      className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] hover:shadow-md transition-all text-left space-y-3 group cursor-pointer"
+                      className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] hover:shadow-md transition-all text-left space-y-3 group cursor-pointer"
                     >
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[#1A2333] group-hover:bg-[#C8A34D]/20 text-[#C8A34D] flex items-center justify-center transition-colors">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[#1A2333] group-hover:bg-[#B88B2A]/20 text-[#B88B2A] flex items-center justify-center transition-colors">
                         <IconComp className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="font-extrabold text-slate-900 dark:text-white text-sm group-hover:text-[#C8A34D] transition-colors">
+                        <h4 className="font-extrabold text-slate-900 dark:text-white text-sm group-hover:text-[#B88B2A] transition-colors">
                           {src.label}
                         </h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                           {src.desc}
                         </p>
                       </div>
-                      <div className="flex items-center text-xs font-bold text-[#C8A34D] pt-1">
+                      <div className="flex items-center text-xs font-bold text-[#B88B2A] pt-1">
                         Select Ingestion <ChevronRight className="w-3.5 h-3.5 ml-1" />
                       </div>
                     </button>
@@ -560,13 +560,13 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                     <button
                       key={src.id}
                       onClick={() => handleSelectSourceType(src.id)}
-                      className="p-4 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] transition-all text-left space-y-2 group cursor-pointer"
+                      className="p-4 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] transition-all text-left space-y-2 group cursor-pointer"
                     >
-                      <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-[#1A2333] group-hover:bg-[#C8A34D]/20 text-[#C8A34D] flex items-center justify-center transition-colors">
+                      <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-[#1A2333] group-hover:bg-[#B88B2A]/20 text-[#B88B2A] flex items-center justify-center transition-colors">
                         <IconComp className="w-4 h-4" />
                       </div>
                       <div>
-                        <h4 className="font-extrabold text-slate-900 dark:text-white text-xs group-hover:text-[#C8A34D] transition-colors">
+                        <h4 className="font-extrabold text-slate-900 dark:text-white text-xs group-hover:text-[#B88B2A] transition-colors">
                           {src.label}
                         </h4>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -591,13 +591,13 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                     <button
                       key={src.id}
                       onClick={() => handleSelectSourceType(src.id)}
-                      className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] transition-all text-left space-y-3 group cursor-pointer"
+                      className="p-5 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] transition-all text-left space-y-3 group cursor-pointer"
                     >
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[#1A2333] group-hover:bg-[#C8A34D]/20 text-[#C8A34D] flex items-center justify-center transition-colors">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[#1A2333] group-hover:bg-[#B88B2A]/20 text-[#B88B2A] flex items-center justify-center transition-colors">
                         <IconComp className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="font-extrabold text-slate-900 dark:text-white text-sm group-hover:text-[#C8A34D] transition-colors">
+                        <h4 className="font-extrabold text-slate-900 dark:text-white text-sm group-hover:text-[#B88B2A] transition-colors">
                           {src.label}
                         </h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -626,7 +626,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div>
                   <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
-                    Collect & Review Evidence: <span className="text-[#C8A34D] capitalize">{selectedSource}</span>
+                    Collect & Review Evidence: <span className="text-[#B88B2A] capitalize">{selectedSource}</span>
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     Verify file details and link to authorized case matter before initiating the 6-stage forensic scan.
@@ -642,7 +642,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                       <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
                       <button
                         onClick={captureSnapshot}
-                        className="absolute bottom-4 px-6 py-2.5 rounded-full bg-[#C8A34D] text-[#111] font-black text-xs shadow-lg hover:bg-[#b8933d] transition-all cursor-pointer flex items-center gap-2"
+                        className="absolute bottom-4 px-6 py-2.5 rounded-full bg-[#B88B2A] text-[#111] font-black text-xs shadow-lg hover:bg-[#b8933d] transition-all cursor-pointer flex items-center gap-2"
                       >
                         <Camera className="w-4 h-4" /> Capture Exhibit Snapshot
                       </button>
@@ -654,9 +654,9 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                   ) : (
                     <button
                       onClick={startCamera}
-                      className="w-full p-8 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-[#C8A34D] flex flex-col items-center justify-center gap-2 cursor-pointer"
+                      className="w-full p-8 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-[#B88B2A] flex flex-col items-center justify-center gap-2 cursor-pointer"
                     >
-                      <Camera className="w-8 h-8 text-[#C8A34D]" />
+                      <Camera className="w-8 h-8 text-[#B88B2A]" />
                       <span className="text-xs font-bold">Activate Camera Stream</span>
                     </button>
                   )}
@@ -665,8 +665,8 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
 
               {selectedSource !== 'camera' && selectedSource !== 'manual' && (
                 <div className="space-y-4">
-                  <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-[#C8A34D] p-8 rounded-2xl text-center space-y-3 bg-slate-50 dark:bg-[#1A2333]/50">
-                    <Cloud className="w-10 h-10 text-[#C8A34D] mx-auto" />
+                  <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-[#B88B2A] p-8 rounded-2xl text-center space-y-3 bg-slate-50 dark:bg-[#1A2333]/50">
+                    <Cloud className="w-10 h-10 text-[#B88B2A] mx-auto" />
                     <div>
                       <h4 className="text-xs font-extrabold text-slate-900 dark:text-white">
                         Upload or Drag Evidence File ({selectedSource.toUpperCase()})
@@ -675,7 +675,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                         Supported file formats: PNG, JPG, PDF, MP4, M4A, TXT (Max 50MB)
                       </p>
                     </div>
-                    <label className="inline-block px-4 py-2 rounded-xl bg-[#C8A34D] text-[#111111] font-bold text-xs cursor-pointer hover:bg-[#b8933d] transition-colors shadow-sm">
+                    <label className="inline-block px-4 py-2 rounded-xl bg-[#B88B2A] text-[#111111] font-bold text-xs cursor-pointer hover:bg-[#b8933d] transition-colors shadow-sm">
                       Browse Files
                       <input type="file" onChange={handleFileSelect} className="hidden" />
                     </label>
@@ -693,7 +693,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                     value={manualText}
                     onChange={(e) => setManualText(e.target.value)}
                     placeholder="Enter or paste witness statement, chat log transcript, or textual exhibit notes..."
-                    className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs focus:border-[#B88B2A] focus:outline-none"
                   />
                 </div>
               )}
@@ -702,7 +702,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
               {evidenceName && (
                 <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <FileText className="w-6 h-6 text-[#C8A34D]" />
+                    <FileText className="w-6 h-6 text-[#B88B2A]" />
                     <div>
                       <h4 className="font-extrabold text-xs text-slate-900 dark:text-white">{evidenceName}</h4>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400">{evidenceType} • {fileSize}</p>
@@ -728,7 +728,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                     const c = cases.find(item => item._id === e.target.value);
                     if (c) setSelectedCase(c);
                   }}
-                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:border-[#C8A34D] focus:outline-none cursor-pointer"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:border-[#B88B2A] focus:outline-none cursor-pointer"
                 >
                   {cases.map((c) => (
                     <option key={c._id} value={c._id}>
@@ -748,7 +748,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                 </button>
                 <button
                   onClick={handleStartForensicScan}
-                  className="px-6 py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] font-extrabold text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] font-extrabold text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
                 >
                   <Cpu className="w-4 h-4" /> Start 6-Stage Forensic Analysis
                 </button>
@@ -760,7 +760,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
         {/* STEP 3: 6-STAGE FORENSIC SCANNER (ANIMATED PROGRESS) */}
         {step === 'SCAN' && (
           <div className="max-w-3xl mx-auto p-8 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-6 text-center shadow-lg">
-            <div className="w-16 h-16 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] flex items-center justify-center mx-auto animate-pulse">
+            <div className="w-16 h-16 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] flex items-center justify-center mx-auto animate-pulse">
               <RefreshCw className="w-8 h-8 animate-spin" />
             </div>
 
@@ -776,7 +776,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
             {/* Progress Bar */}
             <div className="w-full bg-slate-100 dark:bg-[#1A2333] h-3 rounded-full overflow-hidden">
               <div
-                className="bg-[#C8A34D] h-full transition-all duration-300 rounded-full"
+                className="bg-[#B88B2A] h-full transition-all duration-300 rounded-full"
                 style={{ width: `${scanProgress}%` }}
               />
             </div>
@@ -798,7 +798,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                     <span className="font-semibold text-slate-800 dark:text-slate-200">{stageLabel}</span>
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
                       isDone ? 'bg-emerald-500/15 text-emerald-500' :
-                      isCurrent ? 'bg-[#C8A34D]/20 text-[#C8A34D] animate-pulse' :
+                      isCurrent ? 'bg-[#B88B2A]/20 text-[#B88B2A] animate-pulse' :
                       'text-slate-400'
                     }`}>
                       {isDone ? 'COMPLETED' : isCurrent ? 'PROCESSING' : 'PENDING'}
@@ -828,13 +828,13 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleSaveEvidenceToCase}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold hover:bg-[#C8A34D] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold hover:bg-[#B88B2A] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  <Gavel className="w-3.5 h-3.5 text-[#C8A34D]" /> Save Report
+                  <Gavel className="w-3.5 h-3.5 text-[#B88B2A]" /> Save Report
                 </button>
                 <button
                   onClick={handleExportForensicPDF}
-                  className="px-4 py-1.5 rounded-xl bg-[#C8A34D] text-[#111111] font-extrabold text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
+                  className="px-4 py-1.5 rounded-xl bg-[#B88B2A] text-[#111111] font-extrabold text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
                 >
                   <Download className="w-3.5 h-3.5" /> Export Forensic PDF
                 </button>
@@ -868,8 +868,8 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
               <div className="p-5 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-1 shadow-sm">
                 <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block">Court Readiness Score</span>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-2xl font-black text-[#C8A34D]">{courtReadinessScore}%</span>
-                  <span className="text-[10px] font-bold text-[#C8A34D] bg-[#C8A34D]/10 px-2 py-0.5 rounded-full">HIGH</span>
+                  <span className="text-2xl font-black text-[#B88B2A]">{courtReadinessScore}%</span>
+                  <span className="text-[10px] font-bold text-[#B88B2A] bg-[#B88B2A]/10 px-2 py-0.5 rounded-full">HIGH</span>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">Ready for trial exhibit submission.</p>
               </div>
@@ -905,7 +905,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                         navigator.clipboard.writeText(hashValue);
                         toast.success('SHA-256 Hash copied!');
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#1A2333] text-[11px] font-bold text-[#C8A34D] hover:bg-[#C8A34D] hover:text-[#111] transition-all flex items-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#1A2333] text-[11px] font-bold text-[#B88B2A] hover:bg-[#B88B2A] hover:text-[#111] transition-all flex items-center gap-1 cursor-pointer"
                     >
                       <Copy className="w-3 h-3" /> Copy SHA-256 Hash
                     </button>
@@ -931,7 +931,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                   </div>
 
                   <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] font-mono text-[11px] text-slate-700 dark:text-slate-300 break-all border border-slate-200 dark:border-slate-800">
-                    <span className="text-[#C8A34D] font-bold block mb-0.5">SHA-256 Fingerprint:</span>
+                    <span className="text-[#B88B2A] font-bold block mb-0.5">SHA-256 Fingerprint:</span>
                     {hashValue}
                   </div>
                 </div>
@@ -984,7 +984,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                         navigator.clipboard.writeText(ocrText);
                         toast.success('OCR text copied!');
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#1A2333] text-[11px] font-bold text-[#C8A34D] hover:bg-[#C8A34D] hover:text-[#111] transition-all flex items-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#1A2333] text-[11px] font-bold text-[#B88B2A] hover:bg-[#B88B2A] hover:text-[#111] transition-all flex items-center gap-1 cursor-pointer"
                     >
                       <Copy className="w-3 h-3" /> Copy OCR Text
                     </button>
@@ -1003,21 +1003,21 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] space-y-1">
                       <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1">
-                        <User className="w-3 h-3 text-[#C8A34D]" /> Identified Persons
+                        <User className="w-3 h-3 text-[#B88B2A]" /> Identified Persons
                       </span>
                       <p className="text-xs font-bold text-slate-900 dark:text-white">Petitioner / Account Holder</p>
                     </div>
 
                     <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] space-y-1">
                       <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1">
-                        <FileSpreadsheet className="w-3 h-3 text-[#C8A34D]" /> Case Reference
+                        <FileSpreadsheet className="w-3 h-3 text-[#B88B2A]" /> Case Reference
                       </span>
                       <p className="text-xs font-bold text-slate-900 dark:text-white">{selectedCase ? selectedCase.name : 'Case File Matter'}</p>
                     </div>
 
                     <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] space-y-1">
                       <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1">
-                        <Gavel className="w-3 h-3 text-[#C8A34D]" /> Legal Provisions
+                        <Gavel className="w-3 h-3 text-[#B88B2A]" /> Legal Provisions
                       </span>
                       <p className="text-xs font-bold text-slate-900 dark:text-white">
                         {isNepal ? 'Evidence Act 2031 • ETA 2063 • Banking Offence Act 2064' : 'BSA Sec 65B • Sec 138 NI Act'}
@@ -1031,15 +1031,15 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
               <div className="space-y-6">
 
                 {/* BSA / ETA Section 65B Audit Panel */}
-                <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border-2 border-[#C8A34D] space-y-4 shadow-md">
+                <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border-2 border-[#B88B2A] space-y-4 shadow-md">
                   <div className="flex items-center gap-2">
-                    <Gavel className="w-5 h-5 text-[#C8A34D]" />
-                    <h3 className="text-xs font-black uppercase tracking-wider text-[#C8A34D]">
+                    <Gavel className="w-5 h-5 text-[#B88B2A]" />
+                    <h3 className="text-xs font-black uppercase tracking-wider text-[#B88B2A]">
                       {isNepal ? 'ETA 2063 & Evidence Act Panel' : 'BSA Sec 65B Admissibility Panel'}
                     </h3>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#C8A34D]/10 border border-[#C8A34D]/30 space-y-2 text-xs">
+                  <div className="p-4 rounded-2xl bg-[#B88B2A]/10 border border-[#B88B2A]/30 space-y-2 text-xs">
                     <span className="font-extrabold text-slate-900 dark:text-white block">Statutory Audit Requirement:</span>
                     <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
                       {isNepal
@@ -1050,7 +1050,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
 
                   <button
                     onClick={handleExportForensicPDF}
-                    className="w-full py-2.5 rounded-xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm"
+                    className="w-full py-2.5 rounded-xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm"
                   >
                     {isNepal ? 'Generate ETA 2063 Certificate Draft' : 'Generate Sec 65B BSA Affidavit Draft'}
                   </button>
@@ -1059,7 +1059,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                 {/* EVIDENCE AI COPILOT DRAWER */}
                 <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm flex flex-col h-[480px]">
                   <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <Sparkles className="w-4 h-4 text-[#C8A34D]" />
+                    <Sparkles className="w-4 h-4 text-[#B88B2A]" />
                     <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
                       Evidence AI Copilot Assistant
                     </h3>
@@ -1072,11 +1072,11 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                         key={msg.id}
                         className={`p-3 rounded-2xl space-y-1 ${
                           msg.role === 'user' 
-                            ? 'bg-[#C8A34D]/15 text-slate-900 dark:text-white ml-6 border border-[#C8A34D]/30'
+                            ? 'bg-[#B88B2A]/15 text-slate-900 dark:text-white ml-6 border border-[#B88B2A]/30'
                             : 'bg-slate-50 dark:bg-[#1A2333] text-slate-800 dark:text-slate-200 mr-4 border border-slate-200 dark:border-slate-800'
                         }`}
                       >
-                        <span className="text-[10px] font-bold uppercase text-[#C8A34D] block">
+                        <span className="text-[10px] font-bold uppercase text-[#B88B2A] block">
                           {msg.role === 'user' ? 'Advocate:' : 'Forensic AI Copilot:'}
                         </span>
                         <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
@@ -1084,7 +1084,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                     ))}
 
                     {isCopilotThinking && (
-                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] text-xs text-[#C8A34D] flex items-center gap-2">
+                      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] text-xs text-[#B88B2A] flex items-center gap-2">
                         <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                         <span>Analyzing evidence context...</span>
                       </div>
@@ -1098,12 +1098,12 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                       value={copilotInput}
                       onChange={(e) => setCopilotInput(e.target.value)}
                       placeholder="Ask AI Copilot about this exhibit..."
-                      className="flex-1 p-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs focus:border-[#C8A34D] focus:outline-none"
+                      className="flex-1 p-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs focus:border-[#B88B2A] focus:outline-none"
                     />
                     <button
                       type="submit"
                       disabled={isCopilotThinking}
-                      className="px-3.5 py-2.5 rounded-xl bg-[#C8A34D] text-[#111] font-bold text-xs hover:bg-[#b8933d] transition-all cursor-pointer"
+                      className="px-3.5 py-2.5 rounded-xl bg-[#B88B2A] text-[#111] font-bold text-xs hover:bg-[#b8933d] transition-all cursor-pointer"
                     >
                       Ask
                     </button>
@@ -1118,10 +1118,10 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
       {/* SAVED REPORTS MODAL */}
       {isSavedReportsOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#111622] border-2 border-[#C8A34D] w-full max-w-2xl rounded-3xl p-6 space-y-5 shadow-2xl relative overflow-hidden">
+          <div className="bg-white dark:bg-[#111622] border-2 border-[#B88B2A] w-full max-w-2xl rounded-3xl p-6 space-y-5 shadow-2xl relative overflow-hidden">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <HardDrive className="w-5 h-5 text-[#C8A34D]" />
+                <HardDrive className="w-5 h-5 text-[#B88B2A]" />
                 <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
                   Saved Forensic Evidence Reports ({savedReportsList.length})
                 </h3>
@@ -1142,11 +1142,11 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
             ) : (
               <div className="max-h-[380px] overflow-y-auto space-y-3 pr-1">
                 {savedReportsList.map((item) => (
-                  <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 hover:border-[#C8A34D]/50 transition-colors">
+                  <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 hover:border-[#B88B2A]/50 transition-colors">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-extrabold text-xs text-slate-900 dark:text-white">{item.name}</h4>
-                        <span className="px-2 py-0.5 rounded bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-bold">{item.type}</span>
+                        <span className="px-2 py-0.5 rounded bg-[#B88B2A]/20 text-[#B88B2A] text-[10px] font-bold">{item.type}</span>
                         <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-500 text-[10px] font-bold">{item.authenticity || 95}% Score</span>
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -1156,7 +1156,7 @@ Stage 6: ${isNepal ? 'ETA 2063 & Evidence Act 2031 Audit' : 'BSA Section 65B Aud
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => handleLoadSavedReport(item)}
-                        className="px-3 py-1.5 rounded-xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer flex items-center gap-1"
+                        className="px-3 py-1.5 rounded-xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer flex items-center gap-1"
                       >
                         <Eye className="w-3.5 h-3.5" /> View Report
                       </button>

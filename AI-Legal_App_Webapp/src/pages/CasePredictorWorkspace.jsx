@@ -346,13 +346,13 @@ export default function CasePredictorWorkspace() {
           <style>
             @page { size: A4; margin: 18mm 20mm; }
             body { font-family: 'Times New Roman', Times, serif; font-size: 10.5pt; line-height: 1.5; color: #111; }
-            .header { text-align: center; border-bottom: 2px solid #C8A34D; padding-bottom: 8px; margin-bottom: 16px; }
+            .header { text-align: center; border-bottom: 2px solid #B88B2A; padding-bottom: 8px; margin-bottom: 16px; }
             .header h1 { font-size: 16pt; margin: 0; text-transform: uppercase; }
             .header p { font-size: 9pt; font-family: Arial, sans-serif; color: #555; margin-top: 3px; }
             .table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
             .table td { border: 1px solid #444; padding: 6px 8px; font-size: 9.5pt; }
             .table td strong { font-family: Arial, sans-serif; text-transform: uppercase; color: #444; font-size: 8pt; display: block; }
-            .sec { font-family: Arial, sans-serif; font-size: 10.5pt; font-weight: bold; text-transform: uppercase; background: #f4f4f4; border-left: 4px solid #C8A34D; padding: 4px 8px; margin: 14px 0 6px 0; }
+            .sec { font-family: Arial, sans-serif; font-size: 10.5pt; font-weight: bold; text-transform: uppercase; background: #f4f4f4; border-left: 4px solid #B88B2A; padding: 4px 8px; margin: 14px 0 6px 0; }
             .box { border: 1px solid #ccc; padding: 8px; background: #fafafa; font-size: 10pt; margin-bottom: 10px; }
             .green-box { border: 1px solid #38a169; background: #f0fff4; padding: 8px; margin-bottom: 8px; }
             .red-box { border: 1px solid #e53e3e; background: #fff5f5; padding: 8px; margin-bottom: 8px; }
@@ -469,13 +469,13 @@ export default function CasePredictorWorkspace() {
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
             <button
               onClick={() => navigate('/dashboard/tools')}
-              className="p-1.5 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-600 dark:text-slate-300 hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-xs font-bold shadow-xs shrink-0"
+              className="p-1.5 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] text-slate-600 dark:text-slate-300 hover:bg-[#B88B2A] hover:text-[#111111] transition-all cursor-pointer border border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-xs font-bold shadow-xs shrink-0"
               title="Back to AI Tools Suite"
             >
               <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden md:inline">Back to AI Tools</span>
             </button>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D] shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A] shrink-0">
               <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -483,7 +483,7 @@ export default function CasePredictorWorkspace() {
                 <h1 className="text-xs sm:text-xl font-black tracking-tight text-slate-900 dark:text-white truncate">
                   Case Predictor
                 </h1>
-                <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0 hidden md:inline-block">
+                <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0 hidden md:inline-block">
                   Probability Engine
                 </span>
               </div>
@@ -497,7 +497,7 @@ export default function CasePredictorWorkspace() {
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={handleOpenSavedModal}
-              className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 text-[#C8A34D] text-[10.5px] sm:text-xs font-bold hover:bg-[#C8A34D] hover:text-[#111111] transition-all cursor-pointer flex items-center gap-1.5 shadow-xs shrink-0 whitespace-nowrap"
+              className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 text-[#B88B2A] text-[10.5px] sm:text-xs font-bold hover:bg-[#B88B2A] hover:text-[#111111] transition-all cursor-pointer flex items-center gap-1.5 shadow-xs shrink-0 whitespace-nowrap"
               title="View Saved Predictions"
             >
               <HardDrive className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Saved Predictions</span><span className="sm:hidden">Saved</span>
@@ -533,7 +533,7 @@ export default function CasePredictorWorkspace() {
                   onClick={() => setInputMode(tab.id)}
                   className={`flex-1 min-w-[200px] p-4 rounded-2xl transition-all cursor-pointer text-left ${
                     inputMode === tab.id
-                      ? 'bg-[#C8A34D] text-[#111111] font-black shadow-md shadow-[#C8A34D]/20'
+                      ? 'bg-[#B88B2A] text-[#111111] font-black shadow-md shadow-[#B88B2A]/20'
                       : 'bg-slate-50 dark:bg-[#1A2333] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#242F42]'
                   }`}
                 >
@@ -548,8 +548,8 @@ export default function CasePredictorWorkspace() {
 
             {/* TAB CONTENT: OPTION 1 — UPLOAD PLEADINGS */}
             {inputMode === 'UPLOAD' && (
-              <div className="p-8 rounded-3xl bg-white dark:bg-[#111622] border-2 border-dashed border-[#C8A34D]/40 text-center space-y-4 shadow-sm">
-                <div className="w-16 h-16 rounded-3xl bg-[#C8A34D]/15 text-[#C8A34D] flex items-center justify-center mx-auto">
+              <div className="p-8 rounded-3xl bg-white dark:bg-[#111622] border-2 border-dashed border-[#B88B2A]/40 text-center space-y-4 shadow-sm">
+                <div className="w-16 h-16 rounded-3xl bg-[#B88B2A]/15 text-[#B88B2A] flex items-center justify-center mx-auto">
                   <Upload className="w-8 h-8" />
                 </div>
                 <div>
@@ -572,7 +572,7 @@ export default function CasePredictorWorkspace() {
 
                 <label
                   htmlFor="pleadings-upload-input"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md"
                 >
                   <Upload className="w-4 h-4" /> Browse Pleadings Files
                 </label>
@@ -602,12 +602,12 @@ export default function CasePredictorWorkspace() {
             {inputMode === 'ACTIVE_CASE' && (
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <Gavel className="w-4 h-4 text-[#C8A34D]" /> Link to Active Advocate Matter
+                  <Gavel className="w-4 h-4 text-[#B88B2A]" /> Link to Active Advocate Matter
                 </h3>
 
                 {isLoadingCases ? (
                   <div className="p-4 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                    <RefreshCw className="w-4 h-4 animate-spin text-[#C8A34D]" /> Loading Advocate Cases...
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#B88B2A]" /> Loading Advocate Cases...
                   </div>
                 ) : (
                   <select
@@ -616,7 +616,7 @@ export default function CasePredictorWorkspace() {
                       const found = advocateCases.find(c => c._id === e.target.value);
                       setSelectedCase(found || null);
                     }}
-                    className="w-full p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:border-[#B88B2A] focus:outline-none"
                   >
                     {advocateCases.map(c => (
                       <option key={c._id} value={c._id}>{c.name} — ({c.caseType})</option>
@@ -625,8 +625,8 @@ export default function CasePredictorWorkspace() {
                 )}
 
                 {selectedCase && (
-                  <div className="p-4 rounded-2xl bg-[#C8A34D]/10 border border-[#C8A34D]/30 space-y-1 text-xs">
-                    <span className="font-extrabold text-[#C8A34D] block">{selectedCase.name}</span>
+                  <div className="p-4 rounded-2xl bg-[#B88B2A]/10 border border-[#B88B2A]/30 space-y-1 text-xs">
+                    <span className="font-extrabold text-[#B88B2A] block">{selectedCase.name}</span>
                     <span className="text-slate-600 dark:text-slate-300 block">Court: {selectedCase.courtName || 'District Court'}</span>
                     <span className="text-slate-500 text-[11px] block">Client: {selectedCase.clientName}</span>
                   </div>
@@ -638,7 +638,7 @@ export default function CasePredictorWorkspace() {
             {inputMode === 'MANUAL' && (
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <Edit3 className="w-4 h-4 text-[#C8A34D]" /> Manual Case Details & Claims Form
+                  <Edit3 className="w-4 h-4 text-[#B88B2A]" /> Manual Case Details & Claims Form
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -649,7 +649,7 @@ export default function CasePredictorWorkspace() {
                       value={manualTitle}
                       onChange={(e) => setManualTitle(e.target.value)}
                       placeholder="e.g. State vs Raj Malhotra & Ors."
-                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                     />
                   </div>
 
@@ -658,7 +658,7 @@ export default function CasePredictorWorkspace() {
                     <select
                       value={manualCaseType}
                       onChange={(e) => setManualCaseType(e.target.value)}
-                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                     >
                       {CASE_TYPES.map(ct => (
                         <option key={ct} value={ct}>{ct}</option>
@@ -671,7 +671,7 @@ export default function CasePredictorWorkspace() {
                     <select
                       value={manualCourt}
                       onChange={(e) => setManualCourt(e.target.value)}
-                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#C8A34D] focus:outline-none"
+                      className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold focus:border-[#B88B2A] focus:outline-none"
                     >
                       {COURT_LEVELS.map(cl => (
                         <option key={cl} value={cl}>{cl}</option>
@@ -687,7 +687,7 @@ export default function CasePredictorWorkspace() {
                     value={manualFacts}
                     onChange={(e) => setManualFacts(e.target.value)}
                     placeholder="Enter case facts, cheque dishonour details, statutory notice delivery dates, admitted signatures, and core defense points..."
-                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-medium focus:border-[#C8A34D] focus:outline-none"
+                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-medium focus:border-[#B88B2A] focus:outline-none"
                   />
                 </div>
               </div>
@@ -697,7 +697,7 @@ export default function CasePredictorWorkspace() {
             <div className="flex justify-end pt-2">
               <button
                 onClick={handleContinueToReview}
-                className="px-8 py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
+                className="px-8 py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
               >
                 <span>Continue to Prediction Review</span>
                 <ArrowRight className="w-4 h-4" />
@@ -711,7 +711,7 @@ export default function CasePredictorWorkspace() {
         {step === 'PRE_REVIEW' && (
           <div className="max-w-3xl mx-auto p-8 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-6 shadow-lg">
             <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#C8A34D]/15 border border-[#C8A34D]/40 flex items-center justify-center text-[#C8A34D]">
+              <div className="w-12 h-12 rounded-2xl bg-[#B88B2A]/15 border border-[#B88B2A]/40 flex items-center justify-center text-[#B88B2A]">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <div>
@@ -727,7 +727,7 @@ export default function CasePredictorWorkspace() {
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 space-y-3 text-xs">
               <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-800">
                 <span className="text-slate-500">Selected Modality:</span>
-                <span className="font-extrabold text-[#C8A34D]">{inputMode}</span>
+                <span className="font-extrabold text-[#B88B2A]">{inputMode}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-200 dark:border-slate-800">
                 <span className="text-slate-500">Case Matter:</span>
@@ -753,7 +753,7 @@ export default function CasePredictorWorkspace() {
 
               <button
                 onClick={handleStartPrediction}
-                className="px-8 py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
+                className="px-8 py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center gap-2"
               >
                 <Sparkles className="w-4 h-4" /> Run Case Prediction
               </button>
@@ -764,7 +764,7 @@ export default function CasePredictorWorkspace() {
         {/* STEP 3: 10-STAGE NEURAL PREDICTION PIPELINE */}
         {step === 'SCAN' && (
           <div className="max-w-3xl mx-auto p-8 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-6 text-center shadow-lg">
-            <div className="w-16 h-16 rounded-full bg-[#C8A34D]/15 text-[#C8A34D] flex items-center justify-center mx-auto animate-pulse">
+            <div className="w-16 h-16 rounded-full bg-[#B88B2A]/15 text-[#B88B2A] flex items-center justify-center mx-auto animate-pulse">
               <RefreshCw className="w-8 h-8 animate-spin" />
             </div>
 
@@ -780,7 +780,7 @@ export default function CasePredictorWorkspace() {
             {/* Progress Bar */}
             <div className="w-full bg-slate-100 dark:bg-[#1A2333] h-3 rounded-full overflow-hidden">
               <div
-                className="bg-[#C8A34D] h-full transition-all duration-300 rounded-full"
+                className="bg-[#B88B2A] h-full transition-all duration-300 rounded-full"
                 style={{ width: `${scanProgress}%` }}
               />
             </div>
@@ -806,7 +806,7 @@ export default function CasePredictorWorkspace() {
                     <span className="font-semibold text-slate-800 dark:text-slate-200">{stageLabel}</span>
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
                       isDone ? 'bg-emerald-500/15 text-emerald-500' :
-                      isCurrent ? 'bg-[#C8A34D]/20 text-[#C8A34D] animate-pulse' :
+                      isCurrent ? 'bg-[#B88B2A]/20 text-[#B88B2A] animate-pulse' :
                       'text-slate-400'
                     }`}>
                       {isDone ? 'COMPLETED' : isCurrent ? 'PROCESSING' : 'PENDING'}
@@ -836,13 +836,13 @@ export default function CasePredictorWorkspace() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleSaveReport}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold hover:bg-[#C8A34D] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs font-bold hover:bg-[#B88B2A] hover:text-[#111] transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  <Gavel className="w-3.5 h-3.5 text-[#C8A34D]" /> Save Report
+                  <Gavel className="w-3.5 h-3.5 text-[#B88B2A]" /> Save Report
                 </button>
                 <button
                   onClick={handleExportPredictionPDF}
-                  className="px-4 py-1.5 rounded-xl bg-[#C8A34D] text-[#111111] font-extrabold text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
+                  className="px-4 py-1.5 rounded-xl bg-[#B88B2A] text-[#111111] font-extrabold text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
                 >
                   <Download className="w-3.5 h-3.5" /> Export PDF Dossier
                 </button>
@@ -903,7 +903,7 @@ export default function CasePredictorWorkspace() {
                 <span className="text-[8.5px] sm:text-[9px] font-extrabold uppercase tracking-wider text-slate-400 block truncate">
                   EST. SETTLEMENT RANGE
                 </span>
-                <span className="text-[11px] sm:text-xs font-black text-[#C8A34D] block truncate min-w-0">
+                <span className="text-[11px] sm:text-xs font-black text-[#B88B2A] block truncate min-w-0">
                   {predictionData.settlementRange}
                 </span>
                 <span className="text-[9.5px] sm:text-[10px] text-slate-500 block truncate">Damodar S. Prabhu</span>
@@ -938,7 +938,7 @@ export default function CasePredictorWorkspace() {
                   onClick={() => setActiveTab(t.id)}
                   className={`px-3 sm:px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap shrink-0 transition-all cursor-pointer ${
                     activeTab === t.id
-                      ? 'bg-[#C8A34D] text-[#111111] shadow-xs'
+                      ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
                       : 'bg-slate-50/60 dark:bg-[#1A2333]/60 hover:bg-slate-100 dark:hover:bg-[#1A2333] text-slate-600 dark:text-slate-400 border border-slate-200/50 dark:border-slate-800/50'
                   }`}
                 >
@@ -951,7 +951,7 @@ export default function CasePredictorWorkspace() {
             {activeTab === 'overview' && (
               <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs">
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-2">
+                  <h3 className="text-xs font-black uppercase tracking-wider text-[#B88B2A] flex items-center gap-2">
                     <Sparkles className="w-4 h-4" /> AI Predictive Case Analysis Summary
                   </h3>
                   <span className="text-[10px] font-mono text-slate-400 font-bold">10-Stage Model</span>
@@ -1015,7 +1015,7 @@ export default function CasePredictorWorkspace() {
                         <span className="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-500 font-black text-[10px] whitespace-nowrap shrink-0 self-start sm:self-auto">{w.penalty}</span>
                       </div>
                       <p className="text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">{w.desc}</p>
-                      <div className="p-3 rounded-xl bg-white dark:bg-[#111622] border border-rose-500/20 font-bold text-[#C8A34D] text-[11px] leading-relaxed">
+                      <div className="p-3 rounded-xl bg-white dark:bg-[#111622] border border-rose-500/20 font-bold text-[#B88B2A] text-[11px] leading-relaxed">
                         💡 Mitigation Plan: {w.mitigation}
                       </div>
                     </div>
@@ -1039,7 +1039,7 @@ export default function CasePredictorWorkspace() {
                         <span className="px-2 py-0.5 rounded bg-sky-500/15 text-sky-500 font-extrabold text-[10px]">{s.winChance}</span>
                       </div>
                       <p className="text-slate-600 dark:text-slate-300 text-[11px]">{s.trigger}</p>
-                      <div className="pt-2 border-t border-slate-200 dark:border-slate-800 font-bold text-[#C8A34D] text-[11px]">
+                      <div className="pt-2 border-t border-slate-200 dark:border-slate-800 font-bold text-[#B88B2A] text-[11px]">
                         🎯 Strategy: {s.strategy}
                       </div>
                     </div>
@@ -1051,7 +1051,7 @@ export default function CasePredictorWorkspace() {
             {/* TAB 5: JUDICIAL BENCH INSIGHTS */}
             {activeTab === 'judge' && (
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
-                <h3 className="text-xs font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-2">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#B88B2A] flex items-center gap-2">
                   <BookOpen className="w-4 h-4" /> Judicial Bench Insights & Expected Oral Scrutiny
                 </h3>
 
@@ -1070,7 +1070,7 @@ export default function CasePredictorWorkspace() {
             {activeTab === 'timeline' && (
               <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
                 <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#C8A34D]" /> Litigation Stage Timeline & Roadmap
+                  <Clock className="w-4 h-4 text-[#B88B2A]" /> Litigation Stage Timeline & Roadmap
                 </h3>
 
                 <div className="space-y-3">
@@ -1081,7 +1081,7 @@ export default function CasePredictorWorkspace() {
                         <p className="text-slate-500 text-[11px] mt-0.5">{tl.detail}</p>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="px-2.5 py-0.5 rounded bg-[#C8A34D]/20 text-[#C8A34D] font-bold text-[10px] block mb-1">{tl.status}</span>
+                        <span className="px-2.5 py-0.5 rounded bg-[#B88B2A]/20 text-[#B88B2A] font-bold text-[10px] block mb-1">{tl.status}</span>
                         <span className="text-slate-400 text-[10px]">{tl.duration}</span>
                       </div>
                     </div>
@@ -1097,7 +1097,7 @@ export default function CasePredictorWorkspace() {
                 {/* PDF Export Banner */}
                 <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm flex flex-col justify-between">
                   <div>
-                    <h3 className="text-xs font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-2">
+                    <h3 className="text-xs font-black uppercase tracking-wider text-[#B88B2A] flex items-center gap-2">
                       <Download className="w-4 h-4" /> Export Case Prediction Dossier
                     </h3>
                     <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
@@ -1107,7 +1107,7 @@ export default function CasePredictorWorkspace() {
 
                   <button
                     onClick={handleExportPredictionPDF}
-                    className="w-full py-3.5 rounded-2xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
+                    className="w-full py-3.5 rounded-2xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
                   >
                     <Download className="w-4 h-4" /> Download Printable PDF Dossier
                   </button>
@@ -1116,21 +1116,21 @@ export default function CasePredictorWorkspace() {
                 {/* Copilot Assistant */}
                 <div className="p-6 rounded-3xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm flex flex-col justify-between">
                   <div>
-                    <h3 className="text-xs font-black uppercase tracking-wider text-[#C8A34D] flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <h3 className="text-xs font-black uppercase tracking-wider text-[#B88B2A] flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                       <Sparkles className="w-4 h-4" /> Case AI Copilot Assistant
                     </h3>
 
                     <div className="mt-3 space-y-3 max-h-[260px] overflow-y-auto pr-1">
                       {copilotMessages.map((msg) => (
                         <div key={msg.id} className={`p-3.5 rounded-2xl text-xs ${
-                          msg.role === 'user' ? 'bg-[#C8A34D] text-[#111] font-bold ml-6' : 'bg-slate-50 dark:bg-[#1A2333] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 mr-6'
+                          msg.role === 'user' ? 'bg-[#B88B2A] text-[#111] font-bold ml-6' : 'bg-slate-50 dark:bg-[#1A2333] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 mr-6'
                         }`}>
                           <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                         </div>
                       ))}
 
                       {isCopilotThinking && (
-                        <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] text-xs text-[#C8A34D] flex items-center gap-2">
+                        <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1A2333] text-xs text-[#B88B2A] flex items-center gap-2">
                           <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                           <span>Analyzing prediction context...</span>
                         </div>
@@ -1144,12 +1144,12 @@ export default function CasePredictorWorkspace() {
                       value={copilotInput}
                       onChange={(e) => setCopilotInput(e.target.value)}
                       placeholder="Ask AI Copilot about this prediction..."
-                      className="flex-1 p-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs focus:border-[#C8A34D] focus:outline-none"
+                      className="flex-1 p-2.5 rounded-xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 text-xs focus:border-[#B88B2A] focus:outline-none"
                     />
                     <button
                       type="submit"
                       disabled={isCopilotThinking}
-                      className="px-3.5 py-2.5 rounded-xl bg-[#C8A34D] text-[#111] font-bold text-xs hover:bg-[#b8933d] transition-all cursor-pointer"
+                      className="px-3.5 py-2.5 rounded-xl bg-[#B88B2A] text-[#111] font-bold text-xs hover:bg-[#b8933d] transition-all cursor-pointer"
                     >
                       Ask
                     </button>
@@ -1167,10 +1167,10 @@ export default function CasePredictorWorkspace() {
       {/* SAVED PREDICTIONS VAULT MODAL */}
       {isSavedModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#111622] border-2 border-[#C8A34D] w-full max-w-2xl rounded-3xl p-6 space-y-5 shadow-2xl relative overflow-hidden">
+          <div className="bg-white dark:bg-[#111622] border-2 border-[#B88B2A] w-full max-w-2xl rounded-3xl p-6 space-y-5 shadow-2xl relative overflow-hidden">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <HardDrive className="w-5 h-5 text-[#C8A34D]" />
+                <HardDrive className="w-5 h-5 text-[#B88B2A]" />
                 <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
                   Saved Case Outcome Predictions ({savedPredictionsList.length})
                 </h3>
@@ -1191,11 +1191,11 @@ export default function CasePredictorWorkspace() {
             ) : (
               <div className="max-h-[380px] overflow-y-auto space-y-3 pr-1">
                 {savedPredictionsList.map((item) => (
-                  <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 hover:border-[#C8A34D]/50 transition-colors">
+                  <div key={item.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1A2333] border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 hover:border-[#B88B2A]/50 transition-colors">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-extrabold text-xs text-slate-900 dark:text-white">{item.name}</h4>
-                        <span className="px-2 py-0.5 rounded bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-bold">{item.type}</span>
+                        <span className="px-2 py-0.5 rounded bg-[#B88B2A]/20 text-[#B88B2A] text-[10px] font-bold">{item.type}</span>
                         <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-500 text-[10px] font-bold">{item.winProb}% Win</span>
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -1205,7 +1205,7 @@ export default function CasePredictorWorkspace() {
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => handleLoadSavedPrediction(item)}
-                        className="px-3 py-1.5 rounded-xl bg-[#C8A34D] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer flex items-center gap-1"
+                        className="px-3 py-1.5 rounded-xl bg-[#B88B2A] text-[#111111] font-black text-xs hover:bg-[#b8933d] transition-all cursor-pointer flex items-center gap-1"
                       >
                         <Eye className="w-3.5 h-3.5" /> View Prediction
                       </button>

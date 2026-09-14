@@ -158,7 +158,7 @@ export default function ExperienceRoleSelector({ compact = false }) {
             <div className="overflow-y-auto custom-scrollbar flex-1 space-y-4 pr-1">
               {/* 1. AVAILABLE WORKSPACES SECTION */}
               <div>
-                <div className="text-[11px] font-extrabold text-[#C8A34D] tracking-wider uppercase mb-2">
+                <div className="text-[11px] font-extrabold text-[#B88B2A] tracking-wider uppercase mb-2">
                   AVAILABLE WORKSPACES {availableFirmWorkspaces.length > 0 ? `(${availableFirmWorkspaces.length})` : ''}
                 </div>
 
@@ -182,20 +182,20 @@ export default function ExperienceRoleSelector({ compact = false }) {
                           onClick={() => handleSelectFirmWorkspace(ws)}
                           className={`w-full flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#FEF3C7] dark:bg-amber-500/15 border-[#C8A34D] text-[#92400E] dark:text-amber-300 shadow-xs'
-                              : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800/80 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:border-[#C8A34D]/40'
+                              ? 'bg-[#B88B2A]/15 dark:bg-amber-500/15 border-[#B88B2A] text-[#8B6517] dark:text-amber-300 shadow-xs'
+                              : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800/80 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:border-[#B88B2A]/40'
                           }`}
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className={`p-2 rounded-xl shrink-0 ${isSelected ? 'bg-[#C8A34D]/20 text-[#C8A34D]' : 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
+                            <div className={`p-2 rounded-xl shrink-0 ${isSelected ? 'bg-[#B88B2A]/20 text-[#B88B2A]' : 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
                               <Building2 className="w-5 h-5" />
                             </div>
                             <div className="min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className={`text-sm font-extrabold truncate ${isSelected ? 'text-[#92400E] dark:text-amber-300' : 'text-slate-900 dark:text-white'}`}>
+                                <span className={`text-sm font-extrabold truncate ${isSelected ? 'text-[#8B6517] dark:text-amber-300' : 'text-slate-900 dark:text-white'}`}>
                                   {ws.name}
                                 </span>
-                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ${isSelected ? 'bg-[#C8A34D] text-white' : 'bg-[#C8A34D]/15 text-[#C8A34D] border border-[#C8A34D]/30'}`}>
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ${isSelected ? 'bg-[#B88B2A] text-white' : 'bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30'}`}>
                                   {ws.badge || 'Law Firm'}
                                 </span>
                               </div>
@@ -204,7 +204,7 @@ export default function ExperienceRoleSelector({ compact = false }) {
                               </p>
                             </div>
                           </div>
-                          {isSelected && <Check className="w-5 h-5 text-[#C8A34D] shrink-0 ml-2" />}
+                          {isSelected && <Check className="w-5 h-5 text-[#B88B2A] shrink-0 ml-2" />}
                         </button>
                       );
                     })}
@@ -214,7 +214,7 @@ export default function ExperienceRoleSelector({ compact = false }) {
 
               {/* 2. PRACTICE EXPERIENCE SECTION */}
               <div>
-                <div className="text-[11px] font-extrabold text-[#C8A34D] tracking-wider uppercase mt-4 mb-2">
+                <div className="text-[11px] font-extrabold text-[#B88B2A] tracking-wider uppercase mt-4 mb-2">
                   PRACTICE EXPERIENCE
                 </div>
                 <div className="space-y-2">
@@ -231,16 +231,16 @@ export default function ExperienceRoleSelector({ compact = false }) {
                         onClick={() => handleSelectPracticeRole(roleItem.id)}
                         className={`w-full flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-[#FEF3C7] dark:bg-amber-500/15 border-[#C8A34D] text-[#92400E] dark:text-amber-300 shadow-xs'
-                            : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800/80 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:border-[#C8A34D]/40'
+                            ? 'bg-[#B88B2A]/15 dark:bg-amber-500/15 border-[#B88B2A] text-[#8B6517] dark:text-amber-300 shadow-xs'
+                            : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800/80 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:border-[#B88B2A]/40'
                         }`}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className={`p-2 rounded-xl shrink-0 ${isSelected ? 'bg-[#C8A34D]/20 text-[#C8A34D]' : 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
+                          <div className={`p-2 rounded-xl shrink-0 ${isSelected ? 'bg-[#B88B2A]/20 text-[#B88B2A]' : 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
                             <ItemIcon className="w-5 h-5" />
                           </div>
                           <div className="min-w-0">
-                            <span className={`text-sm font-extrabold truncate ${isSelected ? 'text-[#92400E] dark:text-amber-300' : 'text-slate-900 dark:text-white'}`}>
+                            <span className={`text-sm font-extrabold truncate ${isSelected ? 'text-[#8B6517] dark:text-amber-300' : 'text-slate-900 dark:text-white'}`}>
                               {roleItem.label}
                             </span>
                             <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
@@ -248,7 +248,7 @@ export default function ExperienceRoleSelector({ compact = false }) {
                             </p>
                           </div>
                         </div>
-                        {isSelected && <Check className="w-5 h-5 text-[#C8A34D] shrink-0 ml-2" />}
+                        {isSelected && <Check className="w-5 h-5 text-[#B88B2A] shrink-0 ml-2" />}
                       </button>
                     );
                   })}
@@ -266,11 +266,11 @@ export default function ExperienceRoleSelector({ compact = false }) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#FEF3C7] dark:bg-amber-500/15 hover:bg-[#FDE68A] dark:hover:bg-amber-500/25 border border-[#C8A34D] text-[#92400E] dark:text-amber-300 font-bold text-xs shadow-xs transition-all duration-200 cursor-pointer max-w-[200px]"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#B88B2A]/15 dark:bg-amber-500/15 hover:bg-[#B88B2A]/25 dark:hover:bg-amber-500/25 border border-[#B88B2A] text-[#8B6517] dark:text-amber-300 font-bold text-xs shadow-xs transition-all duration-200 cursor-pointer max-w-[200px]"
       >
-        <DisplayIcon className="w-3.5 h-3.5 text-[#C8A34D] shrink-0" />
+        <DisplayIcon className="w-3.5 h-3.5 text-[#B88B2A] shrink-0" />
         <span className="truncate">{displayTitle}</span>
-        <ChevronDown className="w-3 h-3 text-[#C8A34D] shrink-0 ml-0.5" />
+        <ChevronDown className="w-3 h-3 text-[#B88B2A] shrink-0 ml-0.5" />
       </button>
 
       {modalPortal}

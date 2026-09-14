@@ -60,7 +60,7 @@ const EnterpriseOverview = () => {
       {/* Header Welcome Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xs">
         <div>
-          <div className="flex items-center gap-1.5 text-[11px] font-extrabold text-[#C8A34D] uppercase tracking-wider mb-0.5">
+          <div className="flex items-center gap-1.5 text-[11px] font-extrabold text-[#B88B2A] uppercase tracking-wider mb-0.5">
             <Sparkles size={13} /> Official Institutional Dashboard
           </div>
           <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
@@ -82,7 +82,7 @@ const EnterpriseOverview = () => {
       {/* 6 Top Overview Cards - COMPACT HEIGHT */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
         {/* Card 1: Total Students */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#C8A34D]/40 transition-all">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#B88B2A]/40 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">1. Total Students</span>
             <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
@@ -99,7 +99,7 @@ const EnterpriseOverview = () => {
         </div>
 
         {/* Card 2: Active Faculty */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#C8A34D]/40 transition-all">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#B88B2A]/40 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">2. Active Faculty</span>
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
@@ -116,7 +116,7 @@ const EnterpriseOverview = () => {
         </div>
 
         {/* Card 3: Enterprise Seats */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#C8A34D]/40 transition-all">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#B88B2A]/40 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">3. Enterprise Seats</span>
             <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center">
@@ -128,14 +128,14 @@ const EnterpriseOverview = () => {
           </div>
           <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1.5">
             <div
-              className="bg-[#C8A34D] h-full rounded-full"
+              className="bg-[#B88B2A] h-full rounded-full"
               style={{ width: `${(metrics.usedSeats / metrics.totalSeats) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Card 4: Monthly AI Usage */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#C8A34D]/40 transition-all">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#B88B2A]/40 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">4. Monthly AI Usage</span>
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
@@ -152,10 +152,10 @@ const EnterpriseOverview = () => {
         </div>
 
         {/* Card 5: Monthly Budget */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#C8A34D]/40 transition-all">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#B88B2A]/40 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">5. Monthly Budget</span>
-            <div className="w-8 h-8 rounded-xl bg-[#C8A34D]/10 text-[#C8A34D] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] flex items-center justify-center">
               <CreditCard size={16} />
             </div>
           </div>
@@ -169,7 +169,7 @@ const EnterpriseOverview = () => {
         </div>
 
         {/* Card 6: Pending Invitations */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#C8A34D]/40 transition-all">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#B88B2A]/40 transition-all">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">6. Pending Invitations</span>
             <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
@@ -192,7 +192,7 @@ const EnterpriseOverview = () => {
         <div className="lg:col-span-2 space-y-4">
           <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
             <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <TrendingUp size={18} className="text-[#C8A34D]" /> Institutional AI Usage Highlights
+              <TrendingUp size={18} className="text-[#B88B2A]" /> Institutional AI Usage Highlights
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -205,7 +205,7 @@ const EnterpriseOverview = () => {
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-0.5">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Most Active Batch</span>
                 <p className="text-sm font-black text-slate-900 dark:text-white">BA LLB 2025-2030 (Batch A)</p>
-                <p className="text-[11px] text-[#C8A34D] font-semibold">92.4% Student Engagement</p>
+                <p className="text-[11px] text-[#B88B2A] font-semibold">92.4% Student Engagement</p>
               </div>
             </div>
 
@@ -226,7 +226,7 @@ const EnterpriseOverview = () => {
                 ].map(item => (
                   <div key={item.m} className="flex flex-col items-center gap-1 h-full justify-end">
                     <div
-                      className="w-full bg-[#C8A34D]/20 hover:bg-[#C8A34D] rounded-t-md transition-all"
+                      className="w-full bg-[#B88B2A]/20 hover:bg-[#B88B2A] rounded-t-md transition-all"
                       style={{ height: `${item.v}%` }}
                     />
                     <span className="text-[9px] font-bold text-slate-400">{item.m}</span>
@@ -240,7 +240,7 @@ const EnterpriseOverview = () => {
         {/* Recent Activity Log */}
         <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
           <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Activity size={18} className="text-[#C8A34D]" /> Recent Activity
+            <Activity size={18} className="text-[#B88B2A]" /> Recent Activity
           </h3>
 
           <div className="space-y-3 text-xs">
@@ -251,7 +251,7 @@ const EnterpriseOverview = () => {
               { title: 'Budget Threshold Passed 50%', time: '1 day ago', desc: 'Monthly usage reached 36.8% of budget.', icon: CreditCard }
             ].map((act, idx) => (
               <div key={idx} className="flex gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800/60 last:border-none">
-                <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#C8A34D] flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#B88B2A] flex items-center justify-center shrink-0">
                   <act.icon size={14} />
                 </div>
                 <div>

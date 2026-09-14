@@ -431,7 +431,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
               className={`px-3 py-1.5 rounded-full border transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold ${
                 isRecording 
                   ? 'bg-rose-500 text-white border-rose-600 animate-pulse' 
-                  : 'bg-amber-500/10 text-[#C8A34D] border-[#C8A34D]/40 hover:bg-[#C8A34D]/20'
+                  : 'bg-amber-500/10 text-[#B88B2A] border-[#B88B2A]/40 hover:bg-[#B88B2A]/20'
               }`}
               title="Voice AI Dictation (English/Hindi)"
             >
@@ -448,7 +448,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
         {/* Wizard Step Progress Bar */}
         <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 shrink-0">
           <div 
-            className="bg-[#C8A34D] h-full transition-all duration-300"
+            className="bg-[#B88B2A] h-full transition-all duration-300"
             style={{ width: `${(step / 5) * 100}%` }}
           />
         </div>
@@ -460,7 +460,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
           {step === 1 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
               <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div className="p-2 rounded-xl bg-amber-500/15 text-[#C8A34D]">
+                <div className="p-2 rounded-xl bg-amber-500/15 text-[#B88B2A]">
                   <User size={20} />
                 </div>
                 <div>
@@ -478,7 +478,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                   onClick={() => setClientMode('existing')}
                   className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
                     clientMode === 'existing'
-                      ? 'bg-amber-500/15 text-[#C8A34D] border-2 border-[#C8A34D] shadow-xs'
+                      ? 'bg-amber-500/15 text-[#B88B2A] border-2 border-[#B88B2A] shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                   }`}
                 >
@@ -489,7 +489,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                   onClick={() => setClientMode('new')}
                   className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
                     clientMode === 'new'
-                      ? 'bg-amber-500/15 text-[#C8A34D] border-2 border-[#C8A34D] shadow-xs'
+                      ? 'bg-amber-500/15 text-[#B88B2A] border-2 border-[#B88B2A] shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                   }`}
                 >
@@ -511,7 +511,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                         placeholder="Search by name, company, or phone..."
                         value={searchClientQuery}
                         onChange={e => setSearchClientQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                        className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                       />
                     </div>
                   </div>
@@ -526,13 +526,13 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                         No Registered Clients Found
                       </h5>
                       <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto mt-1 leading-relaxed">
-                        Switch to the <span className="text-[#C8A34D] font-bold">'New Client'</span> tab above to add your first client profile!
+                        Switch to the <span className="text-[#B88B2A] font-bold">'New Client'</span> tab above to add your first client profile!
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setClientMode('new')}
-                      className="px-5 py-2.5 bg-[#C8A34D] hover:bg-[#b08d3b] text-slate-950 font-black rounded-xl text-xs shadow-md transition-all cursor-pointer inline-flex items-center gap-1.5"
+                      className="px-5 py-2.5 bg-[#B88B2A] hover:bg-[#b08d3b] text-slate-950 font-black rounded-xl text-xs shadow-md transition-all cursor-pointer inline-flex items-center gap-1.5"
                     >
                       <Plus className="w-4 h-4" />
                       <span>Register New Client</span>
@@ -551,7 +551,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                       placeholder="e.g. Aditi Lakhera / Apex Logistics Pvt Ltd"
                       value={clientName}
                       onChange={e => setClientName(e.target.value)}
-                      className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                      className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                     />
                   </div>
 
@@ -565,7 +565,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                         placeholder="+91 98765 43210"
                         value={clientMobile}
                         onChange={e => setClientMobile(e.target.value)}
-                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                       />
                     </div>
                     <div className="space-y-1">
@@ -577,7 +577,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                         placeholder="client@email.com"
                         value={clientEmail}
                         onChange={e => setClientEmail(e.target.value)}
-                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                       />
                     </div>
                   </div>
@@ -592,7 +592,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                         placeholder="Organization name"
                         value={clientCompany}
                         onChange={e => setClientCompany(e.target.value)}
-                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                        className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                       />
                     </div>
                     <div className="space-y-1">
@@ -607,7 +607,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                             onClick={() => setClientType(type)}
                             className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                               clientType === type
-                                ? 'bg-[#C8A34D] text-slate-950 font-black shadow-xs'
+                                ? 'bg-[#B88B2A] text-slate-950 font-black shadow-xs'
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                             }`}
                           >
@@ -627,7 +627,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                       placeholder="Street address / Office premises"
                       value={clientCity}
                       onChange={e => setClientCity(e.target.value)}
-                      className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                      className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                     />
                   </div>
                 </div>
@@ -639,7 +639,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
           {step === 2 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
               <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div className="p-2 rounded-xl bg-amber-500/15 text-[#C8A34D]">
+                <div className="p-2 rounded-xl bg-amber-500/15 text-[#B88B2A]">
                   <Scale size={20} />
                 </div>
                 <div>
@@ -659,7 +659,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                   placeholder="e.g. Ramesh Chandra vs Union of India"
                   value={caseTitle}
                   onChange={e => setCaseTitle(e.target.value)}
-                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                 />
               </div>
 
@@ -675,7 +675,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                       onClick={() => setCaseCategory(cat)}
                       className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                         caseCategory === cat
-                          ? 'bg-[#C8A34D] text-slate-950 font-black shadow-xs'
+                          ? 'bg-[#B88B2A] text-slate-950 font-black shadow-xs'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                       }`}
                     >
@@ -698,7 +698,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                         onClick={() => setCaseTypeMode(type)}
                         className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           caseTypeMode === type
-                            ? 'bg-[#C8A34D] text-slate-950 font-black shadow-xs'
+                            ? 'bg-[#B88B2A] text-slate-950 font-black shadow-xs'
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                         }`}
                       >
@@ -720,7 +720,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                         onClick={() => setPriority(p)}
                         className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           priority === p
-                            ? 'bg-[#C8A34D] text-slate-950 font-black shadow-xs'
+                            ? 'bg-[#B88B2A] text-slate-950 font-black shadow-xs'
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                         }`}
                       >
@@ -741,7 +741,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                     placeholder="e.g. High Court of Delhi"
                     value={courtName}
                     onChange={e => setCourtName(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -753,7 +753,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                     placeholder="e.g. Court Room 14"
                     value={courtRoomNo}
                     onChange={e => setCourtRoomNo(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
               </div>
@@ -768,7 +768,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                     placeholder="Opposite Party Name"
                     value={oppositeParty}
                     onChange={e => setOppositeParty(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -780,7 +780,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                     placeholder="Opposing Advocate Name"
                     value={oppositeAdvocate}
                     onChange={e => setOppositeAdvocate(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
               </div>
@@ -794,14 +794,14 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                   placeholder="Brief facts of the dispute, prayer, key legal questions..."
                   value={caseOverview}
                   onChange={e => setCaseOverview(e.target.value)}
-                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-slate-900 dark:text-white bg-white dark:bg-[#111111] resize-none"
+                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-slate-900 dark:text-white bg-white dark:bg-[#111111] resize-none"
                 />
               </div>
 
               {/* Confidential Case Toggle Switch Box */}
               <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-amber-500/15 text-[#C8A34D]">
+                  <div className="p-2.5 rounded-xl bg-amber-500/15 text-[#B88B2A]">
                     <Shield className="w-5 h-5" />
                   </div>
                   <div>
@@ -818,7 +818,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                   type="button"
                   onClick={() => setIsConfidential(!isConfidential)}
                   className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out cursor-pointer relative ${
-                    isConfidential ? 'bg-[#C8A34D]' : 'bg-slate-300 dark:bg-slate-700'
+                    isConfidential ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'
                   }`}
                 >
                   <div
@@ -835,7 +835,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
           {step === 3 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
               <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div className="p-2 rounded-xl bg-amber-500/15 text-[#C8A34D]">
+                <div className="p-2 rounded-xl bg-amber-500/15 text-[#B88B2A]">
                   <Users size={20} />
                 </div>
                 <div>
@@ -852,9 +852,9 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                   Lead Advocate <span className="text-rose-500">*</span>
                 </label>
 
-                <div className="p-4 rounded-2xl border-2 border-[#C8A34D] bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent dark:bg-amber-500/10 flex items-center justify-between">
+                <div className="p-4 rounded-2xl border-2 border-[#B88B2A] bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent dark:bg-amber-500/10 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#C8A34D]/20 border border-[#C8A34D]/40 flex items-center justify-center font-bold text-[#C8A34D] text-sm shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[#B88B2A]/20 border border-[#B88B2A]/40 flex items-center justify-center font-bold text-[#B88B2A] text-sm shrink-0">
                       AL
                     </div>
                     <div>
@@ -862,7 +862,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                         <span className="font-extrabold text-sm text-slate-900 dark:text-white">
                           Aditi Lakhera
                         </span>
-                        <span className="px-2 py-0.5 rounded-md bg-[#C8A34D]/20 text-[#C8A34D] text-[10px] font-black uppercase">
+                        <span className="px-2 py-0.5 rounded-md bg-[#B88B2A]/20 text-[#B88B2A] text-[10px] font-black uppercase">
                           Firm Owner
                         </span>
                       </div>
@@ -871,7 +871,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                       </p>
                     </div>
                   </div>
-                  <CheckCircle2 className="w-5 h-5 text-[#C8A34D]" />
+                  <CheckCircle2 className="w-5 h-5 text-[#B88B2A]" />
                 </div>
               </div>
 
@@ -890,7 +890,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                       <p className="font-extrabold text-xs text-slate-900 dark:text-white">Team Member</p>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Junior Advocate • Civil Litigation</p>
                     </div>
-                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-[#C8A34D] rounded cursor-pointer" />
+                    <input type="checkbox" defaultChecked className="w-4 h-4 accent-[#B88B2A] rounded cursor-pointer" />
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -907,12 +907,12 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                           }}
                           className={`p-3.5 border-2 rounded-2xl flex items-center justify-between cursor-pointer transition-all ${
                             isSelected
-                              ? 'border-[#C8A34D] bg-amber-500/10'
+                              ? 'border-[#B88B2A] bg-amber-500/10'
                               : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-[#C8A34D]/20 text-[#C8A34D] flex items-center justify-center font-bold text-xs shrink-0">
+                            <div className="w-9 h-9 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] flex items-center justify-center font-bold text-xs shrink-0">
                               {member.name?.charAt(0) || 'M'}
                             </div>
                             <div>
@@ -928,7 +928,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => {}}
-                            className="w-4 h-4 accent-[#C8A34D] rounded cursor-pointer"
+                            className="w-4 h-4 accent-[#B88B2A] rounded cursor-pointer"
                           />
                         </div>
                       );
@@ -948,7 +948,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                   <select
                     value={courtType}
                     onChange={e => setCourtType(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                   >
                     {COURT_TYPES.map(ct => (
                       <option key={ct} value={ct}>{ct}</option>
@@ -962,7 +962,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                     placeholder="Delhi / Maharashtra"
                     value={courtState}
                     onChange={e => setCourtState(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -972,7 +972,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                     placeholder="New Delhi / Mumbai"
                     value={courtDistrict}
                     onChange={e => setCourtDistrict(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
               </div>
@@ -984,7 +984,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                   placeholder="e.g. High Court of Delhi / Patiala House District Court"
                   value={courtName}
                   onChange={e => setCourtName(e.target.value)}
-                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                  className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                 />
               </div>
 
@@ -996,7 +996,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                     placeholder="e.g. DLHC01-004321-2024"
                     value={cnrNumber}
                     onChange={e => setCnrNumber(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -1006,7 +1006,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                     placeholder="e.g. CS(COMM) 142/2024"
                     value={caseNumber}
                     onChange={e => setCaseNumber(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#C8A34D] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
+                    className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#B88B2A] text-[#111111] dark:text-white bg-white dark:bg-[#111111]"
                   />
                 </div>
               </div>
@@ -1019,9 +1019,9 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
               <div className="p-4 border border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/60 dark:bg-[#181818] space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                   <h4 className="text-xs font-black text-[#111111] dark:text-white uppercase tracking-wider flex items-center gap-2">
-                    <Sparkles size={16} className="text-[#C8A34D]" /> Final Review & Case Workspace Summary
+                    <Sparkles size={16} className="text-[#B88B2A]" /> Final Review & Case Workspace Summary
                   </h4>
-                  <span className="px-2.5 py-1 rounded-full text-[9px] font-mono font-bold bg-[#111111] text-[#C8A34D] uppercase border border-[#C8A34D]/30">
+                  <span className="px-2.5 py-1 rounded-full text-[9px] font-mono font-bold bg-[#111111] text-[#B88B2A] uppercase border border-[#B88B2A]/30">
                     {priority} Priority
                   </span>
                 </div>
@@ -1029,8 +1029,8 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                 {/* 1. Client Review Card */}
                 <div className="p-3.5 rounded-xl bg-white dark:bg-[#111111] border border-slate-200/80 dark:border-slate-800 space-y-1.5 text-xs shadow-2xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase text-[#C8A34D] tracking-wider">1. Client Information</span>
-                    <button onClick={() => setStep(1)} className="text-[11px] font-bold text-slate-500 hover:text-[#C8A34D] flex items-center gap-1 cursor-pointer transition-colors">
+                    <span className="text-[10px] font-black uppercase text-[#B88B2A] tracking-wider">1. Client Information</span>
+                    <button onClick={() => setStep(1)} className="text-[11px] font-bold text-slate-500 hover:text-[#B88B2A] flex items-center gap-1 cursor-pointer transition-colors">
                       <Edit2 size={11} /> Edit
                     </button>
                   </div>
@@ -1043,8 +1043,8 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                 {/* 2. Case Details Review Card */}
                 <div className="p-3.5 rounded-xl bg-white dark:bg-[#111111] border border-slate-200/80 dark:border-slate-800 space-y-1.5 text-xs shadow-2xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase text-[#C8A34D] tracking-wider">2. Case Information</span>
-                    <button onClick={() => setStep(2)} className="text-[11px] font-bold text-slate-500 hover:text-[#C8A34D] flex items-center gap-1 cursor-pointer transition-colors">
+                    <span className="text-[10px] font-black uppercase text-[#B88B2A] tracking-wider">2. Case Information</span>
+                    <button onClick={() => setStep(2)} className="text-[11px] font-bold text-slate-500 hover:text-[#B88B2A] flex items-center gap-1 cursor-pointer transition-colors">
                       <Edit2 size={11} /> Edit
                     </button>
                   </div>
@@ -1077,7 +1077,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
               <button
                 type="button"
                 onClick={handleNextStep}
-                className="px-6 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
+                className="px-6 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
               >
                 <span>Continue</span>
                 <ChevronRight size={16} />
@@ -1087,7 +1087,7 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
                 type="button"
                 disabled={isSubmitting}
                 onClick={handleSubmit}
-                className="px-7 py-3 bg-[#C8A34D] hover:bg-[#b08d3b] text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+                className="px-7 py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <span>{initialData ? 'Saving Changes...' : 'Creating Workspace...'}</span>
