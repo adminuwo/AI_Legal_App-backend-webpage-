@@ -105,8 +105,59 @@ export const getWorkspaces = async (req, res) => {
                 ws.permission = membership.permission;
                 ws.modules = membership.modules;
                 
-                // Dynamically count cases
-                ws.casesCount = await Project.countDocuments({ workspaceId: ws._id.toString() });
+                // Dynamically count cases strictly according to role and assignment
+                if (ws.type === 'personal') {
+                    ws.casesCount = await Project.countDocuments({
+                        userId,
+                        workspaceId: { $in: [null, '', 'personal_practice', ws._id.toString()] }
+                    });
+                } else {
+                    const isFirmOwner = ws.ownerId && String(ws.ownerId) === String(userId);
+                    const isFirmAdmin = Boolean(
+                        isFirmOwner ||
+                        membership.permission === 'Administrator' ||
+                        membership.role === 'Managing Partner' ||
+                        membership.role === 'Advocate / Owner'
+                    );
+
+                    if (isFirmAdmin) {
+                        ws.casesCount = await Project.countDocuments({
+                            workspaceId: { $in: [ws._id.toString(), ws._id] }
+                        });
+                    } else {
+                        // Invited team member: count ONLY cases explicitly assigned to them!
+                        const userIdStr = String(userId);
+                        const membershipIdStr = membership._id ? String(membership._id) : null;
+                        const idMatches = [userIdStr];
+                        if (membershipIdStr) idMatches.push(membershipIdStr);
+                        if (mongoose.Types.ObjectId.isValid(userIdStr)) {
+                            idMatches.push(new mongoose.Types.ObjectId(userIdStr));
+                        }
+
+                        const userDoc = await User.findById(userId).select('email name fullName').lean();
+                        const searchNames = [];
+                        if (userDoc?.name || userDoc?.fullName) {
+                            const rawName = String(userDoc.name || userDoc.fullName).trim();
+                            const stripped = rawName.replace(/^Adv\.\s*/i, '');
+                            searchNames.push(rawName, stripped, `Adv. ${stripped}`);
+                        }
+                        if (userDoc?.email) searchNames.push(userDoc.email);
+
+                        ws.casesCount = await Project.countDocuments({
+                            workspaceId: { $in: [ws._id.toString(), ws._id] },
+                            $or: [
+                                { userId: { $in: idMatches } },
+                                { owner: { $in: idMatches } },
+                                { assignedMembers: { $in: idMatches } },
+                                { assignedUserIds: { $in: idMatches } },
+                                { leadAdvocateUserId: { $in: idMatches } },
+                                { 'caseAssignments.userId': { $in: idMatches.map(String) } },
+                                { teamMembers: { $in: [...idMatches, ...searchNames] } },
+                                { 'members.user': { $in: idMatches } }
+                            ]
+                        });
+                    }
+                }
                 
                 workspaces.push(ws);
             }

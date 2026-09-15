@@ -163,6 +163,11 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
       setFirNumber(initialData.firNumber || '');
       setFirYear(initialData.firYear || '');
       setReferenceNumber(initialData.referenceNumber || '');
+
+      // Pre-select assigned team members
+      const existingAssignees = Array.isArray(initialData.assignedUserIds) ? initialData.assignedUserIds :
+        (Array.isArray(initialData.assignedMembers) ? initialData.assignedMembers : []);
+      setSelectedTeamMembers(existingAssignees.map(String));
     } else if (isOpen && !initialData) {
       resetForm();
     }
@@ -342,6 +347,11 @@ export const CreateCaseWizardModal = ({ isOpen, onClose, onSuccess, initialData 
       nextHearingDate,
       isConfidential,
       assignedTeamMembers: selectedTeamMembers,
+      assignedUserIds: selectedTeamMembers,
+      teamMembers: selectedTeamMembers.map(id => {
+        const found = firmMembers.find(m => (m.id || m._id) === id || m.userId === id);
+        return found?.name || found?.fullName || id;
+      }),
       isLegalCase: true,
       clientInfo: {
         name: finalClientName,

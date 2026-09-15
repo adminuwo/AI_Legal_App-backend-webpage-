@@ -7,6 +7,7 @@ import Message from '../models/Message.js';
 import WorkspaceMembership from '../models/WorkspaceMembership.js';
 import Workspace from '../models/Workspace.js';
 import Analysis from '../models/Analysis.js';
+import Client from '../models/Client.js';
 import { askOpenAI } from '../services/openai.service.js';
 import { detectLanguage } from '../utils/languageDetector.js';
 import { resolveResponseLanguage } from '../utils/languageResolver.js';
@@ -443,17 +444,45 @@ router.post('/', verifyToken, verifyMatterCreationAccess, async (req, res) => {
             activeWorkspaceId = 'personal_practice';
         }
 
+        const incomingTeamIds = Array.from(new Set([
+            ...(Array.isArray(assignedUserIds) ? assignedUserIds : []),
+            ...(Array.isArray(req.body.assignedTeamMembers) ? req.body.assignedTeamMembers : [])
+        ].filter(Boolean)));
+
+        const resolvedUserIds = new Set();
+        const resolvedNames = new Set(Array.isArray(teamMembers) ? teamMembers : []);
+
+        for (const rawId of incomingTeamIds) {
+            const idStr = String(rawId);
+            resolvedUserIds.add(idStr);
+            if (mongoose.Types.ObjectId.isValid(idStr)) {
+                try {
+                    const mem = await WorkspaceMembership.findById(idStr).populate('userId', 'name fullName email').lean();
+                    if (mem && mem.userId) {
+                        const uId = mem.userId._id ? String(mem.userId._id) : String(mem.userId);
+                        resolvedUserIds.add(uId);
+                        const memName = mem.userId.fullName || mem.userId.name;
+                        if (memName) resolvedNames.add(memName);
+                    }
+                } catch (e) {}
+            }
+        }
+
+        const finalAssignedUserIds = Array.from(resolvedUserIds);
+        const finalAssignedMembers = Array.from(new Set([String(req.user.id), ...finalAssignedUserIds]));
+        const finalTeamMembers = Array.from(resolvedNames);
+
         let project = new Project({
             name: caseName,
             userId: req.user.id,
             role: roleToSave,
             workspaceType: workspaceTypeToSave,
             workspaceId: String(activeWorkspaceId),
-            assignedMembers: Array.from(new Set([req.user.id, ...(assignedUserIds || [])])),
+            assignedMembers: finalAssignedMembers,
             leadAdvocate: leadAdvocate || '',
             leadAdvocateUserId: leadAdvocateUserId || req.user.id,
-            teamMembers: teamMembers || [],
-            assignedUserIds: assignedUserIds || [],
+            teamMembers: finalTeamMembers,
+            assignedUserIds: finalAssignedUserIds,
             clientId: req.body.clientId || null,
             clientName: clientName || '',
             clientMobileNumber: clientMobileNumber || '',
@@ -547,14 +576,12 @@ router.post('/', verifyToken, verifyMatterCreationAccess, async (req, res) => {
 // @access  Private
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const activeWorkspaceId = req.query.workspaceId || req.headers['x-active-workspace-id'] || req.headers['X-Active-Workspace-Id'] || req.headers['x-workspace-id'] || req.workspaceId || 'personal_practice';
+        let activeWorkspaceId = req.query.workspaceId || req.headers['x-active-workspace-id'] || req.headers['X-Active-Workspace-Id'] || req.headers['x-workspace-id'] || req.workspaceId;
         const userRoleHeader = (req.query.role || req.headers['x-user-role'] || 'advocate').toLowerCase();
         let requestedWsType = (req.query.workspaceType || req.headers['x-workspace-type'] || userRoleHeader).toLowerCase();
         if (requestedWsType === 'personal' || requestedWsType === 'personal_practice') {
             requestedWsType = userRoleHeader;
         }
-        
-        const isLawFirmWs = requestedWsType === 'law_firm' && activeWorkspaceId && activeWorkspaceId !== 'personal_practice' && !String(activeWorkspaceId).startsWith('personal_') && mongoose.Types.ObjectId.isValid(activeWorkspaceId);
 
         const authUserId = (req.user?.id || req.user?._id || '').toString();
         if (!authUserId) {
@@ -566,6 +593,43 @@ router.get('/', verifyToken, async (req, res) => {
             userIdConditions.push(new mongoose.Types.ObjectId(authUserId));
         }
 
+        // Auto-resolve active workspace if requestedWsType is law_firm but workspaceId is missing, placeholder, or invalid
+        if (requestedWsType === 'law_firm') {
+            const isInvalidWsId = !activeWorkspaceId || 
+                activeWorkspaceId === 'personal_practice' || 
+                activeWorkspaceId === 'firm_default' || 
+                activeWorkspaceId === 'firm_abc_workspace' || 
+                !mongoose.Types.ObjectId.isValid(activeWorkspaceId);
+
+            if (isInvalidWsId) {
+                // Check user's active firm memberships
+                const firmMemberships = await WorkspaceMembership.find({
+                    userId: { $in: userIdConditions },
+                    status: { $ne: 'Removed' }
+                }).populate('workspaceId').lean();
+
+                for (const m of firmMemberships) {
+                    if (m.workspaceId && (m.workspaceId.type === 'law_firm' || m.workspaceId.type !== 'personal')) {
+                        activeWorkspaceId = String(m.workspaceId._id);
+                        break;
+                    }
+                }
+
+                // If not found via membership, check if user is owner of a firm workspace
+                if (!activeWorkspaceId || !mongoose.Types.ObjectId.isValid(activeWorkspaceId)) {
+                    const ownedFirm = await Workspace.findOne({
+                        ownerId: { $in: userIdConditions },
+                        type: { $in: ['law_firm', 'enterprise', 'firm'] }
+                    }).lean();
+                    if (ownedFirm) {
+                        activeWorkspaceId = String(ownedFirm._id);
+                    }
+                }
+            }
+        }
+        
+        const isLawFirmWs = requestedWsType === 'law_firm' && activeWorkspaceId && activeWorkspaceId !== 'personal_practice' && !String(activeWorkspaceId).startsWith('personal_') && mongoose.Types.ObjectId.isValid(activeWorkspaceId);
+
         let roleQuery = {};
 
         if (isLawFirmWs) {
@@ -573,31 +637,79 @@ router.get('/', verifyToken, async (req, res) => {
             const wsIdStr = String(activeWorkspaceId);
             const wsObjId = mongoose.Types.ObjectId.isValid(wsIdStr) ? new mongoose.Types.ObjectId(wsIdStr) : null;
             const wsQueryConditions = wsObjId ? [{ workspaceId: wsIdStr }, { workspaceId: wsObjId }] : [{ workspaceId: wsIdStr }];
+            const wsFilter = wsObjId ? { $in: [wsIdStr, wsObjId] } : wsIdStr;
 
-            const isFirmMember = await WorkspaceMembership.exists({
-                $or: wsQueryConditions,
-                $or: [{ userId: req.user.id }, { email: req.user.email }]
-            }) || await Workspace.exists({
+            // 1. Check if user is the Workspace Owner
+            const isFirmOwner = await Workspace.exists({
                 $or: wsObjId ? [{ _id: wsIdStr }, { _id: wsObjId }] : [{ _id: wsIdStr }],
                 ownerId: req.user.id
             });
 
-            if (isFirmMember) {
+            // 2. Fetch the user's active membership in this workspace
+            const membership = await WorkspaceMembership.findOne({
+                workspaceId: wsFilter,
+                userId: { $in: userIdConditions },
+                status: { $ne: 'Removed' }
+            }).lean();
+
+            // 3. Determine if the user is a Firm Administrator / Managing Partner
+            const isFirmAdmin = Boolean(
+                isFirmOwner ||
+                membership?.permission === 'Administrator' ||
+                membership?.role === 'Managing Partner' ||
+                membership?.role === 'Advocate / Owner'
+            );
+
+            if (isFirmAdmin) {
+                // Firm Owner / Managing Partner sees all cases in this firm workspace
                 roleQuery = {
-                    $or: wsQueryConditions,
-                    workspaceType: 'law_firm'
-                };
-            } else {
-                roleQuery = {
-                    $or: wsQueryConditions,
-                    workspaceType: 'law_firm',
-                    $or: [
-                        { userId: { $in: userIdConditions } },
-                        { assignedMembers: { $in: userIdConditions } },
-                        { assignedUserIds: { $in: userIdConditions } },
-                        { leadAdvocateUserId: { $in: userIdConditions } }
+                    $and: [
+                        { $or: wsQueryConditions },
+                        { workspaceType: 'law_firm' }
                     ]
                 };
+            } else if (membership) {
+                // Invited team member (Associate Advocate, Junior Advocate, Partner, Intern, etc.):
+                // STRICT ISOLATION: Must ONLY see cases where they are explicitly assigned / added!
+                const membershipIdStr = membership._id ? String(membership._id) : null;
+                const idMatches = [...userIdConditions];
+                if (membershipIdStr) {
+                    idMatches.push(membershipIdStr);
+                    if (mongoose.Types.ObjectId.isValid(membershipIdStr)) {
+                        idMatches.push(new mongoose.Types.ObjectId(membershipIdStr));
+                    }
+                }
+
+                const userEmail = req.user.email ? String(req.user.email).trim() : null;
+                const userName = (req.user.name || req.user.fullName) ? String(req.user.name || req.user.fullName).trim() : null;
+                const searchNames = [];
+                if (userName) {
+                    const stripped = userName.replace(/^Adv\.\s*/i, '');
+                    searchNames.push(userName, stripped, `Adv. ${stripped}`);
+                }
+                if (userEmail) searchNames.push(userEmail);
+
+                roleQuery = {
+                    $and: [
+                        { $or: wsQueryConditions },
+                        { workspaceType: 'law_firm' },
+                        {
+                            $or: [
+                                { userId: { $in: userIdConditions } },
+                                { owner: { $in: userIdConditions } },
+                                { assignedMembers: { $in: idMatches } },
+                                { assignedUserIds: { $in: idMatches } },
+                                { leadAdvocateUserId: { $in: idMatches } },
+                                { 'caseAssignments.userId': { $in: idMatches.map(String) } },
+                                { teamMembers: { $in: [...idMatches, ...searchNames] } },
+                                { 'members.user': { $in: idMatches } }
+                            ]
+                        }
+                    ]
+                };
+            } else {
+                // User is not a member or owner of this firm: zero access
+                roleQuery = { _id: null };
             }
         } else if (requestedWsType === 'student') {
             // STRICT STUDENT WORKSPACE QUERY
@@ -672,37 +784,54 @@ router.get('/workspace-hearings', verifyToken, async (req, res) => {
         }
 
         let isAuthorized = false;
+        let isFirmAdmin = false;
 
         if (wsIdStr === 'personal_practice' || workspaceType === 'personal') {
             isAuthorized = true;
         } else {
             const isOwner = await Workspace.exists({ _id: wsIdStr, ownerId: req.user.id });
-            const userDoc = req.user.id ? await User.findById(req.user.id).select('email').lean() : null;
+            const userDoc = req.user.id ? await User.findById(req.user.id).select('email name fullName').lean() : null;
             const userEmail = userDoc?.email || req.user.email;
-            const isMember = isOwner || await WorkspaceMembership.exists({
+            const membership = await WorkspaceMembership.findOne({
                 workspaceId: wsIdStr,
                 $or: [{ userId: req.user.id }, { email: userEmail }],
                 status: 'Active'
-            });
-            const hasCaseAccess = isMember || await Project.exists({
+            }).lean();
+            isFirmAdmin = Boolean(isOwner || membership?.permission === 'Administrator' || membership?.role === 'Managing Partner');
+            const hasCaseAccess = isFirmAdmin || await Project.exists({
+                workspaceId: { $in: wsCondition },
                 $or: [
-                    { workspaceId: { $in: wsCondition } },
                     { userId: req.user.id },
                     { assignedMembers: req.user.id },
                     { assignedUserIds: req.user.id },
-                    { leadAdvocateUserId: req.user.id }
+                    { leadAdvocateUserId: req.user.id },
+                    { 'caseAssignments.userId': String(req.user.id) }
                 ]
             });
-            isAuthorized = Boolean(isMember || hasCaseAccess);
+            isAuthorized = Boolean(isFirmAdmin || hasCaseAccess);
         }
 
         if (!isAuthorized) {
             return res.status(403).json({ success: false, error: 'ACCESS_DENIED', message: 'You are not authorized to view hearings in this workspace.' });
         }
 
-        const query = (wsIdStr === 'personal_practice' || workspaceType === 'personal')
-            ? { userId: req.user.id }
-            : { $or: [{ workspaceId: { $in: wsCondition } }, { userId: req.user.id }] };
+        let query;
+        if (wsIdStr === 'personal_practice' || workspaceType === 'personal') {
+            query = { userId: req.user.id };
+        } else if (isFirmAdmin) {
+            query = { $or: [{ workspaceId: { $in: wsCondition } }, { userId: req.user.id }] };
+        } else {
+            query = {
+                workspaceId: { $in: wsCondition },
+                $or: [
+                    { userId: req.user.id },
+                    { assignedMembers: req.user.id },
+                    { assignedUserIds: req.user.id },
+                    { leadAdvocateUserId: req.user.id },
+                    { 'caseAssignments.userId': String(req.user.id) }
+                ]
+            };
+        }
 
         const projects = await Project.find(query).select('name clientName court hearings workspaceId').lean();
 
@@ -774,27 +903,48 @@ router.get('/:id', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Project not found' });
         }
 
-        // Access Control Verification for Law Firm Members / Assigned Members / Case Owner
-        const isOwner = String(project.userId) === String(req.user.id);
-        const isAssigned = (project.assignedMembers || []).map(String).includes(String(req.user.id)) ||
-                           (project.assignedUserIds || []).map(String).includes(String(req.user.id)) ||
-                           String(project.leadAdvocateUserId) === String(req.user.id);
-        
-        let isFirmMember = false;
-        if (project.workspaceId || project.workspaceType === 'law_firm') {
-            const wsIdStr = String(project.workspaceId || '');
-            const wsObjId = mongoose.Types.ObjectId.isValid(wsIdStr) ? new mongoose.Types.ObjectId(wsIdStr) : null;
-            isFirmMember = await WorkspaceMembership.exists({
-                $or: [{ userId: req.user.id }, { email: req.user.email }]
-            }) || (wsIdStr && await Workspace.exists({
+        // Access Control Verification: Firm Owner, Firm Admin, Case Owner, or Assigned Members ONLY
+        const isOwner = String(project.userId) === String(req.user.id) || String(project.owner) === String(req.user.id);
+        const wsIdStr = String(project.workspaceId || '');
+        const wsObjId = mongoose.Types.ObjectId.isValid(wsIdStr) ? new mongoose.Types.ObjectId(wsIdStr) : null;
+
+        let isFirmOwner = false;
+        let isFirmAdmin = false;
+        let membership = null;
+
+        if (project.workspaceType === 'law_firm' || (wsIdStr && wsIdStr !== 'personal_practice' && !wsIdStr.startsWith('personal_'))) {
+            isFirmOwner = wsIdStr && await Workspace.exists({
                 $or: wsObjId ? [{ _id: wsIdStr }, { _id: wsObjId }] : [{ _id: wsIdStr }],
                 ownerId: req.user.id
-            }));
+            });
+            membership = wsIdStr && await WorkspaceMembership.findOne({
+                $or: wsObjId ? [{ workspaceId: wsIdStr }, { workspaceId: wsObjId }] : [{ workspaceId: wsIdStr }],
+                $or: [{ userId: req.user.id }, { email: req.user.email }],
+                status: { $ne: 'Removed' }
+            }).lean();
+            if (membership) {
+                isFirmAdmin = membership.permission === 'Administrator' || membership.role === 'Managing Partner' || membership.role === 'Advocate / Owner';
+            }
         }
 
-        if (!isOwner && !isAssigned && !isFirmMember) {
-            console.warn(`[DEBUG] Access DENIED: ${req.params.id} for user: ${req.user.id}`);
-            return res.status(403).json({ error: 'Access denied to this case' });
+        const membershipIdStr = membership?._id ? String(membership._id) : null;
+        const idMatches = [String(req.user.id)];
+        if (membershipIdStr) idMatches.push(membershipIdStr);
+
+        const isAssigned = (project.assignedMembers || []).some(id => idMatches.includes(String(id))) ||
+                           (project.assignedUserIds || []).some(id => idMatches.includes(String(id))) ||
+                           idMatches.includes(String(project.leadAdvocateUserId)) ||
+                           (project.caseAssignments || []).some(ca => idMatches.includes(String(ca.userId))) ||
+                           (project.teamMembers || []).some(tm => {
+                               const tmStr = String(tm).trim().toLowerCase();
+                               return idMatches.some(id => tmStr === id.toLowerCase()) ||
+                                      (req.user.email && tmStr === req.user.email.toLowerCase()) ||
+                                      (req.user.name && (tmStr.includes(req.user.name.toLowerCase()) || req.user.name.toLowerCase().includes(tmStr)));
+                           });
+
+        if (!isOwner && !isFirmOwner && !isFirmAdmin && !isAssigned) {
+            console.warn(`[DEBUG] Access DENIED: ${req.params.id} for user: ${req.user.id} (not assigned to this case)`);
+            return res.status(403).json({ error: 'Access denied: You are not assigned to this case' });
         }
 
         // Strict Role Workspace Scoping Verification
@@ -875,46 +1025,136 @@ router.get('/:id', verifyToken, async (req, res) => {
         const formattedDocs = await AccessControlService.filterAndFormatItems(req.user, project, refreshedDocuments);
         const formattedEvidence = await AccessControlService.filterAndFormatItems(req.user, project, refreshedEvidence);
 
-        // Resolve Firm Owner real identity
-        const ownerIdentity = await AccessControlService.resolveUploaderIdentity(project.userId, project);
+        // Resolve Firm Owner / Lead Advocate real identity
+        const ownerIdStr = String(project.userId || '');
+        const leadUser = await AccessControlService.resolveUploaderIdentity(project.userId, project);
+        const ownerIdentity = {
+            userId: ownerIdStr,
+            name: leadUser?.name || project.leadAdvocate || 'Aditi Lakhera',
+            fullName: leadUser?.fullName || leadUser?.name || project.leadAdvocate || 'Aditi Lakhera',
+            role: leadUser?.role || 'Firm Owner',
+            email: leadUser?.email || '',
+            avatar: leadUser?.avatar || ''
+        };
 
-        // Resolve Team Members real identities
         const teamMembersList = [];
-        const memberUserIds = new Set();
-        if (project.userId) memberUserIds.add(String(project.userId));
+        const assignedIdSet = new Set();
+
+        // 1. Always add Lead Advocate (Case Creator / Owner) as primary team member
+        const leadMember = {
+            id: ownerIdStr || 'lead_owner',
+            userId: ownerIdStr,
+            name: leadUser?.name || project.leadAdvocate || 'Aditi Lakhera',
+            fullName: leadUser?.fullName || leadUser?.name || project.leadAdvocate || 'Aditi Lakhera',
+            role: 'Lead Advocate',
+            caseRole: 'Lead Advocate',
+            firmDesignation: leadUser?.role || 'Managing Partner',
+            department: leadUser?.department || 'Corporate & Management',
+            avatar: leadUser?.avatar || '',
+            email: leadUser?.email || '',
+            phone: leadUser?.phone || '',
+            status: 'Active',
+            isLead: true,
+            isOwner: true
+        };
+        teamMembersList.push(leadMember);
+        if (ownerIdStr) assignedIdSet.add(ownerIdStr);
+
+        // Fetch active memberships of the case's workspace
+        let firmMemberships = [];
+        if (project.workspaceId && mongoose.Types.ObjectId.isValid(project.workspaceId)) {
+            firmMemberships = await WorkspaceMembership.find({ 
+                workspaceId: project.workspaceId,
+                status: { $ne: 'Removed' }
+            }).populate('userId', 'name fullName email avatar role designation department').lean();
+        }
+
+        // 2. Collect other explicitly assigned user IDs
+        const explicitUserIds = new Set();
         if (Array.isArray(project.assignedMembers)) {
-            project.assignedMembers.forEach(id => memberUserIds.add(String(id)));
+            project.assignedMembers.forEach(id => {
+                if (id && String(id) !== ownerIdStr) explicitUserIds.add(String(id));
+            });
         }
         if (Array.isArray(project.assignedUserIds)) {
-            project.assignedUserIds.forEach(id => memberUserIds.add(String(id)));
+            project.assignedUserIds.forEach(id => {
+                if (id && String(id) !== ownerIdStr) explicitUserIds.add(String(id));
+            });
         }
-
-        // Fetch all members of the case's workspace
-        if (project.workspaceId && mongoose.Types.ObjectId.isValid(project.workspaceId)) {
-            const memberships = await WorkspaceMembership.find({ workspaceId: project.workspaceId }).lean();
-            memberships.forEach(m => {
-                if (m.userId) memberUserIds.add(String(m.userId));
+        if (Array.isArray(project.caseAssignments)) {
+            project.caseAssignments.forEach(ca => {
+                if (ca?.userId && String(ca.userId) !== ownerIdStr) explicitUserIds.add(String(ca.userId));
             });
         }
 
-        for (const uId of memberUserIds) {
+        // If project has explicit teamMembers names, match with firm memberships
+        if (Array.isArray(project.teamMembers) && firmMemberships.length > 0) {
+            project.teamMembers.forEach(tm => {
+                const tmName = typeof tm === 'string' ? tm.trim() : (tm?.name || tm?.fullName || '').trim();
+                if (!tmName) return;
+                const cleanTm = tmName.replace(/^(adv\.|advocate)\s+/i, '').toLowerCase();
+                if (cleanTm.length < 2 || cleanTm === 'advocate') return;
+                const matched = firmMemberships.find(m => {
+                    const mName = (m.userId?.fullName || m.userId?.name || m.name || '').replace(/^(adv\.|advocate)\s+/i, '').trim().toLowerCase();
+                    return mName === cleanTm && String(m.userId?._id || m.userId) !== ownerIdStr;
+                });
+                if (matched && matched.userId) {
+                    explicitUserIds.add(String(matched.userId._id || matched.userId));
+                }
+            });
+        }
+
+        for (const uId of explicitUserIds) {
             const memberInfo = await AccessControlService.resolveUploaderIdentity(uId, project);
             if (memberInfo && memberInfo.userId) {
-                teamMembersList.push(memberInfo);
+                const ca = Array.isArray(project.caseAssignments) ? project.caseAssignments.find(c => String(c.userId) === String(uId)) : null;
+                const caseRole = ca?.caseRole || memberInfo.caseRole || memberInfo.role || 'Associate Advocate';
+                teamMembersList.push({
+                    id: String(uId),
+                    userId: String(uId),
+                    name: memberInfo.name || memberInfo.fullName,
+                    fullName: memberInfo.fullName || memberInfo.name,
+                    role: caseRole,
+                    caseRole: caseRole,
+                    firmDesignation: memberInfo.role || 'Associate Advocate',
+                    department: memberInfo.department || 'Civil & Criminal Practice',
+                    avatar: memberInfo.avatar || '',
+                    email: memberInfo.email || '',
+                    phone: memberInfo.phone || '',
+                    status: 'Active',
+                    isLead: false,
+                    isOwner: false
+                });
+                assignedIdSet.add(String(uId));
             }
         }
 
-        // Also add any legacy lawyers stored directly on project
-        if (Array.isArray(project.lawyers)) {
-            project.lawyers.forEach(l => {
-                if (l && l.name && l.name !== 'Advocate') {
-                    teamMembersList.push({
-                        userId: String(l.userId || l.id || l._id || l.name),
-                        name: l.name,
-                        role: l.role || l.designation || 'Advocate'
-                    });
-                }
-            });
+        // 3. Compute unassigned firm members (members of this firm NOT in assignedIdSet)
+        const unassignedMembersList = [];
+        for (const m of firmMemberships) {
+            if (!m.userId && !m.name && !m.email) continue;
+            const uId = String(m.userId?._id || m.userId || '');
+            const mId = String(m._id);
+            const mName = m.userId?.fullName || m.userId?.name || m.name || m.email?.split('@')[0] || '';
+            if (!mName) continue;
+
+            const isAssigned = (uId && assignedIdSet.has(uId)) || (mId && assignedIdSet.has(mId));
+            if (!isAssigned) {
+                unassignedMembersList.push({
+                    id: mId,
+                    userId: uId || mId,
+                    name: mName,
+                    fullName: mName,
+                    role: m.role || m.userId?.role || 'Associate Advocate',
+                    designation: m.role || 'Associate Advocate',
+                    department: m.department || 'Civil & Criminal Practice',
+                    avatar: m.userId?.avatar || m.avatar || '',
+                    email: m.userId?.email || m.email || '',
+                    phone: m.phone || '',
+                    status: m.status || 'Active',
+                    isAssigned: false
+                });
+            }
         }
 
         // Format Tasks with task privacy and real user identities
@@ -926,6 +1166,7 @@ router.get('/:id', verifyToken, async (req, res) => {
         responseData.tasks = formattedTasks;
         responseData.ownerInfo = ownerIdentity;
         responseData.teamMembers = teamMembersList;
+        responseData.unassignedMembers = unassignedMembersList;
 
         res.json(responseData);
     } catch (error) {
@@ -945,18 +1186,117 @@ router.put('/:id', verifyToken, async (req, res) => {
         delete updateData.userId;
         delete updateData._id;
 
-        let existingProject = await Project.findOne({
-            _id: req.params.id,
-            $or: [
-                { userId: req.user.id },
-                { owner: req.user.id },
-                { assignedUserIds: req.user.id },
-                { 'members.user': req.user.id }
-            ]
-        });
-        if (!existingProject) return res.status(403).json({ error: 'Access denied: Case not found or unauthorized' });
+        let existingProject = await Project.findById(req.params.id);
+        if (!existingProject) return res.status(404).json({ error: 'Case not found' });
 
-        // Apply changes
+        // Access check: Firm Owner, Firm Admin, Case Owner, or Assigned Member
+        const isOwner = String(existingProject.userId) === String(req.user.id) || String(existingProject.owner) === String(req.user.id);
+        const wsIdStr = String(existingProject.workspaceId || '');
+        const wsObjId = mongoose.Types.ObjectId.isValid(wsIdStr) ? new mongoose.Types.ObjectId(wsIdStr) : null;
+        let isFirmOwner = false;
+        let isFirmAdmin = false;
+
+        if (existingProject.workspaceType === 'law_firm' || (wsIdStr && wsIdStr !== 'personal_practice' && !wsIdStr.startsWith('personal_'))) {
+            isFirmOwner = wsIdStr && await Workspace.exists({
+                $or: wsObjId ? [{ _id: wsIdStr }, { _id: wsObjId }] : [{ _id: wsIdStr }],
+                ownerId: req.user.id
+            });
+            const membership = wsIdStr && await WorkspaceMembership.findOne({
+                $or: wsObjId ? [{ workspaceId: wsIdStr }, { workspaceId: wsObjId }] : [{ workspaceId: wsIdStr }],
+                $or: [{ userId: req.user.id }, { email: req.user.email }],
+                status: { $ne: 'Removed' }
+            }).lean();
+            if (membership) {
+                isFirmAdmin = Boolean(isFirmOwner || membership.permission === 'Administrator' || membership.role === 'Managing Partner' || membership.role === 'Advocate / Owner');
+            }
+        }
+
+        const isAssigned = authorizeCaseAccess(req.user, existingProject);
+
+        if (!isOwner && !isFirmOwner && !isFirmAdmin && !isAssigned) {
+            return res.status(403).json({ error: 'Access denied: You are not assigned to this case' });
+        }
+
+        // Team assignment resolution when team members are updated
+        if (updateData.assignedUserIds !== undefined || updateData.assignedTeamMembers !== undefined || updateData.teamMembers !== undefined) {
+            const incomingIds = [
+                ...(Array.isArray(updateData.assignedUserIds) ? updateData.assignedUserIds : []),
+                ...(Array.isArray(updateData.assignedTeamMembers) ? updateData.assignedTeamMembers : [])
+            ];
+            const incomingNames = Array.isArray(updateData.teamMembers) ? updateData.teamMembers : [];
+
+            const resolvedUserIds = new Set();
+            const resolvedNames = new Set();
+
+            // Fetch firm memberships to resolve names <-> user IDs bidirectionally
+            let firmMemberships = [];
+            if (existingProject.workspaceId && mongoose.Types.ObjectId.isValid(existingProject.workspaceId)) {
+                firmMemberships = await WorkspaceMembership.find({ 
+                    workspaceId: existingProject.workspaceId,
+                    status: { $ne: 'Removed' }
+                }).populate('userId', 'name fullName email avatar role designation').lean();
+            }
+
+            // 1. Process incoming IDs (can be User ID or WorkspaceMembership ID)
+            for (const rawId of incomingIds) {
+                if (!rawId) continue;
+                const idStr = String(rawId);
+                resolvedUserIds.add(idStr);
+
+                // Check in firm memberships
+                const matchMem = firmMemberships.find(m => 
+                    String(m._id) === idStr || 
+                    String(m.userId?._id || m.userId) === idStr
+                );
+                if (matchMem) {
+                    if (matchMem.userId?._id) resolvedUserIds.add(String(matchMem.userId._id));
+                    const n = matchMem.userId?.fullName || matchMem.userId?.name || matchMem.name;
+                    if (n) resolvedNames.add(n);
+                } else if (mongoose.Types.ObjectId.isValid(idStr)) {
+                    try {
+                        const u = await User.findById(idStr).select('name fullName email').lean();
+                        if (u) {
+                            resolvedUserIds.add(String(u._id));
+                            if (u.fullName || u.name) resolvedNames.add(u.fullName || u.name);
+                        }
+                    } catch (e) {}
+                }
+            }
+
+            // 2. Process incoming Names
+            for (const rawName of incomingNames) {
+                if (!rawName) continue;
+                const nameStr = typeof rawName === 'string' ? rawName.trim() : (rawName?.name || rawName?.fullName || '').trim();
+                if (!nameStr) continue;
+                resolvedNames.add(nameStr);
+
+                // Match against firm memberships
+                const cleanTarget = nameStr.replace(/^(adv\.|advocate)\s+/i, '').toLowerCase();
+                const matchMem = firmMemberships.find(m => {
+                    const fName = (m.userId?.fullName || m.userId?.name || m.name || '').replace(/^(adv\.|advocate)\s+/i, '').trim().toLowerCase();
+                    return fName === cleanTarget || fName.includes(cleanTarget) || cleanTarget.includes(fName);
+                });
+                if (matchMem && matchMem.userId) {
+                    const uId = String(matchMem.userId._id || matchMem.userId);
+                    resolvedUserIds.add(uId);
+                }
+            }
+
+            // Always ensure project owner is assigned
+            if (existingProject.userId) {
+                resolvedUserIds.add(String(existingProject.userId));
+            }
+
+            existingProject.assignedUserIds = Array.from(resolvedUserIds);
+            existingProject.assignedMembers = Array.from(resolvedUserIds);
+            existingProject.teamMembers = Array.from(resolvedNames);
+
+            delete updateData.assignedUserIds;
+            delete updateData.assignedTeamMembers;
+            delete updateData.teamMembers;
+        }
+
+        // Apply remaining changes
         Object.assign(existingProject, updateData);
 
         // Auto-sync assignedMembers when tasks are assigned to team advocates
@@ -978,8 +1318,9 @@ router.put('/:id', verifyToken, async (req, res) => {
         if (updateData.evidence !== undefined) existingProject.markModified('evidence');
         if (updateData.facts !== undefined) existingProject.markModified('facts');
         if (updateData.hearings !== undefined) existingProject.markModified('hearings');
-        if (updateData.assignedMembers !== undefined) existingProject.markModified('assignedMembers');
-        if (updateData.assignedUserIds !== undefined) existingProject.markModified('assignedUserIds');
+        existingProject.markModified('assignedMembers');
+        existingProject.markModified('assignedUserIds');
+        existingProject.markModified('teamMembers');
 
         // Always trigger AI analysis to refresh caseIntelligence when summary or brief is updated or missing, unless it's only a courtroom language update
         const isOnlyLanguageUpdate = Object.keys(updateData).length === 1 && updateData.courtroomLanguage !== undefined;
@@ -1046,6 +1387,118 @@ router.put('/:id', verifyToken, async (req, res) => {
     }
 });
 
+// @desc    Assign a firm member to this case
+// @route   POST /api/projects/:id/members
+// @access  Private
+router.post('/:id/members', verifyToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId, memberName, role } = req.body;
+
+        const project = await Project.findById(id);
+        if (!project) return res.status(404).json({ success: false, message: 'Case not found' });
+
+        // Access check: Firm Owner, Firm Admin, Case Owner, or Lead Advocate
+        const isOwner = String(project.userId) === String(req.user.id) || String(project.owner) === String(req.user.id);
+        const wsIdStr = String(project.workspaceId || '');
+        const wsObjId = mongoose.Types.ObjectId.isValid(wsIdStr) ? new mongoose.Types.ObjectId(wsIdStr) : null;
+        let isFirmOwner = false;
+        let isFirmAdmin = false;
+
+        if (project.workspaceType === 'law_firm' || (wsIdStr && wsIdStr !== 'personal_practice' && !wsIdStr.startsWith('personal_'))) {
+            isFirmOwner = wsIdStr && await Workspace.exists({
+                $or: wsObjId ? [{ _id: wsIdStr }, { _id: wsObjId }] : [{ _id: wsIdStr }],
+                ownerId: req.user.id
+            });
+            const membership = wsIdStr && await WorkspaceMembership.findOne({
+                $or: wsObjId ? [{ workspaceId: wsIdStr }, { workspaceId: wsObjId }] : [{ workspaceId: wsIdStr }],
+                $or: [{ userId: req.user.id }, { email: req.user.email }],
+                status: { $ne: 'Removed' }
+            }).lean();
+            if (membership) {
+                isFirmAdmin = Boolean(isFirmOwner || membership.permission === 'Administrator' || membership.role === 'Managing Partner' || membership.role === 'Advocate / Owner');
+            }
+        }
+
+        if (!isOwner && !isFirmOwner && !isFirmAdmin) {
+            return res.status(403).json({ success: false, message: 'Not authorized to assign members to this case' });
+        }
+
+        // Resolve user identity
+        let targetUserId = userId ? String(userId) : null;
+        let targetName = memberName ? String(memberName).trim() : '';
+
+        // If targetUserId is a membership id, resolve user
+        if (targetUserId && mongoose.Types.ObjectId.isValid(targetUserId)) {
+            const mem = await WorkspaceMembership.findById(targetUserId).populate('userId', 'name fullName email').lean();
+            if (mem && mem.userId) {
+                targetUserId = String(mem.userId._id || mem.userId);
+                if (!targetName) targetName = mem.userId.fullName || mem.userId.name;
+            }
+        }
+
+        if (!targetUserId && targetName && project.workspaceId) {
+            const cleanTarget = targetName.replace(/^(adv\.|advocate)\s+/i, '').toLowerCase();
+            const mems = await WorkspaceMembership.find({
+                workspaceId: project.workspaceId,
+                status: { $ne: 'Removed' }
+            }).populate('userId', 'name fullName email').lean();
+            const matched = mems.find(m => {
+                const n = (m.userId?.fullName || m.userId?.name || m.name || '').replace(/^(adv\.|advocate)\s+/i, '').trim().toLowerCase();
+                return n === cleanTarget || n.includes(cleanTarget) || cleanTarget.includes(n);
+            });
+            if (matched && matched.userId) {
+                targetUserId = String(matched.userId._id || matched.userId);
+            }
+        }
+
+        if (targetUserId) {
+            const currentAssigned = new Set((project.assignedUserIds || []).map(String));
+            currentAssigned.add(targetUserId);
+            project.assignedUserIds = Array.from(currentAssigned);
+            project.assignedMembers = Array.from(currentAssigned);
+        }
+
+        if (targetName) {
+            const currentTeam = new Set(project.teamMembers || []);
+            currentTeam.add(targetName);
+            project.teamMembers = Array.from(currentTeam);
+        }
+
+        if (role && targetUserId) {
+            if (!Array.isArray(project.caseAssignments)) project.caseAssignments = [];
+            const existingCa = project.caseAssignments.find(ca => String(ca.userId) === targetUserId);
+            if (existingCa) {
+                existingCa.caseRole = role;
+            } else {
+                project.caseAssignments.push({
+                    userId: targetUserId,
+                    name: targetName || 'Advocate',
+                    caseRole: role,
+                    assignedAt: new Date()
+                });
+            }
+        }
+
+        project.markModified('assignedUserIds');
+        project.markModified('assignedMembers');
+        project.markModified('teamMembers');
+        project.markModified('caseAssignments');
+
+        await project.save();
+
+        res.json({
+            success: true,
+            message: `Assigned ${targetName || 'member'} to this case successfully`,
+            assignedUserIds: project.assignedUserIds,
+            teamMembers: project.teamMembers
+        });
+    } catch (error) {
+        console.error('Error assigning member to case:', error);
+        res.status(500).json({ success: false, message: 'Failed to assign member to case', details: error.message });
+    }
+});
+
 // @desc    Remove a team member from a case
 // @route   DELETE /api/projects/:id/members/:memberId
 // @desc    Remove member from THIS CASE ONLY (does NOT alter Law Firm membership)
@@ -1059,15 +1512,30 @@ router.delete('/:id/members/:memberId', verifyToken, async (req, res) => {
         const project = await Project.findById(id);
         if (!project) return res.status(404).json({ success: false, message: 'Case not found' });
 
-        // Access check
-        const isOwner = String(project.userId) === String(req.user.id);
+        // Access check: Firm Owner, Firm Admin, Case Owner, or Lead Advocate ONLY
+        const isOwner = String(project.userId) === String(req.user.id) || String(project.owner) === String(req.user.id);
         const isLead = String(project.leadAdvocateUserId) === String(req.user.id);
-        const isMember = await WorkspaceMembership.exists({
-            workspaceId: project.workspaceId,
-            $or: [{ userId: req.user.id }, { email: req.user.email }]
-        });
+        const wsIdStr = String(project.workspaceId || '');
+        const wsObjId = mongoose.Types.ObjectId.isValid(wsIdStr) ? new mongoose.Types.ObjectId(wsIdStr) : null;
+        let isFirmOwner = false;
+        let isFirmAdmin = false;
 
-        if (!isOwner && !isLead && !isMember) {
+        if (project.workspaceType === 'law_firm' || (wsIdStr && wsIdStr !== 'personal_practice' && !wsIdStr.startsWith('personal_'))) {
+            isFirmOwner = wsIdStr && await Workspace.exists({
+                $or: wsObjId ? [{ _id: wsIdStr }, { _id: wsObjId }] : [{ _id: wsIdStr }],
+                ownerId: req.user.id
+            });
+            const membership = wsIdStr && await WorkspaceMembership.findOne({
+                $or: wsObjId ? [{ workspaceId: wsIdStr }, { workspaceId: wsObjId }] : [{ workspaceId: wsIdStr }],
+                $or: [{ userId: req.user.id }, { email: req.user.email }],
+                status: { $ne: 'Removed' }
+            }).lean();
+            if (membership) {
+                isFirmAdmin = Boolean(isFirmOwner || membership.permission === 'Administrator' || membership.role === 'Managing Partner' || membership.role === 'Advocate / Owner');
+            }
+        }
+
+        if (!isOwner && !isLead && !isFirmOwner && !isFirmAdmin) {
             return res.status(403).json({ success: false, message: 'Not authorized to remove members from this case' });
         }
 
@@ -1213,6 +1681,33 @@ router.put('/:id/members/:memberId/role', verifyToken, async (req, res) => {
         const project = await Project.findById(id);
         if (!project) return res.status(404).json({ success: false, message: 'Case not found' });
 
+        // Access check: Firm Owner, Firm Admin, Case Owner, or Lead Advocate ONLY
+        const isOwner = String(project.userId) === String(req.user.id) || String(project.owner) === String(req.user.id);
+        const isLead = String(project.leadAdvocateUserId) === String(req.user.id);
+        const wsIdStr = String(project.workspaceId || '');
+        const wsObjId = mongoose.Types.ObjectId.isValid(wsIdStr) ? new mongoose.Types.ObjectId(wsIdStr) : null;
+        let isFirmOwner = false;
+        let isFirmAdmin = false;
+
+        if (project.workspaceType === 'law_firm' || (wsIdStr && wsIdStr !== 'personal_practice' && !wsIdStr.startsWith('personal_'))) {
+            isFirmOwner = wsIdStr && await Workspace.exists({
+                $or: wsObjId ? [{ _id: wsIdStr }, { _id: wsObjId }] : [{ _id: wsIdStr }],
+                ownerId: req.user.id
+            });
+            const membership = wsIdStr && await WorkspaceMembership.findOne({
+                $or: wsObjId ? [{ workspaceId: wsIdStr }, { workspaceId: wsObjId }] : [{ workspaceId: wsIdStr }],
+                $or: [{ userId: req.user.id }, { email: req.user.email }],
+                status: { $ne: 'Removed' }
+            }).lean();
+            if (membership) {
+                isFirmAdmin = Boolean(isFirmOwner || membership.permission === 'Administrator' || membership.role === 'Managing Partner' || membership.role === 'Advocate / Owner');
+            }
+        }
+
+        if (!isOwner && !isLead && !isFirmOwner && !isFirmAdmin) {
+            return res.status(403).json({ success: false, message: 'Not authorized to modify member roles on this case' });
+        }
+
         if (!Array.isArray(project.caseAssignments)) {
             project.caseAssignments = [];
         }
@@ -1262,16 +1757,31 @@ router.post('/:id/tasks', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Project not found' });
         }
 
-        // Access Check: user must be case owner or firm workspace member
-        const isOwner = String(project.userId) === String(req.user.id);
-        let isFirmMember = false;
-        if (project.workspaceId || project.workspaceType === 'law_firm') {
-            isFirmMember = await WorkspaceMembership.exists({
-                $or: [{ userId: req.user.id }, { email: req.user.email }]
+        // Access Check: user must be case owner, firm admin, or assigned member
+        const isOwner = String(project.userId) === String(req.user.id) || String(project.owner) === String(req.user.id);
+        const wsIdStr = String(project.workspaceId || '');
+        const wsObjId = mongoose.Types.ObjectId.isValid(wsIdStr) ? new mongoose.Types.ObjectId(wsIdStr) : null;
+        let isFirmOwner = false;
+        let isFirmAdmin = false;
+
+        if (project.workspaceType === 'law_firm' || (wsIdStr && wsIdStr !== 'personal_practice' && !wsIdStr.startsWith('personal_'))) {
+            isFirmOwner = wsIdStr && await Workspace.exists({
+                $or: wsObjId ? [{ _id: wsIdStr }, { _id: wsObjId }] : [{ _id: wsIdStr }],
+                ownerId: req.user.id
             });
+            const membership = wsIdStr && await WorkspaceMembership.findOne({
+                $or: wsObjId ? [{ workspaceId: wsIdStr }, { workspaceId: wsObjId }] : [{ workspaceId: wsIdStr }],
+                $or: [{ userId: req.user.id }, { email: req.user.email }],
+                status: { $ne: 'Removed' }
+            }).lean();
+            if (membership) {
+                isFirmAdmin = Boolean(isFirmOwner || membership.permission === 'Administrator' || membership.role === 'Managing Partner' || membership.role === 'Advocate / Owner');
+            }
         }
-        if (!isOwner && !isFirmMember) {
-            return res.status(403).json({ error: 'Access denied' });
+
+        const isAssigned = authorizeCaseAccess(req.user, project);
+        if (!isOwner && !isFirmOwner && !isFirmAdmin && !isAssigned) {
+            return res.status(403).json({ error: 'Access denied: You are not assigned to this case' });
         }
 
         // Resolve assigner and assignee real identities
@@ -1390,21 +1900,25 @@ const performCaseSnapshotAnalysis = async (req, res) => {
             return res.status(403).json({ success: false, error: 'Access Denied', message: 'You are not authorized to analyze cases in this workspace.' });
         }
 
-        const wsCondition = [wsIdStr];
-        if (mongoose.Types.ObjectId.isValid(wsIdStr)) {
-            wsCondition.push(new mongoose.Types.ObjectId(wsIdStr));
-        }
-
-        const project = await Project.findOne({
-            _id: req.params.id,
-            $or: [
-                { workspaceId: { $in: wsCondition } },
-                { userId: req.user.id }
-            ]
-        });
+        const project = await Project.findById(req.params.id);
 
         if (!project) {
             return res.status(404).json({ success: false, error: 'Case not found', message: 'Case not found in current workspace.' });
+        }
+
+        // Strict isolation check: user must be case owner, firm admin, or assigned member
+        const isCaseOwner = String(project.userId) === String(req.user.id) || String(project.owner) === String(req.user.id);
+        const isFirmOwner = project.workspaceId && await Workspace.exists({ _id: project.workspaceId, ownerId: req.user.id });
+        const userMembership = project.workspaceId && await WorkspaceMembership.findOne({
+            workspaceId: project.workspaceId,
+            $or: [{ userId: req.user.id }, { email: req.user.email }],
+            status: { $ne: 'Removed' }
+        }).lean();
+        const isFirmAdmin = Boolean(isFirmOwner || userMembership?.permission === 'Administrator' || userMembership?.role === 'Managing Partner');
+        const isAssignedToCase = authorizeCaseAccess(req.user, project);
+
+        if (!isCaseOwner && !isFirmAdmin && !isAssignedToCase) {
+            return res.status(403).json({ success: false, error: 'Access Denied', message: 'You are not assigned to this case.' });
         }
 
         // Return cached intelligence snapshot if available and re-analysis not forced

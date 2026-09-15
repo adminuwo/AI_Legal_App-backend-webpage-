@@ -52,11 +52,12 @@ export default function Pricing() {
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: '300 chats/month' },
                 { icon: '📝', label: 'Draft Maker', value: '5 drafts/month' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: '5 searches/month' },
-                { icon: '📜', label: 'Contract Analyzer', value: '5 reviews/month' },
-                { icon: '🔬', label: 'Evidence Analyst', value: '5 analyses/month' },
-                { icon: '🎯', label: 'Strategy Engine', value: '5 strategies/month' },
-                { icon: '📊', label: 'Case Predictor', value: '5 predictions/month' }
+                { icon: '🏛️', label: 'Court Prep Workspace', value: '5 preps/month' },
+                { icon: '⚖️', label: 'Legal Precedent', value: '5 searches/month' },
+                { icon: '🔬', label: 'Evidence Analysis', value: '5 analyses/month' },
+                { icon: '📜', label: 'Contract Review', value: '5 reviews/month' },
+                { icon: '📊', label: 'Case Predictor', value: '5 predictions/month' },
+                { icon: '🎯', label: 'Strategy Engine', value: '5 strategies/month' }
               ]
             },
             {
@@ -92,11 +93,12 @@ export default function Pricing() {
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: '1,000 chats/month' },
                 { icon: '📝', label: 'Draft Maker', value: '15 drafts/month' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: '15 searches/month' },
-                { icon: '📜', label: 'Contract Analyzer', value: '15 reviews/month' },
-                { icon: '🔬', label: 'Evidence Analyst', value: '15 analyses/month' },
-                { icon: '🎯', label: 'Strategy Engine', value: '15 strategies/month' },
-                { icon: '📊', label: 'Case Predictor', value: '15 predictions/month' }
+                { icon: '🏛️', label: 'Court Prep Workspace', value: '15 preps/month' },
+                { icon: '⚖️', label: 'Legal Precedent', value: '15 searches/month' },
+                { icon: '🔬', label: 'Evidence Analysis', value: '15 analyses/month' },
+                { icon: '📜', label: 'Contract Review', value: '15 reviews/month' },
+                { icon: '📊', label: 'Case Predictor', value: '15 predictions/month' },
+                { icon: '🎯', label: 'Strategy Engine', value: '15 strategies/month' }
               ]
             },
             {
@@ -134,11 +136,12 @@ export default function Pricing() {
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: 'Unlimited Chats' },
                 { icon: '📝', label: 'Draft Maker', value: 'Unlimited (500 FUP)' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: 'Unlimited' },
-                { icon: '📜', label: 'Contract Analyzer', value: 'Unlimited' },
-                { icon: '🔬', label: 'Evidence Analyst', value: 'Unlimited' },
-                { icon: '🎯', label: 'Strategy Engine', value: 'Unlimited' },
-                { icon: '📊', label: 'Case Predictor', value: 'Unlimited' }
+                { icon: '🏛️', label: 'Court Prep Workspace', value: 'Unlimited' },
+                { icon: '⚖️', label: 'Legal Precedent', value: 'Unlimited' },
+                { icon: '🔬', label: 'Evidence Analysis', value: 'Unlimited' },
+                { icon: '📜', label: 'Contract Review', value: 'Unlimited' },
+                { icon: '📊', label: 'Case Predictor', value: 'Unlimited' },
+                { icon: '🎯', label: 'Strategy Engine', value: 'Unlimited' }
               ]
             },
             {
@@ -158,10 +161,12 @@ export default function Pricing() {
         { feature: 'Cloud Storage', col1: '5 GB', col2: '20 GB', col3: '100 GB' },
         { feature: 'AI Legal Chat & Assistants', col1: '300 chats/mo', col2: '1,000 chats/mo', col3: 'Unlimited Chats' },
         { feature: 'Draft Maker', col1: '5 drafts/mo', col2: '15 drafts/mo', col3: 'Unlimited (500 FUP)' },
-        { feature: 'Legal Precedents & Research', col1: '5 searches/mo', col2: '15 searches/mo', col3: 'Unlimited' },
-        { feature: 'Contract Analyzer', col1: '5 reviews/mo', col2: '15 reviews/mo', col3: 'Unlimited' },
-        { feature: 'Evidence Analyst', col1: '5 analyses/mo', col2: '15 analyses/mo', col3: 'Unlimited' },
-        { feature: 'Strategy Engine & Predictor', col1: '5 / month', col2: '15 / month', col3: 'Unlimited' },
+        { feature: 'Court Prep Workspace', col1: '5 preps/mo', col2: '15 preps/mo', col3: 'Unlimited' },
+        { feature: 'Legal Precedent', col1: '5 searches/mo', col2: '15 searches/mo', col3: 'Unlimited' },
+        { feature: 'Evidence Analysis', col1: '5 analyses/mo', col2: '15 analyses/mo', col3: 'Unlimited' },
+        { feature: 'Contract Review', col1: '5 reviews/mo', col2: '15 reviews/mo', col3: 'Unlimited' },
+        { feature: 'Case Predictor', col1: '5 predictions/mo', col2: '15 predictions/mo', col3: 'Unlimited' },
+        { feature: 'Strategy Engine', col1: '5 strategies/mo', col2: '15 strategies/mo', col3: 'Unlimited' },
         { feature: 'AI Mock Courtroom', col1: '2 sessions/mo', col2: '5 sessions/mo', col3: '15 sessions/mo' },
         { feature: 'AI Client Connect Listings', col1: '2 listings', col2: '5 listings', col3: '20 listings' },
         { feature: 'Priority AI & Support', col1: 'Standard', col2: 'Priority Processing', col3: '24/7 VIP Support' }
@@ -194,15 +199,11 @@ export default function Pricing() {
               category: 'Academic AI Tools Included',
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: '300 chats/month' },
-                { icon: '🧠', label: 'Quiz & Practice', value: 'Unlimited Quizzes' },
+                { icon: '🧠', label: 'Quiz & MCQ Practice', value: 'Unlimited Quizzes' },
                 { icon: '📝', label: 'Draft Maker', value: '5 drafts/month' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: '5 searches/month' },
-                { icon: '📜', label: 'Contract Analyzer', value: '5 reviews/month' },
-                { icon: '🔬', label: 'Evidence Analyst', value: '5 analyses/month' },
-                { icon: '🎯', label: 'Strategy Engine', value: '5 strategies/month' },
-                { icon: '📊', label: 'Case Predictor', value: '5 predictions/month' },
-                { icon: '⚔️', label: 'Mock Courtroom', value: '2 sessions/month' },
-                { icon: '📝', label: 'Notes Maker', value: '5 notes/month' }
+                { icon: '⚖️', label: 'Legal Precedent', value: '5 searches/month' },
+                { icon: '⚔️', label: 'AI Mock Courtroom', value: '2 sessions/month' },
+                { icon: '📝', label: 'AI Notes Maker', value: '5 notes/month' }
               ]
             }
           ]
@@ -230,15 +231,11 @@ export default function Pricing() {
               category: 'Academic AI Tools Included',
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: '1,000 chats/month' },
-                { icon: '🧠', label: 'Quiz & Practice', value: 'Unlimited Quizzes' },
+                { icon: '🧠', label: 'Quiz & MCQ Practice', value: 'Unlimited Quizzes' },
                 { icon: '📝', label: 'Draft Maker', value: '15 drafts/month' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: '15 searches/month' },
-                { icon: '📜', label: 'Contract Analyzer', value: '15 reviews/month' },
-                { icon: '🔬', label: 'Evidence Analyst', value: '15 analyses/month' },
-                { icon: '🎯', label: 'Strategy Engine', value: '15 strategies/month' },
-                { icon: '📊', label: 'Case Predictor', value: '15 predictions/month' },
-                { icon: '⚔️', label: 'Mock Courtroom', value: '5 sessions/month' },
-                { icon: '📝', label: 'Notes Maker', value: '15 notes/month' }
+                { icon: '⚖️', label: 'Legal Precedent', value: '15 searches/month' },
+                { icon: '⚔️', label: 'AI Mock Courtroom', value: '5 sessions/month' },
+                { icon: '📝', label: 'AI Notes Maker', value: '15 notes/month' }
               ]
             }
           ]
@@ -267,15 +264,11 @@ export default function Pricing() {
               category: 'Academic AI Tools Included',
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: 'Unlimited Chats' },
-                { icon: '🧠', label: 'Quiz & Practice', value: 'Unlimited Quizzes' },
+                { icon: '🧠', label: 'Quiz & MCQ Practice', value: 'Unlimited Quizzes' },
                 { icon: '📝', label: 'Draft Maker', value: 'Unlimited' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: 'Unlimited' },
-                { icon: '📜', label: 'Contract Analyzer', value: 'Unlimited' },
-                { icon: '🔬', label: 'Evidence Analyst', value: 'Unlimited' },
-                { icon: '🎯', label: 'Strategy Engine', value: 'Unlimited' },
-                { icon: '📊', label: 'Case Predictor', value: 'Unlimited' },
-                { icon: '⚔️', label: 'Mock Courtroom', value: '15 sessions/month' },
-                { icon: '📝', label: 'Notes Maker', value: 'Unlimited' }
+                { icon: '⚖️', label: 'Legal Precedent', value: 'Unlimited' },
+                { icon: '⚔️', label: 'AI Mock Courtroom', value: '15 sessions/month' },
+                { icon: '📝', label: 'AI Notes Maker', value: 'Unlimited' }
               ]
             }
           ]
@@ -286,12 +279,11 @@ export default function Pricing() {
         { feature: 'Practice Cases Limit', col1: 'Up to 25 Cases', col2: 'Up to 50 Cases', col3: 'Up to 100 Cases' },
         { feature: 'Cloud Storage', col1: '5 GB', col2: '20 GB', col3: '50 GB' },
         { feature: 'AI Legal Chat & Assistants', col1: '300 chats/mo', col2: '1,000 chats/mo', col3: 'Unlimited Chats' },
-        { feature: 'Quiz & Practice', col1: 'Unlimited Quizzes', col2: 'Unlimited Quizzes', col3: 'Unlimited Quizzes' },
+        { feature: 'Quiz & MCQ Practice', col1: 'Unlimited Quizzes', col2: 'Unlimited Quizzes', col3: 'Unlimited Quizzes' },
         { feature: 'Draft Maker', col1: '5 drafts/mo', col2: '15 drafts/mo', col3: 'Unlimited' },
-        { feature: 'Legal Precedents & Research', col1: '5 searches/mo', col2: '15 searches/mo', col3: 'Unlimited' },
-        { feature: 'Contract & Evidence Analysis', col1: '5 / month', col2: '15 / month', col3: 'Unlimited' },
-        { feature: 'Mock Courtroom', col1: '2 sessions/mo', col2: '5 sessions/mo', col3: '15 sessions/mo' },
-        { feature: 'Notes Maker', col1: '5 notes/mo', col2: '15 notes/mo', col3: 'Unlimited' }
+        { feature: 'Legal Precedent', col1: '5 searches/mo', col2: '15 searches/mo', col3: 'Unlimited' },
+        { feature: 'AI Mock Courtroom', col1: '2 sessions/mo', col2: '5 sessions/mo', col3: '15 sessions/mo' },
+        { feature: 'AI Notes Maker', col1: '5 notes/mo', col2: '15 notes/mo', col3: 'Unlimited' }
       ]
     },
 
@@ -322,16 +314,16 @@ export default function Pricing() {
               category: 'Included AI Tools & Workflows',
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: '1,500 team chats/month' },
-                { icon: '🏛️', label: 'Multi-user Team Workspace', value: 'Member Management' },
+                { icon: '🏛️', label: 'Multi-user Team Workspace & Member Management', value: 'Up to 10 Members' },
                 { icon: '📝', label: 'Draft Maker', value: '30 drafts/month' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: '30 searches/month' },
-                { icon: '📜', label: 'Contract Analyzer', value: '30 reviews/month' },
-                { icon: '🔬', label: 'Evidence Analyst', value: '30 analyses/month' },
-                { icon: '🎯', label: 'Strategy Engine', value: '30 strategies/month' },
+                { icon: '🏛️', label: 'Court Prep Workspace', value: '30 preps/month' },
+                { icon: '⚖️', label: 'Legal Precedent', value: '30 searches/month' },
+                { icon: '🔬', label: 'Evidence Analysis', value: '30 analyses/month' },
+                { icon: '📜', label: 'Contract Review', value: '30 reviews/month' },
                 { icon: '📊', label: 'Case Predictor', value: '30 predictions/month' },
-                { icon: '⚔️', label: 'Mock Courtroom', value: '10 sessions/month' },
-                { icon: '🤝', label: 'Client Connect', value: '10 listings' },
-                { icon: '📋', label: 'Case Assignment Workflow', value: 'Included' }
+                { icon: '🎯', label: 'Strategy Engine', value: '30 strategies/month' },
+                { icon: '💬', label: 'AI Team Communication', value: 'Included' },
+                { icon: '📋', label: 'Case Assignment & Task Workflow', value: 'Included' }
               ]
             }
           ]
@@ -360,16 +352,16 @@ export default function Pricing() {
               category: 'Included AI Tools & Workflows',
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: '3,500 team chats/month' },
-                { icon: '🏛️', label: 'Multi-user Team Workspace', value: 'Member Management' },
+                { icon: '🏛️', label: 'Multi-user Team Workspace & Member Management', value: 'Up to 25 Members' },
                 { icon: '📝', label: 'Draft Maker', value: '100 drafts/month' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: '100 searches/month' },
-                { icon: '📜', label: 'Contract Analyzer', value: '100 reviews/month' },
-                { icon: '🔬', label: 'Evidence Analyst', value: '100 analyses/month' },
-                { icon: '🎯', label: 'Strategy Engine', value: '100 strategies/month' },
+                { icon: '🏛️', label: 'Court Prep Workspace', value: '100 preps/month' },
+                { icon: '⚖️', label: 'Legal Precedent', value: '100 searches/month' },
+                { icon: '🔬', label: 'Evidence Analysis', value: '100 analyses/month' },
+                { icon: '📜', label: 'Contract Review', value: '100 reviews/month' },
                 { icon: '📊', label: 'Case Predictor', value: '100 predictions/month' },
-                { icon: '⚔️', label: 'Mock Courtroom', value: '25 sessions/month' },
-                { icon: '🤝', label: 'Client Connect', value: '25 listings' },
-                { icon: '📋', label: 'Case Assignment Workflow', value: 'Included' }
+                { icon: '🎯', label: 'Strategy Engine', value: '100 strategies/month' },
+                { icon: '💬', label: 'AI Team Communication', value: 'Priority Firm Access' },
+                { icon: '📋', label: 'Case Assignment & Task Workflow', value: 'Included' }
               ]
             }
           ]
@@ -398,16 +390,16 @@ export default function Pricing() {
               category: 'Included AI Tools & Workflows',
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: 'Unlimited Team Chats' },
-                { icon: '🏛️', label: 'Multi-user Team Workspace', value: 'Member Management' },
+                { icon: '🏛️', label: 'Multi-user Team Workspace & Member Management', value: 'Up to 50 Members' },
                 { icon: '📝', label: 'Draft Maker', value: 'Unlimited' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: 'Unlimited' },
-                { icon: '📜', label: 'Contract Analyzer', value: 'Unlimited' },
-                { icon: '🔬', label: 'Evidence Analyst', value: 'Unlimited' },
-                { icon: '🎯', label: 'Strategy Engine', value: 'Unlimited' },
+                { icon: '🏛️', label: 'Court Prep Workspace', value: 'Unlimited' },
+                { icon: '⚖️', label: 'Legal Precedent', value: 'Unlimited' },
+                { icon: '🔬', label: 'Evidence Analysis', value: 'Unlimited' },
+                { icon: '📜', label: 'Contract Review', value: 'Unlimited' },
                 { icon: '📊', label: 'Case Predictor', value: 'Unlimited' },
-                { icon: '⚔️', label: 'Mock Courtroom', value: '50 sessions/month' },
-                { icon: '🤝', label: 'Client Connect', value: '50 listings' },
-                { icon: '📋', label: 'Case Assignment Workflow', value: 'Included' }
+                { icon: '🎯', label: 'Strategy Engine', value: 'Unlimited' },
+                { icon: '💬', label: 'AI Team Communication', value: 'Unlimited Firm Access' },
+                { icon: '📋', label: 'Case Assignment & Task Workflow', value: 'Included' }
               ]
             }
           ]
@@ -419,12 +411,16 @@ export default function Pricing() {
         { feature: 'Firm Active Cases Limit', col1: 'Up to 100 Cases', col2: 'Up to 250 Cases', col3: 'Up to 500 Cases' },
         { feature: 'Shared Firm Storage', col1: '25 GB Shared', col2: '100 GB Shared', col3: '500 GB Shared' },
         { feature: 'AI Legal Chat & Assistants', col1: '1,500 team chats/mo', col2: '3,500 team chats/mo', col3: 'Unlimited Team Chats' },
+        { feature: 'Multi-user Team Workspace', col1: 'Up to 10 Members', col2: 'Up to 25 Members', col3: 'Up to 50 Members' },
         { feature: 'Draft Maker', col1: '30 drafts/mo', col2: '100 drafts/mo', col3: 'Unlimited' },
-        { feature: 'Legal Precedents & Research', col1: '30 searches/mo', col2: '100 searches/mo', col3: 'Unlimited' },
-        { feature: 'Contract & Evidence Analysis', col1: '30 / month', col2: '100 / month', col3: 'Unlimited' },
-        { feature: 'Mock Courtroom', col1: '10 sessions/mo', col2: '25 sessions/mo', col3: '50 sessions/mo' },
-        { feature: 'Client Connect Listings', col1: '10 listings', col2: '25 listings', col3: '50 listings' },
-        { feature: 'Member Management & Workflow', col1: 'Included', col2: 'Included', col3: 'Included' }
+        { feature: 'Court Prep Workspace', col1: '30 preps/mo', col2: '100 preps/mo', col3: 'Unlimited' },
+        { feature: 'Legal Precedent', col1: '30 searches/mo', col2: '100 searches/mo', col3: 'Unlimited' },
+        { feature: 'Evidence Analysis', col1: '30 analyses/mo', col2: '100 analyses/mo', col3: 'Unlimited' },
+        { feature: 'Contract Review', col1: '30 reviews/mo', col2: '100 reviews/mo', col3: 'Unlimited' },
+        { feature: 'Case Predictor', col1: '30 predictions/mo', col2: '100 predictions/mo', col3: 'Unlimited' },
+        { feature: 'Strategy Engine', col1: '30 strategies/mo', col2: '100 strategies/mo', col3: 'Unlimited' },
+        { feature: 'AI Team Communication', col1: 'Included', col2: 'Priority Access', col3: 'Unlimited Firm Access' },
+        { feature: 'Case Assignment & Task Workflow', col1: 'Included', col2: 'Included', col3: 'Included' }
       ]
     },
 
@@ -457,11 +453,17 @@ export default function Pricing() {
               category: 'Included AI Tools & Feature Limits',
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: '500 chats/month' },
-                { icon: '🧠', label: 'Quiz & Practice', value: 'Unlimited Quizzes' },
-                { icon: '📝', label: 'Draft Maker & Contract Analyzer', value: '20/month' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: '20/month' },
-                { icon: '⚔️', label: 'Mock Courtroom', value: '5 sessions/month' },
-                { icon: '🤝', label: 'Client Connect', value: '5 listings' }
+                { icon: '🧠', label: 'Quiz & MCQ Practice', value: 'Unlimited Quizzes' },
+                { icon: '📝', label: 'AI Notes Maker', value: '20 notes/month' },
+                { icon: '📝', label: 'Draft Maker', value: '20 drafts/month' },
+                { icon: '🏛️', label: 'Court Prep Workspace', value: '20 preps/month' },
+                { icon: '⚖️', label: 'Legal Precedent', value: '20 searches/month' },
+                { icon: '🔬', label: 'Evidence Analysis', value: '20 analyses/month' },
+                { icon: '📜', label: 'Contract Review', value: '20 reviews/month' },
+                { icon: '📊', label: 'Case Predictor', value: '20 predictions/month' },
+                { icon: '🎯', label: 'Strategy Engine', value: '20 strategies/month' },
+                { icon: '⚔️', label: 'AI Mock Courtroom', value: '5 sessions/month' },
+                { icon: '🤝', label: 'AI Client Connect', value: '5 listings' }
               ]
             }
           ]
@@ -493,11 +495,18 @@ export default function Pricing() {
               category: 'Included AI Tools & Feature Limits',
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: '1,500 team chats/month' },
-                { icon: '📝', label: 'Draft Maker & Contract Analyzer', value: '30/month' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: '30/month' },
-                { icon: '⚔️', label: 'Mock Courtroom', value: '10 sessions/month' },
-                { icon: '🤝', label: 'Client Connect', value: '10 listings' },
-                { icon: '📋', label: 'Case Assignment Workflow', value: 'Included' }
+                { icon: '🏛️', label: 'Multi-user Team Workspace & Member Management', value: 'Up to 10 Members' },
+                { icon: '📝', label: 'Draft Maker', value: '30 drafts/month' },
+                { icon: '🏛️', label: 'Court Prep Workspace', value: '30 preps/month' },
+                { icon: '⚖️', label: 'Legal Precedent', value: '30 searches/month' },
+                { icon: '🔬', label: 'Evidence Analysis', value: '30 analyses/month' },
+                { icon: '📜', label: 'Contract Review', value: '30 reviews/month' },
+                { icon: '📊', label: 'Case Predictor', value: '30 predictions/month' },
+                { icon: '🎯', label: 'Strategy Engine', value: '30 strategies/month' },
+                { icon: '💬', label: 'AI Team Communication', value: 'Included' },
+                { icon: '📋', label: 'Case Assignment & Task Workflow', value: 'Included' },
+                { icon: '⚔️', label: 'AI Mock Courtroom', value: '10 sessions/month' },
+                { icon: '🤝', label: 'AI Client Connect', value: '10 listings' }
               ]
             }
           ]
@@ -529,12 +538,19 @@ export default function Pricing() {
               category: 'Included AI Tools & Feature Limits',
               items: [
                 { icon: '💬', label: 'AI Legal Chat & Assistants', value: 'Unlimited Chats' },
-                { icon: '🧠', label: 'Quiz & Practice', value: 'Unlimited Quizzes' },
-                { icon: '📝', label: 'Draft Maker & Contract Analyzer', value: 'Unlimited' },
-                { icon: '⚖️', label: 'Legal Precedents & Research', value: 'Unlimited' },
-                { icon: '⚔️', label: 'Mock Courtroom', value: '15 sessions/month' },
-                { icon: '🤝', label: 'Client Connect', value: '20 listings' },
-                { icon: '📋', label: 'Case Assignment Workflow', value: 'Included' }
+                { icon: '🧠', label: 'Quiz & MCQ Practice', value: 'Unlimited Quizzes' },
+                { icon: '📝', label: 'AI Notes Maker', value: 'Unlimited' },
+                { icon: '📝', label: 'Draft Maker', value: 'Unlimited' },
+                { icon: '🏛️', label: 'Court Prep Workspace', value: 'Unlimited' },
+                { icon: '⚖️', label: 'Legal Precedent', value: 'Unlimited' },
+                { icon: '🔬', label: 'Evidence Analysis', value: 'Unlimited' },
+                { icon: '📜', label: 'Contract Review', value: 'Unlimited' },
+                { icon: '📊', label: 'Case Predictor', value: 'Unlimited' },
+                { icon: '🎯', label: 'Strategy Engine', value: 'Unlimited' },
+                { icon: '💬', label: 'AI Team Communication', value: 'Unlimited' },
+                { icon: '📋', label: 'Case Assignment & Task Workflow', value: 'Included' },
+                { icon: '⚔️', label: 'AI Mock Courtroom', value: '15 sessions/month' },
+                { icon: '🤝', label: 'AI Client Connect', value: '20 listings' }
               ]
             }
           ]
@@ -547,12 +563,19 @@ export default function Pricing() {
         { feature: 'Active Cases Capacity', col1: 'Up to 50 Cases', col2: 'Up to 100 Cases', col3: 'Up to 250 Cases' },
         { feature: 'Shared Storage', col1: '25 GB', col2: '50 GB Shared', col3: '100 GB Shared' },
         { feature: 'AI Legal Chat & Assistants', col1: '500 chats/mo', col2: '1,500 team chats/mo', col3: 'Unlimited Chats' },
-        { feature: 'Quiz & Practice', col1: 'Unlimited Quizzes', col2: '—', col3: 'Unlimited Quizzes' },
-        { feature: 'Draft Maker & Contract Analyzer', col1: '20 / month', col2: '30 / month', col3: 'Unlimited' },
-        { feature: 'Legal Precedents & Research', col1: '20 / month', col2: '30 / month', col3: 'Unlimited' },
+        { feature: 'Quiz & MCQ Practice', col1: 'Unlimited Quizzes', col2: '—', col3: 'Unlimited Quizzes' },
+        { feature: 'AI Notes Maker', col1: '20 notes/mo', col2: '—', col3: 'Unlimited' },
+        { feature: 'Draft Maker', col1: '20 / month', col2: '30 / month', col3: 'Unlimited' },
+        { feature: 'Court Prep Workspace', col1: '20 / month', col2: '30 / month', col3: 'Unlimited' },
+        { feature: 'Legal Precedent', col1: '20 / month', col2: '30 / month', col3: 'Unlimited' },
+        { feature: 'Evidence Analysis', col1: '20 / month', col2: '30 / month', col3: 'Unlimited' },
+        { feature: 'Contract Review', col1: '20 / month', col2: '30 / month', col3: 'Unlimited' },
+        { feature: 'Case Predictor', col1: '20 / month', col2: '30 / month', col3: 'Unlimited' },
+        { feature: 'Strategy Engine', col1: '20 / month', col2: '30 / month', col3: 'Unlimited' },
+        { feature: 'AI Team Communication', col1: '—', col2: 'Included', col3: 'Unlimited' },
+        { feature: 'Case Assignment Workflow', col1: '—', col2: 'Included', col3: 'Included' },
         { feature: 'AI Mock Courtroom', col1: '5 sessions/mo', col2: '10 sessions/mo', col3: '15 sessions/mo' },
-        { feature: 'AI Client Connect Listings', col1: '5 listings', col2: '10 listings', col3: '20 listings' },
-        { feature: 'Case Assignment Workflow', col1: '—', col2: 'Included', col3: 'Included' }
+        { feature: 'AI Client Connect Listings', col1: '5 listings', col2: '10 listings', col3: '20 listings' }
       ]
     }
   };
@@ -567,7 +590,7 @@ export default function Pricing() {
     },
     {
       q: 'What is the difference between Advocate, Student, Law Firm, and Combo plans?',
-      a: 'Advocate Plans (from ₹499/mo) are tailored for independent trial advocates and litigation counsel. Student Plans (from ₹499/mo) include academic companions like Unlimited Quizzes and Notes Maker for bar exam preparation. Law Firm Plans (from ₹1,499/mo) provide multi-user team seats (10 to 50 members), shared case dockets, and associate workflow assignment. Combo Bundles (from ₹1,199/mo) unlock dual or all 3 workspaces at up to 30% savings.'
+      a: 'Advocate Plans (from ₹499/mo) are tailored for independent trial advocates and litigation counsel. Student Plans (from ₹499/mo) include academic companions like Quiz & MCQ Practice and AI Notes Maker for bar exam preparation. Law Firm Plans (from ₹1,499/mo) provide multi-user team seats (10 to 50 members), shared case dockets, and associate workflow assignment. Combo Bundles (from ₹1,199/mo) unlock dual or all 3 workspaces at up to 30% savings.'
     },
     {
       q: 'How does the 17% Annual Billing discount work?',

@@ -51,8 +51,8 @@ export class TaskAccessControlService {
     const caseOwnerIdStr = String(project?.userId || '');
     const isOwner = isWorkspaceOwner || userIdStr === caseOwnerIdStr || user.role === 'admin' || user.role === 'SUPER_ADMIN';
 
-    // Firm Owner, Case Lead, or Law Firm workspace members see all firm case tasks
-    if (isOwner || project?.workspaceType === 'law_firm' || (project?.workspaceId && project.workspaceId !== 'personal_practice')) return true;
+    // Firm Owner or Administrator sees all tasks in their firm workspace
+    if (isOwner) return true;
 
     const assignedToIdStr = typeof task.assignedTo === 'object'
       ? String(task.assignedTo?.userId || task.assignedTo?._id || '')

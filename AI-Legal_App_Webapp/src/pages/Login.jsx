@@ -107,8 +107,8 @@ const Login = () => {
 
     if (targetRole === 'law_firm') {
       const activeWs = localStorage.getItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID');
-      if (!activeWs) {
-        localStorage.setItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID', 'firm_default');
+      if (activeWs === 'firm_default' || activeWs === 'firm_abc_workspace') {
+        localStorage.removeItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID');
       }
     }
 

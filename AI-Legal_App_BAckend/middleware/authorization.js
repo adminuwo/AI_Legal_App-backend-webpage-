@@ -131,13 +131,42 @@ export const authorizeCaseAccess = (user, project, capability = 'read') => {
         return true;
     }
 
-    // 2. Assigned team member IDs match
+    // 2. Lead Advocate ID match
+    if (project.leadAdvocateUserId && String(project.leadAdvocateUserId) === userIdStr) {
+        return true;
+    }
+
+    // 3. Assigned team member IDs match (assignedUserIds & assignedMembers)
     if (Array.isArray(project.assignedUserIds)) {
         const isAssigned = project.assignedUserIds.some(id => String(id?._id || id) === userIdStr);
         if (isAssigned) return true;
     }
+    if (Array.isArray(project.assignedMembers)) {
+        const isAssigned = project.assignedMembers.some(id => String(id?._id || id) === userIdStr);
+        if (isAssigned) return true;
+    }
 
-    // 3. Workspace team members array match
+    // 4. Case assignments array match
+    if (Array.isArray(project.caseAssignments)) {
+        const isAssigned = project.caseAssignments.some(ca => String(ca?.userId) === userIdStr);
+        if (isAssigned) return true;
+    }
+
+    // 5. Team members array match (by ID, email or name)
+    const userEmail = user.email ? String(user.email).trim().toLowerCase() : '';
+    const userName = (user.name || user.fullName) ? String(user.name || user.fullName).trim().toLowerCase() : '';
+    if (Array.isArray(project.teamMembers)) {
+        const isMatch = project.teamMembers.some(tm => {
+            if (!tm) return false;
+            const tmStr = String(typeof tm === 'object' ? (tm.name || tm.userId || tm.id || '') : tm).trim().toLowerCase();
+            return tmStr === userIdStr ||
+                   (userEmail && tmStr === userEmail) ||
+                   (userName && (tmStr.includes(userName) || userName.includes(tmStr)));
+        });
+        if (isMatch) return true;
+    }
+
+    // 6. Workspace team members array match
     if (Array.isArray(project.members)) {
         const isMember = project.members.some(m => String(m?.user?._id || m?.user || m) === userIdStr);
         if (isMember) return true;

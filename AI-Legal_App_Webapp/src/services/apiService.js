@@ -78,7 +78,11 @@ apiClient.interceptors.request.use(
 
     const userLocale = getLocaleForLanguage(userLang);
     const activeRole = localStorage.getItem('user_selected_role') || 'advocate';
-    const activeWsId = activeRole === 'law_firm' ? (localStorage.getItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID') || 'personal_practice') : 'personal_practice';
+    let rawWsId = localStorage.getItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID');
+    if (rawWsId === 'firm_default' || rawWsId === 'firm_abc_workspace') {
+      rawWsId = '';
+    }
+    const activeWsId = activeRole === 'law_firm' ? (rawWsId || '') : 'personal_practice';
 
     config.baseURL = API;
 

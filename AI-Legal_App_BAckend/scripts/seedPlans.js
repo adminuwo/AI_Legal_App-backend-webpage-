@@ -22,13 +22,14 @@ const plans = [
         features: [
             'AI Legal Chat',
             'Draft Maker (2 drafts/month)',
-            'Legal Precedents (2 searches/month)',
-            'Contract Analyzer (2 reviews/month)',
-            'Evidence Analyst (2 analyses/month)',
-            'Strategy Engine (2 strategies/month)',
+            'Court Prep Workspace (2 preps/month)',
+            'Legal Precedent (2 searches/month)',
+            'Evidence Analysis (2 analyses/month)',
+            'Contract Review (2 reviews/month)',
             'Case Predictor (2 predictions/month)',
-            'Mock Courtroom (1 session/month)',
-            'Client Connect (1 listing)',
+            'Strategy Engine (2 strategies/month)',
+            'AI Mock Courtroom (1 session/month)',
+            'AI Client Connect (1 listing)',
             'Knowledge Hub (3 files)'
         ],
         badge: 'FREE TIER',
@@ -44,13 +45,14 @@ const plans = [
         features: [
             'AI Legal Chat',
             'Draft Maker (5 drafts/month)',
-            'Legal Precedents (5 searches/month)',
-            'Contract Analyzer (5 reviews/month)',
-            'Evidence Analyst (5 analyses/month)',
-            'Strategy Engine (5 strategies/month)',
+            'Court Prep Workspace (5 preps/month)',
+            'Legal Precedent (5 searches/month)',
+            'Evidence Analysis (5 analyses/month)',
+            'Contract Review (5 reviews/month)',
             'Case Predictor (5 predictions/month)',
-            'Mock Courtroom (2 sessions/month)',
-            'Client Connect (2 listings)'
+            'Strategy Engine (5 strategies/month)',
+            'AI Mock Courtroom (2 sessions/month)',
+            'AI Client Connect (2 listings)'
         ],
         badge: 'BASIC',
         isPopular: false
@@ -65,13 +67,14 @@ const plans = [
         features: [
             'AI Legal Chat & Web Search',
             'Draft Maker (15 drafts/month)',
-            'Legal Precedents & Research Assistant (15 searches/month)',
-            'Contract Analyzer (15 reviews/month)',
-            'Evidence Analyst (15 analyses/month)',
-            'Strategy Engine (15 strategies/month)',
+            'Court Prep Workspace (15 preps/month)',
+            'Legal Precedent (15 searches/month)',
+            'Evidence Analysis (15 analyses/month)',
+            'Contract Review (15 reviews/month)',
             'Case Predictor (15 predictions/month)',
-            'Mock Courtroom (5 sessions/month)',
-            'Client Connect (5 listings)'
+            'Strategy Engine (15 strategies/month)',
+            'AI Mock Courtroom (5 sessions/month)',
+            'AI Client Connect (5 listings)'
         ],
         badge: 'PRO',
         isPopular: true
@@ -86,13 +89,14 @@ const plans = [
         features: [
             'AI Legal Chat & Web Search',
             'Draft Maker (Unlimited / 500 FUP)',
-            'Legal Precedents & Research Assistant (Unlimited)',
-            'Contract Analyzer (Unlimited)',
-            'Evidence Analyst (Unlimited)',
-            'Strategy Engine (Unlimited)',
+            'Court Prep Workspace (Unlimited)',
+            'Legal Precedent (Unlimited)',
+            'Evidence Analysis (Unlimited)',
+            'Contract Review (Unlimited)',
             'Case Predictor (Unlimited)',
-            'Mock Courtroom (15 sessions/month)',
-            'Client Connect (20 listings)'
+            'Strategy Engine (Unlimited)',
+            'AI Mock Courtroom (15 sessions/month)',
+            'AI Client Connect (20 listings)'
         ],
         badge: 'PREMIUM',
         isPopular: false
@@ -108,11 +112,11 @@ const plans = [
         storageGB: 0.5,
         features: [
             'AI Legal Chat',
-            'Quiz & Practice (2 sets/mo)',
+            'Quiz & MCQ Practice (2 sets/mo)',
             'Draft Maker (1 draft/mo)',
-            'Legal Precedents (1 search/mo)',
-            'Contract Analyzer (1 review/mo)',
-            'Evidence Analyst (1 analysis/mo)'
+            'Legal Precedent (1 search/mo)',
+            'AI Mock Courtroom (1 session/month)',
+            'AI Notes Maker (2 notes/mo)'
         ],
         badge: 'FREE TIER',
         isPopular: false
@@ -126,15 +130,11 @@ const plans = [
         storageGB: 5,
         features: [
             'AI Legal Chat',
-            'Quiz & Practice (Unlimited Quizzes)',
+            'Quiz & MCQ Practice (Unlimited Quizzes)',
             'Draft Maker (5 drafts/month)',
-            'Legal Precedents (5 searches/month)',
-            'Contract Analyzer (5 reviews/month)',
-            'Evidence Analyst (5 analyses/month)',
-            'Strategy Engine (5 strategies/month)',
-            'Case Predictor (5 predictions/month)',
-            'Mock Courtroom (2 sessions/month)',
-            'Notes Maker (5 notes/mo)'
+            'Legal Precedent (5 searches/month)',
+            'AI Mock Courtroom (2 sessions/month)',
+            'AI Notes Maker (5 notes/mo)'
         ],
         badge: 'BASIC',
         isPopular: false
@@ -148,15 +148,11 @@ const plans = [
         storageGB: 20,
         features: [
             'AI Legal Chat & Web Search',
-            'Quiz & Practice (Unlimited Quizzes)',
+            'Quiz & MCQ Practice (Unlimited Quizzes)',
             'Draft Maker (15 drafts/month)',
-            'Legal Precedents & Research Assistant (15 searches/month)',
-            'Contract Analyzer (15 reviews/month)',
-            'Evidence Analyst (15 analyses/month)',
-            'Strategy Engine (15 strategies/month)',
-            'Case Predictor (15 predictions/month)',
-            'Mock Courtroom (5 sessions/month)',
-            'Notes Maker (15 notes/mo)'
+            'Legal Precedent (15 searches/month)',
+            'AI Mock Courtroom (5 sessions/month)',
+            'AI Notes Maker (15 notes/mo)'
         ],
         badge: 'PRO',
         isPopular: true
@@ -170,15 +166,11 @@ const plans = [
         storageGB: 50,
         features: [
             'AI Legal Chat & Web Search',
-            'Quiz & Practice (Unlimited Quizzes)',
+            'Quiz & MCQ Practice (Unlimited Quizzes)',
             'Draft Maker (Unlimited)',
-            'Legal Precedents & Research Assistant (Unlimited)',
-            'Contract Analyzer (Unlimited)',
-            'Evidence Analyst (Unlimited)',
-            'Strategy Engine (Unlimited)',
-            'Case Predictor (Unlimited)',
-            'Mock Courtroom (15 sessions/month)',
-            'Notes Maker (Unlimited)'
+            'Legal Precedent (Unlimited)',
+            'AI Mock Courtroom (15 sessions/month)',
+            'AI Notes Maker (Unlimited)'
         ],
         badge: 'PREMIUM',
         isPopular: false
@@ -196,8 +188,14 @@ const plans = [
             'AI Legal Chat',
             'Multi-user Team Workspace (1 Member)',
             'Draft Maker (1 draft/mo)',
-            'Contract Analyzer (1 review/mo)',
-            'Legal Precedents (1 search/mo)'
+            'Court Prep Workspace (1 prep/mo)',
+            'Legal Precedent (1 search/mo)',
+            'Evidence Analysis (1 analysis/mo)',
+            'Contract Review (1 review/mo)',
+            'Case Predictor (1 prediction/mo)',
+            'Strategy Engine (1 strategy/mo)',
+            'AI Team Communication (Basic Access)',
+            'Case Assignment & Task Workflow'
         ],
         badge: 'FREE TIER',
         isPopular: false
@@ -213,14 +211,14 @@ const plans = [
             'AI Legal Chat',
             'Multi-user Team Workspace & Member Management (Up to 10 Members)',
             'Draft Maker (30 drafts/month)',
-            'Legal Precedents (30 searches/month)',
-            'Contract Analyzer (30 reviews/month)',
-            'Evidence Analyst (30 analyses/month)',
-            'Strategy Engine (30 strategies/month)',
+            'Court Prep Workspace (30 preps/month)',
+            'Legal Precedent (30 searches/month)',
+            'Evidence Analysis (30 analyses/month)',
+            'Contract Review (30 reviews/month)',
             'Case Predictor (30 predictions/month)',
-            'Mock Courtroom (10 sessions/month)',
-            'Client Connect (10 listings)',
-            'Case Assignment & Member Task Workflow'
+            'Strategy Engine (30 strategies/month)',
+            'AI Team Communication (Included)',
+            'Case Assignment & Task Workflow'
         ],
         badge: 'FIRM BASIC',
         isPopular: false
@@ -236,14 +234,14 @@ const plans = [
             'AI Legal Chat & Web Search',
             'Multi-user Team Workspace & Member Management (Up to 25 Members)',
             'Draft Maker (100 drafts/month)',
-            'Legal Precedents & Research Assistant (100 searches/month)',
-            'Contract Analyzer (100 reviews/month)',
-            'Evidence Analyst (100 analyses/month)',
-            'Strategy Engine (100 strategies/month)',
+            'Court Prep Workspace (100 preps/month)',
+            'Legal Precedent (100 searches/month)',
+            'Evidence Analysis (100 analyses/month)',
+            'Contract Review (100 reviews/month)',
             'Case Predictor (100 predictions/month)',
-            'Mock Courtroom (25 sessions/month)',
-            'Client Connect (25 listings)',
-            'Case Assignment & Member Task Workflow'
+            'Strategy Engine (100 strategies/month)',
+            'AI Team Communication (Priority Firm Access)',
+            'Case Assignment & Task Workflow'
         ],
         badge: 'FIRM PRO',
         isPopular: true
@@ -259,14 +257,14 @@ const plans = [
             'AI Legal Chat & Web Search',
             'Multi-user Team Workspace & Member Management (Up to 50 Members)',
             'Draft Maker (Unlimited)',
-            'Legal Precedents & Research Assistant (Unlimited)',
-            'Contract Analyzer (Unlimited)',
-            'Evidence Analyst (Unlimited)',
-            'Strategy Engine (Unlimited)',
+            'Court Prep Workspace (Unlimited)',
+            'Legal Precedent (Unlimited)',
+            'Evidence Analysis (Unlimited)',
+            'Contract Review (Unlimited)',
             'Case Predictor (Unlimited)',
-            'Mock Courtroom (50 sessions/month)',
-            'Client Connect (50 listings)',
-            'Case Assignment & Member Task Workflow'
+            'Strategy Engine (Unlimited)',
+            'AI Team Communication (Unlimited Firm Access)',
+            'Case Assignment & Task Workflow'
         ],
         badge: 'FIRM PREMIUM',
         isPopular: false
@@ -282,11 +280,17 @@ const plans = [
         storageGB: 25,
         features: [
             'Dual Access (Student + Advocate Workspaces)',
-            'Quiz & Practice (Unlimited Quizzes)',
-            'Draft Maker & Contract Analyzer (20/month)',
-            'Legal Precedents (20/month)',
-            'Mock Courtroom (5 sessions/month)',
-            'Client Connect (5 listings)'
+            'Quiz & MCQ Practice (Unlimited Quizzes)',
+            'AI Notes Maker (20 notes/month)',
+            'Draft Maker (20 drafts/month)',
+            'Court Prep Workspace (20 preps/month)',
+            'Legal Precedent (20 searches/month)',
+            'Evidence Analysis (20 analyses/month)',
+            'Contract Review (20 reviews/month)',
+            'Case Predictor (20 predictions/month)',
+            'Strategy Engine (20 strategies/month)',
+            'AI Mock Courtroom (5 sessions/month)',
+            'AI Client Connect (5 listings)'
         ],
         badge: 'COMBO',
         isPopular: false
@@ -301,11 +305,17 @@ const plans = [
         features: [
             'Dual Access (Advocate + Law Firm Workspaces)',
             'Up to 10 Team Members',
-            'Draft Maker & Contract Analyzer (30/month)',
-            'Legal Precedents (30/month)',
-            'Mock Courtroom (10 sessions/month)',
-            'Client Connect (10 listings)',
-            'Case Assignment Workflow'
+            'Draft Maker (30 drafts/month)',
+            'Court Prep Workspace (30 preps/month)',
+            'Legal Precedent (30 searches/month)',
+            'Evidence Analysis (30 analyses/month)',
+            'Contract Review (30 reviews/month)',
+            'Case Predictor (30 predictions/month)',
+            'Strategy Engine (30 strategies/month)',
+            'AI Team Communication (Included)',
+            'Case Assignment & Task Workflow (Included)',
+            'AI Mock Courtroom (10 sessions/month)',
+            'AI Client Connect (10 listings)'
         ],
         badge: 'COMBO',
         isPopular: true
@@ -320,12 +330,19 @@ const plans = [
         features: [
             'Full Access to ALL 3 Workspaces (Student, Advocate & Law Firm)',
             'Up to 20 Team Members',
-            'Quiz & Practice (Unlimited Quizzes)',
-            'Draft Maker & Contract Analyzer (Unlimited)',
-            'Legal Precedents & Research Assistant (Unlimited)',
-            'Mock Courtroom (15 sessions/month)',
-            'Client Connect (20 listings)',
-            'Case Assignment Workflow'
+            'Quiz & MCQ Practice (Unlimited Quizzes)',
+            'AI Notes Maker (Unlimited)',
+            'Draft Maker (Unlimited)',
+            'Court Prep Workspace (Unlimited)',
+            'Legal Precedent (Unlimited)',
+            'Evidence Analysis (Unlimited)',
+            'Contract Review (Unlimited)',
+            'Case Predictor (Unlimited)',
+            'Strategy Engine (Unlimited)',
+            'AI Team Communication (Unlimited)',
+            'Case Assignment & Task Workflow (Included)',
+            'AI Mock Courtroom (15 sessions/month)',
+            'AI Client Connect (20 listings)'
         ],
         badge: 'ALL ACCESS',
         isPopular: false

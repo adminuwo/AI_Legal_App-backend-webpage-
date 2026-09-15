@@ -927,11 +927,11 @@ const LegalDashboard = ({
             </div>
             <div className="space-y-2">
               <h3 className="text-xl font-extrabold text-[#111111] dark:text-white">
-                {(localStorage.getItem('user_selected_role') || 'advocate') === 'law_firm' ? 'No Firm Cases Found' : 'No Matters Found'}
+                {(localStorage.getItem('user_selected_role') || 'advocate') === 'law_firm' ? 'No Cases Assigned to You Yet' : 'No Matters Found'}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-sm mx-auto">
                 {(localStorage.getItem('user_selected_role') || 'advocate') === 'law_firm' 
-                  ? 'Create your first firm case workspace to organize pleadings, documents, evidence, hearings and team strategy.' 
+                  ? 'You have not been assigned to any firm cases yet. Once your firm managing partner or lead advocate assigns a case to you, it will appear here.' 
                   : 'Create your first litigation folder to start leveraging AI-powered legal assists.'}
               </p>
             </div>

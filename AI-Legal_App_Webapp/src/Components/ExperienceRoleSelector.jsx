@@ -46,6 +46,18 @@ export default function ExperienceRoleSelector({ compact = false }) {
       const wsData = res?.data?.workspaces || res?.workspaces || res?.data || [];
       if (Array.isArray(wsData)) {
         setWorkspaces(wsData);
+        const firms = wsData.filter(
+          (ws) => (ws.type === 'law_firm' || ws.type === 'firm' || ws.type === 'enterprise' || ws.isFirm) && ws.type !== 'personal'
+        );
+        if (firms.length > 0) {
+          const currentWsId = localStorage.getItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID');
+          const isCurrentValid = currentWsId && currentWsId !== 'firm_default' && currentWsId !== 'firm_abc_workspace' && currentWsId !== 'personal_practice' && firms.some(f => String(f._id || f.id) === String(currentWsId));
+          if (!isCurrentValid) {
+            const defaultId = String(firms[0]._id || firms[0].id);
+            localStorage.setItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID', defaultId);
+            window.dispatchEvent(new CustomEvent('workspace_changed', { detail: { workspaceId: defaultId } }));
+          }
+        }
       }
     } catch (err) {
       console.warn('[ExperienceRoleSelector] Failed to fetch workspaces:', err);

@@ -677,6 +677,12 @@ export const CaseWorkspace = ({
   const [newTask, setNewTask] = useState({ title: '', priority: 'Medium', deadline: '' });
   const [newActivity, setNewActivity] = useState({ type: 'Call', title: '', notes: '' });
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const [isEditTeamModalOpenWeb, setIsEditTeamModalOpenWeb] = useState(false);
+  const [webSelectedMemberIds, setWebSelectedMemberIds] = useState([]);
+  const [webSelectedMemberNames, setWebSelectedMemberNames] = useState([]);
+  const [isSavingWebTeam, setIsSavingWebTeam] = useState(false);
+  const [quickAssigningWebId, setQuickAssigningWebId] = useState(null);
+  const [removingMemberWebId, setRemovingMemberWebId] = useState(null);
 
   // Tab configuration matching mobile & web parity (Up to Enterprise AI Quick Actions)
   const tabs = [
@@ -692,16 +698,119 @@ export const CaseWorkspace = ({
     { id: 'quick_actions', name: 'Enterprise AI Quick Actions', icon: Sparkles }
   ];
 
+  // Case Team Handlers for Web
+  const handleOpenWebEditTeam = () => {
+    const rawAssigned = Array.isArray(caseData.teamMembers) ? caseData.teamMembers : [];
+    const nonLead = rawAssigned.filter((m, idx) => !m.isLead && idx !== 0);
+    setWebSelectedMemberIds(nonLead.map(m => String(m.userId || m.id)).filter(Boolean));
+    setWebSelectedMemberNames(nonLead.map(m => typeof m === 'string' ? m : (m.name || m.fullName)).filter(Boolean));
+    setIsEditTeamModalOpenWeb(true);
+  };
+
+  const handleToggleWebMemberSelection = (member) => {
+    const mId = String(member.userId || member.id || '');
+    const mName = member.name || member.fullName;
+    const isSelected = mId ? webSelectedMemberIds.includes(mId) : webSelectedMemberNames.includes(mName);
+
+    if (isSelected) {
+      if (mId) setWebSelectedMemberIds(prev => prev.filter(id => id !== mId));
+      if (mName) setWebSelectedMemberNames(prev => prev.filter(name => name !== mName));
+    } else {
+      if (mId) setWebSelectedMemberIds(prev => [...prev, mId]);
+      if (mName) setWebSelectedMemberNames(prev => [...prev, mName]);
+    }
+  };
+
+  const handleSaveWebTeam = async () => {
+    if (!caseData?._id) return;
+    setIsSavingWebTeam(true);
+    try {
+      const rawAssigned = Array.isArray(caseData.teamMembers) ? caseData.teamMembers : [];
+      const leadMember = rawAssigned.find(m => m.isLead) || rawAssigned[0];
+      const leadUserId = leadMember?.userId || leadMember?.id || caseData.userId;
+
+      const finalUserIds = Array.from(new Set([
+        ...webSelectedMemberIds,
+        ...(leadUserId ? [String(leadUserId)] : [])
+      ])).filter(Boolean);
+
+      await apiService.updateProject(caseData._id, {
+        assignedUserIds: finalUserIds,
+        teamMembers: webSelectedMemberNames
+      });
+      toast.success("Case Team assignments updated successfully!");
+      setIsEditTeamModalOpenWeb(false);
+      const refreshed = await apiService.getProject(caseData._id);
+      if (refreshed) setCaseData(refreshed);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || "Failed to update case team.");
+    } finally {
+      setIsSavingWebTeam(false);
+    }
+  };
+
+  const handleWebQuickAssign = async (member) => {
+    if (!caseData?._id) return;
+    const mId = String(member.userId || member.id || '');
+    setQuickAssigningWebId(mId || member.name);
+    try {
+      await apiService.post(`/projects/${caseData._id}/members`, {
+        userId: mId,
+        memberName: member.name,
+        role: member.role || member.designation || 'Assigned Advocate'
+      });
+      toast.success(`${member.name} has been assigned to this case!`);
+      const refreshed = await apiService.getProject(caseData._id);
+      if (refreshed) setCaseData(refreshed);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || "Failed to assign advocate.");
+    } finally {
+      setQuickAssigningWebId(null);
+    }
+  };
+
+  const handleWebRemoveMember = async (member) => {
+    if (!caseData?._id) return;
+    const mId = String(member.userId || member.id || '');
+    setRemovingMemberWebId(mId || member.name);
+    try {
+      await apiService.delete(`/projects/${caseData._id}/members/${mId || encodeURIComponent(member.name)}`, {
+        params: { memberName: member.name }
+      });
+      toast.success(`Removed ${member.name} from this case.`);
+      const refreshed = await apiService.getProject(caseData._id);
+      if (refreshed) setCaseData(refreshed);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || "Failed to remove advocate.");
+    } finally {
+      setRemovingMemberWebId(null);
+    }
+  };
+
   const renderTeamChat = () => {
     const userObj = JSON.parse(localStorage.getItem('user') || '{}');
     const currentUserName = userObj?.fullName || userObj?.name || 'Aditi Lakhera';
 
-    // Team Roster matching Mobile Screenshot 2 Parity (Aditi, Advocate, Adit)
-    const teamMembersList = [
-      { id: 'm1', name: 'Aditi', fullName: 'Aditi Lakhera', role: 'Lead Advocate', initial: 'A', bg: 'bg-[#4F46E5]' },
-      { id: 'm2', name: 'Advocate', fullName: 'Assigned Advocate', role: 'Associate Advocate', initial: 'A', bg: 'bg-[#4F46E5]' },
-      { id: 'm3', name: 'Adit', fullName: 'Adit', role: 'Junior Advocate', initial: 'A', bg: 'bg-[#4F46E5]' }
-    ];
+    // Dynamic Team Roster derived from genuine case assignments
+    const assignedMembersFromCase = Array.isArray(caseData.teamMembers) ? caseData.teamMembers : [];
+    const teamMembersList = assignedMembersFromCase.length > 0
+      ? assignedMembersFromCase.map((m, idx) => {
+          const name = typeof m === 'string' ? m : (m.fullName || m.name || 'Advocate');
+          const isLead = m.isLead || idx === 0;
+          return {
+            id: m.userId || m.id || `m_${idx}`,
+            userId: m.userId || m.id,
+            name: name,
+            fullName: name,
+            role: m.role || (isLead ? 'Lead Advocate' : 'Assigned Advocate'),
+            initial: name.charAt(0).toUpperCase() || 'A',
+            isLead: isLead,
+            bg: isLead ? 'bg-[#B88B2A]' : 'bg-[#4F46E5]'
+          };
+        })
+      : [
+          { id: 'lead', name: caseData.leadAdvocate || 'Aditi Lakhera', fullName: caseData.leadAdvocate || 'Aditi Lakhera', role: 'Lead Advocate', initial: 'A', bg: 'bg-[#B88B2A]', isLead: true }
+        ];
 
     const totalMembersCount = teamMembersList.length;
 
@@ -14834,101 +14943,284 @@ Through Counsel
               <p className="text-xs font-medium text-slate-500">{caseData.name || 'hddh'}</p>
             </div>
 
-            {/* CASE TEAM SUMMARY Card */}
-            <div className="bg-gradient-to-br from-amber-500/5 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-[#1E293B] dark:to-amber-950/20 border border-[#B88B2A]/50 rounded-2xl p-3 sm:p-4 space-y-2.5 sm:space-y-3">
-              <h3 className="text-[10px] font-black text-[#B88B2A] uppercase tracking-widest">
-                CASE TEAM SUMMARY
-              </h3>
+            {/* Dynamic Assigned & Unassigned Lists */}
+            {(() => {
+              const rawAssigned = Array.isArray(caseData.teamMembers) ? caseData.teamMembers : [];
+              const assignedList = rawAssigned.length > 0
+                ? rawAssigned.map((m, idx) => {
+                    const name = typeof m === 'string' ? m : (m.fullName || m.name || 'Advocate');
+                    const isLead = m.isLead || idx === 0;
+                    return {
+                      id: m.userId || m.id || `m_${idx}`,
+                      userId: m.userId || m.id,
+                      name: name,
+                      role: m.role || (isLead ? 'Lead Advocate' : 'Assigned Advocate'),
+                      firmDesignation: m.designation || m.role || (isLead ? 'Managing Partner' : 'Associate Advocate'),
+                      department: m.department || 'Corporate Law',
+                      isLead: isLead
+                    };
+                  })
+                : [
+                    {
+                      id: 'lead',
+                      userId: caseData.userId,
+                      name: caseData.leadAdvocate || 'Aditi Lakhera',
+                      role: 'Lead Advocate',
+                      firmDesignation: 'Managing Partner',
+                      department: 'Corporate Law',
+                      isLead: true
+                    }
+                  ];
 
-              <div className="grid grid-cols-4 gap-1.5 sm:gap-2 text-center border-b border-slate-100 dark:border-slate-800 pb-2.5 sm:pb-3">
-                <div>
-                  <div className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">1</div>
-                  <div className="text-[9px] font-medium text-slate-400">Lead Advocate</div>
-                </div>
-                <div>
-                  <div className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">2</div>
-                  <div className="text-[9px] font-medium text-slate-400">Advocates</div>
-                </div>
-                <div>
-                  <div className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">0</div>
-                  <div className="text-[9px] font-medium text-slate-400">Research</div>
-                </div>
-                <div>
-                  <div className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">0</div>
-                  <div className="text-[9px] font-medium text-slate-400">Paralegal</div>
-                </div>
-              </div>
+              const unassignedList = Array.isArray(caseData.unassignedMembers) ? caseData.unassignedMembers : [];
+              const leadCount = 1;
+              const advocatesCount = Math.max(assignedList.length - 1, 0);
 
-              <div className="flex items-center justify-between text-xs pt-0.5">
-                <span className="font-bold text-slate-600 dark:text-slate-400">Assigned to this Case</span>
-                <span className="font-black text-[#B88B2A]">3 Members</span>
-              </div>
-            </div>
+              return (
+                <>
+                  {/* CASE TEAM SUMMARY Card */}
+                  <div className="bg-gradient-to-br from-amber-500/5 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-[#1E293B] dark:to-amber-950/20 border border-[#B88B2A]/50 rounded-2xl p-3 sm:p-4 space-y-2.5 sm:space-y-3">
+                    <h3 className="text-[10px] font-black text-[#B88B2A] uppercase tracking-widest">
+                      CASE TEAM SUMMARY
+                    </h3>
 
-            {/* ASSIGNED MEMBERS (3) */}
-            <div className="space-y-2.5 sm:space-y-3">
-              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                ASSIGNED MEMBERS (3)
-              </h4>
-
-              {/* Member 1: Aditi Lakhera (Lead) */}
-              <div className="bg-slate-50 dark:bg-slate-900/60 border border-[#B88B2A]/40 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-2.5 sm:gap-3 shadow-2xs">
-                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#B88B2A]/20 text-[#B88B2A] font-black flex items-center justify-center text-xs sm:text-sm border border-[#B88B2A]/40 shrink-0">
-                    AL
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="font-black text-slate-800 dark:text-white text-xs truncate">Aditi Lakhera</span>
-                      <span className="px-1.5 py-0.2 bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-300 dark:border-amber-700 rounded text-[9px] font-bold">👑 Lead</span>
+                    <div className="grid grid-cols-4 gap-1.5 sm:gap-2 text-center border-b border-slate-100 dark:border-slate-800 pb-2.5 sm:pb-3">
+                      <div>
+                        <div className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">{leadCount}</div>
+                        <div className="text-[9px] font-medium text-slate-400">Lead Advocate</div>
+                      </div>
+                      <div>
+                        <div className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">{advocatesCount}</div>
+                        <div className="text-[9px] font-medium text-slate-400">Advocates</div>
+                      </div>
+                      <div>
+                        <div className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">0</div>
+                        <div className="text-[9px] font-medium text-slate-400">Research</div>
+                      </div>
+                      <div>
+                        <div className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">0</div>
+                        <div className="text-[9px] font-medium text-slate-400">Paralegal</div>
+                      </div>
                     </div>
-                    <div className="text-[11px] font-bold text-[#B88B2A] mt-0.5">Lead Advocate</div>
-                    <div className="text-[10px] text-slate-400 font-medium truncate">Managing Partner • Corporate Law</div>
-                  </div>
-                </div>
-                <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-full text-[9px] font-bold shrink-0">🟢 Active</span>
-              </div>
 
-              {/* Member 2: Advocate */}
-              <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-2.5 sm:gap-3 shadow-2xs">
-                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white font-black flex items-center justify-center text-xs sm:text-sm shrink-0">
-                    A
+                    <div className="flex items-center justify-between text-xs pt-0.5">
+                      <div>
+                        <span className="font-bold text-slate-600 dark:text-slate-400">Assigned to this Case: </span>
+                        <span className="font-black text-[#B88B2A]">{assignedList.length} Members</span>
+                      </div>
+                      <div className="text-[11px] text-slate-400 font-medium">
+                        Unassigned: <strong className="text-slate-500">{unassignedList.length}</strong>
+                      </div>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <div className="font-black text-slate-800 dark:text-white text-xs truncate">Advocate</div>
-                    <div className="text-[11px] font-bold text-[#B88B2A] mt-0.5">Assigned Advocate</div>
-                    <div className="text-[10px] text-slate-400 font-medium truncate">Associate Advocate • Civil & Criminal</div>
-                  </div>
-                </div>
-                <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-full text-[9px] font-bold shrink-0">🟢 Active</span>
-              </div>
 
-              {/* Member 3: Aditi */}
-              <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-2.5 sm:gap-3 shadow-2xs">
-                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500 text-white font-black flex items-center justify-center text-xs sm:text-sm shrink-0">
-                    A
+                  {/* ASSIGNED MEMBERS LIST */}
+                  <div className="space-y-2.5 sm:space-y-3">
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      ASSIGNED TO THIS CASE ({assignedList.length})
+                    </h4>
+
+                    {assignedList.map((member) => (
+                      <div
+                        key={member.id}
+                        className={`bg-slate-50 dark:bg-slate-900/60 border ${
+                          member.isLead ? 'border-[#B88B2A]/40' : 'border-slate-200/80 dark:border-slate-800'
+                        } rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-2.5 sm:gap-3 shadow-2xs`}
+                      >
+                        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                          <div
+                            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full ${
+                              member.isLead ? 'bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/40' : 'bg-blue-500 text-white'
+                            } font-black flex items-center justify-center text-xs sm:text-sm shrink-0`}
+                          >
+                            {member.name?.charAt(0) || 'A'}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-black text-slate-800 dark:text-white text-xs truncate">{member.name}</span>
+                              {member.isLead && (
+                                <span className="px-1.5 py-0.2 bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-300 dark:border-amber-700 rounded text-[9px] font-bold">
+                                  👑 Lead
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[11px] font-bold text-[#B88B2A] mt-0.5">{member.role}</div>
+                            <div className="text-[10px] text-slate-400 font-medium truncate">
+                              {member.firmDesignation} • {member.department}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-full text-[9px] font-bold">
+                            🟢 Active
+                          </span>
+                          {!member.isLead && (
+                            <button
+                              onClick={() => handleWebRemoveMember(member)}
+                              disabled={removingMemberWebId === (member.userId || member.id)}
+                              className="p-1 text-slate-400 hover:text-rose-500 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+                              title="Remove from Case"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="min-w-0">
-                    <div className="font-black text-slate-800 dark:text-white text-xs truncate">Aditi</div>
-                    <div className="text-[11px] font-bold text-[#B88B2A] mt-0.5">Junior Advocate</div>
-                    <div className="text-[10px] text-slate-400 font-medium truncate">Junior Advocate • Civil Litigation</div>
+
+                  {/* NOT ASSIGNED TO THIS CASE LIST */}
+                  <div className="space-y-2.5 sm:space-y-3 pt-2">
+                    <div>
+                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        NOT ASSIGNED TO THIS CASE ({unassignedList.length})
+                      </h4>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        These advocates cannot access or see this case until assigned.
+                      </p>
+                    </div>
+
+                    {unassignedList.length === 0 ? (
+                      <div className="p-3 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl text-center text-xs text-slate-400">
+                        All active law firm members are assigned to this case.
+                      </div>
+                    ) : (
+                      unassignedList.map((member) => (
+                        <div
+                          key={member.id}
+                          className="bg-slate-50/50 dark:bg-slate-900/30 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-2.5 sm:gap-3"
+                        >
+                          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 font-bold flex items-center justify-center text-xs sm:text-sm shrink-0">
+                              {member.name?.charAt(0) || 'A'}
+                            </div>
+                            <div className="min-w-0">
+                              <span className="font-black text-slate-800 dark:text-white text-xs truncate block">{member.name}</span>
+                              <span className="text-[10px] text-slate-400 font-medium truncate block">
+                                {member.role || member.designation || 'Associate Advocate'}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-full text-[9px] font-bold">
+                              Not Assigned
+                            </span>
+                            <button
+                              onClick={() => handleWebQuickAssign(member)}
+                              disabled={quickAssigningWebId === (member.userId || member.id)}
+                              className="px-2.5 py-1 bg-[#B88B2A]/15 hover:bg-[#B88B2A]/25 text-[#B88B2A] border border-[#B88B2A]/30 rounded-lg text-[10px] font-black transition-all flex items-center gap-1 cursor-pointer"
+                            >
+                              <UserPlus size={11} /> Assign
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
-                </div>
-                <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-full text-[9px] font-bold shrink-0">🟢 Active</span>
+
+                  {/* Edit Case Team Button */}
+                  <button
+                    onClick={handleOpenWebEditTeam}
+                    className="w-full py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs mt-2"
+                  >
+                    <UserPlus size={15} /> Edit Case Team
+                  </button>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* ─── Web Edit Case Team Sub-Modal ─── */}
+      {isEditTeamModalOpenWeb && (
+        <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl max-w-md w-full space-y-4 animate-in fade-in zoom-in duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div>
+                <h3 className="text-base font-black text-slate-900 dark:text-white">Edit Case Team</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Select members to grant access to this case.</p>
               </div>
+              <button
+                onClick={() => setIsEditTeamModalOpenWeb(false)}
+                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <X size={18} />
+              </button>
             </div>
 
-            {/* Edit Case Team Button */}
-            <button
-              onClick={() => {
-                toast.success("Case team editor opened!");
-              }}
-              className="w-full py-3 bg-[#B88B2A] hover:bg-[#b08d3b] text-[#111111] font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-            >
-              <UserPlus size={15} /> Edit Case Team
-            </button>
+            <div className="max-h-60 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+              {(() => {
+                const rawAssigned = Array.isArray(caseData.teamMembers) ? caseData.teamMembers : [];
+                const unassigned = Array.isArray(caseData.unassignedMembers) ? caseData.unassignedMembers : [];
+                const allMembers = [
+                  ...rawAssigned.filter((m, idx) => !m.isLead && idx !== 0),
+                  ...unassigned
+                ];
+                // Deduplicate by name/id
+                const seenKeys = new Set();
+                const uniqueMembers = allMembers.filter((m) => {
+                  const k = String(m.userId || m.id || m.name);
+                  if (seenKeys.has(k)) return false;
+                  seenKeys.add(k);
+                  return true;
+                });
+
+                if (uniqueMembers.length === 0) {
+                  return (
+                    <div className="p-4 text-center text-xs text-slate-400">
+                      No additional firm members found to assign.
+                    </div>
+                  );
+                }
+
+                return uniqueMembers.map((m) => {
+                  const mId = String(m.userId || m.id || '');
+                  const mName = m.name || m.fullName;
+                  const isChecked = mId ? webSelectedMemberIds.includes(mId) : webSelectedMemberNames.includes(mName);
+                  return (
+                    <div
+                      key={m.id || m.userId || mName}
+                      onClick={() => handleToggleWebMemberSelection(m)}
+                      className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                        isChecked
+                          ? 'border-[#B88B2A] bg-amber-500/10 dark:bg-amber-500/15'
+                          : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                      }`}
+                    >
+                      <div>
+                        <p className="text-xs font-black text-slate-800 dark:text-slate-100">{mName}</p>
+                        <p className="text-[10px] text-slate-400">{m.role || m.designation || 'Associate Advocate'}</p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {}}
+                        className="w-4 h-4 accent-[#B88B2A] rounded cursor-pointer"
+                      />
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+
+            <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <button
+                onClick={() => setIsEditTeamModalOpenWeb(false)}
+                className="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveWebTeam}
+                disabled={isSavingWebTeam}
+                className="flex-1 py-2.5 bg-[#B88B2A] hover:bg-[#a67c24] text-black text-xs font-black rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                {isSavingWebTeam ? 'Saving...' : 'Save Case Team'}
+              </button>
+            </div>
           </div>
         </div>
       )}
