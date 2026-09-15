@@ -16,6 +16,8 @@ import SearchResultCard from '../Components/CaseSearch/SearchResultCard';
 import JudgmentReader from '../Components/CaseSearch/JudgmentReader';
 import AddToCaseModal from '../Components/CaseSearch/AddToCaseModal';
 import SavedResearchDrawer from '../Components/CaseSearch/SavedResearchDrawer';
+import ActiveCaseDossierCard from '../Components/CaseSearch/ActiveCaseDossierCard';
+import CaseDossierModal from '../Components/CaseSearch/CaseDossierModal';
 
 import caseSearchService from '../services/caseSearchService';
 import { POPULAR_SEARCH_CHIPS, INDIAN_COURTS } from '../data/indianCourtsData';
@@ -56,6 +58,9 @@ export default function PublicCaseSearchWorkspace() {
 
   // Results & Loading State
   const [results, setResults] = useState([]);
+  const [activeCaseResult, setActiveCaseResult] = useState(null);
+  const [isDossierModalOpen, setIsDossierModalOpen] = useState(false);
+  const [partyResults, setPartyResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -100,8 +105,40 @@ export default function PublicCaseSearchWorkspace() {
     setIsSearching(true);
     setHasSearched(true);
     setSelectedJudgment(null);
+    setActiveCaseResult(null);
+    setPartyResults([]);
+
+    const cleanTrimmed = (queryToUse || '').trim();
+    const sanitizedCnr = cleanTrimmed.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+    const isCnrPattern = /^[A-Z0-9]{16}$/.test(sanitizedCnr);
 
     try {
+      // 1. If CNR pattern detected OR explicitly Case Search with 16 chars: lookup active eCourts case
+      if (isCnrPattern || (activeMode === 'CASE' && sanitizedCnr.length === 16)) {
+        try {
+          const cnrData = await caseSearchService.searchActiveCaseByCnr(sanitizedCnr);
+          if (cnrData) {
+            setActiveCaseResult(cnrData);
+            toast.success(`Active case records retrieved from ${cnrData.court_name || 'eCourts'}`);
+          }
+        } catch (cnrErr) {
+          console.warn('CNR lookup notice:', cnrErr.message);
+        }
+      }
+
+      // 2. If Party Search mode: query active cases by party
+      if (activeMode === 'PARTY') {
+        try {
+          const partyCases = await caseSearchService.searchActiveCasesByParty(cleanTrimmed);
+          if (partyCases && partyCases.length > 0) {
+            setPartyResults(partyCases);
+          }
+        } catch (partyErr) {
+          console.warn('Party search notice:', partyErr.message);
+        }
+      }
+
+      // 3. Search judgments & precedents (Indian Kanoon + Gemini Google Grounding)
       const searchRes = await caseSearchService.searchJudgments({
         query: queryToUse,
         mode: activeMode,
@@ -208,19 +245,27 @@ export default function PublicCaseSearchWorkspace() {
     return count;
   }, [filters]);
 
-  // When a judgment is selected, navigate to the dedicated /judgment/:id route
+  // Direct handler to navigate to dedicated /judgment/:id workspace
+  const handleReadJudgment = (j) => {
+    if (!j) return;
+    const targetId = j.id || j.slug || (j.ikDocId ? `ik_${j.ikDocId}` : 'sc_landmark_kesavananda');
+    navigate(`/judgment/${targetId}`, {
+      state: {
+        judgment: j,
+        searchQuery,
+        activeMode,
+        activeSource,
+        selectedHighCourt,
+        filters,
+        sortBy
+      }
+    });
+  };
+
+  // When a judgment is selected from state/drawer, navigate to the dedicated /judgment/:id route
   useEffect(() => {
     if (selectedJudgment) {
-      navigate(`/judgment/${selectedJudgment.slug || selectedJudgment.id}`, {
-        state: {
-          searchQuery,
-          activeMode,
-          activeSource,
-          selectedHighCourt,
-          filters,
-          sortBy
-        }
-      });
+      handleReadJudgment(selectedJudgment);
       setSelectedJudgment(null);
     }
   }, [selectedJudgment]);
@@ -484,11 +529,24 @@ export default function PublicCaseSearchWorkspace() {
         </div>
       </section>
 
-      {/* ─── CONTENT AREA: EMPTY STATE / LOADING / RESULTS ─── */}
+      {/* ─── CONTENT AREA: EMPTY STATE / LOADING / RESULTS / READER ─── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         
-        {/* STATE 1: INITIAL EMPTY STATE (Section 11) */}
-        {!hasSearched && !isSearching && (
+        {/* STATE 0: IN-SCREEN JUDGMENT READER & AI ANALYSIS */}
+        {selectedJudgment ? (
+          <div className="mb-8">
+            <JudgmentReader
+              judgment={selectedJudgment}
+              onBack={() => setSelectedJudgment(null)}
+              onAddToCase={handleOpenAddToCase}
+              isBookmarked={bookmarkedIds.includes(selectedJudgment.id)}
+              onToggleBookmark={handleToggleBookmark}
+            />
+          </div>
+        ) : (
+          <>
+            {/* STATE 1: INITIAL EMPTY STATE (Section 11) */}
+            {!hasSearched && !isSearching && (
           <div className="max-w-3xl mx-auto space-y-8 py-4">
             
             <div className="text-center space-y-2">
@@ -610,22 +668,74 @@ export default function PublicCaseSearchWorkspace() {
           </div>
         )}
 
-        {/* STATE 3: SEARCH RESULTS WORKSPACE (Section 9 & 36) */}
-        {hasSearched && !isSearching && results.length > 0 && (
+        {/* STATE 3: SEARCH RESULTS WORKSPACE */}
+        {hasSearched && !isSearching && (results.length > 0 || activeCaseResult || partyResults.length > 0) && (
           <div className="space-y-6">
+
+            {/* LIVE ACTIVE ECOURTS CASE DOSSIER */}
+            {activeCaseResult && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 shadow-2xs">
+                    <Landmark size={13} />
+                    <span>Live Court Registry Match (eCourts)</span>
+                  </span>
+                </div>
+                <ActiveCaseDossierCard
+                  activeCase={activeCaseResult}
+                  onAddToCase={handleOpenAddToCase}
+                  onOpenDossier={() => setIsDossierModalOpen(true)}
+                />
+              </div>
+            )}
+
+            {/* PARTY SEARCH RESULTS */}
+            {partyResults.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                  <Scale size={14} className="text-[#B88B2A]" />
+                  <span>Matching Active Cases for Party ({partyResults.length})</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {partyResults.map((pCase, idx) => (
+                    <div 
+                      key={idx}
+                      onClick={() => {
+                        if (pCase.cnr_number) {
+                          setSearchQuery(pCase.cnr_number);
+                          executeSearch(pCase.cnr_number);
+                        }
+                      }}
+                      className="p-4 rounded-2xl bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 hover:border-[#B88B2A]/60 transition-all cursor-pointer space-y-2 shadow-xs group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-mono font-bold text-[#B38628]">CNR: {pCase.cnr_number || 'N/A'}</span>
+                        <span className="text-[10px] uppercase font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded">Active</span>
+                      </div>
+                      <div className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[#B38628] transition-colors">
+                        {pCase.case_title || `${pCase.parties?.petitioner || 'Petitioner'} vs ${pCase.parties?.respondent || 'Respondent'}`}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {pCase.court_name || 'District / High Court'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             
             {/* Results Header with Query Summary and Sort Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800 pb-4">
               <div>
                 <span className="text-xs text-slate-400 font-semibold block">
-                  Search results for:
+                  Legal Precedents & Judgments for:
                 </span>
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
                     {searchQuery ? `"${searchQuery}"` : 'All Jurisprudential Authorities'}
                   </h2>
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#B88B2A]/15 text-[#B38628] dark:text-amber-400 border border-[#B88B2A]/30">
-                    {results.length} Relevant Judgments
+                    {results.length} Relevant Authorities
                   </span>
                 </div>
               </div>
@@ -654,7 +764,7 @@ export default function PublicCaseSearchWorkspace() {
                 <SearchResultCard
                   key={judgment.id}
                   judgment={judgment}
-                  onReadJudgment={(j) => setSelectedJudgment(j)}
+                  onReadJudgment={handleReadJudgment}
                   isBookmarked={bookmarkedIds.includes(judgment.id)}
                   onToggleBookmark={handleToggleBookmark}
                   onAddToCase={handleOpenAddToCase}
@@ -666,7 +776,7 @@ export default function PublicCaseSearchWorkspace() {
         )}
 
         {/* STATE 4: NO RESULTS FOUND (Section 13) */}
-        {hasSearched && !isSearching && results.length === 0 && (
+        {hasSearched && !isSearching && results.length === 0 && !activeCaseResult && partyResults.length === 0 && (
           <div className="max-w-md mx-auto text-center py-16 space-y-4">
             <div className="w-14 h-14 rounded-3xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto">
               <Scale size={28} />
@@ -697,6 +807,9 @@ export default function PublicCaseSearchWorkspace() {
           </div>
         )}
 
+          </>
+        )}
+
       </main>
 
       {/* ─── ADD TO CASE MODAL ─── */}
@@ -706,11 +819,19 @@ export default function PublicCaseSearchWorkspace() {
         judgment={judgmentToAdd}
       />
 
+      {/* ─── IN-SCREEN CASE DOSSIER & COURT ORDER PDF VIEWER ─── */}
+      <CaseDossierModal
+        isOpen={isDossierModalOpen}
+        onClose={() => setIsDossierModalOpen(false)}
+        activeCase={activeCaseResult}
+        onAddToCase={handleOpenAddToCase}
+      />
+
       {/* ─── SAVED BOOKMARKS & HISTORY DRAWER ─── */}
       <SavedResearchDrawer
         isOpen={isSavedDrawerOpen}
         onClose={() => setIsSavedDrawerOpen(false)}
-        onSelectJudgment={(j) => setSelectedJudgment(j)}
+        onSelectJudgment={handleReadJudgment}
         onSelectSearchQuery={(q) => {
           setSearchQuery(q);
           executeSearch(q);

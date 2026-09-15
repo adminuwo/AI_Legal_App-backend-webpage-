@@ -5,8 +5,9 @@ import {
   FileText, Check, Copy, ExternalLink, ChevronRight, Hash
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import caseSearchService from '../../services/caseSearchService';
 
-export default function JudgmentDocumentViewer({ judgment }) {
+export default function JudgmentDocumentViewer({ judgment, onOpenPdfModal }) {
   const [fontSize, setFontSize] = useState(15); // 13px to 24px
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,36 +46,19 @@ export default function JudgmentDocumentViewer({ judgment }) {
   };
 
   const handleDownloadReport = () => {
-    const header = `================================================================================
-${judgment.court || 'SUPREME COURT OF INDIA'}
-${judgment.caseType || 'APPELLATE JURISDICTION'} — ${judgment.caseNumber || 'CIVIL/CRIMINAL'}
-================================================================================
-CASE TITLE: ${judgment.title}
-CITATION:   ${judgment.citation}
-DECIDED ON: ${judgment.date || judgment.year}
-BENCH:      ${judgment.bench || 'Division Bench'}
-CORAM:      ${(judgment.judges || []).join(', ')}
-${judgment.counsel?.petitioner ? `COUNSEL FOR PETITIONER: ${judgment.counsel.petitioner.join(', ')}` : ''}
-${judgment.counsel?.respondent ? `COUNSEL FOR RESPONDENT: ${judgment.counsel.respondent.join(', ')}` : ''}
---------------------------------------------------------------------------------
-BINDING RATIO DECIDENDI:
-"${judgment.ratioDecidendi || ''}"
---------------------------------------------------------------------------------
-JUDGMENT TEXT:
-${judgment.fullTextExcerpt || judgment.executiveSummary || ''}
-================================================================================
-Generated via AI LEGAL™ Research Workspace`;
-
-    const blob = new Blob([header], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    const targetId = judgment.id || judgment.slug;
+    if (!targetId) {
+      toast.error('Judgment identifier unavailable.');
+      return;
+    }
+    const downloadUrl = caseSearchService.getJudgmentPdfUrl(targetId, true);
     const link = document.createElement('a');
-    link.href = url;
-    link.download = `${(judgment.slug || judgment.title || 'judgment').replace(/[^a-z0-9]/gi, '_')}_Official_Report.txt`;
+    link.href = downloadUrl;
+    link.download = `${(judgment.title || 'Official_Judgment').replace(/[^a-zA-Z0-9]/g, '_').slice(0, 35)}_Official_Report.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    toast.success('Official Law Report downloaded.');
+    toast.success('Downloading Official Law Report PDF...');
   };
 
   // Search in text highlighter
@@ -277,11 +261,23 @@ Generated via AI LEGAL™ Research Workspace`;
             </button>
           </div>
 
-          {/* Download Law Report */}
+          {/* Official PDF Preview Button */}
+          {onOpenPdfModal && (
+            <button
+              onClick={onOpenPdfModal}
+              className="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-[#B88B2A]/40 text-[#B38628] dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/60 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="View Official Law Report PDF"
+            >
+              <FileText size={13} />
+              <span className="hidden sm:inline">Official PDF</span>
+            </button>
+          )}
+
+          {/* Download Official Law Report PDF */}
           <button
             onClick={handleDownloadReport}
             className="p-2 rounded-xl bg-white dark:bg-[#0B101D] border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
-            title="Download Law Report (.txt)"
+            title="Download Official Law Report PDF"
           >
             <Download size={13} />
           </button>

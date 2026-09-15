@@ -81,6 +81,7 @@ import judgmentSubmissionRoutes from './routes/judgmentSubmissionRoutes.js';
 import blogPostRoutes from './routes/blogPostRoutes.js';
 import downloadAnalyticsRoutes from './routes/downloadAnalyticsRoutes.js';
 import telemetryRoutes from './routes/telemetryRoutes.js';
+import caseSearchRoutes from './routes/caseSearchRoutes.js';
 
 import { startPlanExpiryService } from './services/planExpiryService.js';
 import { langMiddleware } from './middleware/langContext.js';
@@ -349,6 +350,7 @@ app.use('/api/strategy-history', strategyHistoryRoutes);
 app.use('/api/security', securityRoutes);
 
 // Intelligence Features
+app.use('/api/case-search', caseSearchRoutes);
 app.use('/api/precedents', precedentsRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/agents', agentRoutes);

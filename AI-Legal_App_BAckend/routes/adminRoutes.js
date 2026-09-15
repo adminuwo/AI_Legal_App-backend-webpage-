@@ -33,7 +33,9 @@ import {
     reportCrashLog,
     getCrashLogs,
     updateCrashStatus,
-    clearCrashLogs
+    clearCrashLogs,
+    getInstitutionalAddonRequests,
+    updateInstitutionalAddonRequestStatus
 } from '../controllers/adminPortalController.js';
 
 const router = express.Router();
@@ -141,4 +143,10 @@ router.get('/linked-organizations', verifyToken, isAdmin, getLinkedOrganizations
 router.post('/linked-organizations/:orgSlug/toggle-subscription', verifyToken, isAdmin, toggleOrgSubscription);
 router.post('/linked-organizations/seed-sample', verifyToken, isAdmin, seedSampleConveeOrgs);
 
+// Institutional Add-on Feature Requests (Law Universities & Enterprises)
+router.get('/addon-requests', verifyToken, isAdmin, getInstitutionalAddonRequests);
+router.patch('/addon-requests/:id/status', verifyToken, isAdmin, updateInstitutionalAddonRequestStatus);
+router.post('/addon-requests/:id/status', verifyToken, isAdmin, updateInstitutionalAddonRequestStatus);
+
 export default router;
+

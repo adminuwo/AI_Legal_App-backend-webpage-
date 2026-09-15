@@ -69,12 +69,17 @@ router.post('/search', optionalVerifyToken, async (req, res, next) => {
  * @route POST /api/precedents/analyze
  * @desc Perform AI analysis on a specific precedent
  */
-router.post('/analyze', verifyToken, verifyFeatureAccess('legal_precedent'), async (req, res) => {
+router.post('/analyze', optionalVerifyToken, async (req, res, next) => {
+    if (req.user) {
+        return verifyFeatureAccess('legal_precedent')(req, res, next);
+    }
+    next();
+}, async (req, res) => {
     try {
         const { actionType, precedentData, projectId, language } = req.body;
         
         let activeCaseData = null;
-        if (projectId) {
+        if (projectId && req.user) {
             activeCaseData = await Project.findOne({
                 _id: projectId,
                 $or: [
@@ -114,8 +119,8 @@ router.post('/analyze', verifyToken, verifyFeatureAccess('legal_precedent'), asy
             query: `${fullPrecedentData?.case_name || ''} ${activeCaseData?.title || ''}`,
             headers: req.headers,
             explicitJurisdiction: (explicitJurisdiction.country || explicitJurisdiction.state) ? explicitJurisdiction : null,
-            userId: req.user.id,
-            userProfile: req.user
+            userId: req.user?.id || 'public_visitor',
+            userProfile: req.user || null
         });
 
         const { analyzePrecedent } = await import('../services/precedents.service.js');

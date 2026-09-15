@@ -256,63 +256,56 @@ export const caseSearchService = {
     matchedLocal.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
     results = matchedLocal;
 
-    // 2. Asynchronous attempt to augment with Backend Precedents API if available
+    // 2. Query Unified Case Search & Precedents API (Indian Kanoon + Gemini 2.5 + eCourts)
     try {
       const activeToken = localStorage.getItem('token');
       const headers = activeToken ? { Authorization: `Bearer ${activeToken}` } : {};
 
-      const response = await axios.post(
-        `${API}/precedents/search`,
+      const response = await axios.get(
+        `${API}/case-search/judgments`,
         {
-          query,
-          language: 'English',
-          searchMode: mode,
-          courtFilter: selectedCourt,
-          filters
-        },
-        { headers, timeout: 3500 }
+          params: {
+            q: query,
+            court: selectedCourt !== 'all' ? selectedCourt : undefined,
+            limit: 20
+          },
+          headers,
+          timeout: 20000 // 20s timeout for live Kanoon & AI web grounding
+        }
       );
 
-      if (response.data && Array.isArray(response.data.precedents) && response.data.precedents.length > 0) {
-        const backendItems = response.data.precedents.map((p, idx) => ({
-          id: p._id || p.id || `backend_${idx}`,
-          title: p.case_name || p.title || 'Judicial Precedent',
-          parties: {
-            petitioner: p.parties?.petitioner || (p.case_name || '').split(' v. ')[0] || 'Petitioner',
-            respondent: p.parties?.respondent || (p.case_name || '').split(' v. ')[1] || 'Respondent'
+      if (response.data && Array.isArray(response.data.results) && response.data.results.length > 0) {
+        const liveItems = response.data.results.map((p, idx) => ({
+          id: p.id || `live_${idx}_${Date.now()}`,
+          title: p.title || p.case_name || 'Judicial Precedent',
+          parties: p.parties || {
+            petitioner: (p.title || p.case_name || '').split(' v. ')[0] || (p.title || p.case_name || '').split(' Versus ')[0] || 'Petitioner',
+            respondent: (p.title || p.case_name || '').split(' v. ')[1] || (p.title || p.case_name || '').split(' Versus ')[1] || 'Respondent'
           },
-          court: p.court || (p.jurisdiction?.isNepal ? 'Supreme Court of Nepal' : 'Supreme Court of India'),
-          courtId: 'sc',
-          year: p.year || new Date().getFullYear().toString(),
-          date: p.judgment_date || p.date || 'Recent Ruling',
-          citation: p.citation || 'Citation In Progress',
+          court: p.court || 'Supreme Court of India',
+          courtId: (p.court || '').toLowerCase().includes('supreme') ? 'sc' : 'hc',
+          year: p.year || (p.date || '').match(/\d{4}/)?.[0] || new Date().getFullYear().toString(),
+          date: p.date || p.decision_date || 'Recent Ruling',
+          citation: p.citation || 'Official Citation',
           bench: p.bench || 'Division Bench',
-          judges: Array.isArray(p.judges) ? p.judges : [p.judge || "Hon'ble Supreme Court Bench"],
-          caseType: p.case_type || 'Civil / Criminal',
-          acts: p.acts || ['Constitution of India, 1950', 'Code of Criminal Procedure'],
-          sections: p.sections || ['Article 21'],
-          relevanceScore: p.similarity?.relevance_score || p.relevanceScore || 92,
-          relevanceReason: p.similarity?.why_relevant || p.relevanceReason || 'Direct jurisprudential authority on point.',
-          ratioDecidendi: p.ratio_decidendi || p.ratioDecidendi || 'Binding legal principle established in matter.',
-          executiveSummary: p.summary || p.executiveSummary || 'Detailed judicial brief analyzing facts and law.',
-          caseContext: {
-            facts: p.facts || 'Summary of facts as placed before the Court.',
-            legalIssue: p.legal_issue || 'Substantial question of law determined.'
-          },
-          reasoning: p.judicial_reasoning || p.reasoning || 'Detailed judicial analysis of statutory provisions.',
-          finalDecision: p.final_order || p.finalDecision || 'Disposed of with binding directions.',
-          applicableStatutes: p.applicableStatutes || ['Article 21'],
-          precedentsCited: p.precedents_cited || [],
-          keyParagraphs: p.key_paragraphs || [],
-          fullTextExcerpt: p.full_text || p.summary || ''
+          judges: Array.isArray(p.judges) ? p.judges : [p.judge || "Hon'ble Bench"],
+          caseType: p.caseType || p.case_type || 'Civil / Criminal',
+          acts: p.acts || ['Indian Precedent Archive'],
+          sections: p.sections || [],
+          relevanceScore: p.relevanceScore || 94,
+          relevanceReason: p.relevanceReason || 'Direct judicial authority retrieved from live court archives.',
+          ratioDecidendi: p.ratioDecidendi || p.ratio_decidendi || 'Binding principle of law established in matter.',
+          executiveSummary: p.executiveSummary || p.summary || 'Summary of facts, arguments, and statutory application.',
+          source_url: p.source_url || `https://indiankanoon.org`,
+          fullTextExcerpt: p.fullTextExcerpt || p.full_text || p.executiveSummary || ''
         }));
 
-        // Merge backend items with local results avoiding duplicates
+        // Merge live items with local results avoiding duplicates
         const seenTitles = new Set(results.map(r => normalize(r.title)));
-        backendItems.forEach(bItem => {
-          if (!seenTitles.has(normalize(bItem.title))) {
-            results.push(bItem);
-            seenTitles.add(normalize(bItem.title));
+        liveItems.forEach(item => {
+          if (!seenTitles.has(normalize(item.title))) {
+            results.push(item);
+            seenTitles.add(normalize(item.title));
           }
         });
 
@@ -345,6 +338,50 @@ export const caseSearchService = {
   },
 
   /**
+   * Search and track an active Indian Court Case by 16-character CNR Number
+   */
+  async searchActiveCaseByCnr(cnrNumber) {
+    const cleanCnr = (cnrNumber || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    if (!cleanCnr || cleanCnr.length !== 16) {
+      throw new Error('Invalid CNR number. Please enter a valid 16-character CNR Number.');
+    }
+
+    const activeToken = localStorage.getItem('token');
+    const headers = activeToken ? { Authorization: `Bearer ${activeToken}` } : {};
+
+    const response = await axios.get(`${API}/case-search/cnr/${cleanCnr}`, {
+      headers,
+      timeout: 25000
+    });
+
+    if (response.data && response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    throw new Error(response.data?.error || 'Active case not found for this CNR.');
+  },
+
+  /**
+   * Search active court cases by Party Name (Petitioner / Respondent)
+   */
+  async searchActiveCasesByParty(partyName, year = '', state = '') {
+    const cleanName = (partyName || '').trim();
+    if (!cleanName || cleanName.length < 2) {
+      throw new Error('Please enter at least 2 characters for party name.');
+    }
+
+    const activeToken = localStorage.getItem('token');
+    const headers = activeToken ? { Authorization: `Bearer ${activeToken}` } : {};
+
+    const response = await axios.get(`${API}/case-search/party`, {
+      params: { name: cleanName, year, state },
+      headers,
+      timeout: 20000
+    });
+
+    return response.data?.results || [];
+  },
+
+  /**
    * Fetch judgment by ID or slug
    */
   async getJudgmentById(id) {
@@ -354,6 +391,7 @@ export const caseSearchService = {
       j.id === id || 
       (j.slug && j.slug.toLowerCase() === normalizedId) ||
       (j.id && j.id.toLowerCase() === normalizedId) ||
+      (j.aliases && j.aliases.some(a => a.toLowerCase() === normalizedId)) ||
       (j.title && j.title.toLowerCase().replace(/[^a-z0-9]/g, '-').includes(normalizedId))
     );
     if (found) return found;
@@ -361,12 +399,45 @@ export const caseSearchService = {
     try {
       const activeToken = localStorage.getItem('token');
       const headers = activeToken ? { Authorization: `Bearer ${activeToken}` } : {};
-      const res = await axios.get(`${API}/precedents/${id}`, { headers });
+
+      // 1. Try case-search backend route (/api/case-search/judgments/:id)
+      try {
+        const csRes = await axios.get(`${API}/case-search/judgments/${id}`, { headers, timeout: 6000 });
+        if (csRes.data && csRes.data.data) {
+          const raw = csRes.data.data;
+          return {
+            id: raw.id || id,
+            title: raw.title || 'Official Court Judgment Record',
+            citation: raw.citation || 'Official Citation / Law Report',
+            court: raw.court || 'Supreme Court of India',
+            bench: raw.bench || 'Division Bench',
+            date: raw.date || raw.year || `${new Date().getFullYear()}`,
+            ratioDecidendi: raw.ratioDecidendi || raw.ratio || raw.executiveSummary || 'Judgment and ratio decidendi on record.',
+            executiveSummary: raw.executiveSummary || raw.full_text?.slice(0, 800) || '',
+            fullTextExcerpt: raw.full_text || raw.fullTextExcerpt || '',
+            acts: raw.acts || [],
+            sections: raw.sections || [],
+            judges: raw.judges || [],
+            source_url: raw.source_url
+          };
+        }
+      } catch (csErr) {}
+
+      // 2. Try precedents endpoint
+      const res = await axios.get(`${API}/precedents/${id}`, { headers, timeout: 6000 });
       return res.data?.precedent || res.data;
     } catch (e) {
       console.warn('Could not fetch remote judgment by id:', e);
       return null;
     }
+  },
+
+  /**
+   * Get official Judgment Law Report PDF URL
+   */
+  getJudgmentPdfUrl(id, download = false) {
+    if (!id) return '#';
+    return `${API}/case-search/judgments/pdf/${id}${download ? '?download=1' : ''}`;
   },
 
   /**

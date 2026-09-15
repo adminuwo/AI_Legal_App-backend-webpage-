@@ -7,7 +7,7 @@ import {
   Binary, FileCheck, Brain, Mic, MessageSquare, Plus,
   Calendar, Clock, CreditCard, Bell, ChevronRight, Zap,
   Key, Briefcase, Search, Check, Play, Pause, Radio, RotateCcw,
-  Menu, X
+  Menu, X, Smartphone
 } from 'lucide-react';
 import ThemeToggle from '../Components/ThemeToggle';
 import PublicFooter, { OfficialAppStoreBadge, OfficialGooglePlayBadge } from '../Components/PublicFooter';
@@ -423,7 +423,7 @@ export default function PublicFeatures() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF7] dark:bg-[#070A12] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#B88B2A]/25 selection:text-[#111111]">
+    <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-[#0F172A] dark:text-slate-100 font-sans selection:bg-[#B88B2A]/25 selection:text-[#111111]">
       {/* Top Header Navbar */}
       <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
@@ -590,46 +590,49 @@ export default function PublicFeatures() {
         </AnimatePresence>
       </header>
 
-      {/* Hero Section */}
-      <section className="pt-16 pb-12 sm:pt-20 sm:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
-        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[550px] h-[300px] bg-[#E5A93C]/5 rounded-full blur-[140px] pointer-events-none" />
-
-        <div className="max-w-4xl space-y-6 relative z-10">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest uppercase text-[#E5A93C] dark:text-[#B88B2A]">
-            <span className="w-4 h-[2px] bg-[#E5A93C] dark:bg-[#B88B2A] inline-block" />
-            THE AI LEGAL™ LITIGATION SUITE
-          </div>
-
-          <h1 className="text-4xl sm:text-6xl font-black text-[#0F172A] dark:text-white tracking-tight leading-[1.12]">
-            All Your Legal Work,<br />
-            <span className="text-[#E5A93C] dark:text-[#F59E0B]">In One Intelligent Platform.</span>
-          </h1>
-
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed">
-            From case research and judgment analysis to court drafting and argument practice — everything Indian advocates need in one seamless workspace. Explore each feature below with interactive live demos.
-          </p>
-
-          {/* Stats Badges */}
-          <div className="flex flex-wrap items-center gap-3 pt-1">
-            <div className="px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-amber-200/70 dark:border-amber-900/40 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
-              6 products, one place
+      {/* Hero Section — Restored to Features Tab's Original Layout with Clean Home Dashboard Colors */}
+      <section 
+        id="hero" 
+        className="relative overflow-hidden pt-14 pb-12 sm:pt-20 sm:pb-16 border-b border-slate-200/80 dark:border-slate-800/80 bg-[#F8FAFC] dark:bg-[#070A12] bg-[radial-gradient(#CBD5E1_1.25px,transparent_1.25px)] dark:bg-[radial-gradient(rgba(184,139,42,0.18)_1.25px,transparent_1.25px)] bg-[size:24px_24px]"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-4xl space-y-6">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest uppercase text-[#B38628] dark:text-amber-400">
+              <span className="w-4 h-[2px] bg-[#B88B2A] inline-block" />
+              THE AI LEGAL™ LITIGATION SUITE
             </div>
-            <div className="px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-amber-200/70 dark:border-amber-900/40 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
-              Every feature, a <span className="text-[#E5A93C] dark:text-[#F59E0B] font-bold">live demo</span>
-            </div>
-            <div className="px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-amber-200/70 dark:border-amber-900/40 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
-              SC • 25 HCs • 30+ tribunals
-            </div>
-          </div>
 
-          {/* Hero CTA Button */}
-          <div className="pt-2">
-            <button
-              onClick={() => handleCta('/signup')}
-              className="px-7 py-3.5 rounded-xl text-sm font-black text-white bg-gradient-to-r from-[#FBBF24] via-[#F59E0B] to-[#D97706] hover:from-[#F59E0B] hover:to-[#B45309] transition-all cursor-pointer shadow-lg shadow-amber-500/25 active:scale-95"
-            >
-              Start your free trial
-            </button>
+            <h1 className="text-4xl sm:text-6xl font-black text-[#0F172A] dark:text-white tracking-tight leading-[1.12]">
+              All Your Legal Work,<br />
+              <span className="text-[#B38628] dark:text-amber-400">In One Intelligent Platform.</span>
+            </h1>
+
+            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed">
+              From case research and judgment analysis to court drafting and argument practice — everything Indian advocates need in one seamless workspace. Explore each feature below with interactive live demos.
+            </p>
+
+            {/* Stats Badges — Clean Home Styling */}
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <div className="px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-slate-200/80 dark:border-slate-800 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
+                6 products, one place
+              </div>
+              <div className="px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-slate-200/80 dark:border-slate-800 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
+                Every feature, a <span className="text-[#B38628] dark:text-amber-400 font-bold">live demo</span>
+              </div>
+              <div className="px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-slate-200/80 dark:border-slate-800 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
+                SC • 25 HCs • 30+ tribunals
+              </div>
+            </div>
+
+            {/* Hero CTA Button — Matching Home Gold Style */}
+            <div className="pt-2">
+              <button
+                onClick={() => handleCta('/signup')}
+                className="px-7 py-3.5 rounded-xl text-sm font-black text-[#111111] bg-gradient-to-b from-[#D4AF37] to-[#B88B2A] hover:brightness-105 active:scale-98 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/25"
+              >
+                Start your free trial
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -644,8 +647,8 @@ export default function PublicFeatures() {
       >
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div className="space-y-2">
-            <div className="flex items-center gap-2.5 text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#E5A93C] inline-block animate-pulse" />
+            <div className="flex items-center gap-2.5 text-2xl sm:text-4xl font-black text-[#0F172A] dark:text-white tracking-tight">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#B88B2A] inline-block animate-pulse" />
               <span>Explore the suite</span>
             </div>
             <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">
@@ -657,16 +660,16 @@ export default function PublicFeatures() {
           <div className="flex items-center gap-3 self-start md:self-auto">
             <button
               onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#0B1120] border border-amber-200/80 dark:border-amber-900/50 text-xs font-mono font-semibold text-slate-700 dark:text-slate-300 hover:border-[#E5A93C] transition-all cursor-pointer shadow-2xs"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-slate-800 text-xs font-mono font-semibold text-slate-700 dark:text-slate-300 hover:border-[#B88B2A] transition-all cursor-pointer shadow-2xs"
             >
               {isAutoPlaying ? (
                 <>
-                  <Pause size={12} className="text-[#E5A93C] fill-[#E5A93C]" />
+                  <Pause size={12} className="text-[#B88B2A] fill-[#B88B2A]" />
                   <span>Auto Demo: Playing</span>
                 </>
               ) : (
                 <>
-                  <Play size={12} className="text-[#E5A93C] fill-[#E5A93C]" />
+                  <Play size={12} className="text-[#B88B2A] fill-[#B88B2A]" />
                   <span>Auto Demo: Paused</span>
                 </>
               )}
@@ -691,31 +694,31 @@ export default function PublicFeatures() {
                   onClick={() => handleProductSelect(idx)}
                   className={`w-full text-left p-4.5 rounded-2xl border transition-all cursor-pointer group flex flex-col gap-1.5 relative overflow-hidden ${
                     isActive
-                      ? 'border-[#E5A93C] dark:border-[#F59E0B] bg-[#FFFBEB] dark:bg-[#E5A93C]/10 shadow-md ring-1 ring-[#E5A93C]/40'
-                      : 'border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0B1120] hover:border-[#E5A93C]/40 hover:bg-[#FFFDF7] dark:hover:bg-[#0F172A]'
+                      ? 'border-[#B88B2A] dark:border-[#B88B2A] bg-amber-50/50 dark:bg-amber-950/20 shadow-md ring-1 ring-[#B88B2A]/40'
+                      : 'border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0B0F19] hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50/80 dark:hover:bg-[#0F172A]'
                   }`}
                 >
                   {/* Subtle active glow bar on the left edge */}
                   {isActive && (
                     <motion.div
                       layoutId="activeCardGlow"
-                      className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#FBBF24] via-[#F59E0B] to-[#D97706]"
+                      className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#D4AF37] to-[#B88B2A]"
                     />
                   )}
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <span className={`text-xs font-mono font-bold ${isActive ? 'text-[#E5A93C] dark:text-[#F59E0B]' : 'text-slate-400'}`}>
+                      <span className={`text-xs font-mono font-bold ${isActive ? 'text-[#B88B2A] dark:text-amber-400' : 'text-slate-400'}`}>
                         {prod.num}
                       </span>
-                      <span className="text-sm font-bold text-slate-900 dark:text-white">
+                      <span className="text-sm font-bold text-[#0F172A] dark:text-white">
                         {prod.name}
                       </span>
                     </div>
                     {prod.badge && (
                       <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full border ${
                         isActive
-                          ? 'border-[#E5A93C]/50 bg-[#E5A93C]/15 text-[#B87A14] dark:text-[#F59E0B] font-bold'
+                          ? 'border-[#B88B2A]/50 bg-[#B88B2A]/15 text-[#B38628] dark:text-amber-300 font-bold'
                           : 'border-slate-200 dark:border-slate-700 text-slate-500'
                       }`}>
                         {prod.badge}
@@ -732,23 +735,23 @@ export default function PublicFeatures() {
 
           {/* Right Column: Animated Live Interactive Mockup Window */}
           <div className="lg:col-span-8">
-            <div className="rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0B1120] overflow-hidden shadow-xl relative">
+            <div className="rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0B0F19] overflow-hidden shadow-xl relative">
               
               {/* Window Header */}
-              <div className="px-5 py-3.5 bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+              <div className="px-5 py-3.5 bg-slate-900 text-slate-200 border-b border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-red-400/80 inline-block" />
                   <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80 inline-block" />
                   <span className="w-2.5 h-2.5 rounded-full bg-green-400/80 inline-block" />
                 </div>
 
-                <div className="text-xs font-mono text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                  <span className="text-[#E5A93C]">●</span> {currentProduct.terminalTitle}
+                <div className="text-xs font-mono text-slate-400 flex items-center gap-1.5">
+                  <span className="text-[#B88B2A]">●</span> {currentProduct.terminalTitle}
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#FFFBEB] dark:bg-[#E5A93C]/15 border border-[#E5A93C]/40 text-[10px] font-mono font-bold text-[#B87A14] dark:text-[#F59E0B]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#E5A93C] animate-ping inline-block" />
+                  <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#B88B2A]/20 border border-[#B88B2A]/40 text-[10px] font-mono font-bold text-[#D4AF37]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-ping inline-block" />
                     LIVE DEMO
                   </div>
                 </div>
@@ -758,11 +761,11 @@ export default function PublicFeatures() {
               <div className="grid grid-cols-1 md:grid-cols-12 min-h-[500px]">
                 
                 {/* Visual Canvas Area (Animated Mockup Screen) */}
-                <div className="md:col-span-6 bg-[#FFFDF7]/90 dark:bg-[#070A12] p-6 sm:p-8 flex flex-col justify-between relative border-b md:border-b-0 md:border-r border-slate-200/80 dark:border-slate-800 overflow-hidden">
+                <div className="md:col-span-6 bg-[#0B0F19] dark:bg-[#070A12] p-6 sm:p-8 flex flex-col justify-between relative border-b md:border-b-0 md:border-r border-slate-800 overflow-hidden text-white">
                   
                   {/* Animated Background Scanning Beam */}
                   <motion.div
-                    className="absolute inset-0 pointer-events-none opacity-20 bg-gradient-to-b from-transparent via-[#E5A93C]/15 to-transparent"
+                    className="absolute inset-0 pointer-events-none opacity-20 bg-gradient-to-b from-transparent via-[#B88B2A]/15 to-transparent"
                     animate={{ y: ['-100%', '100%'] }}
                     transition={{ duration: 4.5, repeat: Infinity, ease: 'linear' }}
                   />
@@ -770,15 +773,15 @@ export default function PublicFeatures() {
                   {/* Subtle Background Outline / Skeleton */}
                   <div className="space-y-3 opacity-60 relative z-10">
                     <div className="flex items-center justify-between">
-                      <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
                         RECENT ACTIVITY — AUTO-UPDATED
                       </div>
-                      <div className="flex items-center gap-1 text-[9px] font-mono text-[#E5A93C]">
+                      <div className="flex items-center gap-1 text-[9px] font-mono text-[#D4AF37]">
                         <Radio size={10} className="animate-pulse" /> LIVE STREAM
                       </div>
                     </div>
-                    <div className="h-2 w-36 bg-amber-200/40 dark:bg-slate-700/60 rounded" />
-                    <div className="h-2 w-24 bg-amber-200/30 dark:bg-slate-700/40 rounded" />
+                    <div className="h-2 w-36 bg-slate-700/60 rounded" />
+                    <div className="h-2 w-24 bg-slate-700/40 rounded" />
                   </div>
 
                   {/* Centered Dynamic Animated Card with Floating Motion */}
@@ -790,12 +793,12 @@ export default function PublicFeatures() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -16, scale: 0.96 }}
                         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                        className="bg-white dark:bg-[#0B1120] rounded-2xl p-5 shadow-2xl border border-amber-200/70 dark:border-amber-900/40 space-y-3 relative group"
+                        className="bg-[#0F172A] rounded-2xl p-5 shadow-2xl border border-slate-700/80 space-y-3 relative group text-white"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             {currentFeature.tagColor === 'yellow' && (
-                              <span className="w-2.5 h-2.5 rounded-full bg-[#E5A93C] inline-block shadow-xs shadow-amber-500/50" />
+                              <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] inline-block shadow-xs shadow-amber-500/50" />
                             )}
                             {currentFeature.tagColor === 'green' && (
                               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-xs shadow-emerald-500/50" />
@@ -806,31 +809,31 @@ export default function PublicFeatures() {
                             {currentFeature.tagColor === 'purple' && (
                               <span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block shadow-xs shadow-purple-500/50" />
                             )}
-                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                            <span className="text-xs font-bold text-slate-200">
                               {currentFeature.tag}
                             </span>
                           </div>
 
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">
                             Verified
                           </span>
                         </div>
 
-                        <div className="text-sm font-bold text-slate-900 dark:text-white">
+                        <div className="text-sm font-bold text-white">
                           {currentFeature.title}
                         </div>
 
-                        <div className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        <div className="text-xs text-slate-300 leading-relaxed">
                           {currentFeature.detail}
                         </div>
 
-                        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+                        <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400 font-medium">
                           <span className="truncate max-w-[210px]">{currentFeature.subtext}</span>
                           
                           {/* Mini Interactive Action Button inside the card */}
                           <button
                             onClick={() => handleSimulatedAction(currentFeature.actionText || 'Action Executed')}
-                            className="text-[10px] font-mono font-bold text-[#E5A93C] hover:underline flex items-center gap-1 cursor-pointer shrink-0"
+                            className="text-[10px] font-mono font-bold text-[#D4AF37] hover:underline flex items-center gap-1 cursor-pointer shrink-0"
                           >
                             <span>{currentFeature.actionText || 'Simulate'}</span>
                             <ArrowRight size={10} />
@@ -846,7 +849,7 @@ export default function PublicFeatures() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 10 }}
-                          className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/90 text-white text-[10px] font-mono font-bold border border-[#E5A93C]/60 shadow-lg whitespace-nowrap z-20"
+                          className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/90 text-white text-[10px] font-mono font-bold border border-[#B88B2A]/60 shadow-lg whitespace-nowrap z-20"
                         >
                           {actionFeedback}
                         </motion.div>
@@ -855,9 +858,9 @@ export default function PublicFeatures() {
                   </div>
 
                   {/* Bottom Verification Footer with fluctuating latency */}
-                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 dark:text-slate-500 relative z-10 pt-2">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 relative z-10 pt-2">
                     <span>Latency: ~{latency}ms</span>
-                    <span className="text-[#E5A93C] dark:text-[#F59E0B] font-bold flex items-center gap-1.5">
+                    <span className="text-[#D4AF37] font-bold flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
                       High Court Sync Active
                     </span>
@@ -865,7 +868,7 @@ export default function PublicFeatures() {
                 </div>
 
                 {/* Right Specification & Clickable Feature Tags */}
-                <div className="md:col-span-6 p-6 sm:p-8 flex flex-col justify-between space-y-6 bg-white dark:bg-[#0B1120]">
+                <div className="md:col-span-6 p-6 sm:p-8 flex flex-col justify-between space-y-6 bg-white dark:bg-[#0B0F19]">
                   <div className="space-y-4">
                     <AnimatePresence mode="wait">
                       <motion.div
@@ -876,11 +879,11 @@ export default function PublicFeatures() {
                         transition={{ duration: 0.25 }}
                         className="space-y-3"
                       >
-                        <div className="text-[11px] font-mono font-bold text-[#E5A93C] dark:text-[#F59E0B] tracking-wider">
+                        <div className="text-[11px] font-mono font-bold text-[#B38628] dark:text-amber-400 tracking-wider">
                           {currentProduct.kicker}
                         </div>
 
-                        <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
+                        <h3 className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white tracking-tight leading-snug">
                           {currentProduct.mainHeading}
                         </h3>
 
@@ -893,10 +896,10 @@ export default function PublicFeatures() {
                     <div className="pt-2">
                       <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-mono mb-2">
                         <span>• Tap any feature to watch it work</span>
-                        <span className="text-[10px] text-[#E5A93C] font-semibold">Auto-cycling</span>
+                        <span className="text-[10px] text-[#B38628] dark:text-amber-400 font-semibold">Auto-cycling</span>
                       </div>
 
-                      <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#E5A93C] dark:text-[#F59E0B] mb-2.5">
+                      <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#B38628] dark:text-amber-400 mb-2.5">
                         {currentProduct.categoryName}
                       </div>
 
@@ -910,27 +913,27 @@ export default function PublicFeatures() {
                               onClick={() => handleFeatureSelect(fIdx)}
                               className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs transition-all cursor-pointer flex items-center justify-between gap-2.5 relative overflow-hidden ${
                                 isFActive
-                                  ? 'bg-[#FFFBEB] dark:bg-[#E5A93C]/15 text-[#B87A14] dark:text-[#F59E0B] font-bold border border-[#E5A93C]/60 shadow-2xs'
-                                  : 'text-slate-600 dark:text-slate-400 hover:bg-amber-50/50 dark:hover:bg-slate-800/60 font-medium'
+                                  ? 'bg-amber-50/70 dark:bg-amber-950/40 text-[#B38628] dark:text-amber-300 font-bold border border-[#B88B2A]/50 shadow-2xs'
+                                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 font-medium'
                               }`}
                             >
                               {/* Bottom Animated Progress Bar inside the Active Pill */}
                               {isFActive && isAutoPlaying && (
-                                <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#E5A93C]/20 rounded-b-xl overflow-hidden">
+                                <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#B88B2A]/20 rounded-b-xl overflow-hidden">
                                   <div
-                                    className="h-full bg-gradient-to-r from-[#FBBF24] to-[#D97706] transition-all"
+                                    className="h-full bg-gradient-to-r from-[#D4AF37] to-[#B88B2A] transition-all"
                                     style={{ width: `${progress}%`, transitionDuration: `${TICK_INTERVAL}ms` }}
                                   />
                                 </div>
                               )}
 
                               <div className="flex items-center gap-2.5 truncate">
-                                <span className={`w-2 h-2 rounded-full shrink-0 ${isFActive ? 'bg-[#E5A93C] shadow-xs shadow-amber-500/80' : 'bg-slate-300 dark:bg-slate-600'}`} />
+                                <span className={`w-2 h-2 rounded-full shrink-0 ${isFActive ? 'bg-[#B88B2A] shadow-xs shadow-amber-500/80' : 'bg-slate-300 dark:bg-slate-600'}`} />
                                 <span className="truncate">{feat.label}</span>
                               </div>
 
                               {isFActive && (
-                                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#E5A93C]/20 text-[#B87A14] dark:text-[#F59E0B] uppercase shrink-0">
+                                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#B88B2A]/20 text-[#B38628] dark:text-amber-300 uppercase shrink-0">
                                   Active Demo
                                 </span>
                               )}
@@ -948,11 +951,11 @@ export default function PublicFeatures() {
       </section>
 
       {/* Bottom CTA Banner */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#FFFDF7] dark:bg-[#070A12] border-t border-slate-200/80 dark:border-slate-800 text-center relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-[#E5A93C]/5 rounded-full blur-[140px] pointer-events-none" />
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#F8FAFC] dark:bg-[#070A12] border-t border-slate-200/80 dark:border-slate-800 text-center relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-[#B88B2A]/5 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="max-w-3xl mx-auto space-y-6 relative z-10">
-          <span className="text-xs font-black uppercase tracking-widest text-[#E5A93C] dark:text-[#B88B2A] block">
+          <span className="text-xs font-black uppercase tracking-widest text-[#B38628] dark:text-[#B88B2A] block">
             CHAMBER SCALING
           </span>
 
@@ -967,7 +970,7 @@ export default function PublicFeatures() {
           <div className="pt-2">
             <button
               onClick={() => handleCta('/signup')}
-              className="px-8 py-4 rounded-xl text-sm font-black text-white bg-gradient-to-r from-[#FBBF24] via-[#F59E0B] to-[#D97706] hover:from-[#F59E0B] hover:to-[#B45309] transition-all cursor-pointer shadow-lg shadow-amber-500/30 hover:shadow-xl active:scale-95"
+              className="px-8 py-4 rounded-xl text-sm font-black text-[#111111] bg-gradient-to-b from-[#D4AF37] to-[#B88B2A] hover:brightness-105 active:scale-98 transition-all cursor-pointer shadow-lg shadow-[#B88B2A]/25"
             >
               Start Your Free Trial Today
             </button>

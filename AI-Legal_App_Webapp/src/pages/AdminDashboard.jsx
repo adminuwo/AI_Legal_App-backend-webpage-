@@ -141,68 +141,116 @@ export default function AdminDashboard() {
   const [judgmentActionLoading, setJudgmentActionLoading] = useState(false);
   const [adminNoteInput, setAdminNoteInput] = useState('');
 
-  // Enterprise Add-on Requests State & Sync
+  // Enterprise & Institutional Add-on Requests State & Sync
   const [addonRequestsList, setAddonRequestsList] = useState(() => {
     const saved = localStorage.getItem('adminAddonRequests');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(item => item._id !== 'addon-req-101' && !item.institutionName?.includes('Rani Durgavati'));
+        }
+      } catch (e) {}
     }
-    return [
-      {
-        _id: 'addon-req-101',
-        addonId: 'evidence-analyst',
-        addonName: 'Evidence Analyst & Forensic Scanner',
-        category: 'Advocate Practitioner Suite',
-        institutionName: 'Rani Durgavati Vishwavidyalaya (RDVV)',
-        institutionEmail: 'admin@rdvv.ac.in',
-        requestedBy: 'University Admin (RDVV)',
-        notes: 'Requested for BA LLB Final Year moot court preparation & evidence examination.',
-        status: 'Pending',
-        createdAt: new Date().toISOString()
-      }
-    ];
+    return [];
   });
+  const [addonsLoading, setAddonsLoading] = useState(false);
+  const [addonActionLoading, setAddonActionLoading] = useState(null);
 
-  const handleApproveAddonRequest = (req) => {
-    const updatedList = addonRequestsList.map(item =>
-      item._id === req._id ? { ...item, status: 'Approved' } : item
-    );
-    setAddonRequestsList(updatedList);
-    localStorage.setItem('adminAddonRequests', JSON.stringify(updatedList));
-
-    const approvedStr = localStorage.getItem('approvedAddonsList');
-    let approvedList = approvedStr ? JSON.parse(approvedStr) : [];
-    if (!approvedList.includes(req.addonId)) {
-      approvedList.push(req.addonId);
+  const fetchAddonRequests = async () => {
+    try {
+      setAddonsLoading(true);
+      const token = user?.token || localStorage.getItem('token');
+      const res = await axios.get(`${API}/admin/addon-requests`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
+      if (res.data?.success && Array.isArray(res.data?.list)) {
+        setAddonRequestsList(res.data.list);
+        localStorage.setItem('adminAddonRequests', JSON.stringify(res.data.list));
+      }
+    } catch (err) {
+      console.error('Failed to fetch institutional add-on requests:', err);
+    } finally {
+      setAddonsLoading(false);
     }
-    localStorage.setItem('approvedAddonsList', JSON.stringify(approvedList));
-
-    const featureMap = {
-      'argument-builder': 'argumentBuilder',
-      'evidence-analyst': 'evidenceAnalyst',
-      'contract-analyzer': 'contractAnalyzer',
-      'case-predictor': 'casePredictor',
-      'strategy-engine': 'strategyEngine',
-      'client-connect': 'clientConnect',
-      'client-communication': 'teamCommunication'
-    };
-    const targetKey = featureMap[req.addonId] || req.addonId;
-
-    const rulesStr = localStorage.getItem('enterpriseFeatureAccessRules');
-    let currentRules = rulesStr ? JSON.parse(rulesStr) : {};
-    currentRules[targetKey] = true;
-    localStorage.setItem('enterpriseFeatureAccessRules', JSON.stringify(currentRules));
-
-    toast.success(`✅ Add-on "${req.addonName}" APPROVED & LIVE enabled for ${req.institutionName} students across Web & Mobile app!`);
   };
 
-  const handleRejectAddonRequest = (req) => {
-    const updatedList = addonRequestsList.map(item =>
-      item._id === req._id ? { ...item, status: 'Rejected' } : item
-    );
-    setAddonRequestsList(updatedList);
-    localStorage.setItem('adminAddonRequests', JSON.stringify(updatedList));
-    toast.error(`❌ Add-on request for "${req.addonName}" rejected.`);
+  const handleApproveAddonRequest = async (req) => {
+    setAddonActionLoading(req._id);
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.patch(`${API}/admin/addon-requests/${req._id}/status`, {
+        status: 'Approved'
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const updatedList = addonRequestsList.map(item =>
+        item._id === req._id ? { ...item, status: 'Approved' } : item
+      );
+      setAddonRequestsList(updatedList);
+      localStorage.setItem('adminAddonRequests', JSON.stringify(updatedList));
+
+      if (req.addonId) {
+        const approvedStr = localStorage.getItem('approvedAddonsList');
+        let approvedList = approvedStr ? JSON.parse(approvedStr) : [];
+        if (!approvedList.includes(req.addonId)) {
+          approvedList.push(req.addonId);
+        }
+        localStorage.setItem('approvedAddonsList', JSON.stringify(approvedList));
+
+        const featureMap = {
+          'argument-builder': 'argumentBuilder',
+          'evidence-analyst': 'evidenceAnalyst',
+          'contract-analyzer': 'contractAnalyzer',
+          'case-predictor': 'casePredictor',
+          'strategy-engine': 'strategyEngine',
+          'client-connect': 'clientConnect',
+          'client-communication': 'teamCommunication'
+        };
+        const targetKey = featureMap[req.addonId] || req.addonId;
+
+        const rulesStr = localStorage.getItem('enterpriseFeatureAccessRules');
+        let currentRules = rulesStr ? JSON.parse(rulesStr) : {};
+        currentRules[targetKey] = true;
+        localStorage.setItem('enterpriseFeatureAccessRules', JSON.stringify(currentRules));
+      }
+
+      toast.success(`✅ Add-on "${req.addonName}" APPROVED & LIVE enabled for ${req.institutionName || 'institution'} across Web & Mobile app!`);
+    } catch (err) {
+      console.error('Failed to approve add-on request:', err);
+      toast.error(err.response?.data?.message || 'Failed to approve add-on request.');
+    } finally {
+      setAddonActionLoading(null);
+    }
+  };
+
+  const handleRejectAddonRequest = async (req) => {
+    setAddonActionLoading(req._id);
+    try {
+      const token = user?.token || localStorage.getItem('token');
+      await axios.patch(`${API}/admin/addon-requests/${req._id}/status`, {
+        status: 'Rejected'
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const updatedList = addonRequestsList.map(item =>
+        item._id === req._id ? { ...item, status: 'Rejected' } : item
+      );
+      setAddonRequestsList(updatedList);
+      localStorage.setItem('adminAddonRequests', JSON.stringify(updatedList));
+      toast.error(`❌ Add-on request for "${req.addonName}" rejected.`);
+    } catch (err) {
+      console.error('Failed to reject add-on request:', err);
+      toast.error(err.response?.data?.message || 'Failed to reject add-on request.');
+    } finally {
+      setAddonActionLoading(null);
+    }
   };
   const [adminSettings, setAdminSettings] = useState({
     maintenanceMode: false,
@@ -459,7 +507,7 @@ export default function AdminDashboard() {
       };
       const noCacheAuthHeader = authHeader;
 
-      const [statsRes, usersRes, billingRes, plansRes, couponsRes, featuresRes, bugsRes, settingsRes, complaintsRes] = await Promise.all([
+      const [statsRes, usersRes, billingRes, plansRes, couponsRes, featuresRes, bugsRes, settingsRes, complaintsRes, addonRequestsRes] = await Promise.all([
         axios.get(`${API}/admin/stats?_t=${tStamp}${forceRefresh ? '&force=true' : ''}`, noCacheAuthHeader).catch((err) => ({ data: { success: false, code: err.response?.data?.code } })),
         axios.get(`${API}/admin/users?dateRange=today&page=1&limit=25`, authHeader).catch(() => ({ data: { list: [], pagination: null } })),
         axios.get(`${API}/admin/billing?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
@@ -468,7 +516,8 @@ export default function AdminDashboard() {
         axios.get(`${API}/admin/feature-requests?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
         axios.get(`${API}/admin/bug-reports?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
         axios.get(`${API}/admin/settings`, authHeader).catch(() => ({ data: { settings: null } })),
-        axios.get(`${API}/complaints?limit=200`, authHeader).catch(() => ({ data: { data: [] } }))
+        axios.get(`${API}/complaints?limit=200`, authHeader).catch(() => ({ data: { data: [] } })),
+        axios.get(`${API}/admin/addon-requests`, authHeader).catch(() => ({ data: { list: [] } }))
       ]);
 
       if (statsRes.data?.code === 'SESSION_REVOKED') {
@@ -496,6 +545,10 @@ export default function AdminDashboard() {
       if (Array.isArray(featuresRes.data?.list)) setFeaturesList(featuresRes.data.list);
       if (Array.isArray(bugsRes.data?.list)) setBugsList(bugsRes.data.list);
       if (Array.isArray(complaintsRes.data?.data)) setComplaintsList(complaintsRes.data.data);
+      if (Array.isArray(addonRequestsRes.data?.list)) {
+        setAddonRequestsList(addonRequestsRes.data.list);
+        localStorage.setItem('adminAddonRequests', JSON.stringify(addonRequestsRes.data.list));
+      }
       if (settingsRes.data?.settings) setAdminSettings(prev => ({ ...prev, ...settingsRes.data.settings }));
     } catch (err) {
       console.error('Failed to load Admin Dashboard data:', err);
@@ -561,6 +614,12 @@ export default function AdminDashboard() {
     const interval = setInterval(() => loadData(true), 45000);
     return () => clearInterval(interval);
   }, [isAdmin]);
+
+  useEffect(() => {
+    if (activeTab === 'addons') {
+      fetchAddonRequests();
+    }
+  }, [activeTab]);
 
   // --- Users List & Dynamic Telemetry Counts ---
   const filteredUsers = usersList;
@@ -2990,29 +3049,47 @@ export default function AdminDashboard() {
                   Review and allow add-on feature requests submitted by Law Universities for their students & faculty.
                 </p>
               </div>
-              <div className="px-3.5 py-1.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-xs font-black text-[#B88B2A] shrink-0">
-                {addonRequestsList.filter(r => r.status === 'Pending').length} Pending Approvals
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={fetchAddonRequests}
+                  disabled={addonsLoading}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-xs font-bold text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
+                  title="Refresh Add-on Requests"
+                >
+                  <RotateCw className={`w-3.5 h-3.5 ${addonsLoading ? 'animate-spin text-[#B88B2A]' : 'text-slate-500'}`} />
+                  <span>{addonsLoading ? 'Refreshing...' : 'Refresh'}</span>
+                </button>
+                <div className="px-3.5 py-1.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/30 text-xs font-black text-[#B88B2A] shrink-0">
+                  {addonRequestsList.filter(r => r.status === 'Pending').length} Pending Approvals
+                </div>
               </div>
             </div>
 
-            {addonRequestsList.length === 0 ? (
+            {addonsLoading && addonRequestsList.length === 0 ? (
+              <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-12 text-center space-y-3">
+                <RotateCw className="w-8 h-8 text-[#B88B2A] animate-spin mx-auto" />
+                <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">Loading Add-on Requests from Database...</p>
+              </div>
+            ) : addonRequestsList.length === 0 ? (
               <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-8 sm:p-12 text-center space-y-2">
                 <PlusCircle className="w-10 h-10 text-slate-300 dark:text-zinc-700 mx-auto" />
                 <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">No Add-on Requests Submitted Yet</p>
+                <p className="text-[11px] text-slate-400">New feature proposals and university requests will appear here dynamically.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 max-w-6xl">
                 {addonRequestsList.map((req) => (
                   <div
                     key={req._id}
-                    className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition-all"
+                    className="max-w-md w-full bg-white dark:bg-[#1E293B] rounded-xl sm:rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2.5 flex flex-col justify-between hover:shadow-sm transition-all"
                   >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-[#B88B2A] px-2.5 py-0.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/20">
-                          🏛️ {req.institutionName || 'RDVV Law University'}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-1.5 flex-wrap">
+                        <span className="text-[9.5px] font-black uppercase tracking-wider text-[#B88B2A] px-2 py-0.5 rounded-full bg-[#B88B2A]/10 border border-[#B88B2A]/20 flex items-center gap-1 truncate max-w-[220px]">
+                          <span>🏛️</span> <span className="truncate">{req.institutionName || 'Institutional Partner'}</span>
                         </span>
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[9.5px] font-black uppercase border shrink-0 ${
                           req.status === 'Approved'
                             ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30'
                             : req.status === 'Rejected'
@@ -3024,44 +3101,68 @@ export default function AdminDashboard() {
                       </div>
 
                       <div>
-                        <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">{req.category}</span>
-                        <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-0.5">{req.addonName}</h3>
+                        <span className="text-[9.5px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider block">
+                          {req.category || 'Institutional Suite'}
+                        </span>
+                        <h3 className="text-xs sm:text-[13px] font-black text-slate-900 dark:text-white mt-0.5 leading-snug line-clamp-2" title={req.addonName}>
+                          {req.addonName}
+                        </h3>
                       </div>
 
-                      <div className="p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/80 dark:border-zinc-800 text-xs space-y-1">
-                        <p className="text-slate-500 font-medium truncate">
+                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/70 dark:border-zinc-800 text-[11px] space-y-1">
+                        <p className="text-slate-500 dark:text-zinc-400 font-medium truncate">
                           Requested By: <strong className="text-slate-800 dark:text-zinc-200">{req.requestedBy || req.institutionEmail}</strong>
                         </p>
-                        <p className="text-slate-600 dark:text-zinc-300 font-semibold italic">
-                          "{req.notes || 'No custom notes provided.'}"
-                        </p>
+                        {req.notes && req.notes !== req.addonName && (
+                          <p className="text-slate-600 dark:text-zinc-300 italic line-clamp-2 text-[10.5px]">
+                            "{req.notes}"
+                          </p>
+                        )}
+                        {req.createdAt && (
+                          <div className="flex items-center gap-1 text-[9.5px] text-slate-400 dark:text-zinc-500 pt-0.5">
+                            <Clock className="w-2.5 h-2.5" />
+                            <span>Submitted: {new Date(req.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-end gap-2 text-xs flex-wrap">
+                    <div className="pt-2 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-end gap-1.5 text-xs flex-wrap">
                       {req.status === 'Approved' ? (
-                        <div className="w-full py-2 rounded-xl bg-emerald-500/15 text-emerald-500 font-black text-center border border-emerald-500/30 flex items-center justify-center gap-1.5">
-                          <CheckCircle2 size={16} /> Approved & Live Unlocked for Students
+                        <div className="w-full py-1.5 rounded-lg bg-emerald-500/15 text-emerald-500 font-bold text-[11px] text-center border border-emerald-500/30 flex items-center justify-center gap-1">
+                          <CheckCircle2 size={13} /> Approved & Unlocked
                         </div>
                       ) : req.status === 'Rejected' ? (
-                        <div className="w-full py-2 rounded-xl bg-rose-500/15 text-rose-500 font-black text-center border border-rose-500/30">
+                        <div className="w-full py-1.5 rounded-lg bg-rose-500/15 text-rose-500 font-bold text-[11px] text-center border border-rose-500/30">
                           ❌ Request Rejected
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <div className="flex items-center gap-1.5 w-full justify-end">
                           <button
                             type="button"
+                            disabled={addonActionLoading === req._id}
                             onClick={() => handleRejectAddonRequest(req)}
-                            className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl border border-rose-500/30 text-rose-500 font-bold hover:bg-rose-500/10 cursor-pointer text-center"
+                            className="px-2.5 py-1.5 rounded-lg border border-rose-500/30 text-rose-500 font-bold hover:bg-rose-500/10 cursor-pointer text-[11px] disabled:opacity-50 transition-all"
                           >
-                            Reject
+                            {addonActionLoading === req._id ? '...' : 'Reject'}
                           </button>
                           <button
                             type="button"
+                            disabled={addonActionLoading === req._id}
                             onClick={() => handleApproveAddonRequest(req)}
-                            className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black shadow-md hover:brightness-110 cursor-pointer flex items-center justify-center gap-1.5"
+                            className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold shadow-xs hover:brightness-110 cursor-pointer flex items-center gap-1 text-[11px] disabled:opacity-50 transition-all"
                           >
-                            <CheckCircle2 size={15} /> Allow & Approve
+                            {addonActionLoading === req._id ? (
+                              <>
+                                <RotateCw className="w-3 h-3 animate-spin" />
+                                <span>Approving...</span>
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle2 size={13} />
+                                <span>Allow & Approve</span>
+                              </>
+                            )}
                           </button>
                         </div>
                       )}

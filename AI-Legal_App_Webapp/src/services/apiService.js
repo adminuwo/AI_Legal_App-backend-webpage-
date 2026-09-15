@@ -1836,6 +1836,49 @@ export const apiService = {
       console.error("Failed to trigger historical downloads sync:", error);
       throw error;
     }
+  },
+
+  // ─── LEGAL PRECEDENTS & AI INTELLIGENCE ───
+  async searchPrecedents(query, projectId = null, language = 'English', jurisdiction = null) {
+    try {
+      const response = await apiClient.post('/precedents/search', {
+        query,
+        projectId,
+        language,
+        jurisdiction
+      });
+      return response.data;
+    } catch (error) {
+      console.warn("searchPrecedents error:", error.message);
+      throw error;
+    }
+  },
+
+  async analyzePrecedent(actionType, precedentData, projectId = null, language = 'English') {
+    try {
+      const response = await apiClient.post('/precedents/analyze', {
+        actionType,
+        precedentData,
+        projectId,
+        language
+      });
+      return response.data;
+    } catch (error) {
+      console.warn("analyzePrecedent error:", error.message);
+      throw error;
+    }
+  },
+
+  async generatePrecedentPDF(precedentData) {
+    try {
+      const response = await apiClient.post('/precedents/generate-pdf', { precedentData }, {
+        responseType: 'blob'
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to generate precedent PDF:", error);
+      throw error;
+    }
   }
 };
 

@@ -14,6 +14,8 @@ import FeatureRequest from '../models/FeatureRequest.js';
 import CrashLog from '../models/CrashLog.js';
 import Session from '../models/Session.js';
 import AppInstall from '../models/AppInstall.js';
+import Organization from '../models/Organization.js';
+import EnterpriseAddonRequest from '../models/EnterpriseAddonRequest.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { getIO } from '../utils/socket.js';
@@ -1374,4 +1376,161 @@ export const handleJurisdictionSandboxTest = async (req, res) => {
         });
     }
 };
+
+// ==========================================
+// INSTITUTIONAL ADD-ON FEATURE REQUESTS
+// ==========================================
+
+export const getInstitutionalAddonRequests = async (req, res) => {
+    try {
+        const [orgRequests, enterpriseRequests] = await Promise.all([
+            Organization.find({
+                $or: [
+                    { type: 'FEATURE_ADDON_REQUEST' },
+                    { feature: { $exists: true, $ne: null } }
+                ]
+            }).sort({ createdAt: -1 }).lean(),
+            EnterpriseAddonRequest.find({})
+                .populate('enterpriseId', 'name officialEmail organizationName')
+                .populate('requestedBy', 'name email')
+                .sort({ createdAt: -1 })
+                .lean()
+        ]);
+
+        const formattedList = [];
+
+        // Map Organization requests
+        for (const org of orgRequests) {
+            const statusRaw = String(org.status || 'Pending').trim();
+            const statusFormatted = statusRaw ? (statusRaw.charAt(0).toUpperCase() + statusRaw.slice(1).toLowerCase()) : 'Pending';
+
+            formattedList.push({
+                _id: org._id.toString(),
+                source: 'organization',
+                addonId: org.organizationSlug || org._id.toString(),
+                addonName: org.feature || org.addonName || 'Precedents & Trial Simulator Suite',
+                category: 'Academic Precedents & Simulation Suite',
+                institutionName: org.organizationName || org.name || 'Law University / College',
+                institutionEmail: org.email || org.officialEmail || '',
+                requestedBy: org.userName ? `${org.userName} (${org.email || 'Admin'})` : (org.email || 'University Admin'),
+                notes: org.feature || org.notes || 'Institutional add-on requested for academic moot courts and curriculum training.',
+                status: statusFormatted,
+                createdAt: org.createdAt || new Date().toISOString(),
+                updatedAt: org.updatedAt
+            });
+        }
+
+        // Map Enterprise requests
+        for (const ent of enterpriseRequests) {
+            const statusRaw = String(ent.status || 'Pending').trim();
+            const statusFormatted = statusRaw ? (statusRaw.charAt(0).toUpperCase() + statusRaw.slice(1).toLowerCase()) : 'Pending';
+
+            formattedList.push({
+                _id: ent._id.toString(),
+                source: 'enterprise',
+                addonId: ent.featureName ? ent.featureName.toLowerCase().replace(/\s+/g, '-') : 'custom-addon',
+                addonName: ent.featureName || 'Enterprise Feature Suite',
+                category: 'Advocate Practitioner Suite',
+                institutionName: ent.enterpriseId?.organizationName || ent.enterpriseId?.name || 'Enterprise Law Firm',
+                institutionEmail: ent.enterpriseId?.officialEmail || ent.requestedBy?.email || '',
+                requestedBy: ent.requestedBy?.name ? `${ent.requestedBy.name} (${ent.requestedBy.email || ''})` : (ent.requestedBy?.email || 'Enterprise Admin'),
+                notes: ent.notes || 'Requested by enterprise legal team.',
+                status: statusFormatted,
+                createdAt: ent.createdAt || new Date().toISOString(),
+                updatedAt: ent.updatedAt || ent.reviewedAt
+            });
+        }
+
+        // Sort combined list newest first
+        formattedList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        return res.status(200).json({
+            success: true,
+            count: formattedList.length,
+            list: formattedList
+        });
+    } catch (error) {
+        console.error('[getInstitutionalAddonRequests] Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to fetch institutional add-on requests'
+        });
+    }
+};
+
+export const updateInstitutionalAddonRequestStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, adminNotes } = req.body;
+
+        if (!status || !['Approved', 'Rejected', 'Pending'].includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid status. Must be "Approved", "Rejected", or "Pending".'
+            });
+        }
+
+        // 1. Check if ID exists in Organization
+        const orgDoc = await Organization.findById(id);
+        if (orgDoc) {
+            const dbStatus = status.toLowerCase(); // 'approved', 'rejected', 'pending'
+            const updatePayload = {
+                status: dbStatus,
+                updatedAt: new Date()
+            };
+            if (adminNotes !== undefined) {
+                updatePayload.adminNotes = adminNotes;
+            }
+
+            await Organization.updateOne({ _id: orgDoc._id }, { $set: updatePayload });
+
+            broadcastAdminRefresh('addon-request-updated', { id, status });
+
+            return res.status(200).json({
+                success: true,
+                message: `Add-on request for "${orgDoc.organizationName}" marked as ${status}!`,
+                updated: {
+                    _id: orgDoc._id.toString(),
+                    status,
+                    adminNotes
+                }
+            });
+        }
+
+        // 2. Check if ID exists in EnterpriseAddonRequest
+        const entDoc = await EnterpriseAddonRequest.findById(id);
+        if (entDoc) {
+            entDoc.status = status;
+            entDoc.reviewedAt = new Date();
+            if (adminNotes) {
+                entDoc.notes = (entDoc.notes ? `${entDoc.notes}\n` : '') + `[Admin Note]: ${adminNotes}`;
+            }
+            await entDoc.save();
+
+            broadcastAdminRefresh('addon-request-updated', { id, status });
+
+            return res.status(200).json({
+                success: true,
+                message: `Add-on request for "${entDoc.featureName}" marked as ${status}!`,
+                updated: {
+                    _id: entDoc._id.toString(),
+                    status,
+                    adminNotes
+                }
+            });
+        }
+
+        return res.status(404).json({
+            success: false,
+            message: 'Add-on request record not found'
+        });
+    } catch (error) {
+        console.error('[updateInstitutionalAddonRequestStatus] Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to update add-on request status'
+        });
+    }
+};
+
 

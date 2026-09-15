@@ -17,20 +17,29 @@ import DeepAnalysisModal from '../Components/CaseSearch/DeepAnalysisModal';
 import JudgmentChatSidebar from '../Components/CaseSearch/JudgmentChatSidebar';
 import ContextualAuthModal from '../Components/CaseSearch/ContextualAuthModal';
 import AddToCaseModal from '../Components/CaseSearch/AddToCaseModal';
+import JudgmentPdfModal from '../Components/CaseSearch/JudgmentPdfModal';
 
 export default function JudgmentDetailWorkspace() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [judgment, setJudgment] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Instant hydration from navigation state if available
+  const passedJudgment = location.state?.judgment;
+  const [judgment, setJudgment] = useState(() => {
+    if (passedJudgment && (passedJudgment.id === id || passedJudgment.slug === id || !id)) {
+      return passedJudgment;
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(!judgment);
   const [isBookmarked, setIsBookmarked] = useState(false);
   
   // Modals & Drawers state
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
   const [isAddToCaseOpen, setIsAddToCaseOpen] = useState(false);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authActionName, setAuthActionName] = useState('save this judgment');
   const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
@@ -42,15 +51,26 @@ export default function JudgmentDetailWorkspace() {
 
   useEffect(() => {
     async function loadCase() {
+      // If we already have the exact judgment in state, skip network fetching
+      if (passedJudgment && (passedJudgment.id === id || passedJudgment.slug === id)) {
+        setJudgment(passedJudgment);
+        setIsBookmarked(caseSearchService.isJudgmentBookmarked(passedJudgment.id));
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const data = await caseSearchService.getJudgmentById(id);
-        setJudgment(data);
         if (data) {
+          setJudgment(data);
           setIsBookmarked(caseSearchService.isJudgmentBookmarked(data.id));
+        } else if (passedJudgment) {
+          setJudgment(passedJudgment);
         }
       } catch (err) {
         console.error('Failed to load judgment:', err);
+        if (passedJudgment) setJudgment(passedJudgment);
       } finally {
         setLoading(false);
       }
@@ -184,6 +204,16 @@ export default function JudgmentDetailWorkspace() {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end">
+            {/* View Official PDF Button */}
+            <button
+              onClick={() => setIsPdfModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#111111] dark:bg-white text-white dark:text-slate-950 hover:bg-[#B38628] dark:hover:bg-[#E5A93C] dark:hover:text-black transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+              title="View Official Law Report PDF"
+            >
+              <FileText size={13} className="text-[#B88B2A] dark:text-[#B38628]" />
+              <span>Official Law Report PDF</span>
+            </button>
+
             <button
               onClick={handleAddToCaseClick}
               className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#B88B2A] hover:bg-[#B38628] text-slate-950 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
@@ -235,7 +265,10 @@ export default function JudgmentDetailWorkspace() {
           
           {/* Central Law Report Document Viewer (8 cols on desktop) */}
           <div className="lg:col-span-8 space-y-6 min-w-0">
-            <JudgmentDocumentViewer judgment={judgment} />
+            <JudgmentDocumentViewer 
+              judgment={judgment} 
+              onOpenPdfModal={() => setIsPdfModalOpen(true)}
+            />
 
             {/* Citations & Precedents Network Card */}
             {judgment.precedentsCited && judgment.precedentsCited.length > 0 && (
@@ -324,6 +357,13 @@ export default function JudgmentDetailWorkspace() {
       <AddToCaseModal
         isOpen={isAddToCaseOpen}
         onClose={() => setIsAddToCaseOpen(false)}
+        judgment={judgment}
+      />
+
+      {/* ─── Official Law Report PDF Modal ─── */}
+      <JudgmentPdfModal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
         judgment={judgment}
       />
 

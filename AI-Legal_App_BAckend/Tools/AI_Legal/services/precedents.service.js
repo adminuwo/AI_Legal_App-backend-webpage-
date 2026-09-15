@@ -831,9 +831,17 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
         ? "\n\n### MANDATORY LANGUAGE RULE:\n- Generate ALL text in HINDI.\n- Use professional legal Hindi terminology.\n- Maintain high formal tone."
         : `\n\n### MANDATORY LANGUAGE RULE:\n- Respond entirely in ${language}.`;
 
+    // Normalize action aliases
+    let effectiveActionType = actionType;
+    if (actionType === 'simple' || actionType === 'easy') effectiveActionType = 'explain';
+    else if (actionType === 'summary') effectiveActionType = 'summarize';
+    else if (actionType === 'stronger') effectiveActionType = 'find_stronger';
+    else if (actionType === 'oral') effectiveActionType = 'arguments';
+    else if (actionType === 'notes') effectiveActionType = 'court_notes';
+
     let prompt = "";
 
-    if (actionType === 'intelligence_report') {
+    if (effectiveActionType === 'intelligence_report') {
         prompt = `
         You are a Senior Legal Analyst and ${isNepal ? 'Supreme Court of Nepal' : 'Supreme Court'} Advocate.
         Generate a comprehensive, professional, and detailed Intelligence Report for the following landmark precedent judgment in ${countryName}.
@@ -932,53 +940,90 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
         ### ⚖️ Party Support
         - Conclude if this precedent supports: Plaintiff, Defendant, Both, or Neither, and state the reasoning.
         `;
-    } else if (actionType === 'summarize') {
+    } else if (effectiveActionType === 'summarize') {
         prompt = `
-        You are a Senior Legal Counsel. Provide a "Master Summary" of the following legal judgment.
+        You are a Senior Legal Counsel. Provide a comprehensive "Master Summary & Structured Dossier" of the following legal judgment.
         ${langRule}
 
         PRECEDENT DATA:
         Case: ${precedentData.case_identity?.case_name || precedentData.case_name}
+        Citation: ${precedentData.case_identity?.citation || precedentData.citation}
+        Court: ${precedentData.case_identity?.court || precedentData.court}
+        Facts: ${precedentData.case_context?.facts || precedentData.facts}
+        Issues: ${precedentData.case_context?.legal_issue || precedentData.issue}
         Reasoning: ${precedentData.judgment_basis?.legal_reasoning || precedentData.reasoning}
+        Ratio: ${precedentData.judgment_basis?.principles_applied?.join(', ') || precedentData.ratio_decidendi}
         Outcome: ${precedentData.judgment_outcome?.final_decision || precedentData.decision}
 
         STRUCTURE YOUR RESPONSE (SCANNABLE MARKDOWN):
         ### ⚖️ Judgment Overview
-        (Provide a 2-sentence high-level overview)
+        (Provide an authoritative high-level overview)
 
-        ### 🔍 Critical Findings
-        - Bullet points of the most important findings of the court.
+        ### 🔍 Material Facts & Issues
+        - Bullet points of the primary dispute and questions of law.
         
-        ### 📖 Legal Principle (Ratio Decidendi)
-        - Clear statement of the law established.
+        ### 📖 Binding Legal Principle (Ratio Decidendi)
+        - Clear, authoritative statement of the law established under Article 141.
 
-        ### 🏛️ Conclusion & Impact
-        - Final result and why it matters to the legal field.
+        ### 🏛️ Operative Holding & National Impact
+        - Final result and its binding effect across all subordinate courts.
         `;
-    } else if (actionType === 'explain') {
+    } else if (effectiveActionType === 'explain') {
         prompt = `
-        You are a Legal educator. Explain the following legal judgment in simple, clear, and comprehensive terms.
+        You are a Master Legal Educator and Senior Advocate known for explaining complex judicial doctrines in vivid, easy-to-understand, crystal-clear language.
+        Explain the following legal judgment in DETAILED, PLAIN, EVERYDAY LANGUAGE (आसान भाषा में) so that any advocate, client, or student can immediately grasp every nuance.
         ${langRule}
 
         PRECEDENT DATA:
         Case: ${precedentData.case_identity?.case_name || precedentData.case_name}
+        Citation: ${precedentData.case_identity?.citation || precedentData.citation}
+        Court: ${precedentData.case_identity?.court || precedentData.court}
         Facts: ${precedentData.case_context?.facts || precedentData.facts}
+        Issues: ${precedentData.case_context?.legal_issue || precedentData.issue}
         Reasoning: ${precedentData.judgment_basis?.legal_reasoning || precedentData.reasoning}
+        Ratio: ${precedentData.judgment_basis?.principles_applied?.join(', ') || precedentData.ratio_decidendi}
         Outcome: ${precedentData.judgment_outcome?.final_decision || precedentData.decision}
 
-        STRUCTURE YOUR RESPONSE (SCANNABLE MARKDOWN):
-        ### ⚖️ Simple Explanation
-        - Explain in plain terms what this case is about and what was decided.
-        
-        ### 🔍 Why it Matters
-        - Break down the core legal reasoning in everyday language.
-        
-        ### 📖 Key Takeaways
-        - Plain-language summary of what we can learn from this judgment.
+        MANDATORY STRUCTURE (DEEP, COMPREHENSIVE & WRITTEN IN EASY LANGUAGE):
+        ### ⚖️ 1. What was this dispute really about? (The Story in Simple Words)
+        - Explain in simple, narrative language what happened between the parties, who took whom to court, and what the real fight was about. No complicated legal Latin.
+
+        ### 🎯 2. The Core Dilemma (The Big Question That Needed Solving)
+        - Explain in everyday terms why this case was so difficult and what key question the judges had to answer for the whole country.
+
+        ### 🏛️ 3. What the Court Decided (The Binding Rules in Plain English)
+        - Provide a clear, bullet-by-bullet breakdown of the golden rules and directives laid down by the Bench. Explain each rule simply and concisely.
+
+        ### 💡 4. Why This Matters to You (Actionable Steps for Advocates & Litigants)
+        - Detail concrete steps on how to use this judgment in active court matters:
+          * What the filing party/petitioner should do.
+          * How the responding party should defend themselves.
+          * Pitfalls and traps to avoid.
         `;
-    } else if (actionType === 'arguments') {
+    } else if (effectiveActionType === 'conflict') {
         prompt = `
-        You are a Trial Advocate. Generate compelling legal arguments for court based on the following precedent, considering my active case context if available.
+        You are a Senior Appellate Advocate.
+        Analyze conflicting judgments, prior distinguished rulings, or coordinate bench variations related to this precedent.
+        ${langRule}
+
+        PRECEDENT DATA:
+        Case: ${precedentData.case_identity?.case_name || precedentData.case_name}
+        Citation: ${precedentData.case_identity?.citation || precedentData.citation}
+        Ratio: ${precedentData.judgment_basis?.principles_applied?.join(', ') || precedentData.ratio_decidendi}
+
+        STRUCTURE YOUR RESPONSE (SCANNABLE MARKDOWN):
+        ### ⚡ Distinguishable / Conflicting Authorities
+        - Name 2-3 judgments that opposing counsel frequently cite or that take a different view.
+
+        ### 🛡️ How to Distinguish Them in Court
+        - Concrete factual or statutory points to show why the conflicting case does NOT apply.
+
+        ### ⚖️ Why This Precedent Governs
+        - Explain why this ruling stands as binding, superior law under Article 141.
+        `;
+    } else if (effectiveActionType === 'arguments') {
+        prompt = `
+        You are a Senior Trial Advocate. Generate a persuasive, ready-to-use Courtroom Oral Submissions Script citing this precedent.
         ${langRule}
 
         LANDMARK PRECEDENT:
@@ -992,14 +1037,14 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
         Facts: ${activeCaseData?.summary || activeCaseData?.caseSummary || activeCaseData?.facts || 'N/A'}
 
         STRUCTURE YOUR RESPONSE (SCANNABLE MARKDOWN):
-        ### 📣 Primary Argument Point
+        ### 📣 Primary Submission Point
         - State the main argument point citing this precedent.
         
-        ### 🏛️ Courtroom Presentation / Script
-        - Write a professional courtroom statement quoting the precedent.
+        ### 🏛️ Ready-to-Read Courtroom Script
+        - Write the exact words the advocate should speak to the Bench ("My Lord / Shreeman...").
         
-        ### 🛡️ Anticipated Rebuttal
-        - Prepare for how the other side might respond and how to counter it.
+        ### 🛡️ Anticipated Objection & Counter-Argument
+        - What the opposing counsel will likely object to and the immediate counter-rebuttal.
         `;
     } else if (actionType === 'court_notes') {
         prompt = `

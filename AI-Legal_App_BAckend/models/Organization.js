@@ -84,9 +84,25 @@ const organizationSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive', 'expired', 'suspended'],
     default: 'active',
     index: true
+  },
+  type: {
+    type: String,
+    trim: true,
+    index: true
+  },
+  userName: {
+    type: String,
+    trim: true
+  },
+  feature: {
+    type: String,
+    trim: true
+  },
+  adminNotes: {
+    type: String,
+    trim: true
   },
   subscriptionExpiry: {
     type: Date
