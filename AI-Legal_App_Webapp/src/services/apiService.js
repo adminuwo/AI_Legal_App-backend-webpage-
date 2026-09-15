@@ -1406,9 +1406,9 @@ export const apiService = {
   },
 
   // --- Projects ---
-  async getProjects() {
+  async getProjects(params = {}) {
     try {
-      const response = await apiClient.get('/projects');
+      const response = await apiClient.get('/projects', { params });
       return response.data;
     } catch (error) {
       console.error("Failed to fetch projects:", error);

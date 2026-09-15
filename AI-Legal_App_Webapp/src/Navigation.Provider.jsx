@@ -60,6 +60,7 @@ const KnowledgeHubWorkspace = lazy(() => import('./pages/Workspace/KnowledgeHubW
 const DraftMakerWorkspace = lazy(() => import('./pages/DraftMakerWorkspace'));
 const ArgumentBuilderWorkspace = lazy(() => import('./pages/ArgumentBuilderWorkspace'));
 const LegalPrecedentsWorkspace = lazy(() => import('./pages/LegalPrecedentsWorkspace'));
+const PublicCaseSearchWorkspace = lazy(() => import('./pages/PublicCaseSearchWorkspace'));
 const JudgmentDetailWorkspace = lazy(() => import('./pages/JudgmentDetailWorkspace'));
 const EvidenceAnalystWorkspace = lazy(() => import('./pages/EvidenceAnalystWorkspace'));
 const ContractAnalyzerWorkspace = lazy(() => import('./pages/ContractAnalyzerWorkspace'));
@@ -509,12 +510,12 @@ const NavigateProvider = () => {
         } />
         <Route path="/judgment" element={
           <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Case Search...</div>}>
-            <LegalPrecedentsWorkspace />
+            <PublicCaseSearchWorkspace />
           </Suspense>
         } />
         <Route path="/case-search" element={
           <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-950 text-[#B88B2A] font-bold">Loading Case Search...</div>}>
-            <LegalPrecedentsWorkspace />
+            <PublicCaseSearchWorkspace />
           </Suspense>
         } />
         <Route path="/judgment/:id" element={

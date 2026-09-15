@@ -632,7 +632,18 @@ router.get('/', verifyToken, async (req, res) => {
 
         let roleQuery = {};
 
-        if (isLawFirmWs) {
+        if (req.query.all === 'true' || req.query.scope === 'all' || requestedWsType === 'all') {
+            // ALL MATTERS QUERY - Returns all cases owned by or assigned to authenticated user across all practices/workspaces
+            roleQuery = {
+                $or: [
+                    { userId: { $in: userIdConditions } },
+                    { assignedMembers: { $in: userIdConditions } },
+                    { assignedUserIds: { $in: userIdConditions } },
+                    { leadAdvocateUserId: { $in: userIdConditions } },
+                    { 'members.user': { $in: userIdConditions } }
+                ]
+            };
+        } else if (isLawFirmWs) {
             // STRICT LAW FIRM WORKSPACE QUERY (by specific Law Firm ObjectId)
             const wsIdStr = String(activeWorkspaceId);
             const wsObjId = mongoose.Types.ObjectId.isValid(wsIdStr) ? new mongoose.Types.ObjectId(wsIdStr) : null;
