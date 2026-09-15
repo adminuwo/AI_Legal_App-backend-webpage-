@@ -299,7 +299,19 @@ router.post("/login", async (req, res) => {
       role: user.role,
       plan: user.plan,
       avatar: user.avatar,
-      notifications: user.notificationsInbox
+      notifications: user.notificationsInbox,
+      country: user.country || user.legalJurisdiction?.country || 'India',
+      countryCode: user.countryCode || user.legalJurisdiction?.countryCode || 'IN',
+      dialCode: user.dialCode || '+91',
+      state: user.state || user.legalJurisdiction?.state || '',
+      jurisdiction: user.jurisdiction || user.legalJurisdiction?.country || user.country || 'India',
+      legalJurisdiction: user.legalJurisdiction || {
+        country: user.country || 'India',
+        countryCode: user.countryCode || 'IN',
+        state: user.state || '',
+        jurisdictionType: user.state ? 'state' : 'national'
+      },
+      personalizations: user.personalizations
     });
 
   } catch (err) {

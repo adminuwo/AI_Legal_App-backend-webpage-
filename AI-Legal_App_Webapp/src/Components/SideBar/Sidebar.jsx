@@ -44,6 +44,24 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
   const selectedRole = useRecoilValue(selectedRoleState) || 'advocate';
   const user = currentUserData.user || { name: "Advocate", email: "..." };
 
+  const userCountry = user?.country || user?.legalJurisdiction?.country || localStorage.getItem('ai_legal_selected_country') || 'India';
+  const userCountryCode = user?.countryCode || user?.legalJurisdiction?.countryCode || localStorage.getItem('legal_country_code') || 'IN';
+
+  const getCountryFlag = (cName, cCode) => {
+    const norm = String(cName || cCode || '').toUpperCase();
+    if (norm.includes('NEPAL') || norm === 'NP') return '🇳🇵';
+    if (norm.includes('UNITED STATES') || norm.includes('USA') || norm === 'US') return '🇺🇸';
+    if (norm.includes('UNITED KINGDOM') || norm.includes('UK') || norm === 'GB') return '🇬🇧';
+    if (norm.includes('UNITED ARAB EMIRATES') || norm.includes('UAE') || norm.includes('DUBAI') || norm === 'AE') return '🇦🇪';
+    if (norm.includes('INDIA') || norm === 'IN') return '🇮🇳';
+    if (norm.includes('ARMENIA') || norm === 'AM') return '🇦🇲';
+    if (norm.includes('CANADA') || norm === 'CA') return '🇨🇦';
+    if (norm.includes('AUSTRALIA') || norm === 'AU') return '🇦🇺';
+    return '🌐';
+  };
+
+  const countryFlag = getCountryFlag(userCountry, userCountryCode);
+
   const tokenRole = (() => {
     try {
       const t = user?.token || localStorage.getItem('token');
@@ -312,9 +330,15 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
             <div className="min-w-0 flex-1">
               <p className="text-sm font-extrabold text-slate-800 dark:text-white truncate leading-tight capitalize">{user.name || 'Advocate Profile'}</p>
               <p className="text-[11px] font-semibold text-slate-400 truncate mt-0.5">{user.email || 'Advocate Account'}</p>
-              <span className="inline-block mt-1 px-2 py-0.5 rounded bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20 text-[9px] font-bold uppercase tracking-wider">
-                {isSuperAdminUser ? 'SUPER ADMIN' : isAdminUser ? 'ADMIN' : selectedRole === 'student' ? 'Law Student' : selectedRole === 'law_firm' ? 'Law Firm Associate' : 'Advocate / Practitioner'}
-              </span>
+              <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20 text-[9px] font-bold uppercase tracking-wider">
+                  {isSuperAdminUser ? 'SUPER ADMIN' : isAdminUser ? 'ADMIN' : selectedRole === 'student' ? 'Law Student' : selectedRole === 'law_firm' ? 'Law Firm Associate' : 'Advocate / Practitioner'}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] font-bold text-slate-700 dark:text-slate-300">
+                  <span>{countryFlag}</span>
+                  <span>{userCountry}</span>
+                </span>
+              </div>
             </div>
           </div>
           <button
@@ -480,6 +504,10 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
                     <p className="text-sm font-bold text-[#111827] dark:text-white truncate leading-tight capitalize">{user.name}</p>
                     <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 shrink-0">
                       {isSuperAdminUser ? 'SUPER ADMIN' : isAdminUser ? 'ADMIN' : badge === 'SUPER ADMIN' ? 'Free' : badge}
+                    </span>
+                    <span className="text-xs shrink-0 flex items-center gap-0.5 px-1 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800 text-[10px] font-bold" title={`Jurisdiction: ${userCountry}`}>
+                      <span>{countryFlag}</span>
+                      <span className="text-[9px] text-slate-600 dark:text-slate-300 uppercase">{userCountryCode}</span>
                     </span>
                   </div>
                   <p className="text-xs text-[#6B7280] dark:text-slate-400 truncate mt-0.5">{user.email}</p>

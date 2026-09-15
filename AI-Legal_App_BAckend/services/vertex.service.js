@@ -889,7 +889,7 @@ export const askVertex = async (prompt, context = null, options = {}) => {
                     let fallbackSources = [];
                     if (options.useSearch) {
                         try {
-                            const liveSearchRes = await executeTargetedLegalSearch(options.searchQueryOverride || prompt);
+                            const liveSearchRes = await executeTargetedLegalSearch(options.searchQueryOverride || prompt, { jurisdiction: options.jurisdiction });
                             fallbackSources = liveSearchRes.sources || [];
                             groundedSearchContext = formatGroundingContext(fallbackSources, liveSearchRes.summary);
                             logger.info(`[LEGAL-FRESHNESS] SEARCH_REQUIRED=true | ENGINE=tavily_fallback | SOURCES=${fallbackSources.length} | STATUS=fallback_grounded`);
@@ -936,7 +936,7 @@ export const askVertex = async (prompt, context = null, options = {}) => {
                     let fallbackSources = [];
                     if (options.useSearch) {
                         try {
-                            const liveSearchRes = await executeTargetedLegalSearch(options.searchQueryOverride || prompt);
+                            const liveSearchRes = await executeTargetedLegalSearch(options.searchQueryOverride || prompt, { jurisdiction: options.jurisdiction });
                             fallbackSources = liveSearchRes.sources || [];
                             groundedSearchContext = formatGroundingContext(fallbackSources, liveSearchRes.summary);
                             logger.info(`[LEGAL-FRESHNESS] SEARCH_REQUIRED=true | ENGINE=tavily_fallback | SOURCES=${fallbackSources.length} | STATUS=fallback_grounded`);
