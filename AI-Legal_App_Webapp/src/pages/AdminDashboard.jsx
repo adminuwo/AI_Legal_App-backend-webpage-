@@ -18,6 +18,8 @@ import axios from 'axios';
 import { API } from '../types.js';
 import { COUNTRIES } from '../constants/countries';
 import { STATES_BY_COUNTRY } from '../constants/states';
+import AdminDownloadsSection from './AdminDashboard/components/AdminDownloadsSection';
+import AdminLinkedOrganizationsSection from './AdminDashboard/components/AdminLinkedOrganizationsSection';
 
 export const DATE_RANGE_OPTIONS = [
   { id: 'today', label: 'Today' },
@@ -43,8 +45,9 @@ const TABS = [
   { id: 'addons', label: 'Add-on Requests', icon: PlusCircle },
   { id: 'features', label: 'Requests', icon: Lightbulb },
   { id: 'bugs', label: 'Bugs', icon: Bug },
-  { id: 'reports', label: 'Response Reports', icon: MessageSquare },
   { id: 'jurisdiction', label: 'Jurisdiction', icon: Globe },
+  { id: 'downloads', label: 'Downloads & Installs', icon: Download },
+  { id: 'linked-orgs', label: 'Linked Organization (via Convee-Education)', icon: Building2 },
   { id: 'settings', label: 'Settings', icon: Settings },
   { id: 'rag-files', label: 'RAG Files', icon: FileText }
 ];
@@ -1726,14 +1729,13 @@ export default function AdminDashboard() {
                   <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                     {(stats.totalUsers || 0).toLocaleString()}
                   </h3>
-                  <div className="flex flex-wrap items-center gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 text-[11px] font-semibold">
-                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                  <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 text-[11px] font-semibold">
+                    <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                      <span>{stats.onlineUsers || 0} Online</span>
+                      <span>{stats.activeUsers || 0} Active Users</span>
                     </span>
-                    <span className="text-slate-300 dark:text-zinc-700">•</span>
-                    <span className="text-slate-500 dark:text-zinc-400 truncate">
-                      {stats.activeUsers || 0} Active (30d)
+                    <span className="text-slate-400 dark:text-zinc-500 text-[10px] font-medium">
+                      ({stats.onlineUsers > 0 ? `${stats.onlineUsers} live now · ` : ''}30-day active)
                     </span>
                   </div>
                 </div>
@@ -1798,48 +1800,125 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* ROW 3: 7-DAY ACTIVITY GRAPH */}
+            {/* ROW 3: 7-DAY ACTIVITY & DOWNLOADS GRAPH */}
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
               <div className="flex flex-wrap justify-between items-center gap-2">
                 <div>
-                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">DAILY ACTIVITY</h3>
-                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Last 7 Days aggregated logins & AI queries</p>
+                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span>DAILY ACTIVITY & DOWNLOADS</span>
+                  </h3>
+                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Last 7 Days downloads, new user registrations & platform usage (hover bar for details)</p>
                 </div>
-                <span className="text-[11px] sm:text-xs font-bold text-[#B88B2A] bg-[#B88B2A]/10 px-2.5 sm:px-3 py-1 rounded-full border border-[#B88B2A]/20 shrink-0">
-                  7-Day Trend
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] sm:text-xs font-bold text-[#B88B2A] bg-[#B88B2A]/10 px-2.5 sm:px-3 py-1 rounded-full border border-[#B88B2A]/20 shrink-0 flex items-center gap-1">
+                    <span>📥</span>
+                    <span>Downloads & Registrations</span>
+                  </span>
+                </div>
               </div>
 
-              {/* Interactive Bar Chart */}
-              <div className="pt-4 flex items-end justify-between gap-1.5 sm:gap-6 h-40 sm:h-48 px-1.5 sm:px-6 bg-slate-50/60 dark:bg-zinc-900/50 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-zinc-800/80">
+              {/* Interactive Bar Chart with Rich Hover Tooltip */}
+              <div className="pt-8 pb-3 flex items-end justify-between gap-1.5 sm:gap-6 h-48 sm:h-56 px-2 sm:px-6 bg-slate-50/60 dark:bg-zinc-900/50 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-zinc-800/80 relative">
                 {(Array.isArray(stats.dailyActivity) && stats.dailyActivity.length > 0
                   ? stats.dailyActivity
                   : [
-                      { label: 'MON', val: 24 },
-                      { label: 'TUE', val: 45 },
-                      { label: 'WED', val: 68 },
-                      { label: 'THU', val: 52 },
-                      { label: 'FRI', val: 89 },
-                      { label: 'SAT', val: 61 },
-                      { label: 'SUN', val: 75 }
+                      { label: 'WED', downloads: 32, registeredUsers: 32, val: 32 },
+                      { label: 'THU', downloads: 57, registeredUsers: 57, val: 57 },
+                      { label: 'FRI', downloads: 44, registeredUsers: 44, val: 44 },
+                      { label: 'SAT', downloads: 47, registeredUsers: 47, val: 47 },
+                      { label: 'SUN', downloads: 28, registeredUsers: 28, val: 28 },
+                      { label: 'MON', downloads: 25, registeredUsers: 25, val: 25 },
+                      { label: 'TUE', downloads: 21, registeredUsers: 21, val: 21, isToday: true }
                     ]
-                ).map((day, idx) => {
-                  const maxVal = Math.max(1, ...(stats.dailyActivity || []).map(d => d.val || 0));
-                  const heightPercent = Math.max(12, Math.min(100, ((day.val || 0) / maxVal) * 100));
+                ).map((day, idx, arr) => {
+                  const dayDownloads = typeof day.downloads === 'number' ? day.downloads : (day.val || 0);
+                  const maxVal = Math.max(1, ...(stats.dailyActivity || arr).map(d => typeof d.downloads === 'number' ? d.downloads : (d.val || 0)));
+                  const heightPercent = Math.max(16, Math.min(100, (dayDownloads / maxVal) * 100));
+                  const isToday = day.isToday || idx === (arr.length - 1);
+                  const isFirst = idx === 0;
+                  const isLast = idx === (arr.length - 1);
+                  
+                  // Tooltip horizontal alignment based on bar index
+                  const tooltipPosClass = isFirst 
+                    ? 'left-0 translate-x-0' 
+                    : isLast 
+                      ? 'right-0 left-auto translate-x-0' 
+                      : 'left-1/2 -translate-x-1/2';
+
                   return (
-                    <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
-                      <span className="text-[9px] sm:text-[10px] font-black text-slate-500 group-hover:text-[#B88B2A] transition-colors opacity-80 sm:opacity-0 group-hover:opacity-100">
-                        {day.val}
+                    <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer relative">
+                      {/* Interactive Floating Hover Tooltip */}
+                      <div className={`absolute bottom-[calc(100%+8px)] hidden group-hover:flex flex-col items-center z-40 pointer-events-none min-w-[170px] sm:min-w-[195px] ${tooltipPosClass} animate-in fade-in zoom-in-95 duration-150`}>
+                        <div className="bg-slate-900/95 backdrop-blur-md text-white rounded-xl p-2.5 shadow-2xl border border-slate-700/80 w-full text-left">
+                          <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
+                            <span className="font-extrabold text-[#D4AF37] text-[11px]">{day.fullDate || day.label}</span>
+                            {isToday && (
+                              <span className="text-[8px] font-black bg-[#B88B2A] text-white px-1.5 py-0.2 rounded uppercase tracking-wider">
+                                Today
+                              </span>
+                            )}
+                          </div>
+                          <div className="space-y-1 text-[11px]">
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-slate-300 flex items-center gap-1">
+                                <span>📥</span> Downloads / Installs:
+                              </span>
+                              <span className="font-black text-emerald-400 text-xs">
+                                {(day.downloads ?? day.registeredUsers ?? dayDownloads)}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-slate-300 flex items-center gap-1">
+                                <span>👤</span> New Registered:
+                              </span>
+                              <span className="font-black text-white text-xs">
+                                {(day.registeredUsers ?? day.downloads ?? dayDownloads)}
+                              </span>
+                            </div>
+                            {(day.logins !== undefined || day.aiQueries !== undefined) && (
+                              <div className="flex items-center justify-between gap-3 pt-1 border-t border-slate-800/80 text-[10px] text-slate-400">
+                                <span>Active Logins:</span>
+                                <span className="font-semibold text-slate-200">{day.logins || 0}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        {/* Tooltip caret */}
+                        <div className={`w-2.5 h-2.5 bg-slate-900 rotate-45 -mt-1.5 border-r border-b border-slate-700/80 ${
+                          isFirst ? 'self-start ml-4' : isLast ? 'self-end mr-4' : 'self-center'
+                        }`} />
+                      </div>
+
+                      {/* Top Metric Display */}
+                      <span className={`text-[10px] sm:text-xs font-black transition-colors ${
+                        isToday ? 'text-[#B88B2A]' : 'text-slate-500 dark:text-zinc-400 group-hover:text-[#B88B2A]'
+                      }`}>
+                        {dayDownloads}
                       </span>
-                      <div className="w-full max-w-[28px] sm:max-w-[40px] bg-slate-200 dark:bg-zinc-800 rounded-t-lg sm:rounded-t-xl overflow-hidden h-24 sm:h-32 flex items-end">
+
+                      {/* Bar Pillar */}
+                      <div className="w-full max-w-[28px] sm:max-w-[42px] bg-slate-200/80 dark:bg-zinc-800 rounded-t-lg sm:rounded-t-xl overflow-hidden h-24 sm:h-32 flex items-end shadow-inner">
                         <div
                           style={{ height: `${heightPercent}%` }}
-                          className="w-full bg-[#B88B2A] group-hover:bg-[#b08d3b] transition-all rounded-t-lg sm:rounded-t-xl"
+                          className={`w-full transition-all duration-300 rounded-t-lg sm:rounded-t-xl ${
+                            isToday 
+                              ? 'bg-gradient-to-t from-[#B88B2A] to-[#E6C36A] shadow-md' 
+                              : 'bg-[#B88B2A] group-hover:bg-[#a67c24]'
+                          }`}
                         />
                       </div>
-                      <span className="text-[9px] sm:text-[11px] font-black text-slate-600 dark:text-zinc-400 group-hover:text-[#B88B2A] truncate">
-                        {day.label}
-                      </span>
+
+                      {/* Day Label at Bottom */}
+                      <div className="flex flex-col items-center">
+                        <span className={`text-[10px] sm:text-xs font-black truncate ${
+                          isToday ? 'text-[#B88B2A]' : 'text-slate-600 dark:text-zinc-400 group-hover:text-[#B88B2A]'
+                        }`}>
+                          {day.label}
+                        </span>
+                        {isToday && (
+                          <span className="text-[8px] font-black text-[#B88B2A] -mt-0.5">Today</span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -3168,30 +3247,6 @@ export default function AdminDashboard() {
               )}
             </div>
           </div>
-        ) : activeTab === 'reports' ? (
-          /* TAB 9: RESPONSE REPORTS */
-          <div className="space-y-4 sm:space-y-6">
-            <div className="bg-white dark:bg-[#1E293B] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-4">
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">AI Output Flagging & Quality Audit</h3>
-              {complaintsList.length === 0 ? (
-                <div className="py-8 text-center text-xs text-slate-400 font-medium">No response complaints flagged by advocates.</div>
-              ) : (
-                <div className="space-y-3">
-                  {complaintsList.map((r, idx) => (
-                    <div key={r._id || idx} className="p-3.5 sm:p-4 bg-slate-50 dark:bg-zinc-900 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-zinc-800 space-y-2">
-                      <div className="flex justify-between items-start gap-2 flex-wrap">
-                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded">
-                          {r.flagReason || 'Inaccurate Citation'}
-                        </span>
-                        <span className="text-xs font-bold text-slate-400">{new Date(r.createdAt || Date.now()).toLocaleDateString()}</span>
-                      </div>
-                      <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">{r.feedback || 'User flagged response citations.'}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
         ) : activeTab === 'jurisdiction' ? (
           /* TAB 10: JURISDICTION OVERRIDES & SANDBOX */
           <div className="space-y-4 sm:space-y-6">
@@ -3505,6 +3560,12 @@ export default function AdminDashboard() {
               </form>
             </div>
           </div>
+        ) : activeTab === 'downloads' ? (
+          /* TAB: DOWNLOADS & INSTALLS ANALYTICS */
+          <AdminDownloadsSection />
+        ) : activeTab === 'linked-orgs' ? (
+          /* TAB: LINKED ORGANIZATIONS (VIA CONVEE-EDUCATION) */
+          <AdminLinkedOrganizationsSection />
         ) : activeTab === 'settings' ? (
           /* TAB 11: SETTINGS & SECURITY */
           <div className="space-y-4 sm:space-y-6">

@@ -65,6 +65,33 @@ const seedPlansIfEmpty = async () => {
                 ],
                 badge: 'ENTERPRISE',
                 isPopular: false
+            },
+            {
+                planId: 'convee_institutional',
+                planName: 'Convee Institutional Academic Plan',
+                priceMonthly: 0,
+                priceYearly: 0,
+                credits: 5000,
+                creditsYearly: 60000,
+                validityMonthly: 1,
+                validityYearly: 12,
+                features: [
+                    'Institutional Partner Access via Convee-Education',
+                    'Unlimited AI Quiz Practice & Mock Tests',
+                    'Unlimited AI Draft Maker & Legal Documents',
+                    'Unlimited Legal Precedent & Citation Research',
+                    'Unlimited Contract Review & Clause Analysis',
+                    'Unlimited Case Predictor & Outcome Forecasting',
+                    'Unlimited Strategy Engine & Moot Court Prep',
+                    'AI Mock Courtroom Simulation (25 Sessions/mo)',
+                    'Unlimited Smart Notes Maker & Summarizer',
+                    '5,000 Institutional Credits / Month',
+                    'Verified Institutional Partner Badge'
+                ],
+                badge: 'CONVEE ACADEMIC',
+                isPopular: false,
+                storageGB: 50,
+                isActive: true
             }
         ];
 

@@ -130,4 +130,15 @@ router.get('/lifecycle/export', verifyToken, isAdmin, async (req, res) => {
     }
 });
 
+// Convee-Education Linked Organizations Management
+import {
+    getLinkedOrganizations,
+    toggleOrgSubscription,
+    seedSampleConveeOrgs
+} from '../controllers/linkedOrgController.js';
+
+router.get('/linked-organizations', verifyToken, isAdmin, getLinkedOrganizations);
+router.post('/linked-organizations/:orgSlug/toggle-subscription', verifyToken, isAdmin, toggleOrgSubscription);
+router.post('/linked-organizations/seed-sample', verifyToken, isAdmin, seedSampleConveeOrgs);
+
 export default router;

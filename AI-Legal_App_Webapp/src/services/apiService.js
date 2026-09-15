@@ -1775,6 +1775,67 @@ export const apiService = {
       console.error("UWO Login failed:", error);
       throw error;
     }
+  },
+
+  // --- Downloads & Installs Analytics API ---
+  async getDownloadAnalyticsSummary(params = {}) {
+    try {
+      const response = await apiClient.get('/admin/analytics/downloads/summary', { params });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch download analytics summary:", error);
+      throw error;
+    }
+  },
+
+  async getDownloadAnalyticsCountries(params = {}) {
+    try {
+      const response = await apiClient.get('/admin/analytics/downloads/countries', { params });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch country download analytics:", error);
+      throw error;
+    }
+  },
+
+  async getDownloadAnalyticsCountryDetails(countryName, params = {}) {
+    try {
+      const response = await apiClient.get(`/admin/analytics/downloads/countries/${encodeURIComponent(countryName)}`, { params });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch country download details:", error);
+      throw error;
+    }
+  },
+
+  async getDownloadAnalyticsTrends(params = {}) {
+    try {
+      const response = await apiClient.get('/admin/analytics/downloads/trends', { params });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch download analytics trends:", error);
+      throw error;
+    }
+  },
+
+  async exportDownloadAnalyticsReport(params = {}) {
+    try {
+      const response = await apiClient.get('/admin/analytics/downloads/export', { params });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to export download report:", error);
+      throw error;
+    }
+  },
+
+  async syncHistoricalDownloads() {
+    try {
+      const response = await apiClient.post('/admin/analytics/downloads/sync-historical');
+      return response.data;
+    } catch (error) {
+      console.error("Failed to trigger historical downloads sync:", error);
+      throw error;
+    }
   }
 };
 

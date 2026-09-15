@@ -79,6 +79,8 @@ import enterpriseRoutes from './routes/enterpriseRoutes.js';
 import jurisdictionRoutes from './routes/jurisdictionRoutes.js';
 import judgmentSubmissionRoutes from './routes/judgmentSubmissionRoutes.js';
 import blogPostRoutes from './routes/blogPostRoutes.js';
+import downloadAnalyticsRoutes from './routes/downloadAnalyticsRoutes.js';
+import telemetryRoutes from './routes/telemetryRoutes.js';
 
 import { startPlanExpiryService } from './services/planExpiryService.js';
 import { langMiddleware } from './middleware/langContext.js';
@@ -131,9 +133,15 @@ connectDB().then(async () => {
     // Initialize Plan Expiry Notification System
     startPlanExpiryService();
 
-
-  } catch (err) {
-    console.error("❌ Failed to pre-initialize AI services:", err.message);
+    // Initialize & Sync AppInstall analytics records from real users
+    try {
+      const { syncHistoricalInstalls } = await import('./controllers/downloadAnalyticsController.js');
+      await syncHistoricalInstalls();
+    } catch (syncErr) {
+      console.warn("AppInstall sync warning:", syncErr.message);
+    }
+  } catch (initErr) {
+    console.error("❌ Failed to pre-initialize services:", initErr.message);
   }
 }).catch(error => {
   console.error("Database connection failed during startup:", error);
@@ -378,8 +386,10 @@ app.use('/api/admin/settings', adminSettingsRoutes);
 app.use('/api/admin/feature-requests', featureRequestRoutes);
 app.use('/api/admin/bug-reports', bugReportRoutes);
 app.use('/api/admin/judgment-submissions', judgmentSubmissionRoutes);
+app.use('/api/admin/analytics/downloads', downloadAnalyticsRoutes);
 
-// Public / User access submissions
+// Public / User access submissions & telemetry
+app.use('/api/telemetry', telemetryRoutes);
 app.use('/api/judgment-submissions', judgmentSubmissionRoutes);
 app.use('/api/blogs', blogPostRoutes);
 app.use('/api/app-update', appUpdateRoutes);

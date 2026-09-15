@@ -107,6 +107,20 @@ export const PLAN_LIMITS = {
         mock_courtroom: 15,
         notes_maker: Infinity
     },
+    CONVEE_INSTITUTIONAL: {
+        cases: 150,
+        quiz_practice: Infinity,
+        draft_maker: Infinity,
+        legal_precedent: Infinity,
+        contract_review: Infinity,
+        evidence_analysis: Infinity,
+        strategy_engine: Infinity,
+        case_predictor: Infinity,
+        mock_courtroom: 25,
+        notes_maker: Infinity,
+        ai_chat: Infinity,
+        knowledge_hub: 25
+    },
 
     // Law Firm Plans
     FIRM_FREE: {
@@ -337,6 +351,37 @@ export const resolveActiveUserPlan = async (user, targetWorkspace) => {
     // SUPER_ADMIN / ADMIN: Permanent unlimited access — bypass all subscription logic based on database role
     if (user.role === 'SUPER_ADMIN' || user.role === 'admin') {
         return user.role === 'SUPER_ADMIN' ? 'SUPER_ADMIN' : 'ENTERPRISE';
+    }
+
+    // Check Convee-Education Linked Organization subscription for student
+    try {
+        const userEmail = (user.email || '').toLowerCase().trim();
+        if (userEmail) {
+            const Organization = mongoose.model('Organization');
+            const orgRecord = await Organization.findOne({
+                $or: [
+                    { studentEmail: userEmail },
+                    { email: userEmail },
+                    { userEmail: userEmail }
+                ],
+                status: { $in: ['active', 'Active'] }
+            }).lean();
+
+            if (orgRecord) {
+                const orgSubscribed = (
+                    orgRecord.plan?.subscribed !== false &&
+                    orgRecord.status === 'active' &&
+                    (!orgRecord.plan?.expiryDate || new Date(orgRecord.plan.expiryDate) > new Date()) &&
+                    (!orgRecord.subscriptionExpiry || new Date(orgRecord.subscriptionExpiry) > new Date())
+                );
+
+                if (orgSubscribed) {
+                    return 'CONVEE_INSTITUTIONAL';
+                }
+            }
+        }
+    } catch (orgErr) {
+        // Fall through on error
     }
 
     const normTargetWs = normalizeWorkspace(targetWorkspace);
@@ -832,6 +877,17 @@ export const seedDatabasePlans = async () => {
                 storageGB: 50,
                 limits: PLAN_LIMITS.STUDENT_PREMIUM
             },
+            {
+                planId: 'convee_institutional',
+                planName: 'Convee Institutional Academic Plan',
+                priceMonthly: 0,
+                priceYearly: 0,
+                credits: 5000,
+                badge: 'CONVEE ACADEMIC',
+                isPopular: false,
+                storageGB: 50,
+                limits: PLAN_LIMITS.CONVEE_INSTITUTIONAL
+            },
 
             // Law Firm Plans
             {
@@ -1205,7 +1261,8 @@ export const getUsageStatus = async (userId, targetWorkspace) => {
         PRO: 'Pro',
         PREMIUM: 'Premium',
         ENTERPRISE: 'Enterprise',
-        SUPER_ADMIN: 'Super Admin'
+        SUPER_ADMIN: 'Super Admin',
+        CONVEE_INSTITUTIONAL: 'Convee Academic'
     };
 
     const planDisplayNames = {
@@ -1214,7 +1271,8 @@ export const getUsageStatus = async (userId, targetWorkspace) => {
         PRO: 'AI Legal™ Pro (₹999)',
         PREMIUM: 'AI Legal™ Premium (₹2399)',
         ENTERPRISE: 'AI Legal™ Enterprise',
-        SUPER_ADMIN: 'SUPER ADMIN'
+        SUPER_ADMIN: 'SUPER ADMIN',
+        CONVEE_INSTITUTIONAL: 'Convee Institutional Academic Plan'
     };
 
     return {

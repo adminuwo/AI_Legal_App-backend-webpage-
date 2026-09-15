@@ -959,7 +959,7 @@ STRICT MANDATE FOR THIS TURN:
 
         // --- Generate Related Questions ---
         try {
-            const suggestions = await generateRelatedQuestions(message, finalResponseData.text, userLanguage, mode);
+            const suggestions = await generateRelatedQuestions(message, finalResponseData.text, userLanguage, mode, resolvedJurisdiction);
             if (suggestions && suggestions.length > 0) {
                 finalResponseData.suggestions = suggestions;
                 logger.info(`[RelatedQuestions] Generated ${suggestions.length} suggestions.`);
@@ -1077,76 +1077,332 @@ export const reloadVectorStore = async () => {
     await initializeFromDB();
 };
 
-export const generateRelatedQuestions = async (userMessage, aiResponse, language = 'English', mode = 'GENERAL') => {
+export const getContextualFallbackSuggestions = (userMessage, isNepal, countryName = 'India') => {
+    const text = (userMessage || '').toLowerCase();
+    const cName = String(countryName || (isNepal ? 'Nepal' : 'India'));
+    const isIndia = cName.toLowerCase() === 'india' && !isNepal;
+    const isArmenia = cName.toLowerCase() === 'armenia';
+
+    // 1. Criminal / Murder / Saza / Offence
+    if (/murder|kill|jaan|saza|punishment|homicide|dhara 302|dhara 103|section 177|177|apradh|crime|fir|arrest|life imprisonment/i.test(text)) {
+        if (isNepal) {
+            return [
+                "Exceptions under Section 177 Muluki Code?",
+                "Bail provisions for murder in Nepal?",
+                "Types of homicide under Nepali law?",
+                "Defense strategies under Muluki Criminal Code?"
+            ];
+        }
+        if (isArmenia) {
+            return [
+                "Defenses under Criminal Code of Armenia?",
+                "Bail & detention rules in Armenia?",
+                "Mitigating factors under Armenian law?",
+                "Court of Cassation murder precedents?"
+            ];
+        }
+        if (isIndia) {
+            return [
+                "Difference between Section 103 BNS and 302 IPC?",
+                "Grounds for Anticipatory Bail in serious offences?",
+                "Exceptions to culpable homicide under BNS?",
+                "Essential evidence required for defense?"
+            ];
+        }
+        return [
+            `Defenses under ${cName} Criminal Code?`,
+            `Bail & detention standards in ${cName}?`,
+            `Sentencing guidelines in ${cName}?`,
+            `Evidence required for defense in ${cName}?`
+        ];
+    }
+
+    // 2. Bail / Police / Arrest
+    if (/bail|arrest|custody|remand|police station|thana|fir|cognizable|warrant/i.test(text)) {
+        if (isNepal) {
+            return [
+                "Bail application procedure in District Court?",
+                "Police remand duration under Nepal law?",
+                "How to file Jaheri Darkhast in Nepal?",
+                "Remedies against illegal detention in Nepal?"
+            ];
+        }
+        if (isArmenia) {
+            return [
+                "Pre-trial restraint measures in Armenia?",
+                "Challenging unlawful detention in Armenia?",
+                "Bail hearing at Court of First Instance?",
+                "Human Rights Defender / Ombudsman remedy?"
+            ];
+        }
+        if (isIndia) {
+            return [
+                "Difference between Regular & Anticipatory Bail?",
+                "Section 438 CrPC / BNSS bail provisions?",
+                "Legal rights of an arrested person?",
+                "Procedure to quash an FIR?"
+            ];
+        }
+        return [
+            `Bail & release criteria in ${cName}?`,
+            `Challenging illegal detention in ${cName}?`,
+            `Arrest rights under ${cName} constitution?`,
+            `Pre-trial court hearing procedure in ${cName}?`
+        ];
+    }
+
+    // 3. Cheque Bounce / Money Recovery / Debt
+    if (/cheque|check|bounce|138|ni act|recovery|loan|debt|karz|paisa|dishonour/i.test(text)) {
+        if (isNepal) {
+            return [
+                "Remedy under Banking Offence Act, 2064?",
+                "Negotiable Instruments Act provisions in Nepal?",
+                "Notice period for bounced cheque in Nepal?",
+                "Court process for money recovery in Nepal?"
+            ];
+        }
+        if (isArmenia) {
+            return [
+                "Debt recovery under Armenian Civil Code?",
+                "Judicial enforcement through CES Service?",
+                "Court order of payment in Armenia?",
+                "Commercial claim limitation period in Armenia?"
+            ];
+        }
+        if (isIndia) {
+            return [
+                "Notice timeline under Section 138 NI Act?",
+                "Criminal vs Summary Suit under Order 37 CPC?",
+                "Documents required for cheque bounce complaint?",
+                "Mediation options for debt settlement?"
+            ];
+        }
+        return [
+            `Debt recovery procedure in ${cName}?`,
+            `Statutory notice for dishonoured payments in ${cName}?`,
+            `Court summary proceedings in ${cName}?`,
+            `Enforcement of monetary claims in ${cName}?`
+        ];
+    }
+
+    // 4. Family / Divorce / Custody / Maintenance
+    if (/divorce|talaq|vivah|marriage|maintenance|kharcha|custody|bacha|domestic violence|dv|streedhan|498a/i.test(text)) {
+        if (isNepal) {
+            return [
+                "Divorce grounds under Muluki Civil Code 2074?",
+                "Property division and alimony in Nepal?",
+                "Child custody guidelines in District Court?",
+                "Mutual consent divorce process in Nepal?"
+            ];
+        }
+        if (isArmenia) {
+            return [
+                "Divorce under Armenian Family Code?",
+                "Property division principles in Armenia?",
+                "Child custody guidelines in Armenian courts?",
+                "Alimony and child support calculations in Armenia?"
+            ];
+        }
+        if (isIndia) {
+            return [
+                "Mutual consent divorce timeline?",
+                "Interim maintenance under Section 125 / BNSS?",
+                "Child custody principles for working parents?",
+                "Protection against Section 498A harassment?"
+            ];
+        }
+        return [
+            `Divorce requirements under ${cName} law?`,
+            `Marital asset division rules in ${cName}?`,
+            `Child custody standards in ${cName}?`,
+            `Alimony & spousal support in ${cName}?`
+        ];
+    }
+
+    // 5. Property / Land / Tenancy / Lease
+    if (/property|land|jamin|makan|flat|rent|tenant|kiraya|lease|registry|kabza|partition|batwara/i.test(text)) {
+        if (isNepal) {
+            return [
+                "Partition suit (Angsha Banda) under Muluki Code?",
+                "Tenant eviction rules in Nepal?",
+                "Land registration and Malpot office procedure?",
+                "Remedy for unlawful land possession in Nepal?"
+            ];
+        }
+        if (isArmenia) {
+            return [
+                "Real estate registration at Cadastre Committee?",
+                "Tenant eviction rules under Armenian Civil Code?",
+                "Partition of shared property in Armenia?",
+                "Remedies for unlawful property possession in Armenia?"
+            ];
+        }
+        if (isIndia) {
+            return [
+                "Procedure to file a Partition Suit?",
+                "Tenant eviction grounds under Tenancy Act?",
+                "Documents for ancestral property claim?",
+                "Injunction order against illegal possession?"
+            ];
+        }
+        return [
+            `Property title registration in ${cName}?`,
+            `Tenant rights & eviction laws in ${cName}?`,
+            `Partition of co-owned property in ${cName}?`,
+            `Injunctions against unlawful entry in ${cName}?`
+        ];
+    }
+
+    // 6. Contract / Agreement / Notice / Cyber
+    if (/contract|agreement|notice|clause|breach|cyber|fraud|scam|online/i.test(text)) {
+        if (isNepal) {
+            return [
+                "Contract breach remedies under Muluki Civil Code?",
+                "Electronic Transactions Act 2063 cybercrime rules?",
+                "How to draft a formal legal notice in Nepal?",
+                "Arbitration procedure under Nepal law?"
+            ];
+        }
+        if (isArmenia) {
+            return [
+                "Breach remedies under Civil Code of Armenia?",
+                "Cybercrime & online fraud under Armenian law?",
+                "Commercial dispute resolution in Armenia?",
+                "Enforcing written contracts in Armenian courts?"
+            ];
+        }
+        if (isIndia) {
+            return [
+                "Remedies for breach under Indian Contract Act?",
+                "Cybercrime reporting under IT Act 2000?",
+                "Drafting a Legal Notice for contract breach?",
+                "Arbitration and dispute resolution clauses?"
+            ];
+        }
+        return [
+            `Contract breach remedies under ${cName} law?`,
+            `Cybercrime & fraud reporting in ${cName}?`,
+            `Drafting formal notice under ${cName} law?`,
+            `Dispute resolution & arbitration in ${cName}?`
+        ];
+    }
+
+    // Default context-aware legal questions
+    if (isNepal) {
+        return [
+            "Explain applicable Muluki Code Sections",
+            "Research landmark NKP precedents",
+            "Suggest courtroom strategy in Nepal",
+            "Predict case outcome under Nepal law"
+        ];
+    }
+    if (isArmenia) {
+        return [
+            "Explain applicable Armenian Civil/Penal Codes",
+            "Research Court of Cassation decisions",
+            "Suggest litigation steps in Armenia",
+            "Predict outcome under Armenian law"
+        ];
+    }
+    if (isIndia) {
+        return [
+            "Explain applicable BNS / IPC statutory sections",
+            "Research Supreme Court & High Court precedents",
+            "Suggest strategic litigation steps",
+            "Predict likely case outcome & risks"
+        ];
+    }
+    return [
+        `Explain applicable statutory codes in ${cName}`,
+        `Research Supreme Court precedents in ${cName}`,
+        `Suggest legal strategy under ${cName} law`,
+        `Predict outcome under ${cName} legal framework`
+    ];
+};
+
+export const generateRelatedQuestions = async (userMessage, aiResponse, language = 'English', mode = 'GENERAL', jurisdiction = null) => {
     try {
+        const isNepal = jurisdiction?.isNepal || jurisdiction?.countryCode === 'NP' || (jurisdiction?.country && jurisdiction.country.toLowerCase() === 'nepal');
+        const countryName = jurisdiction?.country || (isNepal ? 'Nepal' : 'India');
+        const isIndia = countryName.toLowerCase() === 'india' && !isNepal;
+
         const lowerMsg = (userMessage || "").toLowerCase().trim();
         const greetings = ['hi', 'hello', 'hii', 'hey', 'yo', 'namaste', 'greeting', 'hola', 'dear'];
         const isGreeting = greetings.some(g => lowerMsg === g || lowerMsg.startsWith(g + ' ')) || lowerMsg.length < 5;
 
-        if (isGreeting) {
+        if (isGreeting || !userMessage || userMessage.length < 4) {
+            if (isNepal) {
+                return [
+                    "How does AI Legal™ work in Nepal?",
+                    "Search Nepal Muluki Code laws",
+                    "Draft a Legal Notice (Nepal)",
+                    "Ask a question on Nepal court procedure"
+                ];
+            }
+            if (countryName.toLowerCase() === 'armenia') {
+                return [
+                    "How does AI Legal™ work in Armenia?",
+                    "Search Armenian Codes on ARLIS",
+                    "Draft a Legal Notice under Armenian Law",
+                    "Court procedure in First Instance Court"
+                ];
+            }
+            if (!isIndia) {
+                return [
+                    `How does AI Legal™ work in ${countryName}?`,
+                    `Search ${countryName} statutory codes`,
+                    `Draft a Legal Document in ${countryName}`,
+                    `Court procedures in ${countryName}`
+                ];
+            }
             if (mode === 'LEGAL_TOOLKIT') {
                 return [
                     "How does AI Legal™ work?",
-                    "What documents can you draft?",
-                    "Can you analyze a contract?",
-                    "How to draft a legal notice?"
+                    "What legal documents can you draft?",
+                    "Can you analyze a contract or FIR?",
+                    "How to research BNS / IPC case laws?"
                 ];
             } else {
                 return [
-                    "What can you do?",
-                    "Show me your features",
-                    "Tell me about AISA",
-                    "How do I generate an image?"
+                    "What legal tasks can you assist with?",
+                    "Explain my legal rights",
+                    "How to draft a legal notice?",
+                    "Analyze a contract or case"
                 ];
             }
         }
 
-        const prompt = `You are an intelligent suggestion engine integrated into a chat system.
+        const cleanAiExcerpt = (aiResponse || '').replace(/\s+/g, ' ').slice(0, 800);
+        let jurisdictionInstruction = '';
+        if (isNepal) {
+            jurisdictionInstruction = `STRICT JURISDICTION LOCK: The active jurisdiction is NEPAL. All suggestions MUST strictly pertain to Nepal law (e.g. Muluki Criminal Code 2074, Muluki Civil Code 2074, NKP precedents, bail in Nepal, or court procedures in Nepal). NEVER cite IPC, BNS, CrPC, BNSS, or Indian laws.`;
+        } else if (isIndia) {
+            jurisdictionInstruction = `STRICT JURISDICTION LOCK: The active jurisdiction is INDIA. Ground all suggestions in applicable Indian statutes (BNS, BNSS, BSA, IPC, CPC) and Indian court procedures.`;
+        } else {
+            jurisdictionInstruction = `STRICT JURISDICTION LOCK: The active jurisdiction is ${countryName.toUpperCase()}. Ground all suggestions STRICTLY in the laws, courts, and legal system of ${countryName}. NEVER mention Indian laws (IPC, BNS, CrPC, BNSS, RERA) or any third-country statutes.`;
+        }
 
-Your task is to generate 3 to 5 highly relevant, clickable follow-up suggestions after every AI response.
+        const prompt = `You are a smart, context-aware suggestion generator for a legal AI assistant.
+
+Your task is to generate exactly 3 or 4 short, highly relevant, clickable follow-up questions or next steps for the user based DIRECTLY on their latest message and the AI's response.
+
+${jurisdictionInstruction}
 
 STRICT RULES:
+1. INPUT-DRIVEN RELEVANCE:
+- Suggestions MUST be directly related to the user's specific legal topic, problem, and questions (e.g. if the user asks about murder, suggest murder defenses, exceptions, bail, or evidence; if about cheque bounce, suggest statutory notices; if about tenancy/contracts, suggest lease clauses).
+- NEVER output generic unrelated suggestions.
+- Do NOT repeat what was already asked or answered. Offer logical next steps or deeper legal questions.
 
-1. Context Awareness:
-- Suggestions MUST be based on the latest user message + AI response.
-- Understand intent, tone, and topic before generating suggestions.
+2. SHORT & CLICKABLE:
+- 3 to 7 words maximum per suggestion.
+- Direct, action-oriented, natural user prompts.
 
-2. No Repetition:
-- Never repeat the same suggestions across messages.
-- Always generate fresh and unique suggestions.
+3. LANGUAGE:
+- Respond in the language appropriate for the user (${language || 'English'}).
 
-3. Conversation Forwarding:
-- Suggestions should help continue the conversation.
-- They must guide the user to the next logical step.
-
-4. Action-Oriented:
-- Each suggestion must feel clickable and actionable.
-- Use short, clear phrases (max 6-8 words).
-- If Mode is LEGAL_TOOLKIT, suggest specific legal follow-ups.
-
-5. Variety:
-- Mix different types:
-  - Clarification (e.g., "Explain in simple words")
-  - Expansion (e.g., "Give more examples")
-  - Action (e.g., "Create a sample case")
-  - Alternative (e.g., "Show another approach")
-
-6. Avoid Generic Suggestions:
-❌ "Tell me more"
-❌ "Explain again"
-❌ "Next"
-
-7. Personalization:
-- If input is small (like "hello"), suggest onboarding-style options.
-- If input is complex, suggest deep-dive or tools.
-
-8. Language:
-- Respond ENTIRELY in ${language}.
-
-9. Format Output STRICTLY:
-
-Return ONLY this JSON format:
-
+4. STRICT JSON FORMAT:
+Return ONLY a valid JSON object matching this schema:
 {
   "suggestions": [
     "Suggestion 1",
@@ -1156,25 +1412,37 @@ Return ONLY this JSON format:
   ]
 }
 
-No extra text.
+No markdown code fences, no extra text.
 
 INPUT CONTEXT:
-- User message: "${userMessage}"
-- Assistant response: "${aiResponse}"
-- Mode: ${mode}`;
+- Active Jurisdiction: ${isNepal ? 'Nepal' : countryName}
+- User Question: "${userMessage}"
+- Assistant Answer Excerpt: "${cleanAiExcerpt}"`;
 
         const response = await vertexService.AskVertexRaw(prompt, {
-            maxOutputTokens: 200,
-            temperature: 0.8,
-            modelOverride: 'gemini-2.5-flash'
+            maxOutputTokens: 1024,
+            temperature: 0.7,
+            modelOverride: 'gemini-2.5-flash',
+            isJson: true
         });
 
         const parsed = safeParseLLMJson(response, { suggestions: [] });
         const questions = parsed.suggestions || [];
-        return Array.isArray(questions) ? questions.slice(0, 5) : [];
+        if (Array.isArray(questions) && questions.length > 0) {
+            const cleaned = questions
+                .map(q => String(q || '').replace(/^[.\-*•\d\s]+/, '').replace(/\*\*/g, '').trim())
+                .filter(q => q.length > 3 && q.length < 100);
+            if (cleaned.length > 0) {
+                return cleaned.slice(0, 4);
+            }
+        }
+
+        // Contextual intelligent fallback
+        return getContextualFallbackSuggestions(userMessage, isNepal, countryName);
     } catch (error) {
         logger.error(`[RelatedQuestions] Error: ${error.message}`);
-        return [];
+        const isNepal = Boolean(jurisdiction?.isNepal || /nepal/i.test(typeof jurisdiction === 'string' ? jurisdiction : jurisdiction?.country || '') || /nepal|muluki/i.test(userMessage || ''));
+        return getContextualFallbackSuggestions(userMessage, isNepal, typeof jurisdiction === 'string' ? jurisdiction : jurisdiction?.country || 'India');
     }
 };
 

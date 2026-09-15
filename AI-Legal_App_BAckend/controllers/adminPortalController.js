@@ -13,6 +13,7 @@ import BugReport from '../models/BugReport.js';
 import FeatureRequest from '../models/FeatureRequest.js';
 import CrashLog from '../models/CrashLog.js';
 import Session from '../models/Session.js';
+import AppInstall from '../models/AppInstall.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { getIO } from '../utils/socket.js';
@@ -141,7 +142,7 @@ export const getAdminStats = async (req, res) => {
         const totalCreditsUsed = creditUsageData[0]?.totalUsed || 0;
         const storageUsed = Math.round(totalCases * 1.5 + contractsAnalyzed * 0.8) || 0; // in MB
 
-        // Real 7-day daily activity graph aggregated from MongoDB in parallel
+        // Real 7-day daily activity & downloads graph aggregated from MongoDB in parallel
         const dayPromises = [];
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
@@ -152,16 +153,29 @@ export const getAdminStats = async (req, res) => {
             nextD.setDate(nextD.getDate() + 1);
 
             const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+            const fullDate = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
 
             dayPromises.push(
                 Promise.all([
                     CreditLog.countDocuments({ createdAt: { $gte: d, $lt: nextD } }),
                     ChatSession.countDocuments({ createdAt: { $gte: d, $lt: nextD } }),
-                    User.countDocuments({ lastLogin: { $gte: d, $lt: nextD } })
-                ]).then(([cLogs, cSessions, uLogins]) => ({
-                    label: dayName,
-                    val: cLogs + cSessions + uLogins
-                }))
+                    User.countDocuments({ lastLogin: { $gte: d, $lt: nextD } }),
+                    User.countDocuments({ createdAt: { $gte: d, $lt: nextD } }),
+                    AppInstall.countDocuments({ installedAt: { $gte: d, $lt: nextD } })
+                ]).then(([cLogs, cSessions, uLogins, newUsers, newInstalls]) => {
+                    const downloads = newInstalls > 0 ? newInstalls : newUsers;
+                    return {
+                        label: dayName,
+                        fullDate,
+                        isToday: i === 0,
+                        val: downloads > 0 ? downloads : (cLogs + cSessions + uLogins),
+                        downloads: downloads,
+                        registeredUsers: newUsers,
+                        logins: uLogins,
+                        aiQueries: cSessions + cLogs,
+                        totalActivity: cLogs + cSessions + uLogins
+                    };
+                })
             );
         }
         const dailyActivity = await Promise.all(dayPromises);

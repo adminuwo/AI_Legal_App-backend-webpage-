@@ -936,7 +936,7 @@ export const getLegalPrompt = (toolKey, jurisdiction = null) => {
 - COURT SYSTEM: District Court (Jilla Adalat) -> High Court (Uchha Adalat) -> Supreme Court of Nepal (Pradhan Nyayalaya / Sarwoccha Adalat).
 - AUTHORITATIVE SOURCES: Nepal Law Commission (lawcommission.gov.np) and Supreme Court of Nepal.
 `;
-        } else {
+        } else if (country.toLowerCase() === 'india' || jurisdiction.countryCode === 'IN') {
             jurisdictionInstruction = `
 ━━━━━━━━━━━━━━━━━━━━━━━
 🇮🇳 ACTIVE LEGAL JURISDICTION: INDIA (${state || 'National Jurisdiction'})
@@ -950,6 +950,14 @@ export const getLegalPrompt = (toolKey, jurisdiction = null) => {
   * Indian Contract Act, 1872
   * Negotiable Instruments Act, 1881
 - COURT SYSTEM: District & Sessions Court -> High Court -> Supreme Court of India.
+`;
+        } else {
+            jurisdictionInstruction = `
+━━━━━━━━━━━━━━━━━━━━━━━
+🌐 ACTIVE LEGAL JURISDICTION: ${country.toUpperCase()} (${state ? state + ' Jurisdiction' : 'National Jurisdiction'})
+- You must analyze this legal matter STRICTLY within the legal framework of ${country}.
+- 🚨 ABSOLUTE PROHIBITION ON INDIAN STATUTES: Do NOT cite Bharatiya Nyaya Sanhita (BNS), Indian Penal Code (IPC), Bharatiya Nagarik Suraksha Sanhita (BNSS), CrPC, CPC, or Indian court decisions.
+- Apply solely the Constitution, statutory codes, regulations, acts, and binding judicial precedents of ${country}.
 `;
         }
     }

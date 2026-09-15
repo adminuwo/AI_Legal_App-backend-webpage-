@@ -1,0 +1,43 @@
+import express from 'express';
+import { verifyToken, isAdmin } from '../middleware/authorization.js';
+import {
+    getDownloadSummary,
+    getCountryDownloads,
+    getCountryDetails,
+    getDownloadTrends,
+    exportDownloadReport,
+    syncHistoricalInstalls
+} from '../controllers/downloadAnalyticsController.js';
+
+const router = express.Router();
+
+// Guard all admin analytics endpoints with verifyToken and isAdmin
+router.use(verifyToken, isAdmin);
+
+// 1. Dashboard summary KPIs
+router.get('/', getDownloadSummary);
+router.get('/summary', getDownloadSummary);
+
+// 2. Country-wise download table with search, sort, pagination
+router.get('/countries', getCountryDownloads);
+
+// 3. Country detail view & State/Region drill-down
+router.get('/countries/:country', getCountryDetails);
+
+// 4. Time-series install trend chart
+router.get('/trends', getDownloadTrends);
+
+// 5. Export report (JSON/CSV)
+router.get('/export', exportDownloadReport);
+
+// 6. Manual trigger to sync historical registered users into AppInstall telemetry
+router.post('/sync-historical', async (req, res) => {
+    try {
+        const result = await syncHistoricalInstalls();
+        return res.status(200).json({ success: true, ...result });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+export default router;

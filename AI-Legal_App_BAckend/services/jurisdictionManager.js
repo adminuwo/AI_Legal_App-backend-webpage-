@@ -19,11 +19,41 @@ import logger from "../utils/logger.js";
 const COUNTRY_MAP = {
     IN: 'India',
     NP: 'Nepal',
+    AM: 'Armenia',
     US: 'United States',
     GB: 'United Kingdom',
+    UK: 'United Kingdom',
     CA: 'Canada',
     AU: 'Australia',
-    AE: 'United Arab Emirates'
+    AE: 'United Arab Emirates',
+    DE: 'Germany',
+    FR: 'France',
+    SG: 'Singapore',
+    MY: 'Malaysia',
+    ZA: 'South Africa',
+    NZ: 'New Zealand',
+    JP: 'Japan',
+    KR: 'South Korea',
+    BR: 'Brazil',
+    RU: 'Russia',
+    IT: 'Italy',
+    ES: 'Spain',
+    NL: 'Netherlands',
+    CH: 'Switzerland',
+    SE: 'Sweden',
+    NO: 'Norway',
+    DK: 'Denmark',
+    FI: 'Finland',
+    IE: 'Ireland',
+    SA: 'Saudi Arabia',
+    QA: 'Qatar',
+    KW: 'Kuwait',
+    OM: 'Oman',
+    BD: 'Bangladesh',
+    LK: 'Sri Lanka',
+    PK: 'Pakistan',
+    BT: 'Bhutan',
+    MV: 'Maldives'
 };
 
 const NEPAL_PROVINCES = [
@@ -39,16 +69,30 @@ class JurisdictionManager {
         if (!userId) return;
         const uId = userId.toString();
         if (typeof jurisdictionData === 'string') {
+            const trimmed = jurisdictionData.trim();
+            const upper = trimmed.toUpperCase();
+            let code = 'GLOBAL';
+            if (trimmed.toLowerCase() === 'nepal' || upper === 'NP') code = 'NP';
+            else if (trimmed.toLowerCase() === 'india' || upper === 'IN') code = 'IN';
+            else if (trimmed.toLowerCase() === 'armenia' || upper === 'AM') code = 'AM';
+            else if (COUNTRY_MAP[upper]) code = upper;
+
             this.temporaryOverrides.set(uId, {
-                country: jurisdictionData,
+                country: COUNTRY_MAP[upper] || trimmed,
                 state: '',
-                countryCode: jurisdictionData.toLowerCase() === 'nepal' ? 'NP' : 'IN'
+                countryCode: code
             });
         } else if (jurisdictionData && typeof jurisdictionData === 'object') {
+            const countryName = jurisdictionData.country || 'India';
+            const countryCode = jurisdictionData.countryCode || 
+                (countryName.toLowerCase() === 'nepal' ? 'NP' : 
+                (countryName.toLowerCase() === 'india' ? 'IN' : 
+                (countryName.toLowerCase() === 'armenia' ? 'AM' : 'GLOBAL')));
+
             this.temporaryOverrides.set(uId, {
-                country: jurisdictionData.country || 'India',
+                country: countryName,
                 state: jurisdictionData.state || '',
-                countryCode: jurisdictionData.countryCode || (jurisdictionData.country === 'Nepal' ? 'NP' : 'IN')
+                countryCode
             });
         }
     }
@@ -156,16 +200,27 @@ class JurisdictionManager {
 
             if (explicitCountry && typeof explicitCountry === 'string' && explicitCountry.trim()) {
                 const trimmed = explicitCountry.trim();
-                // Normalize "IN India (IN)" or "NP Nepal (NP)" format if sent
-                if (trimmed.includes('Nepal') || trimmed.toUpperCase() === 'NP') {
+                const upper = trimmed.toUpperCase();
+                const cleanCode = (explicitCode || '').toUpperCase();
+
+                if (trimmed.toLowerCase().includes('nepal') || upper === 'NP') {
                     resolvedCountry = 'Nepal';
                     resolvedCode = 'NP';
-                } else if (trimmed.includes('India') || trimmed.toUpperCase() === 'IN') {
+                } else if (trimmed.toLowerCase().includes('india') || upper === 'IN') {
                     resolvedCountry = 'India';
                     resolvedCode = 'IN';
+                } else if (trimmed.toLowerCase().includes('armenia') || upper === 'AM') {
+                    resolvedCountry = 'Armenia';
+                    resolvedCode = 'AM';
+                } else if (COUNTRY_MAP[upper]) {
+                    resolvedCountry = COUNTRY_MAP[upper];
+                    resolvedCode = upper;
+                } else if (COUNTRY_MAP[cleanCode]) {
+                    resolvedCountry = COUNTRY_MAP[cleanCode];
+                    resolvedCode = cleanCode;
                 } else {
                     resolvedCountry = trimmed;
-                    resolvedCode = explicitCode || 'GLOBAL';
+                    resolvedCode = cleanCode || 'GLOBAL';
                 }
                 if (explicitState && typeof explicitState === 'string') {
                     resolvedState = explicitState.trim();
@@ -240,6 +295,7 @@ class JurisdictionManager {
         // Normalize country name and code
         const isNepal = (resolvedCountry.toLowerCase() === 'nepal' || resolvedCode === 'NP');
         const isIndia = (resolvedCountry.toLowerCase() === 'india' || resolvedCode === 'IN');
+        const isArmenia = (resolvedCountry.toLowerCase() === 'armenia' || resolvedCode === 'AM');
 
         if (isNepal) {
             resolvedCountry = 'Nepal';
@@ -247,33 +303,58 @@ class JurisdictionManager {
         } else if (isIndia) {
             resolvedCountry = 'India';
             resolvedCode = 'IN';
+        } else if (isArmenia) {
+            resolvedCountry = 'Armenia';
+            resolvedCode = 'AM';
         }
 
         const stateClean = resolvedState ? String(resolvedState).trim() : '';
         const jurisdictionType = isNepal
             ? (stateClean ? 'province' : 'national')
-            : (stateClean ? 'state' : 'federal');
+            : (isIndia ? (stateClean ? 'state' : 'federal') : (stateClean ? 'state' : 'national'));
 
         const label = stateClean ? `${resolvedCountry} — ${stateClean}` : resolvedCountry;
 
-        const authoritativeSources = isNepal
-            ? ['Nepal Law Commission (lawcommission.gov.np)', 'Supreme Court of Nepal (supremecourt.gov.np)', 'Ministry of Law, Justice and Parliamentary Affairs (molpa.gov.np)']
-            : ['India Code (indiacode.nic.in)', 'Supreme Court of India (sci.gov.in)', 'High Courts of India', 'The Gazette of India (egazette.gov.in)'];
+        let authoritativeSources = [];
+        if (isNepal) {
+            authoritativeSources = ['Nepal Law Commission (lawcommission.gov.np)', 'Supreme Court of Nepal (supremecourt.gov.np)', 'Ministry of Law, Justice and Parliamentary Affairs (molpa.gov.np)'];
+        } else if (isIndia) {
+            authoritativeSources = ['India Code (indiacode.nic.in)', 'Supreme Court of India (sci.gov.in)', 'High Courts of India', 'The Gazette of India (egazette.gov.in)'];
+        } else if (isArmenia) {
+            authoritativeSources = ['ARLIS Legal Information System (arlis.am)', 'Ministry of Justice of Armenia (moj.am)', 'Court of Cassation of Armenia (court.am)', 'Constitutional Court of Armenia (concourt.am)'];
+        } else if (resolvedCountry === 'United States' || resolvedCode === 'US') {
+            authoritativeSources = ['United States Code (law.cornell.edu/uscode)', 'Supreme Court of the United States (supremecourt.gov)', 'Federal Register (federalregister.gov)'];
+        } else if (resolvedCountry === 'United Kingdom' || resolvedCode === 'GB' || resolvedCode === 'UK') {
+            authoritativeSources = ['The National Archives Legislation (legislation.gov.uk)', 'Supreme Court of the UK (supremecourt.uk)', 'BAILII (bailii.org)'];
+        } else if (resolvedCountry === 'Canada' || resolvedCode === 'CA') {
+            authoritativeSources = ['Justice Laws Website (laws-lois.justice.gc.ca)', 'Supreme Court of Canada (scc-csc.ca)', 'CanLII (canlii.org)'];
+        } else if (resolvedCountry === 'Australia' || resolvedCode === 'AU') {
+            authoritativeSources = ['Federal Register of Legislation (legislation.gov.au)', 'High Court of Australia (hcourt.gov.au)', 'AustLII (austlii.edu.au)'];
+        } else if (resolvedCountry === 'United Arab Emirates' || resolvedCode === 'AE') {
+            authoritativeSources = ['UAE Federal Legislation (elaws.gov.ae)', 'Ministry of Justice (moj.gov.ae)', 'Dubai Courts (dc.gov.ae)'];
+        } else {
+            authoritativeSources = [
+                `Official Legal Portal & Gazette of ${resolvedCountry}`,
+                `Apex Supreme Court / Court of Cassation of ${resolvedCountry}`,
+                `Ministry of Justice of ${resolvedCountry}`
+            ];
+        }
 
         const contextObj = {
             country: resolvedCountry,
-            countryCode: resolvedCode || (isNepal ? 'NP' : (isIndia ? 'IN' : 'GLOBAL')),
+            countryCode: resolvedCode || (isNepal ? 'NP' : (isIndia ? 'IN' : (isArmenia ? 'AM' : 'GLOBAL'))),
             state: stateClean,
-            province: isNepal ? stateClean : '',
+            province: isNepal ? stateClean : (isArmenia ? stateClean : ''),
             jurisdictionType,
             legalSystem: isNepal ? 'Nepal Legal System' : (isIndia ? 'Indian Legal System' : `${resolvedCountry} Legal System`),
             isNepal,
             isIndia,
+            isArmenia,
             isComparative,
             source: resolutionSource,
             label,
             authoritativeSources,
-            profile: this.getJurisdictionProfile({ isNepal, isIndia, country: resolvedCountry, countryCode: resolvedCode })
+            profile: this.getJurisdictionProfile({ isNepal, isIndia, isArmenia, country: resolvedCountry, countryCode: resolvedCode })
         };
 
         logger.info(`[JurisdictionResolver] Target: ${label} | Code: ${contextObj.countryCode} | PrioritySource: ${resolutionSource} | Comparative: ${isComparative}`);
@@ -284,9 +365,16 @@ class JurisdictionManager {
      * Complete statutory and procedural profile for any jurisdiction.
      */
     getJurisdictionProfile(jurisdictionOrContext) {
-        const isNepal = typeof jurisdictionOrContext === 'object'
-            ? (jurisdictionOrContext?.isNepal || jurisdictionOrContext?.countryCode === 'NP' || String(jurisdictionOrContext?.country || '').toLowerCase() === 'nepal')
-            : String(jurisdictionOrContext || '').toLowerCase().includes('nepal');
+        const countryStr = typeof jurisdictionOrContext === 'object'
+            ? String(jurisdictionOrContext?.country || '').toLowerCase()
+            : String(jurisdictionOrContext || '').toLowerCase();
+        const countryCode = typeof jurisdictionOrContext === 'object'
+            ? String(jurisdictionOrContext?.countryCode || '').toUpperCase()
+            : '';
+
+        const isNepal = countryStr === 'nepal' || countryCode === 'NP';
+        const isIndia = countryStr === 'india' || countryCode === 'IN';
+        const isArmenia = countryStr === 'armenia' || countryCode === 'AM';
 
         if (isNepal) {
             return {
@@ -315,28 +403,87 @@ class JurisdictionManager {
             };
         }
 
+        if (isArmenia) {
+            return {
+                country: 'Armenia',
+                countryCode: 'AM',
+                currency: 'AMD',
+                currencySymbol: '֏',
+                capitalCity: 'Yerevan',
+                constitution: 'Constitution of the Republic of Armenia (1995, as amended 2015)',
+                criminalCode: 'Criminal Code of the Republic of Armenia (2021)',
+                criminalProcedure: 'Criminal Procedure Code of the Republic of Armenia (2021)',
+                civilCode: 'Civil Code of the Republic of Armenia (1998)',
+                civilProcedure: 'Civil Procedure Code of the Republic of Armenia (2018)',
+                evidenceAct: 'Procedural Evidentiary Standards of the Republic of Armenia',
+                electronicTransactionsAct: 'Law of the Republic of Armenia on Electronic Documents and Electronic Digital Signature',
+                commercialLaws: 'Law on Joint Stock Companies, Law on Limited Liability Companies, Law on Bankruptcy',
+                policeReportName: 'Police Crime Report / Report of Crime (Հաղորդում հանցագործության մասին)',
+                courtHierarchy: [
+                    'First Instance Court of General Jurisdiction (Առաջին ատյանի դատարան)',
+                    'Court of Appeal (Վերաքննիչ դատարան)',
+                    'Court of Cassation of the Republic of Armenia (Վճռաբեկ դատարան)',
+                    'Constitutional Court of Armenia (Սահմանադրական դատարան)'
+                ],
+                apexCourt: 'Court of Cassation of the Republic of Armenia',
+                citationFormat: 'ARLIS Official Acts / Court of Cassation Decisions (datalex.am)',
+                authoritativePortal: 'ARLIS Legal Database (www.arlis.am)'
+            };
+        }
+
+        if (isIndia) {
+            return {
+                country: 'India',
+                countryCode: 'IN',
+                currency: 'INR',
+                currencySymbol: '₹',
+                capitalCity: 'New Delhi',
+                constitution: 'Constitution of India, 1950',
+                criminalCode: 'Bharatiya Nyaya Sanhita, 2023 (BNS) [IPC for pre-July 2024]',
+                criminalProcedure: 'Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS) [CrPC for pre-July 2024]',
+                civilCode: 'Code of Civil Procedure, 1908 (CPC) & Indian Contract Act, 1872',
+                civilProcedure: 'Code of Civil Procedure, 1908 (CPC)',
+                evidenceAct: 'Bharatiya Sakshya Adhiniyam, 2023 (BSA) [Indian Evidence Act, 1872]',
+                commercialLaws: 'Companies Act 2013, Negotiable Instruments Act 1881, Consumer Protection Act 2019',
+                policeReportName: 'First Information Report (FIR)',
+                courtHierarchy: [
+                    'District & Sessions Court',
+                    'High Court',
+                    'Supreme Court of India'
+                ],
+                apexCourt: 'Supreme Court of India',
+                citationFormat: 'SCC / AIR / SCR',
+                authoritativePortal: 'India Code (www.indiacode.nic.in) / SCI (sci.gov.in)'
+            };
+        }
+
+        // Global Sovereign Country Profile
+        const countryNameCap = typeof jurisdictionOrContext === 'object' && jurisdictionOrContext?.country
+            ? jurisdictionOrContext.country
+            : 'National Jurisdiction';
+
         return {
-            country: 'India',
-            countryCode: 'IN',
-            currency: 'INR',
-            currencySymbol: '₹',
-            capitalCity: 'New Delhi',
-            constitution: 'Constitution of India, 1950',
-            criminalCode: 'Bharatiya Nyaya Sanhita, 2023 (BNS) [IPC for pre-July 2024]',
-            criminalProcedure: 'Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS) [CrPC for pre-July 2024]',
-            civilCode: 'Code of Civil Procedure, 1908 (CPC) & Indian Contract Act, 1872',
-            civilProcedure: 'Code of Civil Procedure, 1908 (CPC)',
-            evidenceAct: 'Bharatiya Sakshya Adhiniyam, 2023 (BSA) [Indian Evidence Act, 1872]',
-            commercialLaws: 'Companies Act 2013, Negotiable Instruments Act 1881, Consumer Protection Act 2019',
-            policeReportName: 'First Information Report (FIR)',
+            country: countryNameCap,
+            countryCode: countryCode || 'GLOBAL',
+            currency: 'Local Currency',
+            currencySymbol: '¤',
+            capitalCity: 'National Capital',
+            constitution: `Constitution of ${countryNameCap}`,
+            criminalCode: `Criminal / Penal Code of ${countryNameCap}`,
+            criminalProcedure: `Code of Criminal Procedure of ${countryNameCap}`,
+            civilCode: `Civil Code of ${countryNameCap}`,
+            civilProcedure: `Code of Civil Procedure of ${countryNameCap}`,
+            evidenceAct: `Law of Evidence of ${countryNameCap}`,
+            commercialLaws: `Commercial & Company Laws of ${countryNameCap}`,
+            policeReportName: 'Official Police Complaint / Crime Incident Report',
             courtHierarchy: [
-                'District & Sessions Court',
-                'High Court',
-                'Supreme Court of India'
+                'First Instance Court / District Court',
+                'Court of Appeal / High Court',
+                'Supreme Court / Apex Judiciary'
             ],
-            apexCourt: 'Supreme Court of India',
-            citationFormat: 'SCC / AIR / SCR',
-            authoritativePortal: 'India Code (www.indiacode.nic.in) / SCI (sci.gov.in)'
+            apexCourt: `Supreme Court of ${countryNameCap}`,
+            citationFormat: `Official Gazette / Law Reports of ${countryNameCap}`,
+            authoritativePortal: `Ministry of Justice of ${countryNameCap}`
         };
     }
 
@@ -349,74 +496,6 @@ class JurisdictionManager {
             ...(typeof reqOrOptions === 'object' ? reqOrOptions : {})
         });
         return resolved.state ? `${resolved.state}, ${resolved.country}` : resolved.country;
-    }
-
-    /**
-     * Generates a strict, jurisdiction-specific system prompt block.
-     * Guaranteed to prevent Indian legal contamination in Nepal and vice-versa.
-     */
-    getJurisdictionPrompt(jurisdictionContext) {
-        const ctx = typeof jurisdictionContext === 'object' && jurisdictionContext !== null
-            ? jurisdictionContext
-            : {
-                country: String(jurisdictionContext || 'India'),
-                isNepal: String(jurisdictionContext || '').toLowerCase().includes('nepal'),
-                isIndia: String(jurisdictionContext || '').toLowerCase().includes('india') || !jurisdictionContext,
-                isComparative: false,
-                label: String(jurisdictionContext || 'India')
-            };
-
-        if (ctx.isComparative) {
-            return `
-=========================================
-🌐 ACTIVE LEGAL JURISDICTION: COMPARATIVE LAW ANALYSIS (${ctx.label})
-=========================================
-You are a senior comparative law scholar. The user has explicitly requested a comparative analysis between multiple legal systems (including Nepal and India).
-1. Clearly differentiate between the statutory frameworks of each country.
-2. For Nepal: cite the Constitution of Nepal 2072, Muluki Criminal Code 2074, Muluki Civil Code 2074, and Nepal Supreme Court precedents.
-3. For India: cite the Bharatiya Nyaya Sanhita 2023 (BNS), BNSS 2023, BSA 2023 / IPC, CrPC, and Supreme Court of India precedents.
-4. Present differences side-by-side or in clean Markdown comparison tables.
-`;
-        }
-
-        if (ctx.isNepal) {
-            const provincePart = ctx.state ? `\nProvince: ${ctx.state}` : '';
-            return `
-=========================================
-🇳🇵 ACTIVE LEGAL JURISDICTION: NEPAL${provincePart.toUpperCase()}
-=========================================
-You are a senior legal counsel in Nepal, specializing in the Constitution of Nepal, 2072, the Muluki Codes of 2074, Parliamentary Acts, Nepal Law Commission authorities, and judgments of the Supreme Court of Nepal.
-
-STRICT NEPAL JURISDICTION RULES (MANDATORY & ABSOLUTE):
-1. EXCLUSIVE APPLICATION OF NEPAL LAW:
-   - Apply SOLELY the laws, statutes, acts, regulations, and precedents of NEPAL.
-   - Core Statutes: Constitution of Nepal 2072 (2015), Muluki Criminal Code 2074 (National Penal Code), Muluki Criminal Procedure Code 2074, Muluki Civil Code 2074, Muluki Civil Procedure Code 2074, Evidence Act 2031, Companies Act 2063, Banking Offence and Punishment Act 2064, Negotiable Instruments Act 2034.
-2. 🚨 ZERO FOREIGN STATUTE LEAKAGE (STRICT INDIAN LAW BAN):
-   - You are STRICTLY FORBIDDEN from citing or applying Indian legislation, including Bharatiya Nyaya Sanhita (BNS), Bharatiya Nagarik Suraksha Sanhita (BNSS), Bharatiya Sakshya Adhiniyam (BSA), Indian Penal Code (IPC), Code of Criminal Procedure (CrPC), Indian Evidence Act (IEA), Civil Procedure Code (CPC), or Indian Supreme Court / High Court decisions.
-   - Do NOT assume Indian legal doctrines, section numbers, or limitation periods apply to Nepal.
-3. PROVINCIAL / APPLICABLE LEVEL:
-   - Nepal is governed under federal, provincial (7 provinces), and local jurisdiction.${ctx.state ? ` The user has selected ${ctx.state} Province.` : ''}
-4. AUTHORITATIVE SOURCES:
-   - Authoritative sources: Nepal Law Commission (www.lawcommission.gov.np), Supreme Court of Nepal (supremecourt.gov.np), Nepal Gazette (Rajpatra).
-5. ANTI-HALLUCINATION & VERIFICATION MANDATE:
-   - Never fabricate statute titles, section numbers, amendment years, or case citations.
-   - If current authoritative status cannot be verified for an issue under Nepal law, state clearly: "Current authoritative information could not be verified under Nepal Law Commission records. Please consult verified gazette notifications."
-`;
-        }
-
-        // Default: India
-        const statePart = ctx.state ? `\nState/Territory: ${ctx.state}` : '';
-        return `
-=========================================
-🇮🇳 ACTIVE LEGAL JURISDICTION: INDIA${statePart.toUpperCase()}
-=========================================
-You are a senior advocate in India specializing in the Constitution of India, Bharatiya Nyaya Sanhita 2023 (BNS), Bharatiya Nagarik Suraksha Sanhita 2023 (BNSS), Bharatiya Sakshya Adhiniyam 2023 (BSA), transitional criminal laws (IPC, CrPC, Evidence Act), Civil Procedure Code (CPC), and state-specific statutory amendments.
-
-STRICT INDIA JURISDICTION RULES:
-1. Apply Indian statutory codes, High Court precedents, and Supreme Court of India rulings.
-2. For current criminal matters: reference BNS 2023, BNSS 2023, BSA 2023 with transition clarity for pre-July 1, 2024 offences under IPC/CrPC.${ctx.state ? `\n3. Apply state amendments and High Court rulings relevant to ${ctx.state}.` : ''}
-4. ZERO FABRICATED CITATIONS: Cite only genuine statutes and verified precedents. Never invent section numbers.
-`;
     }
 
     /**

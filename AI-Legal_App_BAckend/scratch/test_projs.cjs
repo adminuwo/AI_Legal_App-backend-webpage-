@@ -7,20 +7,39 @@ async function run() {
   const user = await mongoose.connection.db.collection('users').findOne({ email: 'aditi@uwo24.com' });
   console.log('User:', user._id, user.email, 'Role:', user.role);
 
-  const uId = user._id;
-  const query = {
-    $or: [
-      { userId: uId },
-      { userId: uId.toString() },
-      { assignedMembers: uId },
-      { assignedMembers: uId.toString() },
-      { assignedTo: user.email },
-      { members: { $elemMatch: { email: user.email } } }
-    ]
-  };
-  const list = await mongoose.connection.db.collection('projects').find(query).toArray();
-  console.log('Found projects:', list.length);
-  list.forEach(p => console.log('Case:', p._id.toString(), '| Name:', p.name, '| isLegalCase:', p.isLegalCase));
+  const total = await mongoose.connection.db.collection('users').countDocuments();
+  console.log('Total Users:', total);
+
+  const countries = await mongoose.connection.db.collection('users').aggregate([
+    { $group: { _id: { $ifNull: ['$country', 'India'] }, count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]).toArray();
+  console.log('Countries breakdown:', JSON.stringify(countries, null, 2));
+
+  const states = await mongoose.connection.db.collection('users').aggregate([
+    { $match: { $or: [{ state: { $exists: true, $ne: '' } }, { 'legalJurisdiction.state': { $exists: true, $ne: '' } }] } },
+    { $group: { _id: { $ifNull: ['$legalJurisdiction.state', '$state'] }, count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]).toArray();
+  console.log('States breakdown:', JSON.stringify(states, null, 2));
+
+  const platforms = await mongoose.connection.db.collection('users').aggregate([
+    { $group: { _id: '$deviceOS', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ]).toArray();
+  console.log('Platforms breakdown:', JSON.stringify(platforms, null, 2));
+
+  const dateStats = await mongoose.connection.db.collection('users').aggregate([
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { _id: -1 } },
+    { $limit: 10 }
+  ]).toArray();
+  console.log('Recent 10 days user creation:', JSON.stringify(dateStats, null, 2));
   process.exit(0);
 }
 run().catch(e => { console.error(e); process.exit(1); });

@@ -13,6 +13,32 @@ export const isFreeTierUser = async (userId) => {
     if (user.email && user.email.toLowerCase() === 'admin@uwo24.com') return false;
     if (user.founderStatus) return false;
 
+    // Convee-Education Linked Organization Institutional Access
+    try {
+        const userEmail = (user.email || '').toLowerCase().trim();
+        if (userEmail) {
+            const Organization = (await import('../models/Organization.js')).default;
+            const orgRecord = await Organization.findOne({
+                $or: [
+                    { studentEmail: userEmail },
+                    { email: userEmail },
+                    { userEmail: userEmail }
+                ],
+                status: { $in: ['active', 'Active'] }
+            }).lean();
+
+            if (orgRecord) {
+                const orgSubscribed = (
+                    orgRecord.plan?.subscribed !== false &&
+                    orgRecord.status === 'active' &&
+                    (!orgRecord.plan?.expiryDate || new Date(orgRecord.plan.expiryDate) > new Date()) &&
+                    (!orgRecord.subscriptionExpiry || new Date(orgRecord.subscriptionExpiry) > new Date())
+                );
+                if (orgSubscribed) return false;
+            }
+        }
+    } catch (e) {}
+
     const sub = await Subscription.findOne({
         userId,
         subscriptionStatus: 'active'

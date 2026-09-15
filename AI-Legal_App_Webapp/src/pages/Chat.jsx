@@ -7,7 +7,7 @@ import { logo } from '../constants';
 import { renderAsync } from 'docx-preview';
 import * as XLSX from 'xlsx';
 import { Menu, Transition, Dialog, Listbox, Portal } from '@headlessui/react';
-import { generateChatResponse, generateFollowUpPrompts } from '../services/geminiService';
+import { generateChatResponse, generateFollowUpPrompts, getContextualLegalSuggestions } from '../services/geminiService';
 import { chatStorageService } from '../services/chatStorageService';
 import { useLanguage } from '../context/LanguageContext';
 import { useRecoilState } from 'recoil';
@@ -5283,13 +5283,9 @@ ${documentConvertActive ? `### DOCUMENT CONVERSION MODE ENABLED (CRITICAL):
               }
             }
 
-            // Fallback to minimal generic suggestions only if absolutely necessary
+            // Fallback to contextual legal suggestions if absolutely necessary
             if (finalSuggestions.length === 0 && !currentCase?.isLegalCase) {
-              finalSuggestions = [
-                "Tell me more about this",
-                "Give me a practical example",
-                "What are the next steps?"
-              ];
+              finalSuggestions = getContextualLegalSuggestions(userMsg.content);
             }
 
             // --- LEGAL CASE CRM OVERRIDE (Specific to Legal Folder context) ---
@@ -8114,20 +8110,44 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
 
 
                               {/* Integrated Smart Suggestions (Only for the latest AI response) */}
-                              {idx === messages.length - 1 && (msg.role === 'model' || msg.role === 'assistant') &&
-                                suggestions.length > 0 && !isLoading && !typingMessageId && (
+                              {idx === messages.length - 1 && (msg.role === 'model' || msg.role === 'assistant') && !isLoading && !typingMessageId && (() => {
+                                const activeSuggestions = (msg.suggestions && Array.isArray(msg.suggestions) && msg.suggestions.length > 0)
+                                  ? msg.suggestions
+                                  : ((suggestions && Array.isArray(suggestions) && suggestions.length > 0)
+                                    ? suggestions
+                                    : (() => {
+                                        const lastUserQuery = [...messages].reverse().find(m => m.role === 'user')?.content || '';
+                                        return getContextualLegalSuggestions(lastUserQuery);
+                                      })());
+
+                                if (!activeSuggestions || activeSuggestions.length === 0) return null;
+
+                                return (
                                   <div className="suggestions-container animate-in fade-in slide-in-from-bottom-3 duration-500">
-                                    {suggestions.map((item, index) => (
-                                      <button
-                                        key={index}
-                                        onClick={() => handleSuggestionClick(item)}
-                                        className="suggestion-btn"
-                                      >
-                                        {item}
-                                      </button>
-                                    ))}
+                                    {activeSuggestions.map((item, index) => {
+                                      const cleanItem = String(item || '')
+                                        .replace(/^[.\-*•\d\s]+/, '')
+                                        .replace(/\*\*/g, '')
+                                        .replace(/\*/g, '')
+                                        .replace(/^Hello\s+[^,]+,?\s*/i, '')
+                                        .replace(/^Hi\s+[^,]+,?\s*/i, '')
+                                        .trim();
+
+                                      if (!cleanItem || cleanItem.length < 3) return null;
+
+                                      return (
+                                        <button
+                                          key={index}
+                                          onClick={() => handleSuggestionClick(cleanItem)}
+                                          className="suggestion-btn"
+                                        >
+                                          {cleanItem}
+                                        </button>
+                                      );
+                                    })}
                                   </div>
-                                )}
+                                );
+                              })()}
 
 
                             </div>
