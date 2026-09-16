@@ -85,25 +85,43 @@ Understand the user's expertise level and topic preference implicitly from their
 
         logger.info(`[OPENAI] Sending text request to gpt-4o...`);
 
-        const response = await axios.post(
-            'https://api.openai.com/v1/chat/completions',
-            {
-                model: options.model || 'gpt-4o',
-                messages: messages,
-                max_completion_tokens: options.max_tokens || 4096,
-                temperature: options.temperature || 0.7,
-                response_format: options.jsonMode ? { type: 'json_object' } : undefined
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                timeout: options.timeout || 90000 // 90s timeout
-            }
-        );
+        let response = null;
+        let attempts = 0;
+        const maxAttempts = 3;
 
-        if (response.data && response.data.choices && response.data.choices[0]) {
+        while (attempts < maxAttempts) {
+            attempts++;
+            try {
+                response = await axios.post(
+                    'https://api.openai.com/v1/chat/completions',
+                    {
+                        model: options.model || 'gpt-4o',
+                        messages: messages,
+                        max_completion_tokens: options.max_tokens || 4096,
+                        temperature: options.temperature || 0.7,
+                        response_format: options.jsonMode ? { type: 'json_object' } : undefined
+                    },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        timeout: options.timeout || 90000 // 90s timeout
+                    }
+                );
+                break;
+            } catch (err) {
+                const isRateLimit = err.response?.status === 429 || (err.message && err.message.includes('Rate limit'));
+                if (isRateLimit && attempts < maxAttempts) {
+                    logger.warn(`[OPENAI] 429 TPM Rate Limit reached. Retrying in 4000ms (Attempt ${attempts}/${maxAttempts})...`);
+                    await new Promise(r => setTimeout(r, 4000));
+                } else {
+                    throw err;
+                }
+            }
+        }
+
+        if (response && response.data && response.data.choices && response.data.choices[0]) {
             const text = response.data.choices[0].message.content;
             logger.info(`[OPENAI] Response received successfully (${text.length} chars).`);
             if (options.returnSources) {

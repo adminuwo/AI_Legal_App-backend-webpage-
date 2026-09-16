@@ -950,6 +950,50 @@ export const getLegalPrompt = (toolKey, jurisdiction = null) => {
   * Indian Contract Act, 1872
   * Negotiable Instruments Act, 1881
 - COURT SYSTEM: District & Sessions Court -> High Court -> Supreme Court of India.
+- CURRENCY: Indian Rupees (INR / ₹).
+`;
+        } else if (country.toLowerCase().includes('united states') || country.toLowerCase() === 'usa' || country.toLowerCase() === 'us' || jurisdiction.countryCode === 'US') {
+            jurisdictionInstruction = `
+━━━━━━━━━━━━━━━━━━━━━━━
+🇺🇸 ACTIVE LEGAL JURISDICTION: UNITED STATES (${state ? state + ' Jurisdiction' : 'Federal / National Jurisdiction'})
+- You must analyze this legal matter STRICTLY within the legal framework of the UNITED STATES.
+- 🚨 ZERO FOREIGN STATUTE LEAKAGE: Strictly forbidden from citing Indian statutes (BNS, IPC, CrPC, CPC), UK Acts, or foreign codes.
+- CORE STATUTES TO APPLY:
+  * Constitution of the United States of America (1787)
+  * Title 18, United States Code (U.S.C.) & State Penal Codes (e.g. California Penal Code)
+  * Uniform Commercial Code (UCC) & State Civil Codes (e.g. California Civil Code)
+  * Federal Rules of Civil Procedure (FRCP) & Federal Rules of Evidence (FRE)
+- COURT SYSTEM: US District Courts / State Superior Courts -> US Circuit Courts of Appeals -> Supreme Court of the United States (SCOTUS).
+- CURRENCY: US Dollars (USD / $).
+`;
+        } else if (country.toLowerCase().includes('united kingdom') || country.toLowerCase() === 'uk' || country.toLowerCase() === 'gb' || jurisdiction.countryCode === 'GB' || jurisdiction.countryCode === 'UK') {
+            jurisdictionInstruction = `
+━━━━━━━━━━━━━━━━━━━━━━━
+🇬🇧 ACTIVE LEGAL JURISDICTION: UNITED KINGDOM (${state || 'England & Wales'})
+- You must analyze this legal matter STRICTLY within the legal framework of the UNITED KINGDOM (England & Wales).
+- 🚨 ZERO FOREIGN STATUTE LEAKAGE: Strictly forbidden from citing Indian statutes (BNS, IPC, CrPC, CPC) or US Codes.
+- CORE STATUTES TO APPLY:
+  * English Common Law of Contract, Tort, and Commercial Equity
+  * Fraud Act 2006, Theft Act 1968, Bills of Exchange Act 1882, Companies Act 2006
+  * Civil Procedure Rules 1998 (CPR)
+- COURT SYSTEM: County Court / Magistrates' Court -> Crown Court / High Court of Justice -> Court of Appeal -> Supreme Court of the United Kingdom (UKSC).
+- CURRENCY: British Pounds (GBP / £).
+`;
+        } else if (country.toLowerCase().includes('united arab emirates') || country.toLowerCase() === 'uae' || country.toLowerCase() === 'ae' || jurisdiction.countryCode === 'AE') {
+            jurisdictionInstruction = `
+━━━━━━━━━━━━━━━━━━━━━━━
+🇦🇪 ACTIVE LEGAL JURISDICTION: UNITED ARAB EMIRATES (${state ? state + ' Courts / UAE Federal' : 'UAE Federal Jurisdiction'})
+- You must analyze this legal matter STRICTLY within the legal framework of the UNITED ARAB EMIRATES.
+- 🚨 ZERO FOREIGN STATUTE LEAKAGE: Strictly forbidden from citing Indian statutes (BNS, IPC, CrPC, NI Act 138) or foreign codes.
+- CORE STATUTES TO APPLY:
+  * Constitution of the United Arab Emirates (1971)
+  * Federal Decree-Law No. 31 of 2021 (Crimes and Penalties Law)
+  * Federal Decree-Law No. 42 of 2022 (Civil Procedure Law)
+  * Federal Decree-Law No. 50 of 2022 (Commercial Transactions Law)
+  * Federal Decree-Law No. 14 of 2020 (Decriminalization of Cheques / Direct Execution)
+  * Federal Law No. 5 of 1985 (Civil Transactions Law)
+- COURT SYSTEM: Court of First Instance -> Court of Appeal -> Court of Cassation / Federal Supreme Court (or DIFC/ADGM for common law free zones).
+- CURRENCY: UAE Dirhams (AED / د.إ).
 `;
         } else {
             jurisdictionInstruction = `

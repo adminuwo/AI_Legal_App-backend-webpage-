@@ -398,14 +398,20 @@ To perform a conversion, you MUST respond with a JSON action strictly in this fo
 }
 Maintain any text response outside the JSON block.`;
         } else if (mode === 'LEGAL_TOOLKIT' || mode === 'NORMAL_CHAT' || mode === 'CHAT' || !mode) {
-            const applicableStatutes = resolvedJurisdiction.isNepal
-                ? "Constitution of Nepal 2072, Muluki Civil Code 2074, Muluki Criminal Code 2074, Muluki Civil/Criminal Procedure Codes 2074, Evidence Act 2031, Banking Offence Act 2064"
-                : "Constitution of India, BNS, BNSS, BSA, IPC, CrPC, CPC, Indian Evidence Act, Contract Act";
-            const refusalCountryLaw = resolvedJurisdiction.isNepal ? "laws of Nepal" : "Indian laws";
+            const countryName = resolvedJurisdiction.country || 'the active jurisdiction';
+            const countryProfile = resolvedJurisdiction.profile || {};
+            const applicableStatutes = [
+                countryProfile.constitution,
+                countryProfile.criminalCode,
+                countryProfile.civilCode,
+                countryProfile.commercialLaws
+            ].filter(Boolean).join(', ') || `governing statutes of ${countryName}`;
+            const refusalCountryLaw = `laws of ${countryName}`;
 
             toolRestrictions = `\n\n### MODE: LEGAL SYSTEM ACTIVE — STRICT DOMAIN LOCK ⚖️
 - You are a Senior Legal Assistant specialist EXCLUSIVELY for legal matters under the active jurisdiction (${resolvedJurisdiction.country || 'Applicable Jurisdiction'}).
 - 🚨 ABSOLUTE RESTRICTION: You MUST ONLY respond to queries related to: law, legal acts, ${applicableStatutes} sections, court procedures, legal documents, contracts, FIR / Jaheri Darkhast, rights, legal strategy, affidavits, legal notices, evidence, case analysis, or any legal guidance.
+- 🌍 CROSS-BORDER & EXPLICIT JURISDICTION INSTRUCTION: When the user asks about the laws of a specific country, state, or foreign jurisdiction (e.g. US, California, UK, UAE, India, Nepal), answer authoritatively and comprehensively according to that requested jurisdiction's legal system. Do NOT refuse international or cross-border legal questions as outside the legal domain.
 - 🌐 MULTILINGUAL & LANGUAGE COMMAND MANDATE:
   - If the user requests a language or language switch (e.g. "Marathi me smjhao", "Explain in Sanskrit", "Explain in Tamil", "Translate into Gujarati", "कन्नडदल्लि हेळि", "अब से हिंदी में जवाब दो", "नेपालीमा सम्झाउनुहोस्"), you MUST IMMEDIATELY accept and fulfill the request in ${resolvedLang.language}.
   - DO NOT reject or output refusal messages when the user specifies a language preference.
@@ -816,7 +822,7 @@ STRICT MANDATE FOR THIS TURN:
                     let openAiSources = [];
                     if (isFreshnessRequired) {
                         try {
-                            const searchRes = await executeTargetedLegalSearch(freshnessDecision.searchQuery);
+                            const searchRes = await executeTargetedLegalSearch(freshnessDecision.searchQuery, { jurisdiction: resolvedJurisdiction });
                             openAiSources = searchRes.sources || [];
                             groundedSearchContext = formatGroundingContext(openAiSources, searchRes.summary);
                             logger.info(`[AI-Service] OpenAI Grounding: Retrieved ${openAiSources.length} sources`);
@@ -910,7 +916,7 @@ STRICT MANDATE FOR THIS TURN:
                             let groundedSearchContext = '';
                             if (isFreshnessRequired) {
                                 try {
-                                    const searchRes = await executeTargetedLegalSearch(freshnessDecision.searchQuery);
+                                    const searchRes = await executeTargetedLegalSearch(freshnessDecision.searchQuery, { jurisdiction: resolvedJurisdiction });
                                     fallbackSources = searchRes.sources || [];
                                     groundedSearchContext = formatGroundingContext(fallbackSources, searchRes.summary);
                                     logger.info(`[LEGAL-FRESHNESS] SEARCH_REQUIRED=true | ENGINE=tavily_fallback | SOURCES=${fallbackSources.length} | STATUS=fallback_grounded`);

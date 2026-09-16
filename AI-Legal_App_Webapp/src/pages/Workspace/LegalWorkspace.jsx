@@ -5656,7 +5656,23 @@ const LegalWorkspace = () => {
           PERSONA_INSTRUCTION += `\n### USER CUSTOM INSTRUCTIONS (HIGHEST PRIORITY):\n${pStyle.customInstructions}\n`;
         }
 
-        // 6. PARENTAL / SAFETY
+        // 6. JURISDICTION & SAFETY
+        PERSONA_INSTRUCTION += `\n### JURISDICTION & LEGAL CONTEXT:\n${(() => {
+          const c = (localStorage.getItem('ai_legal_selected_country') || localStorage.getItem('legal_country') || '').toLowerCase();
+          const code = (localStorage.getItem('legal_country_code') || '').toUpperCase();
+          if (c.includes('nepal') || code === 'NP') {
+            return '- Explain statutory provisions under Nepal law (Muluki Civil Code 2074, Muluki Criminal Code 2074, Evidence Act 2031, Banking Offence Act 2064, Constitution of Nepal 2072).\n- MANDATORY JURISDICTION: NEPAL. Strictly advise under Nepal statutes and NKP precedents. Zero Indian statutory leakage (no BNS/BNSS/BSA/IPC/CrPC). Currency: NPR (रू).';
+          } else if (c.includes('united states') || c.includes('america') || code === 'US') {
+            return '- Explain statutory provisions under United States law (US Code, Federal Rules of Civil/Criminal Procedure, US Constitution, SCOTUS / State precedents).\n- MANDATORY JURISDICTION: UNITED STATES. Strictly advise under US Federal and State statutes. Currency: USD ($).';
+          } else if (c.includes('united kingdom') || code === 'GB' || code === 'UK') {
+            return '- Explain statutory provisions under United Kingdom law (Acts of Parliament, English Common Law, UK Supreme Court / High Court of Justice precedents).\n- MANDATORY JURISDICTION: UNITED KINGDOM. Currency: GBP (£).';
+          } else if (c.includes('emirates') || c.includes('uae') || code === 'AE') {
+            return '- Explain statutory provisions under United Arab Emirates law (UAE Federal Laws, Civil Transactions Law, Commercial Companies Law, DIFC/ADGM rules).\n- MANDATORY JURISDICTION: UNITED ARAB EMIRATES. Currency: AED (د.إ).';
+          } else {
+            return '- Explain statutory provisions under Indian law (BNS 2023, BNSS 2023, BSA 2023, IPC, CrPC, CPC, Constitution of India, Supreme Court of India precedents).\n- MANDATORY JURISDICTION: INDIA. Currency: INR (₹).';
+          }
+        })()}\n`;
+
         if (pParental.contentFilter) {
           PERSONA_INSTRUCTION += `\n### SAFETY MODE: STRICT\n- Absolutely NO mature, violent, or explicit content.\n- If user asks for such, politley decline.\n`;
         }

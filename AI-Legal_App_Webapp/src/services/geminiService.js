@@ -9,7 +9,11 @@ export const generateChatResponse = async (history, currentMessage, systemInstru
         const token = userData?.token || (typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null);
         const userJurisdiction = userData?.legalJurisdiction?.country || userData?.jurisdiction || userData?.country || 'India';
         const userState = userData?.legalJurisdiction?.state || userData?.state || '';
-        const userCountryCode = userData?.legalJurisdiction?.countryCode || userData?.countryCode || (userJurisdiction === 'Nepal' ? 'NP' : 'IN');
+        const userCountryCode = userData?.legalJurisdiction?.countryCode || userData?.countryCode || 
+            (userJurisdiction === 'Nepal' ? 'NP' : 
+            (userJurisdiction === 'United States' ? 'US' : 
+            (userJurisdiction === 'United Kingdom' ? 'GB' : 
+            (userJurisdiction === 'United Arab Emirates' ? 'AE' : 'IN'))));
 
         const headers = {
             'X-Device-Fingerprint': getDeviceFingerprint(),
@@ -152,6 +156,7 @@ export const generateChatResponse = async (history, currentMessage, systemInstru
 /**
  * Generates context-aware follow-up prompts for a given user query.
  * Useful for "Smart Suggestions" after AI-powered legal research or chat.
+ */
 export const getContextualLegalSuggestions = (queryText) => {
     const text = String(queryText || '').toLowerCase();
     let storedCountry = '';
@@ -288,7 +293,10 @@ export const generateFollowUpPrompts = async (prompt, type = 'chat') => {
 
         const country = isNepal ? 'Nepal' : (storedCountry || userData?.legalJurisdiction?.country || userData?.country || 'India');
         const state = storedState || userData?.legalJurisdiction?.state || userData?.state || '';
-        const countryCode = isNepal ? 'NP' : (country === 'India' ? 'IN' : 'US');
+        const countryCode = isNepal ? 'NP' : 
+            (country.toLowerCase().includes('united states') || country.toLowerCase().includes('america') ? 'US' :
+            (country.toLowerCase().includes('united kingdom') ? 'GB' :
+            (country.toLowerCase().includes('emirates') || country.toLowerCase().includes('uae') ? 'AE' : 'IN')));
 
         const systemInstruction = `You are a smart suggestion engine for a legal AI assistant.
 Your job is to generate exactly 3 highly relevant, context-aware, and ACTION-ORIENTED follow-up legal questions or next steps strictly based on the user's inquiry.

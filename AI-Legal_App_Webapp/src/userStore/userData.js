@@ -52,6 +52,26 @@ export const setUserData = (data) => {
   // Update primary user
   localStorage.setItem("user", JSON.stringify(finalData));
 
+  // Sync country and legal jurisdiction flags into dedicated localStorage keys
+  const country = finalData.country || finalData.legalJurisdiction?.country;
+  const countryCode = finalData.countryCode || finalData.legalJurisdiction?.countryCode;
+  const state = finalData.state || finalData.legalJurisdiction?.state;
+  const lang = finalData.personalizations?.general?.language;
+
+  if (country) {
+    localStorage.setItem('ai_legal_selected_country', country);
+    localStorage.setItem('legal_country', country);
+  }
+  if (countryCode) {
+    localStorage.setItem('legal_country_code', countryCode);
+  }
+  if (state) {
+    localStorage.setItem('legal_state', state);
+  }
+  if (lang) {
+    localStorage.setItem('ai_legal_lang', lang);
+  }
+
   // Update account list
   const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
   const existingIndex = accounts.findIndex(a => a.email === finalData.email);
