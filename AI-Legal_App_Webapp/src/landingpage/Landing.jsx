@@ -666,10 +666,10 @@ export default function Landing() {
               {/* 2 Primary Action Buttons */}
               <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
                 <button
-                  onClick={() => handleProtectedAction('/dashboard')}
+                  onClick={() => navigate(isAuthenticated ? '/dashboard' : '/signup')}
                   className="px-7 py-3.5 bg-gradient-to-b from-[#D4AF37] to-[#B88B2A] hover:brightness-105 active:scale-98 text-[#111111] text-sm font-black rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer group"
                 >
-                  <span>Go to Dashboard</span>
+                  <span>{isAuthenticated ? 'Go to Dashboard' : 'Start Free Trial'}</span>
                   <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
                 </button>
                 <button
@@ -681,6 +681,17 @@ export default function Landing() {
                   <span>Download App</span>
                 </button>
               </div>
+
+              {/* Conversion Trust Badge Microcopy */}
+              <div className="flex flex-wrap items-center gap-2.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400 pt-1">
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                  <CheckCircle2 size={13} /> Free Trial Included
+                </span>
+                <span>•</span>
+                <span>No Credit Card Required</span>
+                <span>•</span>
+                <span>Instant Setup</span>
+              </div>
             </div>
 
             {/* RIGHT COLUMN: DASHBOARD SCREENSHOT (NO ENTER OVERLAY) */}
@@ -690,7 +701,7 @@ export default function Landing() {
               
               {/* macOS-style Window Frame */}
               <div 
-                onClick={() => handleProtectedAction('/dashboard')}
+                onClick={() => navigate(isAuthenticated ? '/dashboard' : '/signup')}
                 className="relative rounded-2xl sm:rounded-3xl bg-[#0B0F19] p-2 sm:p-3 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
                 title="Click to launch AI LEGAL Dashboard"
               >

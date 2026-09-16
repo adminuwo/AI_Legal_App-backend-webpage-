@@ -36,8 +36,8 @@ export default function PublicBlog() {
       author: 'AI LEGAL™ Editorial Board',
       keywords: ['About AI Legal', 'Zero Hallucination', 'Supreme Court', 'High Court', 'Mobile App'],
       tags: ['About AI Legal', 'Zero Hallucination', 'Supreme Court', 'High Court', 'Mobile App'],
-      image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80',
-      coverImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80',
+      image: '/images/blog_about_platform.jpg',
+      coverImage: '/images/blog_about_platform.jpg',
       summary: 'An introduction to AI Legal™ — built specifically for Indian legal practitioners, advocates, law students, and law firms. Grounded in 3.8+ Crore Indian court judgments with seamless mobile apps for iOS and Android.',
       content: `AI Legal™ is India's next-generation legal intelligence and research platform, engineered from the ground up to solve the most pressing pain points of modern Indian litigation, academic research, and chamber management.
 
@@ -74,8 +74,8 @@ AI Legal™ is designed as a unified ecosystem accessible on high-resolution des
       author: 'Legal Practice & Chamber Advisory Group',
       keywords: ['User Roles', 'Advocate Suite', 'Law Students', 'Law Firms', 'Chamber Management'],
       tags: ['User Roles', 'Advocate Suite', 'Law Students', 'Law Firms', 'Chamber Management'],
-      image: 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=1200&q=80',
-      coverImage: 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=1200&q=80',
+      image: '/images/blog_chamber_roles.jpg',
+      coverImage: '/images/blog_chamber_roles.jpg',
       summary: 'How AI Legal™ customizes its tools, research depth, and drafting engines across three dedicated user profiles: Independent Advocates, Law Students, and Multi-Partner Law Firms.',
       content: `In the legal domain, a one-size-fits-all software tool fails to address real-world courtroom and academic demands. A solo advocate arguing a bail petition requires immediate statutory relief arguments, a law student preparing for a national moot court competition needs deep jurisprudential history, and a commercial law firm requires multi-associate collaboration with audit trails.
 
@@ -121,8 +121,8 @@ The **Law Firm** profile provides an enterprise-grade collaborative suite for bo
       author: 'AI LEGAL™ Engineering & Legal-Tech Team',
       keywords: ['Features', 'Semantic Search', 'Evidence Analyst', 'Argument Builder', 'BNSS Conversion'],
       tags: ['Features', 'Semantic Search', 'Evidence Analyst', 'Argument Builder', 'BNSS Conversion'],
-      image: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80',
-      coverImage: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80',
+      image: '/images/blog_feature_guide.jpg',
+      coverImage: '/images/blog_feature_guide.jpg',
       summary: 'Explore the full capability matrix of AI Legal™ — from Semantic Case Search across 3.8 Cr+ precedents to Courtroom Argument Builder, Contract Risk Auditor, and BNS Correlator.',
       content: `The AI Legal™ platform brings together advanced natural language understanding, vector retrieval-augmented generation (RAG), and verified Indian case repositories into an integrated litigation workspace.
 
