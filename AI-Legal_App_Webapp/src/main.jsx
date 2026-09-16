@@ -13,6 +13,14 @@ import { BrowserRouter, useLocation } from 'react-router-dom';
 
 import ErrorBoundary from './Components/ErrorBoundary';
 
+// ─── Auto-Recover from Deployment Stale Chunks ───
+if (typeof window !== 'undefined') {
+  window.addEventListener('vite:preloadError', (event) => {
+    console.warn('[Vite] Dynamic chunk preload failed due to a new deployment. Auto-refreshing...');
+    window.location.reload();
+  });
+}
+
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
   || import.meta.env.AISA_GOOGLE_CLIENT_ID
   || (typeof window !== 'undefined' && window._env_?.AISA_GOOGLE_CLIENT_ID)
