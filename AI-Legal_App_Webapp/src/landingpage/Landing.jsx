@@ -699,34 +699,12 @@ export default function Landing() {
               {/* Ambient Back Glow */}
               <div className="absolute -inset-1.5 bg-gradient-to-r from-[#B88B2A]/25 via-[#D4AF37]/15 to-[#B88B2A]/25 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 transition duration-500 -z-10" />
               
-              {/* macOS-style Window Frame */}
+              {/* Dashboard Preview Frame */}
               <div 
                 onClick={() => navigate(isAuthenticated ? '/dashboard' : '/signup')}
-                className="relative rounded-2xl sm:rounded-3xl bg-[#0B0F19] p-2 sm:p-3 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
+                className="relative rounded-2xl sm:rounded-3xl bg-[#0B0F19] p-2 sm:p-2.5 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
                 title="Click to launch AI LEGAL Dashboard"
               >
-                {/* Window Title Bar */}
-                <div className="flex items-center justify-between px-3 py-2 bg-[#080C14] rounded-t-xl border-b border-slate-800/80 mb-2 select-none">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
-                    <span className="hidden sm:inline-block ml-2 text-[10px] font-semibold text-slate-400">
-                      AI LEGAL™ Litigation Command Center
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900 border border-slate-700/60 text-[10px] text-slate-400 font-mono">
-                    <Lock size={9} className="text-[#B88B2A]" />
-                    <span className="text-slate-300">app.ailegal.in/dashboard</span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 text-[9px] font-bold text-emerald-400">
-                    <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="hidden sm:inline">Live Court Sync</span>
-                  </div>
-                </div>
-
                 {/* The Actual Dashboard Image (Screenshot 3 - Clean, no overlay) */}
                 <div className="relative overflow-hidden rounded-xl bg-[#0B0F19]">
                   <img 

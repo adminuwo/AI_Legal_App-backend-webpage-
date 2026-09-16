@@ -590,49 +590,77 @@ export default function PublicFeatures() {
         </AnimatePresence>
       </header>
 
-      {/* Hero Section — Restored to Features Tab's Original Layout with Clean Home Dashboard Colors */}
+      {/* Hero Section — 2-Column Layout matching Home Page with Advocate AI Tools Suite Frame */}
       <section 
         id="hero" 
-        className="relative overflow-hidden pt-14 pb-12 sm:pt-20 sm:pb-16 border-b border-slate-200/80 dark:border-slate-800/80 bg-[#F8FAFC] dark:bg-[#070A12] bg-[radial-gradient(#CBD5E1_1.25px,transparent_1.25px)] dark:bg-[radial-gradient(rgba(184,139,42,0.18)_1.25px,transparent_1.25px)] bg-[size:24px_24px]"
+        className="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-24 border-b border-slate-200/80 dark:border-slate-800/80 bg-[#F8FAFC] dark:bg-[#070A12] bg-[radial-gradient(#CBD5E1_1.25px,transparent_1.25px)] dark:bg-[radial-gradient(rgba(184,139,42,0.18)_1.25px,transparent_1.25px)] bg-[size:24px_24px]"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-4xl space-y-6">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest uppercase text-[#B38628] dark:text-amber-400">
-              <span className="w-4 h-[2px] bg-[#B88B2A] inline-block" />
-              THE AI LEGAL™ LITIGATION SUITE
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+            
+            {/* LEFT COLUMN: TEXT & CALLS TO ACTION */}
+            <div className="lg:col-span-6 text-left space-y-5">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest uppercase text-[#B38628] dark:text-amber-400">
+                <span className="w-4 h-[2px] bg-[#B88B2A] inline-block" />
+                THE AI LEGAL™ LITIGATION SUITE
+              </div>
+
+              <h1 className="text-3xl sm:text-5xl lg:text-[46px] font-black text-[#0F172A] dark:text-white tracking-tight leading-[1.14]">
+                All Your Legal Work,<br />
+                <span className="text-[#B38628] dark:text-amber-400">In One Intelligent Platform.</span>
+              </h1>
+
+              <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                From case research and judgment analysis to court drafting and argument practice — everything Indian advocates need in one seamless workspace. Explore each feature below with interactive live demos.
+              </p>
+
+              {/* Stats Badges — Clean Styling */}
+              <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-slate-200/80 dark:border-slate-800 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
+                  6 products, one place
+                </div>
+                <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-slate-200/80 dark:border-slate-800 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
+                  Every feature, a <span className="text-[#B38628] dark:text-amber-400 font-bold">live demo</span>
+                </div>
+                <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-slate-200/80 dark:border-slate-800 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
+                  SC • 25 HCs • 30+ tribunals
+                </div>
+              </div>
+
+              {/* Hero CTA Button */}
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => handleCta('/signup')}
+                  className="px-7 py-3.5 rounded-xl text-sm font-black text-[#111111] bg-gradient-to-b from-[#D4AF37] to-[#B88B2A] hover:brightness-105 active:scale-98 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/25"
+                >
+                  Start your free trial
+                </button>
+              </div>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl font-black text-[#0F172A] dark:text-white tracking-tight leading-[1.12]">
-              All Your Legal Work,<br />
-              <span className="text-[#B38628] dark:text-amber-400">In One Intelligent Platform.</span>
-            </h1>
-
-            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed">
-              From case research and judgment analysis to court drafting and argument practice — everything Indian advocates need in one seamless workspace. Explore each feature below with interactive live demos.
-            </p>
-
-            {/* Stats Badges — Clean Home Styling */}
-            <div className="flex flex-wrap items-center gap-3 pt-1">
-              <div className="px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-slate-200/80 dark:border-slate-800 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
-                6 products, one place
-              </div>
-              <div className="px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-slate-200/80 dark:border-slate-800 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
-                Every feature, a <span className="text-[#B38628] dark:text-amber-400 font-bold">live demo</span>
-              </div>
-              <div className="px-3.5 py-1.5 rounded-lg bg-white dark:bg-[#0B1120] border border-slate-200/80 dark:border-slate-800 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 shadow-2xs">
-                SC • 25 HCs • 30+ tribunals
-              </div>
-            </div>
-
-            {/* Hero CTA Button — Matching Home Gold Style */}
-            <div className="pt-2">
-              <button
-                onClick={() => handleCta('/signup')}
-                className="px-7 py-3.5 rounded-xl text-sm font-black text-[#111111] bg-gradient-to-b from-[#D4AF37] to-[#B88B2A] hover:brightness-105 active:scale-98 transition-all cursor-pointer shadow-md shadow-[#B88B2A]/25"
+            {/* RIGHT COLUMN: ADVOCATE AI TOOLS SUITE SCREENSHOT (IN SAME MACOS WINDOW FRAME AS HOME) */}
+            <div className="lg:col-span-6 relative group mt-6 lg:mt-0">
+              {/* Ambient Back Glow */}
+              <div className="absolute -inset-1.5 bg-gradient-to-r from-[#B88B2A]/25 via-[#D4AF37]/15 to-[#B88B2A]/25 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 transition duration-500 -z-10" />
+              
+              {/* Advocate AI Tools Suite Frame */}
+              <div 
+                onClick={() => navigate(isAuthenticated ? '/dashboard/tools' : '/signup')}
+                className="relative rounded-2xl sm:rounded-3xl bg-[#0B0F19] p-2 sm:p-2.5 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
+                title="Click to explore AI Legal Tools Suite"
               >
-                Start your free trial
-              </button>
+                {/* The Actual Advocate AI Tools Suite Image */}
+                <div className="relative overflow-hidden rounded-xl bg-[#0B0F19]">
+                  <img 
+                    src="/assets/ai-legal-tools-suite.png" 
+                    alt="AI LEGAL™ Advocate AI Tools Suite" 
+                    className="w-full h-auto object-cover rounded-xl border border-slate-800/50 shadow-inner block"
+                    loading="eager"
+                  />
+                </div>
+              </div>
             </div>
+
           </div>
         </div>
       </section>
