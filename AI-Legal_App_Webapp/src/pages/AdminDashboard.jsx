@@ -37,16 +37,16 @@ export const DATE_RANGE_OPTIONS = [
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
-  { id: 'judgments', label: 'Posted Judgements', icon: Scale },
   { id: 'users', label: 'Users', icon: Users },
+  { id: 'downloads', label: 'Downloads & Installs', icon: Download },
   { id: 'billing', label: 'Billing', icon: CreditCard },
   { id: 'plans', label: 'Plans', icon: Package },
+  { id: 'judgments', label: 'Posted Judgements', icon: Scale },
   { id: 'coupons', label: 'Coupons', icon: Ticket },
   { id: 'addons', label: 'Add-on Requests', icon: PlusCircle },
   { id: 'features', label: 'Requests', icon: Lightbulb },
   { id: 'bugs', label: 'Bugs', icon: Bug },
   { id: 'jurisdiction', label: 'Jurisdiction', icon: Globe },
-  { id: 'downloads', label: 'Downloads & Installs', icon: Download },
   { id: 'linked-orgs', label: 'Linked Organization (via Convee-Education)', icon: Building2 },
   { id: 'settings', label: 'Settings', icon: Settings },
   { id: 'rag-files', label: 'RAG Files', icon: FileText }
@@ -622,7 +622,22 @@ export default function AdminDashboard() {
   }, [activeTab]);
 
   // --- Users List & Dynamic Telemetry Counts ---
-  const filteredUsers = usersList;
+  const isConveeUser = (u) => {
+    if (!u) return false;
+    const plan = String(u.currentPlan || u.subscription?.plan || '').toLowerCase();
+    const paymentId = String(u.subscription?.paymentId || '').toLowerCase();
+    const gateway = String(u.subscription?.gateway || '').toLowerCase();
+    const email = String(u.email || '').toLowerCase().trim();
+    if (plan.includes('convee')) return true;
+    if (paymentId.includes('convee')) return true;
+    if (gateway.includes('institutional') || gateway.includes('convee')) return true;
+    if (email.endsWith('@demo.edu') || email.endsWith('@cnlu.ac.in')) return true;
+    return false;
+  };
+
+  const filteredUsers = useMemo(() => {
+    return (Array.isArray(usersList) ? usersList : []).filter(u => !isConveeUser(u));
+  }, [usersList]);
 
   const emailDomainCounts = useMemo(() => {
     if (usersCounts?.domains) {

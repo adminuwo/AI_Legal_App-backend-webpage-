@@ -8336,7 +8336,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
         </AnimatePresence>
         <form
           onSubmit={handleSendMessage}
-          className="relative w-full flex flex-col transition-all duration-300 p-1 z-[1002] aisa-chat-input-wrapper bg-white ] border border-slate-200/60 rounded-[28px] sm:rounded-[32px] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-visible"
+          className="relative w-full flex flex-col transition-all duration-300 p-1 z-[1002] aisa-chat-input-wrapper bg-white dark:bg-zinc-800 border border-slate-200/60 dark:border-zinc-700/60 rounded-[28px] sm:rounded-[32px] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-visible"
         >
           {/* Internal File Preview Area */}
           {(filePreviews.length > 0 || longTextPreview) && (
@@ -10567,8 +10567,15 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                               </div>
                             </div>
 
-                            {/* Centered Chat Input Card - Shifted slightly down for better mobile ergonomics */}
-                            <div className="w-full pointer-events-auto mt-3 sm:mt-5">
+                            {/* Centered Chat Input Card - Shifted down with Permanent Legal Advisory Notice */}
+                            <div className="w-full pointer-events-auto mt-6 sm:mt-9 space-y-2.5 sm:space-y-3 px-1 sm:px-0">
+                              {/* ChatGPT-style Permanent Legal Disclaimer */}
+                              <div className="flex items-center justify-center text-center px-3 sm:px-4">
+                                <p className="text-[10px] sm:text-[11px] font-normal text-slate-500 dark:text-zinc-400 select-none leading-relaxed tracking-normal max-w-lg">
+                                  AI output is informational support, not a substitute for professional legal advice.
+                                </p>
+                              </div>
+
                               {renderInputForm()}
                             </div>
 
@@ -10757,8 +10764,13 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
           )}
         </AnimatePresence>        {/* Unified Chat Input Container */}
         {location.pathname !== '/dashboard/cases' && location.pathname !== '/dashboard' && legalView !== 'DASHBOARD' && legalView !== 'PRECEDENTS' && !activeCaseId && messages.length > 0 && (
-          <div className={`w-full shrink-0 bg-slate-50 sm:bg-white border-t border-slate-100 px-4 py-4 relative z-[1001] ${(tglState.sidebarOpen && window.innerWidth < 1024) ? 'hidden' : ''}`}>
-            <div className="max-w-4xl mx-auto w-full">
+          <div className={`w-full shrink-0 bg-slate-50 sm:bg-white dark:bg-[#0d0e16] border-t border-slate-100 dark:border-zinc-800 px-3 sm:px-4 pt-2 pb-3 sm:pb-4 relative z-[1001] ${(tglState.sidebarOpen && window.innerWidth < 1024) ? 'hidden' : ''}`}>
+            <div className="max-w-4xl mx-auto w-full space-y-1.5">
+              <div className="flex items-center justify-center text-center px-2">
+                <p className="text-[9.5px] sm:text-[10.5px] font-normal text-slate-500 dark:text-zinc-400 select-none leading-tight">
+                  AI output is informational support, not a substitute for professional legal advice.
+                </p>
+              </div>
               {renderInputForm()}
             </div>
           </div>

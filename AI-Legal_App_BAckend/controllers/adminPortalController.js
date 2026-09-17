@@ -27,9 +27,62 @@ let adminStatsCache = null;
 let adminStatsCacheTime = 0;
 const STATS_CACHE_TTL = 25 * 1000; // 25 seconds
 
+// In-memory cache for Convee organization exclusion filter
+let conveeExclusionCache = null;
+let conveeExclusionCacheTime = 0;
+const CONVEE_CACHE_TTL = 30 * 1000; // 30 seconds
+
+// Helper: Fetch Convee-Education linked organization emails & exclusion criteria
+export const getConveeExclusionFilter = async (force = false) => {
+    if (!force && conveeExclusionCache && (Date.now() - conveeExclusionCacheTime < CONVEE_CACHE_TTL)) {
+        return conveeExclusionCache;
+    }
+    try {
+        const orgDocs = await Organization.find({}).select('studentEmail email userEmail officialEmail').lean();
+        const emails = new Set();
+        for (const o of orgDocs) {
+            if (o.studentEmail) emails.add(o.studentEmail.toLowerCase().trim());
+            if (o.email) emails.add(o.email.toLowerCase().trim());
+            if (o.userEmail) emails.add(o.userEmail.toLowerCase().trim());
+            if (o.officialEmail) emails.add(o.officialEmail.toLowerCase().trim());
+        }
+        const emailList = Array.from(emails).filter(Boolean);
+        const filter = {
+            $and: [
+                ...(emailList.length > 0 ? [{ email: { $nin: emailList } }] : []),
+                { 'subscription.paymentId': { $not: /^CONVEE/i } },
+                { 'subscription.gateway': { $not: /institutional|convee/i } },
+                { 'subscription.plan': { $not: /convee/i } }
+            ]
+        };
+        conveeExclusionCache = filter;
+        conveeExclusionCacheTime = Date.now();
+        return filter;
+    } catch (e) {
+        console.warn('[getConveeExclusionFilter]', e.message);
+        return {
+            $and: [
+                { 'subscription.paymentId': { $not: /^CONVEE/i } },
+                { 'subscription.gateway': { $not: /institutional|convee/i } },
+                { 'subscription.plan': { $not: /convee/i } }
+            ]
+        };
+    }
+};
+
+// Helper: Build a non-Convee user MongoDB query
+export const buildNonConveeUserQuery = (conveeFilter, additionalQuery = {}) => {
+    const baseConditions = [...(conveeFilter?.$and || [])];
+    if (additionalQuery && Object.keys(additionalQuery).length > 0) {
+        baseConditions.push(additionalQuery);
+    }
+    return baseConditions.length > 0 ? { $and: baseConditions } : {};
+};
+
 // Helper: Broadcast real-time refresh to all connected admin clients
 export const broadcastAdminRefresh = (type, data) => {
     adminStatsCache = null; // Invalidate cache on mutations
+    conveeExclusionCache = null; // Invalidate Convee exclusion cache on mutations
     try {
         const io = getIO();
         io.emit('admin:refresh', { type, data });
@@ -63,7 +116,7 @@ export const getAdminStats = async (req, res) => {
 
         const sandboxUsers = await User.find({
             $or: [
-                { email: { $regex: /privaterelay\.appleid\.com|appleid\.com|sandbox|john\.apple/i } },
+                { email: { $regex: /privaterelay\.appleid\.com|appleid\.com|sandbox|john\.apple|@ailegal\.app/i } },
                 { name: { $regex: /john apple|sandbox|test user/i } }
             ]
         }).select('_id').lean();
@@ -77,6 +130,8 @@ export const getAdminStats = async (req, res) => {
             isSandbox: { $ne: true },
             isTest: { $ne: true }
         };
+
+        const conveeFilter = await getConveeExclusionFilter(forceRefresh);
 
         const [
             totalUsers,
@@ -100,11 +155,24 @@ export const getAdminStats = async (req, res) => {
             courtPrepSessions,
             apiUsage
         ] = await Promise.all([
-            User.countDocuments(),
-            User.countDocuments({ lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } }),
-            User.countDocuments({ lastLogin: { $gte: new Date(Date.now() - 5 * 60 * 1000) } }),
-            User.countDocuments({ 'subscription.plan': { $exists: true, $nin: ['FREE', 'Free', 'free', '', null] } }),
-            Subscription.countDocuments({ tier: { $exists: true, $nin: ['FREE', 'Free', 'free', '', null] }, status: 'active' }),
+            User.countDocuments(buildNonConveeUserQuery(conveeFilter, sandboxUserIds.length > 0 ? { _id: { $nin: sandboxUserIds } } : {})),
+            User.countDocuments(buildNonConveeUserQuery(conveeFilter, { 
+                lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+                ...(sandboxUserIds.length > 0 ? { _id: { $nin: sandboxUserIds } } : {})
+            })),
+            User.countDocuments(buildNonConveeUserQuery(conveeFilter, { 
+                lastLogin: { $gte: new Date(Date.now() - 5 * 60 * 1000) },
+                ...(sandboxUserIds.length > 0 ? { _id: { $nin: sandboxUserIds } } : {})
+            })),
+            User.countDocuments(buildNonConveeUserQuery(conveeFilter, { 
+                'subscription.plan': { $exists: true, $nin: ['FREE', 'Free', 'free', '', null] },
+                ...(sandboxUserIds.length > 0 ? { _id: { $nin: sandboxUserIds } } : {})
+            })),
+            Subscription.countDocuments({ 
+                tier: { $exists: true, $nin: ['FREE', 'Free', 'free', '', null] }, 
+                status: 'active',
+                ...(sandboxUserIds.length > 0 ? { userId: { $nin: sandboxUserIds }, accountId: { $nin: sandboxUserIds } } : {})
+            }),
             Payment.aggregate([
                 { $match: { ...realPaymentMatch, createdAt: { $gte: todayStart } } },
                 { $group: { _id: null, total: { $sum: '$amount' } } }
@@ -144,7 +212,7 @@ export const getAdminStats = async (req, res) => {
         const totalCreditsUsed = creditUsageData[0]?.totalUsed || 0;
         const storageUsed = Math.round(totalCases * 1.5 + contractsAnalyzed * 0.8) || 0; // in MB
 
-        // Real 7-day daily activity & downloads graph aggregated from MongoDB in parallel
+        // Real 7-day daily activity & downloads graph aggregated from MongoDB in parallel (Convee excluded)
         const dayPromises = [];
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
@@ -161,8 +229,8 @@ export const getAdminStats = async (req, res) => {
                 Promise.all([
                     CreditLog.countDocuments({ createdAt: { $gte: d, $lt: nextD } }),
                     ChatSession.countDocuments({ createdAt: { $gte: d, $lt: nextD } }),
-                    User.countDocuments({ lastLogin: { $gte: d, $lt: nextD } }),
-                    User.countDocuments({ createdAt: { $gte: d, $lt: nextD } }),
+                    User.countDocuments(buildNonConveeUserQuery(conveeFilter, { lastLogin: { $gte: d, $lt: nextD } })),
+                    User.countDocuments(buildNonConveeUserQuery(conveeFilter, { createdAt: { $gte: d, $lt: nextD } })),
                     AppInstall.countDocuments({ installedAt: { $gte: d, $lt: nextD } })
                 ]).then(([cLogs, cSessions, uLogins, newUsers, newInstalls]) => {
                     const downloads = newInstalls > 0 ? newInstalls : newUsers;
@@ -365,6 +433,13 @@ export const getAllUsers = async (req, res) => {
 
         const query = {};
 
+        // Exclude Convee organization students and accounts from the general users directory
+        const conveeFilter = await getConveeExclusionFilter();
+        if (conveeFilter?.$and?.length > 0) {
+            query.$and = query.$and || [];
+            query.$and.push(...conveeFilter.$and);
+        }
+
         // 1. Date Range Filter (Default: today)
         const boundaries = getDateRangeBoundaries(dateRange);
         if (boundaries) {
@@ -430,7 +505,7 @@ export const getAllUsers = async (req, res) => {
             User.countDocuments(basePlatformQuery),
             User.countDocuments({ ...basePlatformQuery, deviceOS: 'android' }),
             User.countDocuments({ ...basePlatformQuery, deviceOS: 'ios' }),
-            User.estimatedDocumentCount().catch(() => User.countDocuments({}))
+            User.countDocuments(conveeFilter || {})
         ]);
 
         // 5. Apply Platform Filter to main query

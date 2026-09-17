@@ -18,6 +18,7 @@ import PublicFooter from '../Components/PublicFooter';
 import PrivacyPolicyModal from './PolicyModals/PrivacyPolicyModal';
 import TermsOfServiceModal from './PolicyModals/TermsOfServiceModal';
 import CookiePolicyModal from './PolicyModals/CookiePolicyModal';
+import DisclaimerModal from './PolicyModals/DisclaimerModal';
 import DownloadAppModal from '../Components/DownloadAppModal';
 
 // Verified Real Store Reviews (Google Play & Apple App Store for AI LEGAL™)
@@ -229,6 +230,7 @@ export default function Landing() {
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isCookiePolicyModalOpen, setIsCookiePolicyModalOpen] = useState(false);
+  const [isDisclaimerModalOpen, setIsDisclaimerModalOpen] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
 
   // Sync URL policy modals
@@ -236,10 +238,12 @@ export default function Landing() {
     if (location.pathname === '/privacy-policy') setIsPrivacyModalOpen(true);
     else if (location.pathname === '/terms' || location.pathname === '/terms-of-service') setIsTermsModalOpen(true);
     else if (location.pathname === '/cookie-policy') setIsCookiePolicyModalOpen(true);
+    else if (location.pathname === '/disclaimer') setIsDisclaimerModalOpen(true);
     else {
       setIsPrivacyModalOpen(false);
       setIsTermsModalOpen(false);
       setIsCookiePolicyModalOpen(false);
+      setIsDisclaimerModalOpen(false);
     }
   }, [location.pathname]);
 
@@ -1499,6 +1503,7 @@ export default function Landing() {
       <PrivacyPolicyModal isOpen={isPrivacyModalOpen} onClose={() => setIsPrivacyModalOpen(false)} />
       <TermsOfServiceModal isOpen={isTermsModalOpen} onClose={() => setIsTermsModalOpen(false)} />
       <CookiePolicyModal isOpen={isCookiePolicyModalOpen} onClose={() => setIsCookiePolicyModalOpen(false)} />
+      <DisclaimerModal isOpen={isDisclaimerModalOpen} onClose={() => setIsDisclaimerModalOpen(false)} />
       
       {/* App Download Modal (Google Play & Apple App Store) */}
       <DownloadAppModal isOpen={isDownloadModalOpen} onClose={() => setIsDownloadModalOpen(false)} />

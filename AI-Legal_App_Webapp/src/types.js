@@ -54,6 +54,7 @@ export const AppRoute = {
   PRIVACY_POLICY: "/privacy-policy",
   TERMS_OF_SERVICE: "/terms",
   COOKIE_POLICY: "/cookie-policy",
+  DISCLAIMER: "/disclaimer",
   ADMIN_DASHBOARD: "/dashboard/admin",
   MOBILE_APP: "/dashboard/mobile-app",
 };

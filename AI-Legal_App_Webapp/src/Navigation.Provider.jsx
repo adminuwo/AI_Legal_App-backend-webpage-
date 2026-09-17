@@ -30,6 +30,7 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import PrivacyPolicy from './landingpage/PrivacyPolicy.jsx';
 import TermsOfService from './landingpage/TermsOfService.jsx';
 import CookiePolicy from './landingpage/CookiePolicy.jsx';
+import Disclaimer from './landingpage/Disclaimer.jsx';
 import LegalPricingPortal from './pages/LegalPricingPortal.jsx';
 import EnterprisePage from './pages/EnterprisePage.jsx';
 
@@ -470,6 +471,7 @@ const NavigateProvider = () => {
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/cookie-policy" element={<CookiePolicy />} />
+        <Route path="/disclaimer" element={<Disclaimer />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/legal-pricing" element={<LegalPricingPortal />} />
         <Route path="/subscription-checkout" element={<LegalPricingPortal />} />
