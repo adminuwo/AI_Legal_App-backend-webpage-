@@ -1430,7 +1430,7 @@ export default function AdminDashboard() {
         ragUsed: data?.ragUsed ?? false,
         sourceCount: data?.sourceCount || (data?.sources?.length || 0),
         groundingStatus: data?.groundingStatus || 'Direct Legal Engine Analysis',
-        model: data?.model || 'gemini-2.5-flash',
+        model: data?.model || 'gemini-3.5-flash',
         sources: data?.sources || []
       });
       toast.success('Sandbox test executed successfully.');

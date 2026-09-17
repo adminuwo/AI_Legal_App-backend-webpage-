@@ -79,9 +79,7 @@ if (projectId) {
 
 import { getConfig, getFullSystemInstruction } from '../services/configService.js';
 
-// Model name - Set strictly to user's explicit request
-
-export const modelName = "gemini-2.5-flash";
+export const modelName = "gemini-3.5-flash";
 
 /**
  * Dynamic System Instruction Getter

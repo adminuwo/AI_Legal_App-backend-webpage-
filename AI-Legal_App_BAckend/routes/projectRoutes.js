@@ -81,7 +81,7 @@ Rules:
         const aiResponseText = await AskVertexRaw(prompt, {
             maxOutputTokens: 600,
             temperature: 0.1,
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             isJson: true
         });
 

@@ -106,173 +106,6 @@ export const chat = async (message, activeDocContent = null, options = {}) => {
         const langContext = resolvedLang.systemInstruction;
         const userLanguage = resolvedLang.language;
 
-        // PRIORITY -1: COMPANY, FOUNDER & PLATFORM IDENTITY QUERY FAST-PATH (UWO FOR COMPANY, AI LEGAL FOR PRODUCT)
-        const trimmedQueryLower = (message || '').trim().toLowerCase().replace(/[?!.,;:'"’]/g, '');
-        const queryWords = trimmedQueryLower.split(/\s+/);
-
-        const isFounderQuery = [
-            'who is the founder of company',
-            'who is the founder of the company',
-            'who is the founder of uwo',
-            'who is founder of company',
-            'who is founder of the company',
-            'who is founder of uwo',
-            'who is founder',
-            'who is the founder',
-            'who founded company',
-            'who founded the company',
-            'who founded uwo',
-            'founder of company',
-            'founder of the company',
-            'founder of uwo',
-            'company founder',
-            'uwo founder',
-            'founder kaun hai',
-            'founder kon hai',
-            'founder name',
-            'founder ke bare me batao',
-            'founder details',
-            'director of company',
-            'director of uwo',
-            'who is the director',
-            'ceo of company',
-            'who is the ceo'
-        ].some(p => trimmedQueryLower === p || trimmedQueryLower.startsWith(p)) ||
-        (trimmedQueryLower.includes('founder') && (
-            trimmedQueryLower.includes('who') ||
-            trimmedQueryLower.includes('kaun') ||
-            trimmedQueryLower.includes('kon') ||
-            trimmedQueryLower.includes('kya') ||
-            trimmedQueryLower.includes('name') ||
-            trimmedQueryLower.includes('naam') ||
-            trimmedQueryLower.includes('company') ||
-            trimmedQueryLower.includes('uwo') ||
-            trimmedQueryLower.includes('batao') ||
-            trimmedQueryLower.includes('bare') ||
-            trimmedQueryLower.includes('baare') ||
-            trimmedQueryLower.includes('document') ||
-            trimmedQueryLower.includes('kyu') ||
-            trimmedQueryLower.includes('kyun') ||
-            trimmedQueryLower.includes('bol') ||
-            trimmedQueryLower.includes('hai to') ||
-            trimmedQueryLower.includes('esxda')
-        ));
-
-        const isCompanyQuery = !isFounderQuery && ([
-            'what is your company name',
-            'whats your company name',
-            'what is the company name',
-            'what company',
-            'company name',
-            'company info',
-            'company information',
-            'company details',
-            'tell me about your company',
-            'tell me about the company',
-            'about your company',
-            'about the company',
-            'company profile',
-            'who owns you',
-            'who is the owner',
-            'which company created you',
-            'which company made you',
-            'which company developed you',
-            'which company',
-            'company ka naam kya hai',
-            'company name kya hai',
-            'company ke bare me batao',
-            'company ke baare mein batao',
-            'company ki jankari',
-            'company info do',
-            'koun si company hai',
-            'kaun si company hai',
-            'kiski company hai',
-            'uwo ke bare me batao',
-            'about uwo',
-            'what is uwo',
-            'who is uwo'
-        ].some(p => trimmedQueryLower === p || trimmedQueryLower.startsWith(p)) ||
-        trimmedQueryLower.includes('comapny ka info') ||
-        trimmedQueryLower.includes('company ka info') ||
-        (trimmedQueryLower.includes('company') && (
-            trimmedQueryLower.includes('info') ||
-            trimmedQueryLower.includes('detail') ||
-            trimmedQueryLower.includes('naam') ||
-            trimmedQueryLower.includes('name') ||
-            trimmedQueryLower.includes('batao') ||
-            trimmedQueryLower.includes('about') ||
-            trimmedQueryLower.includes('profile') ||
-            trimmedQueryLower.includes('kya') ||
-            trimmedQueryLower.includes('which') ||
-            trimmedQueryLower.includes('uwo') ||
-            trimmedQueryLower.includes('koun') ||
-            trimmedQueryLower.includes('kaun')
-        ) && queryWords.length <= 25) ||
-        (trimmedQueryLower.includes('company') && trimmedQueryLower.includes('uwo')));
-
-        const isBotIdentityQuery = !isCompanyQuery && !isFounderQuery && [
-            'who are you',
-            'what is your name',
-            'whats your name',
-            'who created you',
-            'who made you',
-            'who developed you',
-            'what is this app',
-            'what is ai legal',
-            'tum kaun ho',
-            'aap kaun ho',
-            'aapka naam kya hai',
-            'ye kaun sa app hai',
-            'kiska app hai'
-        ].some(p => trimmedQueryLower === p || trimmedQueryLower.startsWith(p));
-
-        const isQueryingSpecificPrivateDocEntity = (activeDocContent?.length > 0 || documents?.length > 0) && (
-            trimmedQueryLower.includes('in this document') ||
-            trimmedQueryLower.includes('is document me') ||
-            trimmedQueryLower.includes('in this contract') ||
-            trimmedQueryLower.includes('in this agreement') ||
-            trimmedQueryLower.includes('according to this agreement')
-        );
-
-        if ((isFounderQuery || isCompanyQuery || isBotIdentityQuery) && !isQueryingSpecificPrivateDocEntity) {
-            const isHindiQuery = userLanguage === 'Hindi' || userLanguage === 'Hinglish' || /\b(hai|ho|kaun|kya|naam|kiska|batao|koun|konsi|baare|bare|jankari|do|ki|ke|kyu|rhe|thodi|m|bhi)\b/i.test(trimmedQueryLower);
-            let responseText = '';
-
-            if (isFounderQuery) {
-                if (isHindiQuery) {
-                    responseText = `**Unified Web Options & Services Pvt. Ltd. (UWO)** ke founder **Gurumukh P. Ahuja** hain.\n\n### 👥 UWO Leadership & Founders:\n- **Gurumukh P. Ahuja**: Founder & Director\n- **Anjali Ahuja**: Co-founder\n- **Company**: Unified Web Options & Services Private Limited (UWO™)\n- **Mukhyalaya (Headquarters)**: Jabalpur, Madhya Pradesh, Bharat (Office: 4th Floor, SG Square, near PNB Bank, Rampur Chowk, Jabalpur, MP - 482008)\n- **Flagship Legal Innovation**: **AI LEGAL™** — UWO dwara develop kiya gaya flagship legal intelligence platform.`;
-                } else {
-                    responseText = `The founder of **Unified Web Options & Services Pvt. Ltd. (UWO)** is **Gurumukh P. Ahuja**.\n\n### 👥 UWO Leadership & Founders:\n- **Founder & Director**: **Gurumukh P. Ahuja**\n- **Co-founder**: **Anjali Ahuja**\n- **Company**: Unified Web Options & Services Private Limited (UWO™)\n- **Headquarters**: Jabalpur, Madhya Pradesh, India (Corporate Office: 4th Floor, SG Square, near PNB Bank, Rampur Chowk, Jabalpur, MP - 482008)\n- **Flagship Legal Innovation**: **AI LEGAL™** — UWO's dedicated legal intelligence platform engineered specifically for advocates, law firms, corporate legal teams, and legal practitioners across India.`;
-                }
-            } else if (isCompanyQuery) {
-                if (isHindiQuery) {
-                    responseText = `Meri company ka naam **Unified Web Options & Services Pvt. Ltd. (UWO)** hai.\n\n### 🏢 Unified Web Options & Services Pvt. Ltd. (UWO) ke baare mein:\n- **Company ka Naam**: Unified Web Options & Services Private Limited (UWO™)\n- **Company Type**: IT-registered Technology va Enterprise AI Software Company\n- **Founders & Leadership**:\n  - **Gurumukh P. Ahuja**: Founder & Director\n  - **Anjali Ahuja**: Co-founder\n- **Sthapit (Founded)**: 2019 / 2020\n- **Mukhyalaya (Headquarters)**: Jabalpur, Madhya Pradesh, Bharat\n- **Office Address**: 4th Floor, SG Square, near PNB Bank, Rampur Chowk, Jabalpur, Madhya Pradesh – 482008\n- **Mukhya Karya va Services**:\n  - **Artificial Intelligence (AI) Solutions**: Domain-specific AI platforms, intelligent legal document analysis, cognitive automation, aur ML models.\n  - **Enterprise Digital Platforms**: Scalable enterprise software, cloud infrastructure, web aur mobile applications.\n  - **Business Automation**: Workflow automation frameworks, CRM systems, aur enterprise productivity tools.\n- **AI LEGAL™ Platform**: AI Legal UWO dwara develop aur operate kiya gaya flagship legal intelligence platform hai jo advocates, law firms, aur legal practitioners ke liye tailored hai.`;
-                } else {
-                    responseText = `My company is **Unified Web Options & Services Pvt. Ltd. (UWO)**.\n\n### 🏢 About Unified Web Options & Services Pvt. Ltd. (UWO)\n- **Legal Name**: Unified Web Options & Services Private Limited (UWO™)\n- **Company Type**: IT-registered Technology & Enterprise AI Software Company\n- **Founders & Leadership**:\n  - **Gurumukh P. Ahuja**: Founder & Director\n  - **Anjali Ahuja**: Co-founder\n- **Founded / Inception**: 2019 / 2020\n- **Headquarters**: Jabalpur, Madhya Pradesh, India\n- **Corporate Office Address**: 4th Floor, SG Square, near PNB Bank, Rampur Chowk, Jabalpur, Madhya Pradesh – 482008\n- **Core Specialization & Capabilities**:\n  - **Artificial Intelligence (AI) & Cognitive Systems**: Specialized enterprise AI platforms, intelligent document processing, natural language understanding, and cognitive automation.\n  - **Enterprise Digital Systems & Cloud Architecture**: High-scale enterprise software, scalable web & mobile platforms, and robust cloud infrastructure.\n  - **Business Automation & CRM**: Enterprise workflow automation frameworks, CRM systems, and productivity platforms.\n- **Flagship Legal Innovation**: **AI LEGAL™** — UWO's dedicated legal intelligence platform engineered specifically for advocates, law firms, corporate legal teams, and legal practitioners across India.`;
-                }
-            } else {
-                // Assistant / App identity query
-                if (isHindiQuery) {
-                    responseText = `Main **AI LEGAL™ Assistant** hoon—Indian law, legal research, case management, aur court document drafting ke liye ek specialized AI legal intelligence platform jo **Unified Web Options & Services Pvt. Ltd. (UWO)** dwara develop kiya gaya hai.`;
-                } else {
-                    responseText = `I am **AI LEGAL™ Assistant**, a specialized legal intelligence platform developed by **Unified Web Options & Services Pvt. Ltd. (UWO)**.\n\nI am engineered to assist advocates, legal practitioners, law firms, law students, and citizens with Indian law, legal research, case management, statutory analysis (BNS, BNSS, BSA, IPC, CrPC), and court-ready drafting.`;
-                }
-            }
-
-            if (onChunk) onChunk(responseText);
-
-            return {
-                text: responseText,
-                isRealTime: false,
-                sources: [],
-                mode: 'CHAT',
-                metadata: {
-                    model: model || 'gemini-2.5-flash',
-                    groundingStatus: 'not_required',
-                    sourceCount: 0
-                }
-            };
-        }
 
         const isLegalMode = mode === 'LEGAL_TOOLKIT' || (toolName && toolName.startsWith('legal_'));
 
@@ -320,7 +153,7 @@ Return the summary in strict Markdown format with these exact headings:
 CONVERSATION HISTORY:
 ${combinedHistory.map(m => `${m.role}: ${m.content}`).join('\n')}
 `;
-                const rawSummary = await vertexService.askVertex(summaryPrompt, null, { modelOverride: 'gemini-2.5-flash' });
+                const rawSummary = await vertexService.askVertex(summaryPrompt, null, { modelOverride: 'gemini-3.5-flash' });
                 summaryContext = `\n${rawSummary}\n`;
                 historyToSend = combinedHistory.slice(-10);
                 logger.info(`[Memory] Truncated chat history payload to last 10 messages.`);
@@ -874,9 +707,18 @@ STRICT MANDATE FOR THIS TURN:
 
                     logger.info(`[AI-Service] Executing Chat (Greeting: ${isGreeting} | Freshness: ${isFreshnessRequired}) for: "${message}"`);
 
+                    const isDraftingRequest = /\b(agreement|contract|lease|rent agreement|rent deed|deed|draft|drafting|affidavit|legal notice|notice|banao|bana do|likho|likh do|type karo|type|document format|mou|nda|undertaking|will|power of attorney)\b/i.test(message);
+                    const draftingDirective = isDraftingRequest ? `\n\n### 🚨 MANDATORY LEGAL DRAFTING DIRECTIVE (CRITICAL OVERRIDE):
+The user is requesting to draft, create, write, or type a legal document (Agreement/Deed/Contract/Notice/Affidavit).
+- DO NOT provide a brief outline, bullet summary, or placeholder skeleton!
+- DO NOT tell the user "you can fill the details yourself".
+- YOU MUST DRAFT THE FULL, COMPLETE, EXHAUSTIVE, COURT-READY LEGAL INSTRUMENT from Title to Signatures.
+- Include all standard formal legal clauses: Title & Date, Parties (with HUF/individual status), Recitals (WHEREAS...), Demised Premises/Subject Matter, Term & Tenancy, Rent & GST, Security Deposit, Utilities, Permitted Use, Maintenance, Termination & Notice Period, Default & Remedies, Governing Law & Jurisdiction, Stamp Duty, and Execution & Signatures of Parties and Two Witnesses.
+- Format it cleanly in Markdown so it is immediately usable, formal, and ready for print or execution on Stamp Paper.\n` : '';
+
                     const finalSystemInstruction = toolName === 'legal_contract_analyzer'
-                        ? `${dynamicSystemInstruction}\n\n### LANGUAGE INSTRUCTION:\n${langContext}`
-                        : `${basePersona}\n\n${dynamicSystemInstruction}\n\n### LANGUAGE INSTRUCTION:\n${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}`;
+                        ? `${dynamicSystemInstruction}\n\n### LANGUAGE INSTRUCTION:\n${langContext}${draftingDirective}`
+                        : `${basePersona}\n\n${dynamicSystemInstruction}\n\n### LANGUAGE INSTRUCTION:\n${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}${draftingDirective}`;
 
                     try {
                         const vertexRes = await vertexService.askVertex(promptWithMemory, null, {
@@ -1038,7 +880,7 @@ STRICT MANDATE FOR THIS TURN:
         }
 
         finalResponseData.metadata = {
-            model: model || 'gemini-2.5-flash',
+            model: model || 'gemini-3.5-flash',
             currentnessRequired: isFreshnessRequired,
             googleGroundingUsed,
             tavilyUsed,
@@ -1428,7 +1270,7 @@ INPUT CONTEXT:
         const response = await vertexService.AskVertexRaw(prompt, {
             maxOutputTokens: 1024,
             temperature: 0.7,
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             isJson: true
         });
 
@@ -1476,7 +1318,7 @@ Title:`;
         const title = await vertexService.AskVertexRaw(fullPrompt, {
             maxOutputTokens: 50,
             temperature: 0.1,
-            modelOverride: 'gemini-2.5-flash'
+            modelOverride: 'gemini-3.5-flash'
         });
 
         // Log raw response

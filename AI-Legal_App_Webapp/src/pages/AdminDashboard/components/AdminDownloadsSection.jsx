@@ -64,11 +64,12 @@ export default function AdminDownloadsSection() {
 
   const [countriesList, setCountriesList] = useState([]);
   const [countriesTotalCount, setCountriesTotalCount] = useState(0);
+  const [countrySummaryTotals, setCountrySummaryTotals] = useState(null);
   const [countrySearch, setCountrySearch] = useState('');
   const [countrySortBy, setCountrySortBy] = useState('totalInstalls');
   const [countrySortOrder, setCountrySortOrder] = useState('desc');
   const [countryPage, setCountryPage] = useState(1);
-  const countryPageSize = 10;
+  const [countryPageSize, setCountryPageSize] = useState(25);
 
   const [trendsData, setTrendsData] = useState([]);
   const [chartMode, setChartMode] = useState('split'); // 'split' | 'total'
@@ -127,7 +128,13 @@ export default function AdminDownloadsSection() {
 
       if (countRes?.success) {
         setCountriesList(countRes.countries || []);
-        setCountriesTotalCount(countRes.pagination?.total || (countRes.countries || []).length);
+        const total = countRes.pagination?.totalItems ?? countRes.pagination?.total ?? (countRes.countries || []).length;
+        setCountriesTotalCount(total);
+        if (countRes.summaryTotals) {
+          setCountrySummaryTotals(countRes.summaryTotals);
+        } else if (countRes.totalDownloadsSum !== undefined) {
+          setCountrySummaryTotals({ totalInstalls: countRes.totalDownloadsSum });
+        }
       }
 
       if (trendRes?.success) {
@@ -140,7 +147,7 @@ export default function AdminDownloadsSection() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [dateRange, startDate, endDate, platformFilter, countryFilter, stateFilter, countrySearch, countrySortBy, countrySortOrder, countryPage]);
+  }, [dateRange, startDate, endDate, platformFilter, countryFilter, stateFilter, countrySearch, countrySortBy, countrySortOrder, countryPage, countryPageSize]);
 
   useEffect(() => {
     fetchAnalytics();
@@ -1106,6 +1113,36 @@ export default function AdminDownloadsSection() {
                   })
                 )}
               </tbody>
+              {filteredStates.length > 0 && (
+                <tfoot className="border-t-2 border-slate-200 dark:border-zinc-700 text-xs">
+                  <tr className="bg-amber-50/40 dark:bg-amber-950/20 font-black text-slate-900 dark:text-white">
+                    <td className="py-2.5 px-3">
+                      Total ({filteredStates.length} Regions in {selectedCountryDetail})
+                    </td>
+                    <td className="py-2.5 px-3 text-[#B88B2A]">
+                      {(countryDetailData?.countryMetrics?.total ?? filteredStates.reduce((acc, s) => acc + (s.totalInstalls || 0), 0)).toLocaleString()}
+                    </td>
+                    <td className="py-2.5 px-3 font-bold text-slate-700 dark:text-zinc-300">
+                      100%
+                    </td>
+                    <td className="py-2.5 px-3 text-xs">
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                        {(countryDetailData?.countryMetrics?.android ?? filteredStates.reduce((acc, s) => acc + (s.android || 0), 0)).toLocaleString()}
+                      </span>
+                      <span className="text-slate-300 dark:text-zinc-700 mx-1">/</span>
+                      <span className="text-sky-600 dark:text-sky-400 font-bold">
+                        {(countryDetailData?.countryMetrics?.ios ?? filteredStates.reduce((acc, s) => acc + (s.ios || 0), 0)).toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 font-bold text-slate-700 dark:text-zinc-300">
+                      {filteredStates.reduce((acc, s) => acc + (s.last7Days || 0), 0).toLocaleString()}
+                    </td>
+                    <td className="py-2.5 px-3 font-bold text-slate-700 dark:text-zinc-300">
+                      {(countryDetailData?.countryMetrics?.last30Days ?? filteredStates.reduce((acc, s) => acc + (s.last30Days || 0), 0)).toLocaleString()}
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
             </table>
           </div>
         </div>
@@ -1117,6 +1154,11 @@ export default function AdminDownloadsSection() {
               <h3 className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
                 <Globe className="w-4 h-4 text-[#B88B2A] shrink-0" />
                 <span>Downloads by Country & Territory</span>
+                {countriesTotalCount > 0 && (
+                  <span className="text-[10px] font-bold text-[#B88B2A] bg-[#B88B2A]/10 border border-[#B88B2A]/20 px-2 py-0.5 rounded-full">
+                    {countriesTotalCount} Countries
+                  </span>
+                )}
               </h3>
               <p className="text-[11px] text-slate-500 dark:text-zinc-400">
                 Click any country row to drill-down into its state / regional distribution
@@ -1138,6 +1180,22 @@ export default function AdminDownloadsSection() {
                 />
               </div>
 
+              {/* Page Size */}
+              <select
+                value={countryPageSize}
+                onChange={(e) => {
+                  setCountryPageSize(Number(e.target.value));
+                  setCountryPage(1);
+                }}
+                className="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 text-xs font-medium text-slate-700 dark:text-zinc-200 px-2.5 py-1.5 rounded-lg focus:outline-none cursor-pointer"
+                title="Rows per page"
+              >
+                <option value={10}>10 / page</option>
+                <option value={25}>25 / page</option>
+                <option value={50}>50 / page</option>
+                <option value={100}>All (100)</option>
+              </select>
+
               {/* Sort */}
               <select
                 value={countrySortBy}
@@ -1145,6 +1203,7 @@ export default function AdminDownloadsSection() {
                 className="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 text-xs font-medium text-slate-700 dark:text-zinc-200 px-2.5 py-1.5 rounded-lg focus:outline-none cursor-pointer"
               >
                 <option value="totalInstalls">Most Installs</option>
+                <option value="today">Today's Installs</option>
                 <option value="last7Days">7-Day Velocity</option>
                 <option value="last30Days">30-Day Velocity</option>
                 <option value="country">Country Name</option>
@@ -1274,14 +1333,85 @@ export default function AdminDownloadsSection() {
                   })
                 )}
               </tbody>
+
+              {/* Table Footer with Summary & Totals */}
+              {countriesList.length > 0 && (
+                <tfoot className="border-t-2 border-slate-200 dark:border-zinc-700 text-xs">
+                  {countriesTotalCount > countriesList.length && (
+                    <tr className="bg-slate-50/70 dark:bg-zinc-900/70 text-slate-600 dark:text-zinc-400 font-semibold border-b border-slate-100 dark:border-zinc-800">
+                      <td className="py-2.5 px-3">
+                        <span className="font-bold text-slate-700 dark:text-zinc-300">
+                          Current Page ({countriesList.length} of {countriesTotalCount})
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 font-bold text-slate-800 dark:text-zinc-200">
+                        {countriesList.reduce((acc, c) => acc + (c.totalInstalls || 0), 0).toLocaleString()}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        {countriesList.reduce((acc, c) => acc + (c.percentageOfTotal || 0), 0).toFixed(1)}%
+                      </td>
+                      <td className="py-2.5 px-3 text-xs">
+                        <span className="text-emerald-600 font-bold">{countriesList.reduce((acc, c) => acc + (c.android || 0), 0)}</span>
+                        <span className="text-slate-300 dark:text-zinc-700 mx-1">/</span>
+                        <span className="text-sky-600 font-bold">{countriesList.reduce((acc, c) => acc + (c.ios || 0), 0)}</span>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        {countriesList.reduce((acc, c) => acc + (c.today || 0), 0).toLocaleString()}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        {countriesList.reduce((acc, c) => acc + (c.last7Days || 0), 0).toLocaleString()}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        {countriesList.reduce((acc, c) => acc + (c.last30Days || 0), 0).toLocaleString()}
+                      </td>
+                      <td className="py-2.5 px-3 text-right text-[10px] text-slate-400">
+                        Page Sum
+                      </td>
+                    </tr>
+                  )}
+                  <tr className="bg-amber-50/40 dark:bg-amber-950/20 font-black text-slate-900 dark:text-white">
+                    <td className="py-2.5 px-3 flex items-center space-x-1.5 text-slate-900 dark:text-white">
+                      <Globe className="w-3.5 h-3.5 text-[#B88B2A] shrink-0" />
+                      <span>Grand Total ({countriesTotalCount} Countries)</span>
+                    </td>
+                    <td className="py-2.5 px-3 text-[#B88B2A] text-sm">
+                      {(countrySummaryTotals?.totalInstalls ?? summary.total).toLocaleString()}
+                    </td>
+                    <td className="py-2.5 px-3 font-bold text-slate-700 dark:text-zinc-300">
+                      100%
+                    </td>
+                    <td className="py-2.5 px-3 text-xs">
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                        {(countrySummaryTotals?.android ?? summary.android).toLocaleString()}
+                      </span>
+                      <span className="text-slate-300 dark:text-zinc-700 mx-1">/</span>
+                      <span className="text-sky-600 dark:text-sky-400 font-bold">
+                        {(countrySummaryTotals?.ios ?? summary.ios).toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 font-bold text-slate-700 dark:text-zinc-300">
+                      {(countrySummaryTotals?.today ?? summary.today).toLocaleString()}
+                    </td>
+                    <td className="py-2.5 px-3 font-bold text-slate-700 dark:text-zinc-300">
+                      {(countrySummaryTotals?.last7Days ?? summary.last7Days).toLocaleString()}
+                    </td>
+                    <td className="py-2.5 px-3 font-bold text-slate-700 dark:text-zinc-300">
+                      {(countrySummaryTotals?.last30Days ?? summary.last30Days).toLocaleString()}
+                    </td>
+                    <td className="py-2.5 px-3 text-right text-[10px] text-slate-400 font-normal">
+                      Overall
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
             </table>
           </div>
 
           {/* Pagination */}
           {countriesTotalCount > countryPageSize && (
-            <div className="flex flex-col xs:flex-row items-center justify-between gap-2 pt-1 text-xs text-slate-500">
-              <span>
-                Showing {((countryPage - 1) * countryPageSize) + 1} - {Math.min(countryPage * countryPageSize, countriesTotalCount)} of {countriesTotalCount}
+            <div className="flex flex-col xs:flex-row items-center justify-between gap-2 pt-2 text-xs text-slate-500">
+              <span className="font-medium">
+                Showing {((countryPage - 1) * countryPageSize) + 1} - {Math.min(countryPage * countryPageSize, countriesTotalCount)} of {countriesTotalCount} countries
               </span>
               <div className="flex items-center space-x-1">
                 <button
@@ -1291,7 +1421,19 @@ export default function AdminDownloadsSection() {
                 >
                   Prev
                 </button>
-                <span className="px-2 font-bold text-slate-900 dark:text-white">Page {countryPage}</span>
+                {Array.from({ length: Math.ceil(countriesTotalCount / countryPageSize) }, (_, i) => i + 1).map((pg) => (
+                  <button
+                    key={pg}
+                    onClick={() => setCountryPage(pg)}
+                    className={`w-7 h-7 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      countryPage === pg 
+                        ? 'bg-[#B88B2A] text-white shadow-xs' 
+                        : 'bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
+                    }`}
+                  >
+                    {pg}
+                  </button>
+                ))}
                 <button
                   disabled={countryPage * countryPageSize >= countriesTotalCount}
                   onClick={() => setCountryPage(p => p + 1)}

@@ -17,7 +17,7 @@ export const runJurisdictionSandboxTest = async ({
     country = 'India',
     state = '',
     userId = 'admin_sandbox',
-    model = 'gemini-2.5-flash'
+    model = 'gemini-3.5-flash'
 }) => {
     const startTime = Date.now();
     const cleanQuery = String(query || '').trim();
@@ -62,7 +62,7 @@ export const runJurisdictionSandboxTest = async ({
     let googleGroundingUsed = false;
     let tavilyUsed = false;
     let ragUsed = false;
-    let modelUsed = model || 'gemini-2.5-flash';
+    let modelUsed = model || 'gemini-3.5-flash';
     let groundingStatus = 'Direct Legal Engine Analysis';
 
     // Step 3: RAG Jurisdiction Filtering Guard & Nepal Statutory Retrieval
@@ -105,9 +105,9 @@ export const runJurisdictionSandboxTest = async ({
         }
     }
 
-    // Step 4: Primary Pipeline - Gemini 2.5 Flash with Google Search Grounding
+    // Step 4: Primary Pipeline - Gemini 3.5 Flash with Google Search Grounding
     try {
-        logger.info(`[JurisdictionSandbox] Calling Gemini 2.5 Flash (useSearch: ${needsFreshness})...`);
+        logger.info(`[JurisdictionSandbox] Calling Gemini 3.5 Flash (useSearch: ${needsFreshness})...`);
         const vertexResponse = await vertexService.askVertex(cleanQuery, ragContextText || null, {
             systemInstruction,
             mode: 'LEGAL_TOOLKIT',
@@ -115,7 +115,7 @@ export const runJurisdictionSandboxTest = async ({
             useSearch: needsFreshness,
             searchQueryOverride: freshnessDecision.searchQuery,
             returnSources: true,
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             country: cleanCountry,
             state: cleanState,
             jurisdiction: jurisdictionObj
@@ -162,7 +162,7 @@ export const runJurisdictionSandboxTest = async ({
                     toolName: 'jurisdiction_sandbox',
                     useSearch: false,
                     returnSources: false,
-                    modelOverride: 'gemini-2.5-flash'
+                    modelOverride: 'gemini-3.5-flash'
                 });
 
                 finalResponseText = typeof fallbackResponse === 'object' ? fallbackResponse.text : fallbackResponse;

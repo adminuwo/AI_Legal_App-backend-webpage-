@@ -246,7 +246,7 @@ const analyzeCaseAndGenerateQueries = async (context, resolvedJurisdiction = nul
     try {
         const response = await vertexService.AskVertexRaw(prompt, {
             isJson: true,
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             temperature: 0.1
         });
 
@@ -281,7 +281,7 @@ const generateExpandedQueries = async (metadata, resolvedJurisdiction = null) =>
         
         const response = await vertexService.AskVertexRaw(prompt, {
             isJson: true,
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             temperature: 0.3
         });
         
@@ -395,7 +395,7 @@ const searchExternal = async (queries, resolvedJurisdiction = null) => {
         
         const extractionResponse = await vertexService.AskVertexRaw(extractionPrompt, {
             isJson: true,
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             temperature: 0
         });
         
@@ -632,7 +632,7 @@ export const processPrecedentWithAI = async (caseData, context = null, language 
 
     try {
         const response = await vertexService.AskVertexRaw(prompt, {
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             temperature: 0.1,
             isJson: true
         });
@@ -750,7 +750,7 @@ export const processPrecedentsBatchWithAI = async (candidates, context = null, l
     try {
         logger.info(`[Precedents] Starting batch AI processing for ${candidates.length} candidates.`);
         const response = await vertexService.AskVertexRaw(prompt, {
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             temperature: 0.1,
             isJson: true,
             maxOutputTokens: 8192
@@ -1163,7 +1163,7 @@ export const analyzePrecedent = async (actionType, precedentData, activeCaseData
 
     try {
         const response = await vertexService.AskVertexRaw(prompt, {
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             temperature: 0.2
         });
 

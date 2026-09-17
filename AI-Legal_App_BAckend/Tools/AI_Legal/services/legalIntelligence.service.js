@@ -146,7 +146,7 @@ export const generateUnifiedCaseIntelligence = async (rawText, currentData = {},
         const response = await vertexService.AskVertexRaw(prompt, {
             maxOutputTokens: 8192,
             temperature: 0.1,
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             language: activeLang,
             isJson: true
         });
@@ -253,7 +253,7 @@ export const analyzeDocumentContent = async (content, fileName) => {
         const response = await vertexService.AskVertexRaw(prompt, {
             maxOutputTokens: 1024,
             temperature: 0.1,
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             isJson: true
         });
 
@@ -335,7 +335,7 @@ export const enrichHearingDetails = async (notes, documentText, documentName, la
         const response = await vertexService.AskVertexRaw(prompt, {
             maxOutputTokens: 8192,
             temperature: 0.1,
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             isJson: true
         });
 

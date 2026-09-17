@@ -998,7 +998,7 @@ export const apiService = {
 
       return {
         allowPublicSignup: true,
-        defaultModel: 'gemini-2.5-flash',
+        defaultModel: 'gemini-3.5-flash',
         maxTokensPerUser: 500000,
         organizationName: 'ACME Corp'
       };

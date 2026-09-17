@@ -69,7 +69,7 @@ router.post('/test', async (req, res) => {
             country: country || 'India',
             state: state || '',
             userId: req.user?.id || 'mobile_sandbox',
-            model: model || 'gemini-2.5-flash'
+            model: model || 'gemini-3.5-flash'
         });
 
         return res.json(result);

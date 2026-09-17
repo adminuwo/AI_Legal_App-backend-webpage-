@@ -380,7 +380,7 @@ export const analyzeRAGRequirements = async (query) => {
         const rewriteResult = await AskVertexRaw(rewritePrompt, {
             maxOutputTokens: 200,
             temperature: 0.2,
-            modelOverride: 'gemini-2.5-flash'
+            modelOverride: 'gemini-3.5-flash'
         });
 
         const rewrittenQuery = rewriteResult.trim().replace(/^["']|["']$/g, '') || query;
@@ -465,6 +465,7 @@ export const AskVertexRaw = async (prompt, options = {}) => {
 
         // Map virtual model names to real available Vertex/GenAI models
         const modelMap = {
+            'gemini-3.5-flash': 'gemini-3.5-flash',
             'gemini-2.5-flash': 'gemini-2.5-flash',
             'gemini-2.5-flash-image': 'gemini-2.5-flash',
             'gemini-2.5-pro': 'gemini-2.5-pro'
@@ -511,42 +512,57 @@ export const AskVertexRaw = async (prompt, options = {}) => {
                 contents: [{ role: 'user', parts: [{ text: finalPrompt }] }]
             });
         } catch (execErr) {
-            logger.warn(`[AskVertexRaw] Primary execution failed for ${selectedModelName}: ${execErr.message}. Attempting API Key / OpenAI fallback.`);
-            if (process.env.GEMINI_API_KEY) {
+            logger.warn(`[AskVertexRaw] Primary execution failed for ${selectedModelName}: ${execErr.message}. Attempting gemini-2.5-flash fallback.`);
+            let fallbackSucceeded = false;
+            if (selectedModelName !== 'gemini-2.5-flash') {
                 try {
-                    const { GoogleGenerativeAI } = await import('@google/generative-ai');
-                    const directGenAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-                    const fallbackModel = directGenAI.getGenerativeModel({
-                        model: 'gemini-2.5-flash',
-                        generationConfig: {
-                            maxOutputTokens: options.maxOutputTokens || 4096,
-                            temperature: options.temperature || 0.7,
-                            ...(options.isJson && { responseMimeType: "application/json" })
-                        },
-                        systemInstruction: globalLanguageInstruction
-                    });
-                    result = await fallbackModel.generateContent({
-                        contents: [{ role: 'user', parts: [{ text: finalPrompt }] }]
-                    });
-                } catch (gemErr) {
-                    if (process.env.OPENAI_API_KEY) {
-                        logger.warn(`[AskVertexRaw] Gemini API Key fallback failed. Falling back to OpenAI...`);
-                        const { askOpenAI } = await import('./openai.service.js');
-                        return await askOpenAI(finalPrompt, null, {
+                    let fallbackModel = null;
+                    if (genAIInstance) {
+                        fallbackModel = genAIInstance.getGenerativeModel({
+                            model: 'gemini-2.5-flash',
+                            generationConfig: {
+                                maxOutputTokens: options.maxOutputTokens || 4096,
+                                temperature: options.temperature || 0.7,
+                                ...(options.isJson && { responseMimeType: "application/json" })
+                            },
                             systemInstruction: globalLanguageInstruction,
-                            isJson: options.isJson
+                            tools: options.useSearch ? [{ googleSearch: {} }] : []
+                        });
+                    } else if (process.env.GEMINI_API_KEY) {
+                        const { GoogleGenerativeAI } = await import('@google/generative-ai');
+                        const directGenAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+                        fallbackModel = directGenAI.getGenerativeModel({
+                            model: 'gemini-2.5-flash',
+                            generationConfig: {
+                                maxOutputTokens: options.maxOutputTokens || 4096,
+                                temperature: options.temperature || 0.7,
+                                ...(options.isJson && { responseMimeType: "application/json" })
+                            },
+                            systemInstruction: globalLanguageInstruction,
+                            tools: options.useSearch ? [{ googleSearch: {} }] : []
                         });
                     }
-                    throw gemErr;
+                    if (fallbackModel) {
+                        result = await fallbackModel.generateContent({
+                            contents: [{ role: 'user', parts: [{ text: finalPrompt }] }]
+                        });
+                        fallbackSucceeded = true;
+                        logger.info(`[AskVertexRaw] Fallback to gemini-2.5-flash succeeded!`);
+                    }
+                } catch (gemErr) {
+                    logger.warn(`[AskVertexRaw] gemini-2.5-flash fallback failed: ${gemErr.message}`);
                 }
-            } else if (process.env.OPENAI_API_KEY) {
-                logger.warn(`[AskVertexRaw] Gemini API Key missing. Falling back to OpenAI...`);
-                const { askOpenAI } = await import('./openai.service.js');
-                return await askOpenAI(finalPrompt, null, {
-                    systemInstruction: globalLanguageInstruction,
-                    isJson: options.isJson
-                });
-            } else {
+            }
+
+            if (!fallbackSucceeded) {
+                if (process.env.OPENAI_API_KEY) {
+                    logger.warn(`[AskVertexRaw] Falling back to OpenAI (gpt-4o)...`);
+                    const { askOpenAI } = await import('./openai.service.js');
+                    return await askOpenAI(finalPrompt, null, {
+                        systemInstruction: globalLanguageInstruction,
+                        isJson: options.isJson
+                    });
+                }
                 throw execErr;
             }
         }
@@ -672,6 +688,7 @@ export const askVertex = async (prompt, context = null, options = {}) => {
         // 1. Dynamic Model Creation (if systemInstruction is provided)
         // This is crucial for "File Conversion" mode where specific JSON output instructions are needed.
         const modelMap = {
+            'gemini-3.5-flash': 'gemini-3.5-flash',
             'gemini-2.5-flash': 'gemini-2.5-flash',
             'gemini-2.5-flash-image': 'gemini-2.5-flash',
             'gemini-2.5-pro': 'gemini-2.5-pro'
@@ -868,23 +885,65 @@ export const askVertex = async (prompt, context = null, options = {}) => {
             }
         } catch (execErr) {
             const errStr = String(execErr?.message || execErr);
-            if (errStr.includes("403") || errStr.includes("PERMISSION_DENIED") || errStr.includes("Forbidden") || errStr.includes("ClientError")) {
-                logger.warn(`[VERTEX API 403 FALLBACK] Vertex AI permission denied. Attempting fallback...`);
-                if (process.env.GEMINI_API_KEY) {
-                    const { GoogleGenerativeAI } = await import('@google/generative-ai');
-                    const fallbackGenAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-                    const fallbackModel = fallbackGenAI.getGenerativeModel({
-                        model: 'gemini-1.5-flash',
-                        systemInstruction: systemInstruction,
-                        tools: options.useSearch ? [{ googleSearch: {} }] : []
-                    });
-                    if (onChunk) {
-                        result = await fallbackModel.generateContentStream({ contents });
-                    } else {
-                        result = await fallbackModel.generateContent({ contents });
+            logger.warn(`[VERTEX] Execution failed for ${selectedModelName}: ${errStr}`);
+
+            let fallbackSuccess = false;
+
+            // 1. Primary Fallback to gemini-2.5-flash if primary model was not already gemini-2.5-flash
+            if (selectedModelName !== 'gemini-2.5-flash') {
+                logger.warn(`[VERTEX PRIMARY FALLBACK] Attempting fallback to gemini-2.5-flash...`);
+                try {
+                    let fallbackModel = null;
+                    if (genAIInstance) {
+                        fallbackModel = genAIInstance.getGenerativeModel({
+                            model: 'gemini-2.5-flash',
+                            safetySettings: [
+                                { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
+                                { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
+                                { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
+                                { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH }
+                            ],
+                            generationConfig: {
+                                maxOutputTokens: options.maxOutputTokens || (isJsonMode ? 2048 : 4096),
+                                temperature: options.temperature !== undefined ? options.temperature : 0.4,
+                                responseMimeType: isJsonMode ? "application/json" : "text/plain"
+                            },
+                            systemInstruction: systemInstruction,
+                            tools: options.useSearch ? [{ googleSearch: {} }] : []
+                        });
+                    } else if (process.env.GEMINI_API_KEY) {
+                        const { GoogleGenerativeAI } = await import('@google/generative-ai');
+                        const fallbackGenAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+                        fallbackModel = fallbackGenAI.getGenerativeModel({
+                            model: 'gemini-2.5-flash',
+                            systemInstruction: systemInstruction,
+                            generationConfig: {
+                                maxOutputTokens: options.maxOutputTokens || (isJsonMode ? 2048 : 4096),
+                                temperature: options.temperature !== undefined ? options.temperature : 0.4,
+                                responseMimeType: isJsonMode ? "application/json" : "text/plain"
+                            },
+                            tools: options.useSearch ? [{ googleSearch: {} }] : []
+                        });
                     }
-                } else if (process.env.OPENAI_API_KEY) {
-                    logger.warn(`[VERTEX API 403 -> OPENAI FALLBACK] Falling back to OpenAI (gpt-4o)...`);
+
+                    if (fallbackModel) {
+                        if (onChunk) {
+                            result = await fallbackModel.generateContentStream({ contents });
+                        } else {
+                            result = await fallbackModel.generateContent({ contents });
+                        }
+                        fallbackSuccess = true;
+                        logger.info(`[VERTEX PRIMARY FALLBACK] Succeeded with gemini-2.5-flash!`);
+                    }
+                } catch (fallback25Err) {
+                    logger.warn(`[VERTEX PRIMARY FALLBACK] gemini-2.5-flash also failed: ${fallback25Err.message}`);
+                }
+            }
+
+            // 2. Secondary Fallback to OpenAI (gpt-4o) if gemini models failed
+            if (!fallbackSuccess) {
+                if (process.env.OPENAI_API_KEY) {
+                    logger.warn(`[VERTEX SECONDARY FALLBACK -> OPENAI] Falling back to OpenAI (gpt-4o)...`);
                     let groundedSearchContext = '';
                     let fallbackSources = [];
                     if (options.useSearch) {
@@ -916,52 +975,6 @@ export const askVertex = async (prompt, context = null, options = {}) => {
                 } else {
                     throw execErr;
                 }
-            } else if ((errStr.includes("404") || errStr.includes("NOT_FOUND")) && selectedModelName !== 'gemini-2.5-flash') {
-                logger.warn(`[VERTEX] Execution failed for ${selectedModelName}. Retrying with gemini-2.5-flash.`);
-                const fallbackModel = genAIInstance.getGenerativeModel({
-                    model: 'gemini-2.5-flash',
-                    systemInstruction: systemInstruction,
-                    generationConfig: { maxOutputTokens: 4096 },
-                    tools: options.useSearch ? [{ googleSearch: {} }] : []
-                });
-                if (onChunk) {
-                    result = await fallbackModel.generateContentStream({ contents });
-                } else {
-                    result = await fallbackModel.generateContent({ contents });
-                }
-            } else {
-                if (process.env.OPENAI_API_KEY) {
-                    logger.warn(`[VERTEX UNHANDLED -> OPENAI FALLBACK] Error: ${errStr}. Falling back to OpenAI...`);
-                    let groundedSearchContext = '';
-                    let fallbackSources = [];
-                    if (options.useSearch) {
-                        try {
-                            const liveSearchRes = await executeTargetedLegalSearch(options.searchQueryOverride || prompt, { jurisdiction: options.jurisdiction });
-                            fallbackSources = liveSearchRes.sources || [];
-                            groundedSearchContext = formatGroundingContext(fallbackSources, liveSearchRes.summary);
-                            logger.info(`[LEGAL-FRESHNESS] SEARCH_REQUIRED=true | ENGINE=tavily_fallback | SOURCES=${fallbackSources.length} | STATUS=fallback_grounded`);
-                        } catch (sErr) {
-                            logger.warn(`[VERTEX -> OPENAI FALLBACK] Live search failed: ${sErr.message}`);
-                        }
-                    }
-                    const { askOpenAI } = await import('./openai.service.js');
-                    const aiText = await askOpenAI(finalPrompt, context, {
-                        systemInstruction,
-                        userName: options.userName,
-                        language: targetLanguage,
-                        userId: options.userId,
-                        history: options.history,
-                        isJson: isJsonMode,
-                        groundedSearchContext,
-                        sources: fallbackSources,
-                        returnSources: options.returnSources
-                    });
-                    if (onChunk) {
-                        onChunk(typeof aiText === 'string' ? aiText : aiText.text);
-                    }
-                    return options.returnSources ? (typeof aiText === 'object' ? aiText : { text: aiText, sources: fallbackSources }) : (typeof aiText === 'object' ? aiText.text : aiText);
-                }
-                throw execErr;
             }
         }
 

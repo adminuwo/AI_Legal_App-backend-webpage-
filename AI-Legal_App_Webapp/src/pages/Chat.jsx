@@ -247,7 +247,7 @@ const TOOL_PRICING = {
   },
   document: {
     models: [
-      { id: 'gemini-2.5-flash', name: 'AI LEGAL™ Flash', price: 0, speed: 'Fast', description: 'Basic document analysis' },
+      { id: 'gemini-3.5-flash', name: 'AI LEGAL™ Flash', price: 0, speed: 'Fast', description: 'Basic document analysis' },
       { id: 'gemini-pro', name: 'AI LEGAL™ Pro', price: 20, speed: 'Medium', description: 'Advanced document processing' },
       { id: 'gpt4', name: 'AI LEGAL™ Premium', price: 30, speed: 'Medium', description: 'Premium document analysis' }
     ]
@@ -857,10 +857,10 @@ const Chat = () => {
   const [userAgents, setUserAgents] = useState([]);
   const hasLoadedAgentsRef = useRef(false);
   const [toolModels, setToolModels] = useState({
-    chat: 'gemini-2.5-flash',
-    image: 'gemini-2.5-flash',
-    document: 'gemini-2.5-flash',
-    voice: 'gemini-2.5-flash'
+    chat: 'gemini-3.5-flash',
+    image: 'gemini-3.5-flash',
+    document: 'gemini-3.5-flash',
+    voice: 'gemini-3.5-flash'
   });
   const uploadInputRef = useRef(null);
   const driveInputRef = useRef(null);
@@ -945,7 +945,7 @@ const Chat = () => {
 
   const [videoAspectRatio, setVideoAspectRatio] = useState('16:9');
   const [videoModelId, setVideoModelId] = useState('veo-3.1-fast-generate-001');
-  const [editModelId, setEditModelId] = useState('gemini-2.5-flash');
+  const [editModelId, setEditModelId] = useState('gemini-3.5-flash');
   const [videoResolution, setVideoResolution] = useState('1080p');
   const v = personalizations?.voice || { languageCode: 'en-US', voiceName: 'en-US-Chirp3-HD-Autonoe', pitch: 0, speed: 1.0 };
   const [audioLangCode, setAudioLangCode] = useState(v.languageCode);
@@ -960,7 +960,7 @@ const Chat = () => {
   const [isPlayingSample, setIsPlayingSample] = useState(false);
   const sampleAudioRef = useRef(null);
   const [imageAspectRatio, setImageAspectRatio] = useState('1:1');
-  const [imageModelId, setImageModelId] = useState('gemini-2.5-flash');
+  const [imageModelId, setImageModelId] = useState('gemini-3.5-flash');
   const [isMagicSettingsOpen, setIsMagicSettingsOpen] = useState(false);
   const abortControllerRef = useRef(null);
   const voiceUsedRef = useRef(false); // Track if voice input was used
@@ -4964,6 +4964,12 @@ REQUIRED OUTPUT FORMAT:
 4.  **Highlights**: Bold key terms and important concepts within sentences.
 5.  **Summary**: Include a "One-line summary" or "Simple definition" at the start or end where appropriate.
 6.  **Emojis**: Use relevant emojis.
+
+### LEGAL AGREEMENT & CONTRACT DRAFTING RULES (MANDATORY):
+When the user asks to draft, write, type, or generate ANY agreement, deed, lease, rent agreement, contract, or affidavit:
+- **NEVER provide a brief outline, short bullet points, or template with empty placeholders.**
+- **YOU MUST DRAFT THE FULL, COMPLETE, COURT-READY LEGAL INSTRUMENT** with all standard enforceable clauses (Title, Date, Parties with status/addresses, Recitals, Demised Premises Schedule, Tenancy Period & Renewal, Monthly Rent & GST, Security Deposit, Utilities, Permitted Use, Maintenance, Termination & Notice Period, Default & Remedies, Governing Law & Jurisdiction, Stamp Duty, Witness and Signature blocks).
+- Use all provided user inputs (names, addresses, floor, rent amount, GST, landmarks) directly in the drafted text.
 
 ### LEGAL NOTICE FORMAT (MANDATORY):
 When drafting a Legal Notice, you MUST follow this exact structure:

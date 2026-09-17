@@ -35,14 +35,18 @@ const COUNTRY_REGIONS_MAP = {
     'guyana ': ['Demerara-Mahaica', 'Berbice', 'Essequibo Islands']
 };
 
+let syncPromise = null;
+
 /**
  * Syncs existing registered users into AppInstall collection so historical analytics
  * accurately reflect real first-party users and devices.
  */
 export const syncHistoricalInstalls = async () => {
-    try {
-        const installCount = await AppInstall.countDocuments();
-        const userCount = await User.countDocuments();
+    if (syncPromise) return syncPromise;
+    syncPromise = (async () => {
+        try {
+            const installCount = await AppInstall.countDocuments();
+            const userCount = await User.countDocuments();
 
         if (installCount < userCount) {
             console.log(`[AppInstall Sync] Syncing historical users into AppInstall (${installCount}/${userCount})...`);
@@ -51,12 +55,15 @@ export const syncHistoricalInstalls = async () => {
 
             for (const u of users) {
                 const installId = `inst_user_${u._id.toString()}`;
-                const rawCountry = u.country || u.legalJurisdiction?.country || 'India';
-                let rawState = u.state || u.legalJurisdiction?.state || '';
+                let rawCountry = (u.country || u.legalJurisdiction?.country || 'India').trim();
+                if (rawCountry.toLowerCase() === 'all' || !rawCountry) {
+                    rawCountry = 'India';
+                }
+                let rawState = (u.state || u.legalJurisdiction?.state || '').trim();
 
                 // If state is empty, assign deterministic province/state based on country mapping
-                if (!rawState || rawState.trim() === '' || rawState === 'Unspecified Region') {
-                    const cKey = rawCountry.trim().toLowerCase();
+                if (!rawState || rawState === '' || rawState === 'Unspecified Region') {
+                    const cKey = rawCountry.toLowerCase();
                     const regions = COUNTRY_REGIONS_MAP[cKey] || MAJOR_INDIAN_STATES;
                     const charCodeSum = u._id.toString().split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
                     rawState = regions[charCodeSum % regions.length];
@@ -103,9 +110,13 @@ export const syncHistoricalInstalls = async () => {
             }
             console.log('[AppInstall Sync] Historical installs synchronization complete.');
         }
-    } catch (err) {
-        console.warn('[AppInstall Sync Error]', err.message);
-    }
+        } catch (err) {
+            console.warn('[AppInstall Sync Error]', err.message);
+        } finally {
+            syncPromise = null;
+        }
+    })();
+    return syncPromise;
 };
 
 /**
@@ -298,6 +309,7 @@ export const getDownloadSummary = async (req, res) => {
  */
 export const getCountryDownloads = async (req, res) => {
     try {
+        await syncHistoricalInstalls();
         const {
             search = '',
             sortBy = 'downloads',
@@ -371,6 +383,11 @@ export const getCountryDownloads = async (req, res) => {
 
         const aggregated = await AppInstall.aggregate(pipeline);
         const totalOverall = aggregated.reduce((acc, c) => acc + c.totalDownloads, 0);
+        const totalAndroid = aggregated.reduce((acc, c) => acc + (c.androidCount || 0), 0);
+        const totalIos = aggregated.reduce((acc, c) => acc + (c.iosCount || 0), 0);
+        const totalToday = aggregated.reduce((acc, c) => acc + (c.todayDownloads || 0), 0);
+        const total7Days = aggregated.reduce((acc, c) => acc + (c.d7Downloads || 0), 0);
+        const total30Days = aggregated.reduce((acc, c) => acc + (c.d30Downloads || 0), 0);
 
         // Format and calculate percentages
         let countries = aggregated.map(c => ({
@@ -380,11 +397,11 @@ export const getCountryDownloads = async (req, res) => {
             totalInstalls: c.totalDownloads,
             percentage: totalOverall > 0 ? ((c.totalDownloads / totalOverall) * 100).toFixed(1) : '0.0',
             percentageOfTotal: totalOverall > 0 ? parseFloat(((c.totalDownloads / totalOverall) * 100).toFixed(1)) : 0,
-            today: c.todayDownloads,
-            last7Days: c.d7Downloads,
-            last30Days: c.d30Downloads,
-            android: c.androidCount,
-            ios: c.iosCount
+            today: c.todayDownloads || 0,
+            last7Days: c.d7Downloads || 0,
+            last30Days: c.d30Downloads || 0,
+            android: c.androidCount || 0,
+            ios: c.iosCount || 0
         }));
 
         // Sorting
@@ -392,7 +409,12 @@ export const getCountryDownloads = async (req, res) => {
             const order = sortOrder === 'asc' ? 1 : -1;
             if (sortBy === 'country') return a.country.localeCompare(b.country) * order;
             if (sortBy === 'percentage') return (parseFloat(a.percentage) - parseFloat(b.percentage)) * order;
-            return (a.totalDownloads - b.totalDownloads) * order;
+            if (sortBy === 'last7Days') return ((a.last7Days || 0) - (b.last7Days || 0)) * order;
+            if (sortBy === 'last30Days') return ((a.last30Days || 0) - (b.last30Days || 0)) * order;
+            if (sortBy === 'today') return ((a.today || 0) - (b.today || 0)) * order;
+            if (sortBy === 'android') return ((a.android || 0) - (b.android || 0)) * order;
+            if (sortBy === 'ios') return ((a.ios || 0) - (b.ios || 0)) * order;
+            return ((a.totalDownloads || 0) - (b.totalDownloads || 0)) * order;
         });
 
         // Pagination
@@ -405,10 +427,19 @@ export const getCountryDownloads = async (req, res) => {
         return res.status(200).json({
             success: true,
             totalDownloadsSum: totalOverall,
+            summaryTotals: {
+                totalInstalls: totalOverall,
+                android: totalAndroid,
+                ios: totalIos,
+                today: totalToday,
+                last7Days: total7Days,
+                last30Days: total30Days
+            },
             countries: paginatedCountries,
             pagination: {
                 page: p,
                 limit: l,
+                total: totalItems,
                 totalItems,
                 totalPages
             }
@@ -424,6 +455,7 @@ export const getCountryDownloads = async (req, res) => {
  */
 export const getCountryDetails = async (req, res) => {
     try {
+        await syncHistoricalInstalls();
         const country = req.params.country || req.params.countryName;
         const dateRange = req.query.range || req.query.dateRange || 'all';
         const {
@@ -608,6 +640,7 @@ export const getCountryDetails = async (req, res) => {
  */
 export const getDownloadTrends = async (req, res) => {
     try {
+        await syncHistoricalInstalls();
         const dateRange = req.query.range || req.query.dateRange || '30d';
         const {
             country,

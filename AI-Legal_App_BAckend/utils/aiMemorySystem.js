@@ -261,7 +261,7 @@ ${aiResponse}
 `;
 
         const resultText = await vertexService.askVertex(evaluationPrompt, null, {
-            modelOverride: 'gemini-2.5-flash',
+            modelOverride: 'gemini-3.5-flash',
             isJson: true
         });
 

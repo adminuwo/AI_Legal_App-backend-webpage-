@@ -227,7 +227,7 @@ Your task is to synthesize this into a structured, natural-sounding response in 
             const synthesisText = await AskVertexRaw(synthesisPrompt, {
                 maxOutputTokens: 2048,
                 temperature: 0.3,
-                modelOverride: 'gemini-2.5-flash'
+                modelOverride: 'gemini-3.5-flash'
             });
 
             ds.timing('Gemini synthesis', Date.now() - step3Start);

@@ -1266,7 +1266,7 @@ ${oldContent}
 User Corrected Response:
 ${content}
 `;
-        const stylePreference = await vertexService.askVertex(learnPrompt, null, { modelOverride: 'gemini-2.5-flash' });
+        const stylePreference = await vertexService.askVertex(learnPrompt, null, { modelOverride: 'gemini-3.5-flash' });
         if (stylePreference) {
           await UserMemory.findOneAndUpdate(
             { userId },
