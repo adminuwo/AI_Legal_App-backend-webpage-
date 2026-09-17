@@ -3,7 +3,7 @@ import {
   Building2, GraduationCap, Clock, 
   Sparkles, RefreshCw, Search, 
   Award, Mail, ShieldCheck, 
-  UserCheck, Plus
+  UserCheck, Plus, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
@@ -24,6 +24,16 @@ export default function AdminLinkedOrganizationsSection() {
   // Filter & Search State
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+
+  // Expand/Collapse state per organization slug (by default collapsed)
+  const [expandedOrgs, setExpandedOrgs] = useState({});
+
+  const toggleOrgExpand = (slug) => {
+    setExpandedOrgs(prev => ({
+      ...prev,
+      [slug]: !prev[slug]
+    }));
+  };
 
   // Fetch Linked Organizations
   const fetchOrganizations = async (isManual = false) => {
@@ -269,14 +279,20 @@ export default function AdminLinkedOrganizationsSection() {
           {filteredOrgs.map((org) => {
             const isSubscribed = org.isSubscribed;
             const daysRemaining = org.daysRemaining || 0;
+            const isExpanded = Boolean(expandedOrgs[org.organizationSlug] || (searchQuery && searchQuery.trim().length > 1));
 
             return (
               <div
                 key={org.organizationSlug}
                 className="rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-zinc-800 shadow-xs overflow-hidden transition-all hover:border-slate-300 dark:hover:border-zinc-700"
               >
-                {/* Organization Header Row - Phone Responsive */}
-                <div className="p-3 sm:p-4 border-b border-slate-100 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 bg-white dark:bg-[#1E293B]">
+                {/* Organization Header Row - Clickable Dropdown Accordion */}
+                <div 
+                  onClick={() => toggleOrgExpand(org.organizationSlug)}
+                  className={`p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 bg-white dark:bg-[#1E293B] cursor-pointer hover:bg-slate-50/70 dark:hover:bg-zinc-800/40 transition-colors select-none group ${
+                    isExpanded ? 'border-b border-slate-100 dark:border-zinc-800' : ''
+                  }`}
+                >
                   <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                     <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/20 text-[#C8A34D] flex items-center justify-center font-black text-xs shrink-0">
                       {org.organizationName.substring(0, 2).toUpperCase()}
@@ -326,110 +342,135 @@ export default function AdminLinkedOrganizationsSection() {
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Sub-bar & Students Table - Phone Responsive */}
-                <div className="p-3 sm:p-4 space-y-2.5 sm:space-y-3 bg-slate-50/40 dark:bg-zinc-900/30">
-                  {/* Batches & Quick Stats Bar */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 px-3 rounded-xl bg-slate-100/70 dark:bg-zinc-800/60 border border-slate-200/60 dark:border-zinc-700/60 text-xs">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-zinc-400">Class Batches:</span>
-                      {org.classes?.length > 0 ? (
-                        org.classes.map((cls, idx) => (
-                          <span key={idx} className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700">
-                            {cls}
-                          </span>
-                        ))
+                  {/* Expand / Collapse Toggle Button */}
+                  <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleOrgExpand(org.organizationSlug);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs ${
+                        isExpanded
+                          ? 'bg-amber-500/10 dark:bg-amber-500/20 text-[#C8A34D] border-amber-500/30'
+                          : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-700'
+                      }`}
+                    >
+                      <span>{isExpanded ? 'Hide Students' : `View Students (${org.studentsCount || 0})`}</span>
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-[#C8A34D] transition-transform duration-200" />
                       ) : (
-                        <span className="text-[10px] sm:text-[11px] text-slate-500">General Law Batch</span>
+                        <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-transform duration-200" />
                       )}
-                    </div>
-
-                    <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-zinc-400 flex flex-wrap items-center gap-2">
-                      <span>Credits Allotted: <strong className="text-[#C8A34D]">{org.totalCreditsAllocated.toLocaleString()}</strong></span>
-                      <span>•</span>
-                      <span>Registered on App: <strong className="text-emerald-600 dark:text-emerald-400 font-bold">{org.registeredUsersCount} / {org.studentsCount}</strong></span>
-                    </div>
+                    </button>
                   </div>
-
-                  {/* Swipe indicator for mobile */}
-                  <div className="sm:hidden text-[10px] text-slate-400 dark:text-zinc-500 flex items-center justify-between px-1">
-                    <span>← Swipe table horizontally</span>
-                    <span>7 student columns →</span>
-                  </div>
-
-                  {/* Students Table with minimum width for clean mobile scrolling */}
-                  {org.students?.length === 0 ? (
-                    <div className="p-4 text-center text-xs text-slate-400 font-medium">
-                      No student details records found in this organization.
-                    </div>
-                  ) : (
-                    <div className="border border-slate-200 dark:border-zinc-800 rounded-xl overflow-x-auto bg-white dark:bg-[#1E293B]">
-                      <table className="w-full text-left text-xs min-w-[640px]">
-                        <thead className="bg-slate-50 dark:bg-zinc-800/80 text-slate-500 dark:text-zinc-400 uppercase text-[10px] tracking-wider border-b border-slate-200 dark:border-zinc-700">
-                          <tr>
-                            <th className="py-2.5 px-3 font-bold">Student Name</th>
-                            <th className="py-2.5 px-3 font-bold">Student Email</th>
-                            <th className="py-2.5 px-3 font-bold">Student ID</th>
-                            <th className="py-2.5 px-3 font-bold">Class / Semester</th>
-                            <th className="py-2.5 px-3 font-bold">AI-Legal Status</th>
-                            <th className="py-2.5 px-3 font-bold">Credits</th>
-                            <th className="py-2.5 px-3 font-bold">Synced Date</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
-                          {org.students.map((student) => (
-                            <tr key={student._id} className="hover:bg-slate-50/80 dark:hover:bg-zinc-800/50 transition-colors">
-                              <td className="py-2.5 px-3 font-bold text-slate-900 dark:text-white flex items-center gap-2 whitespace-nowrap">
-                                <div className="w-6 h-6 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-[#C8A34D] flex items-center justify-center font-bold text-[10px] shrink-0">
-                                  {student.studentName.charAt(0).toUpperCase()}
-                                </div>
-                                <span className="truncate">{student.studentName}</span>
-                              </td>
-
-                              <td className="py-2.5 px-3 font-mono text-slate-600 dark:text-zinc-300 text-[11px] whitespace-nowrap">
-                                <div className="flex items-center gap-1.5">
-                                  <Mail className="w-3 h-3 text-slate-400 shrink-0" />
-                                  <span>{student.studentEmail || 'N/A'}</span>
-                                </div>
-                              </td>
-
-                              <td className="py-2.5 px-3 font-mono text-slate-500 dark:text-zinc-400 text-[11px] whitespace-nowrap">
-                                {student.studentId || 'N/A'}
-                              </td>
-
-                              <td className="py-2.5 px-3 text-slate-600 dark:text-zinc-300 font-medium whitespace-nowrap">
-                                {student.className || 'General'}
-                              </td>
-
-                              <td className="py-2.5 px-3 whitespace-nowrap">
-                                {student.isRegisteredInAiLegal ? (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 inline-flex items-center gap-1">
-                                    <UserCheck className="w-3 h-3 shrink-0" />
-                                    <span>Registered</span>
-                                  </span>
-                                ) : (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-[#C8A34D] border border-amber-500/20 inline-flex items-center gap-1" title="Account will auto-activate on first sign in">
-                                    <Clock className="w-3 h-3 shrink-0" />
-                                    <span>Pending Sign-in</span>
-                                  </span>
-                                )}
-                              </td>
-
-                              <td className="py-2.5 px-3 font-bold text-[#C8A34D] whitespace-nowrap">
-                                {student.credits?.toLocaleString()}
-                              </td>
-
-                              <td className="py-2.5 px-3 text-slate-400 dark:text-zinc-500 text-[11px] whitespace-nowrap">
-                                {new Date(student.syncedAt).toLocaleDateString()}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
                 </div>
+
+                {/* Sub-bar & Students Table - Only visible when expanded */}
+                {isExpanded && (
+                  <div className="p-3 sm:p-4 space-y-2.5 sm:space-y-3 bg-slate-50/40 dark:bg-zinc-900/30 animate-fadeIn">
+                    {/* Batches & Quick Stats Bar */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 px-3 rounded-xl bg-slate-100/70 dark:bg-zinc-800/60 border border-slate-200/60 dark:border-zinc-700/60 text-xs">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-zinc-400">Class Batches:</span>
+                        {org.classes?.length > 0 ? (
+                          org.classes.map((cls, idx) => (
+                            <span key={idx} className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700">
+                              {cls}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-[10px] sm:text-[11px] text-slate-500">General Law Batch</span>
+                        )}
+                      </div>
+
+                      <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-zinc-400 flex flex-wrap items-center gap-2">
+                        <span>Credits Allotted: <strong className="text-[#C8A34D]">{org.totalCreditsAllocated.toLocaleString()}</strong></span>
+                        <span>•</span>
+                        <span>Registered on App: <strong className="text-emerald-600 dark:text-emerald-400 font-bold">{org.registeredUsersCount} / {org.studentsCount}</strong></span>
+                      </div>
+                    </div>
+
+                    {/* Swipe indicator for mobile */}
+                    <div className="sm:hidden text-[10px] text-slate-400 dark:text-zinc-500 flex items-center justify-between px-1">
+                      <span>← Swipe table horizontally</span>
+                      <span>7 student columns →</span>
+                    </div>
+
+                    {/* Students Table with minimum width for clean mobile scrolling */}
+                    {org.students?.length === 0 ? (
+                      <div className="p-4 text-center text-xs text-slate-400 font-medium">
+                        No student details records found in this organization.
+                      </div>
+                    ) : (
+                      <div className="border border-slate-200 dark:border-zinc-800 rounded-xl overflow-x-auto bg-white dark:bg-[#1E293B]">
+                        <table className="w-full text-left text-xs min-w-[640px]">
+                          <thead className="bg-slate-50 dark:bg-zinc-800/80 text-slate-500 dark:text-zinc-400 uppercase text-[10px] tracking-wider border-b border-slate-200 dark:border-zinc-700">
+                            <tr>
+                              <th className="py-2.5 px-3 font-bold">Student Name</th>
+                              <th className="py-2.5 px-3 font-bold">Student Email</th>
+                              <th className="py-2.5 px-3 font-bold">Student ID</th>
+                              <th className="py-2.5 px-3 font-bold">Class / Semester</th>
+                              <th className="py-2.5 px-3 font-bold">AI-Legal Status</th>
+                              <th className="py-2.5 px-3 font-bold">Credits</th>
+                              <th className="py-2.5 px-3 font-bold">Synced Date</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
+                            {org.students.map((student) => (
+                              <tr key={student._id} className="hover:bg-slate-50/80 dark:hover:bg-zinc-800/50 transition-colors">
+                                <td className="py-2.5 px-3 font-bold text-slate-900 dark:text-white flex items-center gap-2 whitespace-nowrap">
+                                  <div className="w-6 h-6 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-[#C8A34D] flex items-center justify-center font-bold text-[10px] shrink-0">
+                                    {student.studentName.charAt(0).toUpperCase()}
+                                  </div>
+                                  <span className="truncate">{student.studentName}</span>
+                                </td>
+
+                                <td className="py-2.5 px-3 font-mono text-slate-600 dark:text-zinc-300 text-[11px] whitespace-nowrap">
+                                  <div className="flex items-center gap-1.5">
+                                    <Mail className="w-3 h-3 text-slate-400 shrink-0" />
+                                    <span>{student.studentEmail || 'N/A'}</span>
+                                  </div>
+                                </td>
+
+                                <td className="py-2.5 px-3 font-mono text-slate-500 dark:text-zinc-400 text-[11px] whitespace-nowrap">
+                                  {student.studentId || 'N/A'}
+                                </td>
+
+                                <td className="py-2.5 px-3 text-slate-600 dark:text-zinc-300 font-medium whitespace-nowrap">
+                                  {student.className || 'General'}
+                                </td>
+
+                                <td className="py-2.5 px-3 whitespace-nowrap">
+                                  {student.isRegisteredInAiLegal ? (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 inline-flex items-center gap-1">
+                                      <UserCheck className="w-3 h-3 shrink-0" />
+                                      <span>Registered</span>
+                                    </span>
+                                  ) : (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-[#C8A34D] border border-amber-500/20 inline-flex items-center gap-1" title="Account will auto-activate on first sign in">
+                                      <Clock className="w-3 h-3 shrink-0" />
+                                      <span>Pending Sign-in</span>
+                                    </span>
+                                  )}
+                                </td>
+
+                                <td className="py-2.5 px-3 font-bold text-[#C8A34D] whitespace-nowrap">
+                                  {student.credits?.toLocaleString()}
+                                </td>
+
+                                <td className="py-2.5 px-3 text-slate-400 dark:text-zinc-500 text-[11px] whitespace-nowrap">
+                                  {new Date(student.syncedAt).toLocaleDateString()}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
