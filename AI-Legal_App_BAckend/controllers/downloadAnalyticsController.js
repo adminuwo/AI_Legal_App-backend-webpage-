@@ -7,6 +7,7 @@ import {
     syncUninstallsToDatabase,
     getPropertyId
 } from '../services/googleAnalytics.service.js';
+import { uninstallDetectionService } from '../services/uninstallDetection.service.js';
 
 // Top Indian States for realistic deterministic backfill distribution when unspecified
 const MAJOR_INDIAN_STATES = [
@@ -917,6 +918,25 @@ export const testGaConnectionHandler = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: err.message
+        });
+    }
+};
+
+/**
+ * 9. Silent Token Ping Real-Time Uninstalls Sync Handler
+ * Endpoint: POST /api/admin/analytics/downloads/sync-silent-uninstalls
+ * Pings active mobile device push tokens silently to detect uninstalled apps on the exact same day.
+ */
+export const syncSilentUninstallsHandler = async (req, res) => {
+    try {
+        const result = await uninstallDetectionService.detectUninstallsViaSilentPing();
+        return res.status(result.success ? 200 : 500).json(result);
+    } catch (err) {
+        console.error('[syncSilentUninstallsHandler Error]', err);
+        return res.status(500).json({
+            success: false,
+            message: err.message || "Failed to execute silent uninstall detection",
+            error: err.message
         });
     }
 };

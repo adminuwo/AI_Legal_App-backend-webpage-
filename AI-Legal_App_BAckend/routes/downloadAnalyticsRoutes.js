@@ -8,7 +8,8 @@ import {
     exportDownloadReport,
     syncHistoricalInstalls,
     syncGaUninstallsHandler,
-    testGaConnectionHandler
+    testGaConnectionHandler,
+    syncSilentUninstallsHandler
 } from '../controllers/downloadAnalyticsController.js';
 
 const router = express.Router();
@@ -47,5 +48,8 @@ router.post('/sync-ga-uninstalls', syncGaUninstallsHandler);
 
 // 8. Google Analytics GA4 Connection Test Endpoint
 router.get('/test-ga-connection', testGaConnectionHandler);
+
+// 9. Real-Time Silent Ping Uninstalls Sync Endpoint (Same-day detection via Expo/FCM)
+router.post('/sync-silent-uninstalls', syncSilentUninstallsHandler);
 
 export default router;

@@ -134,6 +134,10 @@ connectDB().then(async () => {
     // Initialize Plan Expiry Notification System
     startPlanExpiryService();
 
+    // Initialize Real-Time Silent Ping Mobile Uninstall Detection System
+    const { initUninstallDetectionScheduler } = await import('./services/uninstallDetection.service.js');
+    initUninstallDetectionScheduler();
+
     // Initialize & Sync AppInstall analytics records from real users
     try {
       const { syncHistoricalInstalls } = await import('./controllers/downloadAnalyticsController.js');

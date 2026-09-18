@@ -2,6 +2,7 @@ import Precedent from '../../../models/Precedent.js';
 import * as vertexService from '../../../services/vertex.service.js';
 import { performSearch } from '../../../services/webSearch.service.js';
 import { jurisdictionManager } from '../../../services/jurisdictionManager.js';
+import legalIngestionService from '../../../services/legalIngestion.service.js';
 import logger from '../../../utils/logger.js';
 import { safeParseLLMJson } from '../../../utils/jsonUtils.js';
 
@@ -361,8 +362,28 @@ const searchInternalDB = async (queries, metadata, resolvedJurisdiction = null) 
  */
 const searchExternal = async (queries, resolvedJurisdiction = null) => {
     try {
+        const countryCode = (resolvedJurisdiction?.countryCode || 'IN').toUpperCase();
+        const countryName = resolvedJurisdiction?.country || 'India';
         const isNepal = resolvedJurisdiction?.isNepal;
-        const countryName = resolvedJurisdiction?.country || (isNepal ? 'Nepal' : 'India');
+
+        // 1. Official Government Court API Ingestion for US, UK, and Canada
+        if (['US', 'GB', 'UK', 'CA'].includes(countryCode)) {
+            logger.info(`[Precedents] Querying official court API via legalIngestionService for [${countryCode}]...`);
+            try {
+                const primaryQuery = queries[0] || '';
+                const officialCases = await legalIngestionService.fetchAndCache(countryCode, primaryQuery, 5);
+                if (officialCases && officialCases.length > 0) {
+                    logger.info(`[Precedents] Successfully retrieved ${officialCases.length} official court judgments from ${countryName} registry.`);
+                    return officialCases.map(c => ({
+                        ...c.toObject(),
+                        source: 'Official Court Registry'
+                    }));
+                }
+            } catch (ingestErr) {
+                logger.warn(`[Precedents] Official ingestion failed, proceeding to search grounding fallback: ${ingestErr.message}`);
+            }
+        }
+
         logger.info(`[Precedents] Searching external for ${countryName} with queries: ${queries.slice(0, 3).join(', ')}`);
         
         const searchResults = await Promise.all(queries.slice(0, 3).map(async (q) => {

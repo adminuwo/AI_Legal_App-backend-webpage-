@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Download, RefreshCw, RotateCw, Calendar, Globe, Smartphone, Apple, 
   TrendingUp, Users, ArrowLeft, Search, Filter, FileSpreadsheet, FileText, 
-  FileDown, ChevronRight, CheckCircle, Info, Layers, ChevronDown, Award, BarChart3
+  FileDown, ChevronRight, CheckCircle, Info, Layers, ChevronDown, Award, BarChart3,
+  Radio, Zap
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, 
@@ -47,6 +48,7 @@ export default function AdminDownloadsSection() {
   const [refreshing, setRefreshing] = useState(false);
   const [syncingHistorical, setSyncingHistorical] = useState(false);
   const [syncingGa4, setSyncingGa4] = useState(false);
+  const [syncingSilent, setSyncingSilent] = useState(false);
 
   const [summary, setSummary] = useState({
     total: 0,
@@ -240,6 +242,26 @@ export default function AdminDownloadsSection() {
       }
     } finally {
       setSyncingGa4(false);
+    }
+  };
+
+  // Sync Real-Time Uninstalls via Silent Mobile Push Ping (Same-day live detection)
+  const handleSyncSilent = async () => {
+    setSyncingSilent(true);
+    try {
+      const res = await apiService.syncSilentUninstalls();
+      if (res?.success) {
+        toast.success(res.message || `Live sync complete: ${res.uninstalledDetected || 0} uninstalls detected today!`);
+        fetchAnalytics(true);
+      } else {
+        toast.error(res?.message || "Live uninstall sync completed with warnings.");
+      }
+    } catch (err) {
+      console.error("Silent uninstall sync error:", err);
+      const msg = err.response?.data?.message || err.message || "Failed to execute live uninstall sync.";
+      toast.error(msg);
+    } finally {
+      setSyncingSilent(false);
     }
   };
 
@@ -486,6 +508,16 @@ export default function AdminDownloadsSection() {
           >
             <BarChart3 className={`w-3.5 h-3.5 shrink-0 ${syncingGa4 ? 'animate-spin text-[#B88B2A]' : 'text-amber-600 dark:text-amber-400'}`} />
             <span className="truncate">{syncingGa4 ? 'Syncing GA4...' : 'Sync GA4'}</span>
+          </button>
+
+          <button
+            onClick={handleSyncSilent}
+            disabled={syncingSilent}
+            title="Real-time same-day mobile uninstall detection via silent push ping"
+            className="flex items-center justify-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-300/80 dark:border-emerald-800/60 rounded-xl transition-all disabled:opacity-50 cursor-pointer shadow-xs"
+          >
+            <Radio className={`w-3.5 h-3.5 shrink-0 ${syncingSilent ? 'animate-spin text-emerald-600' : 'text-emerald-600 dark:text-emerald-400'}`} />
+            <span className="truncate">{syncingSilent ? 'Pinging...' : 'Sync Live'}</span>
           </button>
 
           <button

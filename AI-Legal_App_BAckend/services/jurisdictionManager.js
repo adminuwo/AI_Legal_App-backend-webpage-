@@ -134,6 +134,7 @@ class JurisdictionManager {
             const targetUkRegex = /\b(?:under\s+(?:uk|english|british)\s+law|laws?\s+of\s+(?:the\s+)?(?:uk|united\s+kingdom|england|wales|scotland)|in\s+(?:the\s+)?(?:uk|united\s+kingdom|england|wales|scotland)|english\s+common\s+law|acts?\s+of\s+parliament|bills\s+of\s+exchange\s+act\s+1882|fraud\s+act\s+2006|limitation\s+act\s+1980|bailii|uksc|cpr\s+1998|english\s+legal\s+system)\b/i;
             const targetUaeRegex = /\b(?:under\s+(?:uae|dubai|abu\s+dhabi|emirati)\s+law|laws?\s+of\s+(?:the\s+)?(?:uae|dubai|abu\s+dhabi|united\s+arab\s+emirates)|in\s+(?:the\s+)?(?:uae|dubai|abu\s+dhabi|united\s+arab\s+emirates)|uae\s+federal\s+(?:decree-)?law|federal\s+decree-law(?:\s+no\.)?|federal\s+law\s+no\.|court\s+of\s+execution|difc(?:\s+courts)?|adgm(?:\s+courts)?)\b/i;
             const targetIndiaRegex = /\b(?:under\s+indian?\s+law|laws?\s+of\s+india|indian?\s+law|under\s+india\s+law|bns(?:\s+2023)?|bnss(?:\s+2023)?|bsa(?:\s+2023)?|ipc(?:\s+1860)?|crpc(?:\s+1973)?|supreme\s+court\s+of\s+india|high\s+court\s+of|india\s+code|section\s+138|negotiable\s+instruments\s+act(?:\s+1881)?)\b/i;
+            const targetCanadaRegex = /\b(?:under\s+(?:canad(?:a|ian)|ontario|quebec|british\s+columbia|alberta)\s+law|laws?\s+of\s+(?:the\s+)?(?:canada|ontario|quebec|alberta)|in\s+(?:the\s+)?(?:canada|ontario|quebec|british\s+columbia)|canadian\s+(?:legal\s+system|criminal\s+code|charter\s+of\s+rights)|criminal\s+code\s+of\s+canada|canlii|scc\b)/i;
             const targetNepalRegex = /\b(?:under\s+nepal(?:ese|i)?\s+law|laws?\s+of\s+nepal|nepal(?:ese|i)?\s+law|nepal\s+legal|nepal\s+supreme\s+court|nepal\s+law\s+commission|muluki\s+code|muluki\s+ain|muluki\s+aparadh|muluki\s+devani|banking\s+offence\s+and\s+punishment\s+act(?:\s+2064)?|negotiable\s+instruments\s+act\s+2034|electronic\s+transactions\s+act\s+2063)\b/i;
 
             if (targetUsRegex.test(lowerText)) {
@@ -166,6 +167,15 @@ class JurisdictionManager {
                 if (lowerText.includes('delhi')) resolvedState = 'Delhi (NCT)';
                 else if (lowerText.includes('maharashtra') || lowerText.includes('mumbai')) resolvedState = 'Maharashtra';
                 else if (lowerText.includes('karnataka') || lowerText.includes('bengaluru') || lowerText.includes('bangalore')) resolvedState = 'Karnataka';
+            } else if (targetCanadaRegex.test(lowerText)) {
+                resolvedCountry = 'Canada';
+                resolvedCode = 'CA';
+                resolutionSource = 'explicit_query';
+                if (lowerText.includes('ontario') || lowerText.includes('toronto') || lowerText.includes('ottawa')) resolvedState = 'Ontario';
+                else if (lowerText.includes('quebec') || lowerText.includes('montreal')) resolvedState = 'Quebec';
+                else if (lowerText.includes('british columbia') || lowerText.includes('vancouver')) resolvedState = 'British Columbia';
+                else if (lowerText.includes('alberta') || lowerText.includes('calgary') || lowerText.includes('edmonton')) resolvedState = 'Alberta';
+                else resolvedState = 'Ontario';
             } else if (targetNepalRegex.test(lowerText) || /नेपाल|काठमाडौं|हेटौंडा|पोखरा|मुलुकी|ऐन|देवानी|फौजदारी|जाहेरी|दरखास्त/.test(combinedText)) {
                 resolvedCountry = 'Nepal';
                 resolvedCode = 'NP';
@@ -596,6 +606,35 @@ class JurisdictionManager {
                 apexCourt: 'Court of Cassation (Dubai / Abu Dhabi) / Federal Supreme Court',
                 citationFormat: 'Federal Gazette / Dubai Court of Cassation Judgment Reference',
                 authoritativePortal: 'UAE Legislation Portal (uaelegislation.gov.ae / elaws.gov.ae)'
+            };
+        }
+
+        const isCanada = countryStr === 'canada' || countryStr === 'ca' || countryCode === 'CA' || countryCode === 'CAN';
+        if (isCanada) {
+            return {
+                country: 'Canada',
+                countryCode: 'CA',
+                currency: 'CAD',
+                currencySymbol: '$',
+                capitalCity: 'Ottawa',
+                constitution: 'Constitution Acts, 1867 and 1982 (Canadian Charter of Rights and Freedoms)',
+                criminalCode: 'Criminal Code of Canada (R.S.C., 1985, c. C-46) & Youth Criminal Justice Act (YCJA)',
+                criminalProcedure: 'Criminal Code Part XX (Procedure in Jury Trials and General Provisions)',
+                civilCode: 'Canadian Common Law of Contract & Tort (Civil Code of Quebec / CCQ in Quebec)',
+                civilProcedure: 'Federal Courts Rules (SOR/98-106) & Provincial Rules of Civil Procedure (e.g. Ontario Rules of Civil Procedure)',
+                evidenceAct: 'Canada Evidence Act (R.S.C., 1985, c. C-5) & Provincial Evidence Acts',
+                electronicTransactionsAct: 'Personal Information Protection and Electronic Documents Act (PIPEDA) & Provincial E-Commerce Acts',
+                commercialLaws: 'Canada Business Corporations Act (CBCA), Bankruptcy and Insolvency Act (BIA), Competition Act',
+                policeReportName: 'Police Incident Report / Criminal Information',
+                courtHierarchy: [
+                    'Provincial/Territorial Courts (Ontario Court of Justice, Court of Quebec, etc.)',
+                    'Superior Courts / Supreme Courts of Provinces (e.g. Ontario Superior Court of Justice)',
+                    'Courts of Appeal (Provincial Courts of Appeal & Federal Court of Appeal)',
+                    'Supreme Court of Canada (SCC / CSC)'
+                ],
+                apexCourt: 'Supreme Court of Canada (SCC / CSC)',
+                citationFormat: '[Year] SCC / [Year] CanLII / [Year] 1 S.C.R. / D.L.R.',
+                authoritativePortal: 'Justice Laws Website (laws-lois.justice.gc.ca) / CanLII (www.canlii.org)'
             };
         }
 

@@ -19,6 +19,7 @@ import AuditLog from "../models/AuditLog.js";
 import AuthService from "../services/core/AuthService.js";
 import PendingRegistration from "../models/PendingRegistration.js";
 import { detectLanguageFromRequest } from "../utils/geoLanguageResolver.js";
+import { resolveCountryFromRequest } from "../utils/geoCountryResolver.js";
 import { handleNewUserRegistration } from "../services/userLifecycleService.js";
 
 const router = express.Router();
@@ -418,7 +419,8 @@ const handleSocialUser = async (profile, req, res, isRedirect = true) => {
       } else {
         // 3. Create new user with auto-detected regional language
         console.log(`[Social Auth] Creating new user via ${provider.toUpperCase()}: ${email}`);
-        const detectedLang = detectLanguageFromRequest(req);
+        const geoInfo = resolveCountryFromRequest(req, req.body);
+        const detectedLang = detectLanguageFromRequest(req, geoInfo.state) || geoInfo.language;
         const userAgent = req.headers['user-agent'] || '';
         let detectedPlatform = req.headers['x-device-os'] || req.headers['x-device-platform'];
         if (!['android', 'ios'].includes(String(detectedPlatform).toLowerCase())) {
@@ -437,6 +439,17 @@ const handleSocialUser = async (profile, req, res, isRedirect = true) => {
           password: crypto.randomBytes(16).toString("hex"), // Secure random password
           credits: 500, // Explicitly set to match README Free Tier
           avatar: picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=random`,
+          country: geoInfo.country,
+          countryCode: geoInfo.countryCode,
+          state: geoInfo.state,
+          jurisdiction: geoInfo.country,
+          legalJurisdiction: {
+            country: geoInfo.country,
+            countryCode: geoInfo.countryCode,
+            state: geoInfo.state,
+            jurisdictionType: geoInfo.state ? 'state' : 'national',
+            source: geoInfo.source
+          },
           isVerified: true,
           provider: provider.toLowerCase(),
           providerId: providerId,

@@ -70,7 +70,15 @@ router.post("/", async (req, res) => {
             country: pendingReg.country || 'India',
             countryCode: pendingReg.countryCode || 'IN',
             dialCode: pendingReg.dialCode || '+91',
-            jurisdiction: pendingReg.jurisdiction || 'India',
+            jurisdiction: pendingReg.jurisdiction || pendingReg.country || 'India',
+            state: pendingReg.state || '',
+            legalJurisdiction: {
+                country: pendingReg.country || 'India',
+                countryCode: pendingReg.countryCode || 'IN',
+                state: pendingReg.state || '',
+                jurisdictionType: pendingReg.state ? 'state' : 'national',
+                source: 'email_signup'
+            },
             isVerified: true,
             credits: 500,
             avatar: avatarUrl,

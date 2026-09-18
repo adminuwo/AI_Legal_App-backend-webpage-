@@ -48,7 +48,17 @@ const precedentSchema = new mongoose.Schema({
     },
     jurisdiction: {
         type: String,
-        default: 'India'
+        default: 'India',
+        index: true
+    },
+    subJurisdiction: {
+        type: String,
+        trim: true,
+        index: true
+    },
+    sourceUrl: {
+        type: String,
+        trim: true
     },
     ai_analysis: {
         type: mongoose.Schema.Types.Mixed,
@@ -58,8 +68,9 @@ const precedentSchema = new mongoose.Schema({
     timestamps: true 
 });
 
-// Full text search index
+// Full text search index scoped to jurisdiction and countryCode
 precedentSchema.index({ case_name: 'text', text: 'text', citation: 'text', tags: 'text' });
+precedentSchema.index({ jurisdiction: 1, countryCode: 1, lastExtracted: -1 });
 
 const Precedent = mongoose.model('Precedent', precedentSchema);
 export default Precedent;

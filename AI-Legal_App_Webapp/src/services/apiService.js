@@ -1858,6 +1858,16 @@ export const apiService = {
     }
   },
 
+  async syncSilentUninstalls() {
+    try {
+      const response = await apiClient.post('/admin/analytics/downloads/sync-silent-uninstalls');
+      return response.data;
+    } catch (error) {
+      console.error("Failed to execute live silent uninstall sync:", error);
+      throw error;
+    }
+  },
+
   // ─── LEGAL PRECEDENTS & AI INTELLIGENCE ───
   async searchPrecedents(query, projectId = null, language = 'English', jurisdiction = null) {
     try {
