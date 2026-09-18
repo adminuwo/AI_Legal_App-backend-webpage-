@@ -16,6 +16,7 @@ import { API } from '../types';
 
 import { CATEGORIES, ALL_91_TEMPLATES, getFieldsForTemplate } from '../constants/templatesData';
 import { useSubscription } from '../context/SubscriptionContext';
+import { ratingReviewWebHelper } from '../utils/ratingReviewHelper';
 
 const LANGUAGES = [
   'English', 'Hindi', 'Marathi', 'Gujarati', 'Telugu', 
@@ -503,6 +504,7 @@ THROUGH ADVOCATE`;
     `);
     printWindow.document.close();
     toast.success('Preparing PDF for printing/download...');
+    ratingReviewWebHelper.recordExportAndCheckTrigger({ type: 'draft_maker_pdf_export' });
   };
 
   return (

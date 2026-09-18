@@ -1,6 +1,6 @@
 import express from 'express';
 import Feedback from '../models/Feedback.js';
-import { sendFeedbackEmail } from '../utils/Email.js';
+import { sendFeedbackEmail, sendReviewGatekeeperAlertEmail } from '../utils/Email.js';
 import { sendPublicContactQueryEmail } from '../services/emailService.js';
 import { verifyToken, optionalVerifyToken, isAdmin } from '../middleware/authorization.js';
 
@@ -35,6 +35,49 @@ router.post('/', optionalVerifyToken, async (req, res) => {
         res.status(201).json({ message: 'Feedback submitted successfully', feedback: newFeedback });
     } catch (error) {
         console.error('Error submitting feedback:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// POST /api/feedback/review-gatekeeper
+// Handles In-App Rating Gatekeeper (Positive direct rating, Negative intercepted to admin@uwo24.com)
+router.post('/review-gatekeeper', optionalVerifyToken, async (req, res) => {
+    try {
+        const { sentiment, rating, feedbackText, platform, userEmail, userName, metadata } = req.body;
+
+        const isPositive = sentiment === 'positive' || (rating && Number(rating) >= 4);
+        const type = isPositive ? 'gatekeeper_positive' : 'gatekeeper_negative';
+
+        const newFeedback = new Feedback({
+            userId: req.user ? (req.user.id || req.user._id) : null,
+            type,
+            platform: platform === 'mobile_app' ? 'mobile_app' : (platform === 'web_app' ? 'web_app' : 'unknown'),
+            rating: rating ? Number(rating) : (isPositive ? 5 : 2),
+            details: feedbackText || (isPositive ? 'User indicated positive satisfaction.' : 'User indicated dissatisfaction.'),
+            userEmail: userEmail || (req.user ? req.user.email : undefined),
+            userName: userName || (req.user ? req.user.name : undefined)
+        });
+
+        await newFeedback.save();
+
+        // Send alert email immediately to admin@uwo24.com
+        sendReviewGatekeeperAlertEmail({
+            type,
+            platform: newFeedback.platform,
+            rating: newFeedback.rating,
+            details: newFeedback.details,
+            userEmail: newFeedback.userEmail,
+            userName: newFeedback.userName,
+            metadata
+        }).catch(err => console.error('Error sending review gatekeeper email:', err));
+
+        res.status(201).json({
+            success: true,
+            message: 'Feedback recorded successfully',
+            intercepted: !isPositive
+        });
+    } catch (error) {
+        console.error('Error handling review gatekeeper feedback:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

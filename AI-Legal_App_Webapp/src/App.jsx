@@ -7,6 +7,7 @@ import 'aos/dist/aos.css'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { clearUser } from './userStore/userData'
+import RatingGatekeeperModal from './Components/RatingGatekeeperModal'
 //chat 
 // Global Interceptor for Session Management
 // Guard flag to prevent multiple simultaneous SESSION_REVOKED toasts/logouts
@@ -46,6 +47,7 @@ function App() {
   return (
     <RecoilRoot>
       <NavigationProvider />
+      <RatingGatekeeperModal />
     </RecoilRoot>
   )
 }

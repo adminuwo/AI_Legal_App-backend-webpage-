@@ -43,6 +43,7 @@ import IntentSuggestionBanner from '../../Components/IntentSuggestionBanner';
 import { detectIntent, mapModeToToolState } from '../../services/intentService';
 import LoginRequiredModal from '../../Components/LoginRequiredModal';
 import { isSuperAdmin } from '../../utils/isSuperAdmin';
+import { ratingReviewWebHelper } from '../../utils/ratingReviewHelper';
 
 import FuturisticToolCards from '../../landingpage/FuturisticToolCards';
 import ModernDashboard from '../../landingpage/ModernDashboard';
@@ -5522,6 +5523,7 @@ const LegalWorkspace = () => {
 
       const updatedMessages = messages.filter(m => !m.isSystemLog).concat(userMsg);
       setMessages(updatedMessages, activeSessionId);
+      ratingReviewWebHelper.recordChatTurn();
       // User sent a new message -> always auto-scroll
       shouldAutoScrollRef.current = true;
       // Double-attempt auto-scroll for user message to ensure it handles layout changes correctly
@@ -6756,6 +6758,9 @@ ${documentConvertActive ? `### DOCUMENT CONVERSION MODE ENABLED (CRITICAL):
         document.body.removeChild(a);
         setDownloadedMessages(prev => ({ ...prev, [msg.id]: true }));
         if (processToastId) toast.success("PDF Downloaded", { id: processToastId });
+        ratingReviewWebHelper.recordActionAndCheckTrigger('export_pdf', {
+          userMessageCount: messages.filter(m => m.role === 'user').length
+        });
       } else if (action === 'open') {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
@@ -6864,6 +6869,9 @@ ${documentConvertActive ? `### DOCUMENT CONVERSION MODE ENABLED (CRITICAL):
       toast.success("Thanks for the positive feedback!", {
         icon: '👍',
       });
+      ratingReviewWebHelper.recordActionAndCheckTrigger('thumbs_up', {
+        userMessageCount: messages.filter(m => m.role === 'user').length
+      });
     } catch (error) {
       console.error("Feedback error:", error);
       toast.error("Failed to submit feedback");
@@ -6885,6 +6893,9 @@ ${documentConvertActive ? `### DOCUMENT CONVERSION MODE ENABLED (CRITICAL):
         setCurrentShareId(response.shareId);
         setIsShareModalOpen(true);
         toast.dismiss(shareToast);
+        ratingReviewWebHelper.recordActionAndCheckTrigger('share', {
+          userMessageCount: messages.filter(m => m.role === 'user').length
+        });
       } else {
         throw new Error("Failed to generate share link");
       }
@@ -7219,6 +7230,9 @@ ${documentConvertActive ? `### DOCUMENT CONVERSION MODE ENABLED (CRITICAL):
 
     copyText(clean);
     toast.success("Copied to clipboard!");
+    ratingReviewWebHelper.recordActionAndCheckTrigger('copy', {
+      userMessageCount: messages.filter(m => m.role === 'user').length
+    });
   };
 
   const handleMessageDelete = (messageId) => {

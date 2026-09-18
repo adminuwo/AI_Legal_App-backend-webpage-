@@ -19,6 +19,7 @@ import { toggleState } from '../../userStore/userData';
 import { apis } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { useLegalToolCredits } from '../../hooks/useLegalToolCredits';
+import { ratingReviewWebHelper } from '../../utils/ratingReviewHelper';
 
 export const truncateText = (text, maxLength = 120) => {
     if (!text) return "";
@@ -271,6 +272,7 @@ const LegalPrecedents = ({ projectId: initialProjectId, onBack, cases = [], onSe
             window.URL.revokeObjectURL(url);
 
             toast.success("PDF Downloaded Successfully", { id: loadingToast });
+            ratingReviewWebHelper.recordExportAndCheckTrigger({ type: 'legal_precedents_pdf_download' });
         } catch (error) {
             console.error("PDF generation error:", error);
             toast.error("Failed to generate PDF. Please try again.", { id: loadingToast });

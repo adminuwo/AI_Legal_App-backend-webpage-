@@ -96,4 +96,65 @@ export const sendFeedbackEmail = async (feedback) => {
   }
 }
 
+export const sendReviewGatekeeperAlertEmail = async (feedbackData) => {
+  try {
+    const isNegative = feedbackData.type === 'gatekeeper_negative' || (feedbackData.rating && feedbackData.rating <= 3);
+    const platformLabel = feedbackData.platform === 'mobile_app' ? 'Mobile App' : (feedbackData.platform === 'web_app' ? 'Web Application' : 'Unknown');
+    const userDisplay = feedbackData.userName ? `${feedbackData.userName} (${feedbackData.userEmail || 'No Email'})` : (feedbackData.userEmail || 'Anonymous User');
 
+    const response = await resend.emails.send({
+      from: `AI LEGAL™ Support Alert <${process.env.EMAIL}>`,
+      to: ['admin@uwo24.com'],
+      subject: isNegative 
+        ? `🚨 [URGENT FEEDBACK] Negative Review Intercepted on ${platformLabel}`
+        : `🌟 [User Feedback] Positive In-App Feedback on ${platformLabel}`,
+      html: `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #ffffff;">
+          <div style="border-bottom: 2px solid ${isNegative ? '#ef4444' : '#10b981'}; padding-bottom: 16px; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: ${isNegative ? '#dc2626' : '#059669'}; font-size: 20px;">
+              ${isNegative ? '⚠️ Negative Experience Intercepted' : '⭐ Positive User Feedback'}
+            </h2>
+            <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 14px;">
+              ${isNegative 
+                ? 'This user expressed dissatisfaction in the in-app rating prompt. The negative review was safely intercepted and kept off public app stores.' 
+                : 'User provided in-app feedback via the review prompt.'}
+            </p>
+          </div>
+
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+            <tr>
+              <td style="padding: 8px 0; color: #6b7280; width: 140px;">Platform:</td>
+              <td style="padding: 8px 0; font-weight: 600; color: #111827;">${platformLabel}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #6b7280;">User:</td>
+              <td style="padding: 8px 0; font-weight: 600; color: #111827;">${userDisplay}</td>
+            </tr>
+            ${feedbackData.rating ? `
+            <tr>
+              <td style="padding: 8px 0; color: #6b7280;">Rating Given:</td>
+              <td style="padding: 8px 0; font-weight: 600; color: ${isNegative ? '#dc2626' : '#059669'};">${feedbackData.rating} / 5 Stars</td>
+            </tr>` : ''}
+            <tr>
+              <td style="padding: 8px 0; color: #6b7280;">Timestamp:</td>
+              <td style="padding: 8px 0; color: #374151;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST</td>
+            </tr>
+          </table>
+
+          <div style="background-color: #f9fafb; border-left: 4px solid ${isNegative ? '#ef4444' : '#10b981'}; padding: 16px; border-radius: 6px; margin-bottom: 20px;">
+            <h4 style="margin: 0 0 8px 0; color: #374151; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">User Feedback / Improvement Request:</h4>
+            <p style="margin: 0; color: #1f2937; font-size: 15px; line-height: 1.5; white-space: pre-wrap;">${feedbackData.details || feedbackData.feedbackText || 'No specific comments provided.'}</p>
+          </div>
+
+          <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; font-size: 12px; color: #9ca3af; text-align: center;">
+            <p style="margin: 0;">AI LEGAL™ Review Gatekeeper System &bull; Safeguarding App Store Reputation</p>
+          </div>
+        </div>
+      `
+    });
+    console.log("review_gatekeeper_email_res", response);
+    return response;
+  } catch (error) {
+    console.log('Review gatekeeper email error', error);
+  }
+};
