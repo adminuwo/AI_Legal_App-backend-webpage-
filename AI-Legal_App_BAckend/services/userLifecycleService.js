@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import User from '../models/User.js';
 import EmailEvent from '../models/EmailEvent.js';
 import PlanUsage from '../models/PlanUsage.js';
+import AppInstall from '../models/AppInstall.js';
 import * as FeatureAccessManager from './featureAccessManager.js';
 import {
   getWelcomeEmailHtml,
@@ -165,6 +166,41 @@ export const handleNewUserRegistration = async (user, authMethod = 'email', plat
         signupPlatform: platform
       }
     });
+
+    // Record or sync AppInstall telemetry atomically
+    try {
+      const installId = `inst_user_${userId.toString()}`;
+      const userPlatform = ['android', 'ios'].includes(String(platform || userDoc?.deviceOS).toLowerCase())
+        ? String(platform || userDoc?.deviceOS).toLowerCase()
+        : 'android';
+      const userCountry = (userDoc?.country || userDoc?.legalJurisdiction?.country || 'India').trim();
+      const userCountryCode = userDoc?.countryCode || userDoc?.legalJurisdiction?.countryCode || (userCountry === 'Nepal' ? 'NP' : 'IN');
+      const userState = (userDoc?.state || userDoc?.legalJurisdiction?.state || '').trim();
+
+      await AppInstall.updateOne(
+        { installId },
+        {
+          $setOnInsert: {
+            installId,
+            userId,
+            platform: userPlatform,
+            country: userCountry || 'India',
+            countryCode: userCountryCode,
+            state: userState,
+            city: '',
+            source: userPlatform === 'ios' ? 'app-store' : 'google-play',
+            installedAt: userDoc?.createdAt || new Date(),
+            firstInstall: true,
+            appVersion: '1.0.11',
+            deviceType: 'phone',
+            status: 'installed'
+          }
+        },
+        { upsert: true }
+      );
+    } catch (installErr) {
+      console.warn('[USER-LIFECYCLE] AppInstall telemetry registration error:', installErr.message);
+    }
 
     console.log(`[USER-LIFECYCLE] New User Registered: ${email} via ${authMethod} (${platform}). Queuing Welcome Email...`);
 

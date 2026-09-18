@@ -6,7 +6,9 @@ import {
     getCountryDetails,
     getDownloadTrends,
     exportDownloadReport,
-    syncHistoricalInstalls
+    syncHistoricalInstalls,
+    syncGaUninstallsHandler,
+    testGaConnectionHandler
 } from '../controllers/downloadAnalyticsController.js';
 
 const router = express.Router();
@@ -39,5 +41,11 @@ router.post('/sync-historical', async (req, res) => {
         return res.status(500).json({ success: false, message: err.message });
     }
 });
+
+// 7. Google Analytics GA4 Uninstalls Sync Endpoint
+router.post('/sync-ga-uninstalls', syncGaUninstallsHandler);
+
+// 8. Google Analytics GA4 Connection Test Endpoint
+router.get('/test-ga-connection', testGaConnectionHandler);
 
 export default router;

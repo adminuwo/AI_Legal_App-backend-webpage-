@@ -1,6 +1,12 @@
 import mongoose from 'mongoose';
 import AppInstall from '../models/AppInstall.js';
 import User from '../models/User.js';
+import GaAnalyticsSync from '../models/GaAnalyticsSync.js';
+import {
+    testGa4Connection,
+    syncUninstallsToDatabase,
+    getPropertyId
+} from '../services/googleAnalytics.service.js';
 
 // Top Indian States for realistic deterministic backfill distribution when unspecified
 const MAJOR_INDIAN_STATES = [
@@ -45,73 +51,78 @@ export const syncHistoricalInstalls = async () => {
     if (syncPromise) return syncPromise;
     syncPromise = (async () => {
         try {
-            const installCount = await AppInstall.countDocuments();
-            const userCount = await User.countDocuments();
+            // Find userIds already present in AppInstall collection
+            const existingUserIds = await AppInstall.distinct('userId', { userId: { $ne: null } });
+            const missingUsers = await User.find({ _id: { $nin: existingUserIds } }).lean();
 
-        if (installCount < userCount) {
-            console.log(`[AppInstall Sync] Syncing historical users into AppInstall (${installCount}/${userCount})...`);
-            const users = await User.find({}).lean();
-            const bulkOps = [];
+            if (missingUsers.length > 0) {
+                console.log(`[AppInstall Sync] Syncing ${missingUsers.length} missing users into AppInstall telemetry...`);
+                const bulkOps = [];
 
-            for (const u of users) {
-                const installId = `inst_user_${u._id.toString()}`;
-                let rawCountry = (u.country || u.legalJurisdiction?.country || 'India').trim();
-                if (rawCountry.toLowerCase() === 'all' || !rawCountry) {
-                    rawCountry = 'India';
-                }
-                let rawState = (u.state || u.legalJurisdiction?.state || '').trim();
-
-                // If state is empty, assign deterministic province/state based on country mapping
-                if (!rawState || rawState === '' || rawState === 'Unspecified Region') {
-                    const cKey = rawCountry.toLowerCase();
-                    const regions = COUNTRY_REGIONS_MAP[cKey] || MAJOR_INDIAN_STATES;
-                    const charCodeSum = u._id.toString().split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-                    rawState = regions[charCodeSum % regions.length];
-                }
-
-                const platform = ['android', 'ios'].includes(String(u.deviceOS).toLowerCase())
-                    ? String(u.deviceOS).toLowerCase()
-                    : 'android';
-
-                const source = platform === 'ios' ? 'app-store' : 'google-play';
-
-                bulkOps.push({
-                    updateOne: {
-                        filter: { installId },
-                        update: {
-                            $setOnInsert: {
-                                installId,
-                                userId: u._id,
-                                platform,
-                                country: rawCountry,
-                                countryCode: u.countryCode || u.legalJurisdiction?.countryCode || (rawCountry === 'Nepal' ? 'NP' : 'IN'),
-                                state: rawState,
-                                city: '',
-                                source,
-                                installedAt: u.createdAt || new Date(),
-                                firstInstall: true,
-                                appVersion: '1.0.11',
-                                deviceType: 'phone',
-                                status: 'installed'
-                            }
-                        },
-                        upsert: true
+                for (const u of missingUsers) {
+                    const installId = `inst_user_${u._id.toString()}`;
+                    let rawCountry = (u.country || u.legalJurisdiction?.country || 'India').trim();
+                    if (rawCountry.toLowerCase() === 'all' || !rawCountry) {
+                        rawCountry = 'India';
                     }
-                });
+                    let rawState = (u.state || u.legalJurisdiction?.state || '').trim();
 
-                if (bulkOps.length >= 250) {
-                    await AppInstall.bulkWrite(bulkOps);
-                    bulkOps.length = 0;
+                    // If state is empty, assign deterministic province/state based on country mapping
+                    if (!rawState || rawState === '' || rawState === 'Unspecified Region') {
+                        const cKey = rawCountry.toLowerCase();
+                        const regions = COUNTRY_REGIONS_MAP[cKey] || MAJOR_INDIAN_STATES;
+                        const charCodeSum = u._id.toString().split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+                        rawState = regions[charCodeSum % regions.length];
+                    }
+
+                    const platform = ['android', 'ios'].includes(String(u.deviceOS).toLowerCase())
+                        ? String(u.deviceOS).toLowerCase()
+                        : 'android';
+
+                    const source = platform === 'ios' ? 'app-store' : 'google-play';
+
+                    bulkOps.push({
+                        updateOne: {
+                            filter: { installId },
+                            update: {
+                                $setOnInsert: {
+                                    installId,
+                                    userId: u._id,
+                                    platform,
+                                    country: rawCountry,
+                                    countryCode: u.countryCode || u.legalJurisdiction?.countryCode || (rawCountry === 'Nepal' ? 'NP' : 'IN'),
+                                    state: rawState,
+                                    city: '',
+                                    source,
+                                    installedAt: u.createdAt || new Date(),
+                                    firstInstall: true,
+                                    appVersion: '1.0.11',
+                                    deviceType: 'phone',
+                                    status: 'installed'
+                                }
+                            },
+                            upsert: true
+                        }
+                    });
+
+                    if (bulkOps.length >= 250) {
+                        await AppInstall.bulkWrite(bulkOps);
+                        bulkOps.length = 0;
+                    }
                 }
-            }
 
-            if (bulkOps.length > 0) {
-                await AppInstall.bulkWrite(bulkOps);
+                if (bulkOps.length > 0) {
+                    await AppInstall.bulkWrite(bulkOps);
+                }
+                console.log(`[AppInstall Sync] Successfully synced ${missingUsers.length} installs into AppInstall.`);
+                return { synced: missingUsers.length, message: `Successfully synced ${missingUsers.length} registered users to install telemetry.` };
+            } else {
+                console.log('[AppInstall Sync] All registered users are already present in AppInstall telemetry.');
+                return { synced: 0, message: 'All registered users are already up-to-date in install telemetry.' };
             }
-            console.log('[AppInstall Sync] Historical installs synchronization complete.');
-        }
         } catch (err) {
             console.warn('[AppInstall Sync Error]', err.message);
+            return { synced: 0, error: err.message };
         } finally {
             syncPromise = null;
         }
@@ -241,7 +252,8 @@ export const getDownloadSummary = async (req, res) => {
             iosCount,
             firstTimeCount,
             uninstallCount,
-            uniqueUserCount
+            uniqueUserCount,
+            gaUninstallsAgg
         ] = await Promise.all([
             AppInstall.countDocuments(rangeQuery),
             AppInstall.countDocuments(baseQuery),
@@ -255,8 +267,15 @@ export const getDownloadSummary = async (req, res) => {
             AppInstall.countDocuments({ ...rangeQuery, platform: 'ios' }),
             AppInstall.countDocuments({ ...rangeQuery, firstInstall: true }),
             AppInstall.countDocuments({ ...rangeQuery, status: 'uninstalled' }),
-            AppInstall.distinct('userId', { ...rangeQuery, userId: { $ne: null } })
+            AppInstall.distinct('userId', { ...rangeQuery, userId: { $ne: null } }),
+            GaAnalyticsSync.aggregate([
+                { $match: { metricName: 'app_remove' } },
+                { $group: { _id: null, total: { $sum: '$count' } } }
+            ])
         ]);
+
+        const gaUninstallsCount = gaUninstallsAgg[0]?.total || 0;
+        const finalUninstalls = Math.max(uninstallCount, gaUninstallsCount);
 
         return res.status(200).json({
             success: true,
@@ -272,8 +291,8 @@ export const getDownloadSummary = async (req, res) => {
                 android: androidCount,
                 ios: iosCount,
                 firstTimeInstallers: firstTimeCount,
-                uninstalls: uninstallCount,
-                activeInstalls: totalFiltered - uninstallCount,
+                uninstalls: finalUninstalls,
+                activeInstalls: Math.max(0, totalFiltered - finalUninstalls),
                 activeRegisteredUsers: uniqueUserCount.length
             },
             kpis: {
@@ -288,7 +307,7 @@ export const getDownloadSummary = async (req, res) => {
                 androidInstalls: androidCount,
                 iosInstalls: iosCount,
                 firstTimeInstallers: firstTimeCount,
-                uninstalls: uninstallCount,
+                uninstalls: finalUninstalls,
                 activeRegisteredUsers: uniqueUserCount.length
             },
             definitions: {
@@ -846,5 +865,58 @@ export const recordInstallTelemetry = async (req, res) => {
     } catch (err) {
         console.error('[recordInstallTelemetry Error]', err);
         return res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+/**
+ * 7. GA4 Uninstalls Sync Handler
+ * Endpoint: POST /api/admin/analytics/downloads/sync-ga-uninstalls
+ */
+export const syncGaUninstallsHandler = async (req, res) => {
+    try {
+        const { days = 30, propertyId, dryRun = false } = req.body || {};
+        const effectivePropId = propertyId || getPropertyId();
+
+        if (!effectivePropId) {
+            return res.status(400).json({
+                success: false,
+                needsConfig: true,
+                message: "GA4_PROPERTY_ID is not configured in .env",
+                serviceAccountEmail: "743928421487-compute@developer.gserviceaccount.com"
+            });
+        }
+
+        const syncResult = await syncUninstallsToDatabase({
+            days,
+            propertyIdOverride: effectivePropId,
+            dryRun
+        });
+
+        return res.status(syncResult.success ? 200 : 400).json(syncResult);
+    } catch (err) {
+        console.error('[syncGaUninstallsHandler Error]', err);
+        return res.status(500).json({
+            success: false,
+            message: err.message || "Failed to synchronize uninstalls from GA4",
+            error: err.message
+        });
+    }
+};
+
+/**
+ * 8. GA4 Connection Test Handler
+ * Endpoint: GET /api/admin/analytics/downloads/test-ga-connection
+ */
+export const testGaConnectionHandler = async (req, res) => {
+    try {
+        const { propertyId } = req.query || {};
+        const testResult = await testGa4Connection(propertyId);
+        return res.status(200).json(testResult);
+    } catch (err) {
+        console.error('[testGaConnectionHandler Error]', err);
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
     }
 };

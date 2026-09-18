@@ -1838,6 +1838,26 @@ export const apiService = {
     }
   },
 
+  async syncGaUninstalls(payload = {}) {
+    try {
+      const response = await apiClient.post('/admin/analytics/downloads/sync-ga-uninstalls', payload);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to sync GA4 uninstalls:", error);
+      throw error;
+    }
+  },
+
+  async testGaConnection(params = {}) {
+    try {
+      const response = await apiClient.get('/admin/analytics/downloads/test-ga-connection', { params });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to test GA4 connection:", error);
+      throw error;
+    }
+  },
+
   // ─── LEGAL PRECEDENTS & AI INTELLIGENCE ───
   async searchPrecedents(query, projectId = null, language = 'English', jurisdiction = null) {
     try {

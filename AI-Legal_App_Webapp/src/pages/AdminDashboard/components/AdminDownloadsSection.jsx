@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Download, RefreshCw, RotateCw, Calendar, Globe, Smartphone, Apple, 
   TrendingUp, Users, ArrowLeft, Search, Filter, FileSpreadsheet, FileText, 
-  FileDown, ChevronRight, CheckCircle, Info, Layers, ChevronDown, Award
+  FileDown, ChevronRight, CheckCircle, Info, Layers, ChevronDown, Award, BarChart3
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, 
@@ -46,6 +46,7 @@ export default function AdminDownloadsSection() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [syncingHistorical, setSyncingHistorical] = useState(false);
+  const [syncingGa4, setSyncingGa4] = useState(false);
 
   const [summary, setSummary] = useState({
     total: 0,
@@ -205,6 +206,40 @@ export default function AdminDownloadsSection() {
       toast.error("Failed to sync historical users.");
     } finally {
       setSyncingHistorical(false);
+    }
+  };
+
+  // Sync GA4 Uninstalls
+  const handleSyncGa4 = async () => {
+    setSyncingGa4(true);
+    try {
+      const res = await apiService.syncGaUninstalls();
+      if (res?.success) {
+        toast.success(res.message || "GA4 uninstalls synced successfully!");
+        fetchAnalytics(true);
+      } else if (res?.needsConfig) {
+        toast((t) => (
+          <div className="text-xs">
+            <p className="font-bold text-slate-900 dark:text-white">GA4 Setup Required</p>
+            <p className="mt-1 text-slate-600 dark:text-zinc-300">{res.message}</p>
+            <p className="mt-1 text-[11px] text-[#B88B2A] font-semibold">
+              Add GA4_PROPERTY_ID to .env &amp; invite {res.serviceAccountEmail} in GA4 console.
+            </p>
+          </div>
+        ), { duration: 6000 });
+      } else {
+        toast.error(res?.message || "GA4 sync completed with warnings.");
+      }
+    } catch (err) {
+      console.error("GA4 sync error:", err);
+      const msg = err.response?.data?.message || err.message || "Failed to sync GA4 uninstalls.";
+      if (err.response?.data?.needsConfig) {
+        toast.error("GA4 Property ID not set in .env. See docs.");
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setSyncingGa4(false);
     }
   };
 
@@ -432,7 +467,7 @@ export default function AdminDownloadsSection() {
         </div>
 
         {/* Global Action Buttons - Full width grid on phones, flex on larger screens */}
-        <div className="grid grid-cols-3 sm:flex items-center gap-1.5 sm:gap-2 w-full md:w-auto shrink-0">
+        <div className="grid grid-cols-2 sm:flex items-center gap-1.5 sm:gap-2 w-full md:w-auto shrink-0">
           <button
             onClick={handleSyncHistorical}
             disabled={syncingHistorical}
@@ -441,6 +476,16 @@ export default function AdminDownloadsSection() {
           >
             <RotateCw className={`w-3.5 h-3.5 shrink-0 ${syncingHistorical ? 'animate-spin text-[#B88B2A]' : 'text-slate-500'}`} />
             <span className="truncate">{syncingHistorical ? 'Syncing...' : 'Sync DB'}</span>
+          </button>
+
+          <button
+            onClick={handleSyncGa4}
+            disabled={syncingGa4}
+            title="Sync mobile app uninstalls from Google Analytics (GA4)"
+            className="flex items-center justify-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-zinc-200 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 rounded-xl transition-all disabled:opacity-50 cursor-pointer"
+          >
+            <BarChart3 className={`w-3.5 h-3.5 shrink-0 ${syncingGa4 ? 'animate-spin text-[#B88B2A]' : 'text-amber-600 dark:text-amber-400'}`} />
+            <span className="truncate">{syncingGa4 ? 'Syncing GA4...' : 'Sync GA4'}</span>
           </button>
 
           <button
