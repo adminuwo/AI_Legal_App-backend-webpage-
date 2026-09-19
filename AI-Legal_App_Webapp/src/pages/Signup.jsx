@@ -20,6 +20,7 @@ import AuthErrorDialog from '../Components/AuthErrorDialog';
 import { parseAuthError } from '../utils/authErrorMapper';
 import ThemeToggle from '../Components/ThemeToggle';
 import UWOLoginModal from '../Components/UWOLoginModal';
+import OurProductsDropdown from '../Components/OurProductsDropdown';
 
 const INDIAN_EXAMPLES = [
   { name: 'Aditi Sharma', email: 'aditi.sharma@gmail.com' },
@@ -283,6 +284,7 @@ const Signup = () => {
             <button onClick={() => navigate('/about')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               About
             </button>
+            <OurProductsDropdown />
             <button onClick={() => navigate('/dashboard')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Dashboard
             </button>
@@ -363,6 +365,7 @@ const Signup = () => {
                 >
                   About
                 </button>
+                <OurProductsDropdown isMobile={true} onItemClick={() => setMobileMenuOpen(false)} />
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
                   className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"

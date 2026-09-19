@@ -10,6 +10,7 @@ import { toast } from 'react-hot-toast';
 import { apis } from '../types';
 import ThemeToggle from '../Components/ThemeToggle';
 import PublicFooter from '../Components/PublicFooter';
+import OurProductsDropdown from '../Components/OurProductsDropdown';
 
 export default function PostJudgment() {
   const navigate = useNavigate();
@@ -206,6 +207,7 @@ export default function PostJudgment() {
             <button onClick={() => navigate('/about')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               About
             </button>
+            <OurProductsDropdown />
             <button onClick={() => navigate('/dashboard')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Dashboard
             </button>
@@ -287,6 +289,7 @@ export default function PostJudgment() {
                 >
                   About
                 </button>
+                <OurProductsDropdown isMobile={true} onItemClick={() => setMobileMenuOpen(false)} />
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
                   className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"

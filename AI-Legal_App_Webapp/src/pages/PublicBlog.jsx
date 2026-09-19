@@ -12,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ThemeToggle from '../Components/ThemeToggle';
 import PublicFooter, { OfficialAppStoreBadge, OfficialGooglePlayBadge } from '../Components/PublicFooter';
+import OurProductsDropdown from '../Components/OurProductsDropdown';
 import { getUserData } from '../userStore/userData';
 import { API } from '../types.js';
 
@@ -310,6 +311,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
             <button onClick={() => navigate('/about')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               About
             </button>
+            <OurProductsDropdown />
             <button onClick={() => navigate(isAuthenticated ? '/dashboard' : '/login')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Dashboard
             </button>

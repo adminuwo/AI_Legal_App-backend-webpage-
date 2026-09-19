@@ -11,6 +11,7 @@ import { apiService } from '../services/apiService';
 import { getUserData } from '../userStore/userData';
 import ThemeToggle from '../Components/ThemeToggle';
 import PublicFooter from '../Components/PublicFooter';
+import OurProductsDropdown from '../Components/OurProductsDropdown';
 
 export default function CookiePolicy() {
   const navigate = useNavigate();
@@ -196,6 +197,7 @@ export default function CookiePolicy() {
             >
               About
             </button>
+            <OurProductsDropdown />
             <button 
               onClick={() => navigate(isAuthenticated ? '/dashboard' : '/signup')}
               className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer"
@@ -292,6 +294,7 @@ export default function CookiePolicy() {
                 >
                   About
                 </button>
+                <OurProductsDropdown isMobile={true} onItemClick={() => setMobileMenuOpen(false)} />
                 <button 
                   onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/dashboard' : '/signup'); }}
                   className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"

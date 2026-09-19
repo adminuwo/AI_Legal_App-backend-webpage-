@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 
 import ThemeToggle from '../Components/ThemeToggle';
 import PublicFooter from '../Components/PublicFooter';
+import OurProductsDropdown from '../Components/OurProductsDropdown';
 import SearchModeSelector from '../Components/CaseSearch/SearchModeSelector';
 import LegalSourceSelector from '../Components/CaseSearch/LegalSourceSelector';
 import AdvancedFiltersModal from '../Components/CaseSearch/AdvancedFiltersModal';
@@ -308,6 +309,7 @@ export default function PublicCaseSearchWorkspace() {
             <button onClick={() => navigate('/about')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               About
             </button>
+            <OurProductsDropdown />
             <button onClick={() => handleProtectedAction('/dashboard')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Dashboard
             </button>
@@ -374,6 +376,7 @@ export default function PublicCaseSearchWorkspace() {
             <button onClick={() => { setMobileMenuOpen(false); navigate('/pricing'); }} className="w-full text-left py-2 text-xs font-bold">Pricing</button>
             <button onClick={() => { setMobileMenuOpen(false); }} className="w-full text-left py-2 text-xs font-bold text-[#B38628]">Case Search (Active)</button>
             <button onClick={() => { setMobileMenuOpen(false); navigate('/about'); }} className="w-full text-left py-2 text-xs font-bold">About</button>
+            <OurProductsDropdown isMobile={true} onItemClick={() => setMobileMenuOpen(false)} />
             <button onClick={() => { setMobileMenuOpen(false); handleProtectedAction('/dashboard'); }} className="w-full text-left py-2 text-xs font-bold">Dashboard</button>
             <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
               <button

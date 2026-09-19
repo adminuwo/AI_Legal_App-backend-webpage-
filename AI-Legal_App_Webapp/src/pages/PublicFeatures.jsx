@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import ThemeToggle from '../Components/ThemeToggle';
 import PublicFooter, { OfficialAppStoreBadge, OfficialGooglePlayBadge } from '../Components/PublicFooter';
+import OurProductsDropdown from '../Components/OurProductsDropdown';
 import { getUserData } from '../userStore/userData';
 
 export default function PublicFeatures() {
@@ -456,6 +457,7 @@ export default function PublicFeatures() {
             <button onClick={() => navigate('/about')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               About
             </button>
+            <OurProductsDropdown />
             <button onClick={() => navigate(isAuthenticated ? '/dashboard' : '/login')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Dashboard
             </button>
@@ -545,6 +547,7 @@ export default function PublicFeatures() {
                 >
                   About
                 </button>
+                <OurProductsDropdown isMobile={true} onItemClick={() => setMobileMenuOpen(false)} />
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/dashboard' : '/login'); }}
                   className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"

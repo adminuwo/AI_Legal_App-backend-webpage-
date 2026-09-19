@@ -19,6 +19,7 @@ import { parseAuthError } from '../utils/authErrorMapper';
 import ThemeToggle from '../Components/ThemeToggle';
 import DeviceLimitModal from '../Components/DeviceLimitModal';
 import UWOLoginModal from '../Components/UWOLoginModal';
+import OurProductsDropdown from '../Components/OurProductsDropdown';
 
 const getDeviceId = () => {
   let id = localStorage.getItem('aisa_device_id');
@@ -360,6 +361,7 @@ const Login = () => {
             <button onClick={() => navigate('/about')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               About
             </button>
+            <OurProductsDropdown />
             <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
               Dashboard
             </span>
@@ -443,6 +445,7 @@ const Login = () => {
                 >
                   About
                 </button>
+                <OurProductsDropdown isMobile={true} onItemClick={() => setMobileMenuOpen(false)} />
               </div>
 
               <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex flex-col gap-2.5">

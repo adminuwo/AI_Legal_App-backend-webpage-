@@ -9,6 +9,7 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import ThemeToggle from '../Components/ThemeToggle';
 import PublicFooter from '../Components/PublicFooter';
+import OurProductsDropdown from '../Components/OurProductsDropdown';
 import { getUserData } from '../userStore/userData';
 
 export default function PublicAbout() {
@@ -175,6 +176,7 @@ export default function PublicAbout() {
             <span className="px-4 py-1.5 rounded-full text-sm font-bold bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 shadow-2xs">
               About
             </span>
+            <OurProductsDropdown />
             <button onClick={() => navigate(isAuthenticated ? '/dashboard' : '/login')} className="hover:text-[#B38628] dark:hover:text-amber-400 transition-colors cursor-pointer">
               Dashboard
             </button>
@@ -265,6 +267,7 @@ export default function PublicAbout() {
                 <span className="text-left px-3.5 py-2 rounded-xl bg-[#B88B2A]/15 text-[#B38628] dark:bg-amber-950/60 dark:text-amber-300 font-bold">
                   About
                 </span>
+                <OurProductsDropdown isMobile={true} onItemClick={() => setMobileMenuOpen(false)} />
                 <button
                   onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/dashboard' : '/login'); }}
                   className="text-left px-3.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-[#B38628]"
