@@ -9,7 +9,8 @@ import {
     syncHistoricalInstalls,
     syncGaUninstallsHandler,
     testGaConnectionHandler,
-    syncSilentUninstallsHandler
+    syncSilentUninstallsHandler,
+    getUninstalledUsers
 } from '../controllers/downloadAnalyticsController.js';
 
 const router = express.Router();
@@ -32,6 +33,9 @@ router.get('/trends', getDownloadTrends);
 
 // 5. Export report (JSON/CSV)
 router.get('/export', exportDownloadReport);
+
+// 5b. Uninstalled users & devices detail list
+router.get('/uninstalls', getUninstalledUsers);
 
 // 6. Manual trigger to sync historical registered users into AppInstall telemetry
 router.post('/sync-historical', async (req, res) => {

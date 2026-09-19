@@ -91,6 +91,54 @@ const TOOL_CONFIG = {
     textClass: 'text-teal-600 dark:text-teal-400',
     bgClass: 'bg-teal-50 dark:bg-teal-950/30',
     borderClass: 'border-teal-200 dark:border-teal-900/40'
+  },
+  draftMaker: {
+    name: 'Draft Maker',
+    emoji: '📝',
+    color: '#3b82f6',
+    textClass: 'text-blue-600 dark:text-blue-400',
+    bgClass: 'bg-blue-50 dark:bg-blue-950/30',
+    borderClass: 'border-blue-200 dark:border-blue-900/40'
+  },
+  contractAnalyzer: {
+    name: 'Contract Analyzer',
+    emoji: '📄',
+    color: '#3b82f6',
+    textClass: 'text-blue-600 dark:text-blue-400',
+    bgClass: 'bg-blue-50 dark:bg-blue-950/30',
+    borderClass: 'border-blue-200 dark:border-blue-900/40'
+  },
+  evidenceAnalyst: {
+    name: 'Evidence Analyst',
+    emoji: '🔍',
+    color: '#10b981',
+    textClass: 'text-emerald-600 dark:text-emerald-400',
+    bgClass: 'bg-emerald-50 dark:bg-emerald-950/30',
+    borderClass: 'border-emerald-200 dark:border-emerald-900/40'
+  },
+  argumentBuilder: {
+    name: 'Argument Builder',
+    emoji: '⚔️',
+    color: '#ef4444',
+    textClass: 'text-rose-600 dark:text-rose-400',
+    bgClass: 'bg-rose-50 dark:bg-rose-950/30',
+    borderClass: 'border-rose-200 dark:border-rose-900/40'
+  },
+  casePredictor: {
+    name: 'Case Predictor',
+    emoji: '📊',
+    color: '#06b6d4',
+    textClass: 'text-cyan-600 dark:text-cyan-400',
+    bgClass: 'bg-cyan-50 dark:bg-cyan-950/30',
+    borderClass: 'border-cyan-200 dark:border-cyan-900/40'
+  },
+  strategyEngine: {
+    name: 'Strategy Engine',
+    emoji: '🎯',
+    color: '#8b5cf6',
+    textClass: 'text-violet-600 dark:text-violet-400',
+    bgClass: 'bg-violet-50 dark:bg-violet-950/30',
+    borderClass: 'border-violet-200 dark:border-violet-900/40'
   }
 };
 
@@ -444,30 +492,13 @@ const AIHistoryPanel = ({
         if (isArchived) return false;
       }
 
-      // 2. Strict Chat Filter: Must be legal_my_case, legal_tutor, or unassigned tool
-      const toolId = s.activeTool || 'legal_my_case';
-      if (toolId !== 'legal_my_case' && toolId !== 'legal_tutor' && toolId !== 'chat' && toolId !== 'NORMAL_CHAT' && toolId !== 'none' && toolId !== '') {
-        return false;
-      }
-
-      // 3. Exclude automated tool titles, advocate submissions, mock courtroom turns, performance reports, etc.
+      // 2. Chat Filter: Show conversations across mobile and web assistant/tools
       const titleLower = (s.title || '').toLowerCase();
       const excludedKeywords = [
         'advocate submission',
         'judicial performance',
         'performance report',
-        'research the relevant law',
-        'write email draft',
-        'write whatsapp draft',
-        'mock courtroom',
-        'courtroom practice',
         'client connect',
-        'start ai mock courtroom',
-        'evidence analyst',
-        'contract analyzer',
-        'argument builder',
-        'case predictor',
-        'strategy engine',
         'turn '
       ];
 
@@ -612,7 +643,7 @@ const AIHistoryPanel = ({
         {!showArchivedOnly && (
           <div className="px-4 pb-2 border-b border-slate-100 dark:border-zinc-800/60 shrink-0 flex items-center justify-between gap-2">
             <span
-              className="px-3 py-1 rounded-full text-xs font-bold border shrink-0 bg-purple-50 dark:bg-purple-950/30 text-[#6D5DFC] border-purple-200 dark:border-purple-900/40 cursor-default"
+              className="px-3 py-1 rounded-full text-xs font-bold border shrink-0 bg-[#C8A34D]/10 dark:bg-[#C8A34D]/15 text-[#B88B2A] dark:text-[#E2C275] border-[#C8A34D]/30 dark:border-[#C8A34D]/40 cursor-default"
             >
               {currentScope === 'case' 
                 ? 'Current Case History' 

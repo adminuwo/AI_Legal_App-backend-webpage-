@@ -187,10 +187,25 @@ export const chatStorageService = {
         withCredentials: true
       });
       console.log(`[STORAGE] Fetched data for ${sessionId} from network:`, response.data);
-      return response.data; // Return full session object
+      const fetched = response.data;
+      if (fetched && Array.isArray(fetched.messages) && fetched.messages.length > 0) {
+        try {
+          await idbSet(`chat_history_${sessionId}`, fetched.messages);
+          await idbSet(`chat_meta_${sessionId}`, {
+            title: fetched.title || "New Chat",
+            lastModified: fetched.lastModified || Date.now(),
+            projectId: fetched.projectId?._id || fetched.projectId || null,
+            detectedMode: fetched.detectedMode || 'NORMAL_CHAT',
+            activeTool: fetched.activeTool || 'legal_my_case'
+          });
+        } catch (cacheErr) {
+          console.warn("[STORAGE] Failed to cache network history to idb:", cacheErr);
+        }
+      }
+      return fetched; // Return full session object
     } catch (error) {
       console.warn("Backend history fetch failed, no local backup either:", error);
-      return { messages: [], title: "New Chat", projectId: null, detectedMode: 'NORMAL_CHAT', activeTool: null };
+      return { messages: [], title: "New Chat", projectId: null, detectedMode: 'NORMAL_CHAT', activeTool: 'legal_my_case' };
     }
   },
 
@@ -217,7 +232,7 @@ export const chatStorageService = {
         lastModified: Date.now(),
         projectId: projectId || message.projectId || existingMeta.projectId || null,
         detectedMode: message.mode || existingMeta.detectedMode || 'NORMAL_CHAT',
-        activeTool: message.activeTool || existingMeta.activeTool || null
+        activeTool: message.activeTool || existingMeta.activeTool || 'legal_my_case'
       };
       await idbSet(metaKey, meta);
     } catch (localErr) {
@@ -260,7 +275,7 @@ export const chatStorageService = {
         role: activeRole,
         workspaceType: activeRole,
         mode: message.mode,
-        activeTool: message.activeTool
+        activeTool: message.activeTool || 'legal_my_case'
       }, {
         headers: getAuthHeaders(),
         withCredentials: true

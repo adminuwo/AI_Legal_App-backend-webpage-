@@ -745,7 +745,7 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
       const words = (content || "").trim().split(/\s+/);
       const aiTitle = words.slice(0, 5).join(' ') + (words.length > 5 ? '...' : '') || "New Chat";
       const cleanPid = sanitizeProjectId(req.body.projectId || req.body.caseId);
-      const reqTool = req.body.activeTool || null;
+      const reqTool = req.body.activeTool || (isStudent ? 'legal_tutor' : 'legal_my_case');
       let autoConvType = req.body.conversationType;
       let autoAssistantType = isStudent ? 'legal_tutor' : 'legal_assistant';
 
@@ -789,7 +789,11 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
 
       // Update mode, tool, and projectId if provided
       if (detectedMode) session.detectedMode = detectedMode;
-      if (req.body.activeTool) session.activeTool = req.body.activeTool;
+      if (req.body.activeTool) {
+        session.activeTool = req.body.activeTool;
+      } else if (!session.activeTool && !isStudent) {
+        session.activeTool = 'legal_my_case';
+      }
       const cleanPid = sanitizeProjectId(req.body.projectId || req.body.caseId);
       if (cleanPid) {
         session.projectId = cleanPid;
@@ -950,8 +954,7 @@ router.get('/', optionalVerifyToken, identifyGuest, async (req, res) => {
       } else if (req.query.all === 'true' || projectId === 'all') {
         // Skip scope filter to return all chats
       } else {
-        // Advocate AI Legal Assistant Global Scope
-        query.conversationType = { $in: ['global', null] };
+        // Advocate AI Legal Assistant Global Scope: include general and tool conversations without case linkage
         query.projectId = { $in: [null, undefined] };
         query.assistantType = { $ne: 'legal_tutor' };
         query.workspaceType = { $ne: 'student' };
@@ -1128,7 +1131,7 @@ router.post('/:sessionId/message', optionalVerifyToken, identifyGuest, async (re
     if (!session) {
       // Create new session if it doesn't exist
       const cleanPid = sanitizeProjectId(req.body.projectId || req.body.caseId);
-      const reqTool = req.body.activeTool || null;
+      const reqTool = req.body.activeTool || (isStudent ? 'legal_tutor' : 'legal_my_case');
       let autoConvType = req.body.conversationType;
       let autoAssistantType = isStudent ? 'legal_tutor' : 'legal_assistant';
 
@@ -1167,7 +1170,11 @@ router.post('/:sessionId/message', optionalVerifyToken, identifyGuest, async (re
       
       // Update metadata on existing session if provided
       if (req.body.mode) session.detectedMode = req.body.mode;
-      if (req.body.activeTool) session.activeTool = req.body.activeTool;
+      if (req.body.activeTool) {
+        session.activeTool = req.body.activeTool;
+      } else if (!session.activeTool && !isStudent) {
+        session.activeTool = 'legal_my_case';
+      }
       const cleanPid = sanitizeProjectId(req.body.projectId || req.body.caseId);
       if (cleanPid) {
         session.projectId = cleanPid;

@@ -7489,16 +7489,16 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                                 h3: ({ children }) => <h3 className="font-bold tracking-tight">{children}</h3>,
                                                 strong: ({ children }) => <strong>{children}</strong>,
                                                 table: ({ children }) => (
-                                                  <div className="overflow-x-auto my-4 rounded-xl border border-border/50 shadow-lg bg-surface/30 backdrop-blur-sm">
+                                                  <div className="overflow-x-auto my-4 rounded-xl border border-[#C8A34D]/30 dark:border-[#C8A34D]/20 shadow-lg bg-[#C8A34D]/[0.02] dark:bg-[#C8A34D]/[0.03] backdrop-blur-sm">
                                                     <table className="w-full border-collapse text-sm">{children}</table>
                                                   </div>
                                                 ),
-                                                thead: ({ children }) => <thead className="bg-primary/10 border-b border-border/50">{children}</thead>,
-                                                tbody: ({ children }) => <tbody className="divide-y divide-border/30">{children}</tbody>,
-                                                tr: ({ children }) => <tr className="transition-colors hover:bg-white/3">{children}</tr>,
-                                                th: ({ children }) => <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-primary">{children}</th>,
-                                                td: ({ children }) => <td className="px-4 py-3 text-sm text-maintext leading-relaxed">{children}</td>,
-                                                mark: ({ children }) => <mark className="bg-[#5555ff] text-white px-1 py-0.5 rounded-sm">{children}</mark>,
+                                                thead: ({ children }) => <thead className="bg-[#C8A34D]/15 dark:bg-[#C8A34D]/20 border-b border-[#C8A34D]/30">{children}</thead>,
+                                                    tbody: ({ children }) => <tbody className="divide-y divide-[#C8A34D]/15 dark:divide-[#C8A34D]/10">{children}</tbody>,
+                                                    tr: ({ children }) => <tr className="transition-colors hover:bg-[#C8A34D]/[0.04]">{children}</tr>,
+                                                    th: ({ children }) => <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-[#B88B2A] dark:text-[#E2C275]">{children}</th>,
+                                                    td: ({ children }) => <td className="px-4 py-3 text-sm text-maintext leading-relaxed">{children}</td>,
+                                                    mark: ({ children }) => <mark className="bg-[#C8A34D]/25 text-[#B88B2A] dark:text-[#E2C275] px-1 py-0.5 rounded-sm">{children}</mark>,
                                                 code: ({ node, inline, className, children, ...props }) => {
                                                   const match = /language-(\w+)/.exec(className || '');
                                                   const lang = match ? match[1] : '';

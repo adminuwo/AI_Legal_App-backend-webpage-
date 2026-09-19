@@ -4327,7 +4327,7 @@ const LegalWorkspace = () => {
 
   useEffect(() => {
     const loadSessions = async () => {
-      const data = await chatStorageService.getSessions(currentProjectId);
+      const data = await chatStorageService.getSessions(currentProjectId || 'global');
       setSessions(data);
 
       try {
@@ -5518,7 +5518,7 @@ const LegalWorkspace = () => {
         agentName: activeAgent.agentName || activeAgent.name,
         agentCategory: activeAgent.category,
         mode: currentMode,
-        activeTool: selectedLegalTool?.id,
+        activeTool: selectedLegalTool?.id || 'legal_my_case',
       };
 
       const updatedMessages = messages.filter(m => !m.isSystemLog).concat(userMsg);
@@ -5928,7 +5928,8 @@ ${documentConvertActive ? `### DOCUMENT CONVERSION MODE ENABLED (CRITICAL):
           suggestedAiId,
           imageAspectRatio,
           imageModelId,
-          streamOnChunk  // ← real streaming callback
+          streamOnChunk,  // ← real streaming callback
+          selectedLegalTool?.id || 'legal_my_case'
         );
 
         // Store it for usage in the typewriter loop
@@ -6108,7 +6109,7 @@ ${documentConvertActive ? `### DOCUMENT CONVERSION MODE ENABLED (CRITICAL):
             if (aiResponseData.suggestions) finalModelMsg.suggestions = aiResponseData.suggestions;
             if (aiResponseData.snapshot) finalModelMsg.snapshot = aiResponseData.snapshot;
             finalModelMsg.detectedMode = detectedMode; // ✅ Ensure detectedMode persists to storage
-            finalModelMsg.activeTool = selectedLegalTool?.id;
+            finalModelMsg.activeTool = selectedLegalTool?.id || 'legal_my_case';
           }
 
           // Set Smart Suggestions for the last response part
@@ -9793,7 +9794,7 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                                               navigate(href);
                                                             }
                                                           }}
-                                                          className="text-primary hover:underline font-bold cursor-pointer"
+                                                          className="text-[#B88B2A] dark:text-[#E2C275] hover:underline font-bold cursor-pointer"
                                                           target={isInternal ? "_self" : "_blank"}
                                                           rel={isInternal ? "" : "noopener noreferrer"}
                                                         >
@@ -9810,16 +9811,16 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                                                     h3: ({ children }) => <h3 className="font-bold tracking-tight">{children}</h3>,
                                                     strong: ({ children }) => <strong>{children}</strong>,
                                                     table: ({ children }) => (
-                                                      <div className="overflow-x-auto my-4 rounded-xl border border-border/50 shadow-sm bg-surface/30">
+                                                      <div className="overflow-x-auto my-4 rounded-xl border border-[#C8A34D]/30 dark:border-[#C8A34D]/20 shadow-sm bg-[#C8A34D]/[0.02] dark:bg-[#C8A34D]/[0.03]">
                                                         <table className="w-full border-collapse text-sm">{children}</table>
                                                       </div>
                                                     ),
-                                                    thead: ({ children }) => <thead className="bg-primary/10 border-b border-border/50">{children}</thead>,
-                                                    tbody: ({ children }) => <tbody className="divide-y divide-border/30">{children}</tbody>,
-                                                    tr: ({ children }) => <tr className="transition-colors hover:bg-white/3">{children}</tr>,
-                                                    th: ({ children }) => <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-primary">{children}</th>,
+                                                    thead: ({ children }) => <thead className="bg-[#C8A34D]/15 dark:bg-[#C8A34D]/20 border-b border-[#C8A34D]/30">{children}</thead>,
+                                                    tbody: ({ children }) => <tbody className="divide-y divide-[#C8A34D]/15 dark:divide-[#C8A34D]/10">{children}</tbody>,
+                                                    tr: ({ children }) => <tr className="transition-colors hover:bg-[#C8A34D]/[0.04]">{children}</tr>,
+                                                    th: ({ children }) => <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-[#B88B2A] dark:text-[#E2C275]">{children}</th>,
                                                     td: ({ children }) => <td className="px-4 py-3 text-sm text-maintext leading-relaxed">{children}</td>,
-                                                    mark: ({ children }) => <mark className="bg-[#5555ff] text-white px-1 py-0.5 rounded-sm">{children}</mark>,
+                                                    mark: ({ children }) => <mark className="bg-[#C8A34D]/25 text-[#B88B2A] dark:text-[#E2C275] px-1 py-0.5 rounded-sm">{children}</mark>,
                                                     code: ({ node, inline, className, children, ...props }) => {
                                                       const match = /language-(\w+)/.exec(className || '');
                                                       const lang = match ? match[1] : '';

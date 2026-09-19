@@ -3,7 +3,7 @@ import {
   Download, RefreshCw, RotateCw, Calendar, Globe, Smartphone, Apple, 
   TrendingUp, Users, ArrowLeft, Search, Filter, FileSpreadsheet, FileText, 
   FileDown, ChevronRight, CheckCircle, Info, Layers, ChevronDown, Award, BarChart3,
-  Radio, Zap
+  Radio, Zap, X, MapPin, UserX, UserCheck, Clock, ArrowUpRight
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, 
@@ -78,6 +78,77 @@ export default function AdminDownloadsSection() {
   const [chartMode, setChartMode] = useState('split'); // 'split' | 'total'
   const [exportOpen, setExportOpen] = useState(false);
   const [stateSearch, setStateSearch] = useState('');
+
+  // Uninstalls Modal States
+  const [showUninstallsModal, setShowUninstallsModal] = useState(false);
+  const [uninstallsLoading, setUninstallsLoading] = useState(false);
+  const [uninstallsList, setUninstallsList] = useState([]);
+  const [uninstallsPagination, setUninstallsPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
+  const [uninstallsStats, setUninstallsStats] = useState({ total: 0, android: 0, ios: 0, registered: 0, guest: 0 });
+  const [uninstallsSearch, setUninstallsSearch] = useState('');
+  const [uninstallsPlatform, setUninstallsPlatform] = useState('all');
+  const [uninstallsPage, setUninstallsPage] = useState(1);
+
+  const fetchUninstalledUsers = useCallback(async (page = 1, search = uninstallsSearch, platform = uninstallsPlatform) => {
+    setUninstallsLoading(true);
+    try {
+      const params = {
+        page,
+        limit: 10,
+        search: (search || '').trim(),
+        platform,
+        range: dateRange,
+        country: countryFilter
+      };
+      if (dateRange === 'custom') {
+        if (startDate) params.startDate = startDate;
+        if (endDate) params.endDate = endDate;
+      }
+      const res = await apiService.getUninstalledUsers(params);
+      if (res?.success) {
+        setUninstallsList(res.uninstalls || []);
+        setUninstallsPagination(res.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 });
+        setUninstallsStats(res.stats || { total: 0, android: 0, ios: 0, registered: 0, guest: 0 });
+        setUninstallsPage(page);
+      }
+    } catch (err) {
+      console.error('Failed to load uninstalled users:', err);
+      toast.error('Failed to load uninstalled users data.');
+    } finally {
+      setUninstallsLoading(false);
+    }
+  }, [dateRange, countryFilter, startDate, endDate, uninstallsSearch, uninstallsPlatform]);
+
+  const handleOpenUninstallsModal = () => {
+    setShowUninstallsModal(true);
+    setUninstallsSearch('');
+    setUninstallsPlatform('all');
+    fetchUninstalledUsers(1, '', 'all');
+  };
+
+  const handleExportUninstallsCSV = () => {
+    if (!uninstallsList || uninstallsList.length === 0) {
+      toast.error('No uninstalls data to export');
+      return;
+    }
+    const rows = uninstallsList.map((item, idx) => ({
+      '#': idx + 1,
+      'User / Device': item.user ? `${item.user.name} (${item.user.email || 'No email'})` : `Guest (${item.installId})`,
+      'Platform': (item.platform || 'android').toUpperCase(),
+      'Country': item.country || 'India',
+      'State': item.state || 'Unspecified Region',
+      'City': item.city || 'N/A',
+      'Device Type': item.deviceType || 'phone',
+      'OS Version': item.deviceOSVersion || 'N/A',
+      'Registered User': item.isRegistered ? 'Yes' : 'No',
+      'Uninstalled On': item.uninstalledAt ? new Date(item.uninstalledAt).toLocaleString('en-IN') : 'N/A'
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Uninstalled Devices');
+    XLSX.writeFile(workbook, `Uninstalls_Telemetry_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    toast.success('Uninstalls report exported to Excel!');
+  };
 
   // Available states for selected country filter
   const availableStates = useMemo(() => {
@@ -883,17 +954,31 @@ export default function AdminDownloadsSection() {
         </div>
 
         {/* Uninstalls */}
-        <div className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-zinc-800 rounded-xl p-2.5 sm:p-3 shadow-xs flex flex-col justify-between hover:border-rose-300 dark:hover:border-rose-800 transition-all">
+        <div 
+          onClick={handleOpenUninstallsModal}
+          className="bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-zinc-800 rounded-xl p-2.5 sm:p-3 shadow-xs flex flex-col justify-between hover:border-rose-400 dark:hover:border-rose-500 hover:shadow-md transition-all cursor-pointer group relative overflow-hidden"
+          title="Click to view detailed list of uninstalled devices & users"
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-rose-500">Uninstalls</span>
-            <div className="p-1 rounded-md bg-rose-500/10 text-rose-600 border border-rose-500/20">
-              <ArrowLeft className="w-3 h-3 rotate-45" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-rose-500 group-hover:text-rose-600 flex items-center gap-1">
+              Uninstalls
+              <span className="text-[9px] font-semibold text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity hidden xs:inline">
+                • View list
+              </span>
+            </span>
+            <div className="p-1 rounded-md bg-rose-500/10 text-rose-600 border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-xs">
+              <ArrowLeft className="w-3 h-3 rotate-45 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
           <div className="mt-1">
-            <p className="text-base sm:text-lg md:text-xl font-black text-slate-900 dark:text-white tracking-tight">
-              {loading ? '...' : (summary.uninstalls || 0).toLocaleString()}
-            </p>
+            <div className="flex items-baseline justify-between">
+              <p className="text-base sm:text-lg md:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                {loading ? '...' : (summary.uninstalls || 0).toLocaleString()}
+              </p>
+              <span className="text-[10px] text-rose-500 font-bold group-hover:underline flex items-center gap-0.5">
+                Details &rarr;
+              </span>
+            </div>
             <p className="text-[10px] text-rose-500 font-semibold mt-0.5 truncate">
               {summary.total > 0 ? `${((summary.uninstalls / summary.total) * 100).toFixed(1)}% churn` : '0% churn'}
             </p>
@@ -1521,6 +1606,292 @@ export default function AdminDownloadsSection() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* 6. Uninstalled Devices & Users Drill-down Modal */}
+      {showUninstallsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div 
+            className="bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50 dark:bg-zinc-900/40">
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600 border border-rose-500/20">
+                    <UserX className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                      Uninstalled Devices & Users Telemetry
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-bold border border-rose-200 dark:border-rose-900">
+                        {(uninstallsPagination.total || 0).toLocaleString()} Records
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+                      Telemetry for uninstalled mobile devices, locations (Country/State), and user accounts.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <button
+                  onClick={handleExportUninstallsCSV}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs transition-colors cursor-pointer"
+                  title="Export Uninstalls List to Excel"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                  Export Excel
+                </button>
+                <button
+                  onClick={() => setShowUninstallsModal(false)}
+                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                  title="Close Modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Stats Banner */}
+            <div className="px-4 sm:px-5 py-2.5 bg-slate-100/70 dark:bg-zinc-900/60 border-b border-slate-100 dark:border-zinc-800 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-zinc-800/80 border border-slate-200/60 dark:border-zinc-700/60 shadow-2xs">
+                <div className="p-1 rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50">
+                  <Smartphone className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 uppercase font-semibold">Android Uninstalls</p>
+                  <p className="font-extrabold text-slate-900 dark:text-white text-sm">{uninstallsStats.android || 0}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-zinc-800/80 border border-slate-200/60 dark:border-zinc-700/60 shadow-2xs">
+                <div className="p-1 rounded-md bg-sky-50 text-sky-600 dark:bg-sky-950/50">
+                  <Apple className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 uppercase font-semibold">iOS Uninstalls</p>
+                  <p className="font-extrabold text-slate-900 dark:text-white text-sm">{uninstallsStats.ios || 0}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-zinc-800/80 border border-slate-200/60 dark:border-zinc-700/60 shadow-2xs">
+                <div className="p-1 rounded-md bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50">
+                  <UserCheck className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 uppercase font-semibold">Registered Users</p>
+                  <p className="font-extrabold text-slate-900 dark:text-white text-sm">{uninstallsStats.registered || 0}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-zinc-800/80 border border-slate-200/60 dark:border-zinc-700/60 shadow-2xs">
+                <div className="p-1 rounded-md bg-amber-50 text-amber-600 dark:bg-amber-950/50">
+                  <UserX className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 uppercase font-semibold">Guest Devices</p>
+                  <p className="font-extrabold text-slate-900 dark:text-white text-sm">{uninstallsStats.guest || 0}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Filter & Search Bar */}
+            <div className="p-3 sm:p-4 border-b border-slate-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+              {/* Search */}
+              <div className="relative w-full sm:w-80">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search user, email, state, country..."
+                  value={uninstallsSearch}
+                  onChange={(e) => {
+                    setUninstallsSearch(e.target.value);
+                    fetchUninstalledUsers(1, e.target.value, uninstallsPlatform);
+                  }}
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:border-[#B88B2A] dark:focus:border-[#B88B2A] text-slate-900 dark:text-white placeholder-slate-400"
+                />
+              </div>
+
+              {/* Platform Selector */}
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-900 p-1 rounded-lg border border-slate-200/60 dark:border-zinc-800 text-xs self-start sm:self-auto">
+                {['all', 'android', 'ios'].map((plat) => (
+                  <button
+                    key={plat}
+                    onClick={() => {
+                      setUninstallsPlatform(plat);
+                      fetchUninstalledUsers(1, uninstallsSearch, plat);
+                    }}
+                    className={`px-3 py-1 rounded-md font-bold text-xs capitalize transition-all cursor-pointer ${
+                      uninstallsPlatform === plat
+                        ? 'bg-white dark:bg-zinc-800 text-slate-900 dark:text-white shadow-xs'
+                        : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900'
+                    }`}
+                  >
+                    {plat === 'all' ? 'All Platforms' : plat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Table / Content */}
+            <div className="flex-1 overflow-auto p-0">
+              {uninstallsLoading ? (
+                <div className="py-16 flex flex-col items-center justify-center gap-3 text-slate-400">
+                  <RefreshCw className="w-6 h-6 animate-spin text-[#B88B2A]" />
+                  <p className="text-xs font-semibold">Loading uninstalled telemetry records...</p>
+                </div>
+              ) : uninstallsList.length === 0 ? (
+                <div className="py-16 text-center text-slate-400 space-y-1">
+                  <UserX className="w-8 h-8 mx-auto text-slate-300 dark:text-zinc-600 mb-2" />
+                  <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">No uninstalls found</p>
+                  <p className="text-xs text-slate-400">No records match the active search or platform filter.</p>
+                </div>
+              ) : (
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200/80 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-900/80 text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider sticky top-0 z-10 backdrop-blur-xs">
+                      <th className="py-2.5 px-3.5">User / Device ID</th>
+                      <th className="py-2.5 px-3.5">Platform</th>
+                      <th className="py-2.5 px-3.5">Country & State</th>
+                      <th className="py-2.5 px-3.5">Device Type / OS</th>
+                      <th className="py-2.5 px-3.5">Uninstalled On</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60">
+                    {uninstallsList.map((item) => {
+                      const isIos = (item.platform || '').toLowerCase() === 'ios';
+                      return (
+                        <tr key={item.id || item.installId} className="hover:bg-slate-50/70 dark:hover:bg-zinc-800/50 transition-colors">
+                          {/* User / Device */}
+                          <td className="py-3 px-3.5">
+                            {item.user ? (
+                              <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-black text-xs flex items-center justify-center border border-indigo-200 dark:border-indigo-800">
+                                  {item.user.name?.charAt(0)?.toUpperCase() || 'U'}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-slate-900 dark:text-white truncate max-w-[180px]">
+                                    {item.user.name}
+                                  </p>
+                                  <p className="text-[10px] text-slate-400 truncate max-w-[180px]">
+                                    {item.user.email || item.user.phone || 'Registered User'}
+                                  </p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 font-bold text-[10px] flex items-center justify-center border border-slate-200 dark:border-zinc-700">
+                                  ID
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-slate-700 dark:text-zinc-300 text-xs">
+                                    Guest Device
+                                  </p>
+                                  <p className="text-[10px] text-slate-400 font-mono truncate max-w-[180px]" title={item.installId}>
+                                    {item.installId}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </td>
+
+                          {/* Platform */}
+                          <td className="py-3 px-3.5">
+                            {isIos ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-900 text-white dark:bg-zinc-700 dark:text-zinc-100 text-[10px] font-bold shadow-2xs">
+                                <Apple className="w-3 h-3" />
+                                iOS
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800 shadow-2xs">
+                                <Smartphone className="w-3 h-3 text-emerald-600" />
+                                Android
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Country & State */}
+                          <td className="py-3 px-3.5">
+                            <div className="flex items-start gap-1.5">
+                              <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />
+                              <div>
+                                <p className="font-bold text-slate-900 dark:text-white">
+                                  {item.state || 'Unspecified Region'}
+                                </p>
+                                <p className="text-[10px] text-slate-400">
+                                  {item.country || 'India'} ({item.countryCode || 'IN'})
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Device Type / OS */}
+                          <td className="py-3 px-3.5">
+                            <span className="font-medium text-slate-700 dark:text-zinc-300">
+                              {item.deviceOSVersion ? item.deviceOSVersion : (isIos ? 'iOS Device' : 'Android Device')}
+                            </span>
+                            <p className="text-[10px] text-slate-400 capitalize">
+                              {item.deviceType || 'Phone'}
+                            </p>
+                          </td>
+
+                          {/* Uninstalled On */}
+                          <td className="py-3 px-3.5">
+                            <div className="flex items-center gap-1 text-slate-600 dark:text-zinc-300 font-medium">
+                              <Clock className="w-3 h-3 text-slate-400" />
+                              {item.uninstalledAt ? new Date(item.uninstalledAt).toLocaleDateString('en-IN', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                              }) : 'Recent'}
+                            </div>
+                            <p className="text-[10px] text-slate-400 pl-4">
+                              {item.uninstalledAt ? new Date(item.uninstalledAt).toLocaleTimeString('en-IN', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              }) : ''}
+                            </p>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* Modal Footer / Pagination */}
+            {uninstallsPagination.totalPages > 1 && (
+              <div className="p-3 sm:p-4 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between text-xs text-slate-500 bg-slate-50/50 dark:bg-zinc-900/40">
+                <span className="font-medium">
+                  Showing {((uninstallsPagination.page - 1) * uninstallsPagination.limit) + 1} - {Math.min(uninstallsPagination.page * uninstallsPagination.limit, uninstallsPagination.total)} of {uninstallsPagination.total}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    disabled={uninstallsPagination.page <= 1}
+                    onClick={() => fetchUninstalledUsers(uninstallsPagination.page - 1, uninstallsSearch, uninstallsPlatform)}
+                    className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-slate-700 dark:text-zinc-200 cursor-pointer transition-colors"
+                  >
+                    Prev
+                  </button>
+                  <span className="px-2 font-bold text-slate-900 dark:text-white">
+                    Page {uninstallsPagination.page} of {uninstallsPagination.totalPages}
+                  </span>
+                  <button
+                    disabled={uninstallsPagination.page >= uninstallsPagination.totalPages}
+                    onClick={() => fetchUninstalledUsers(uninstallsPagination.page + 1, uninstallsSearch, uninstallsPlatform)}
+                    className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-slate-700 dark:text-zinc-200 cursor-pointer transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

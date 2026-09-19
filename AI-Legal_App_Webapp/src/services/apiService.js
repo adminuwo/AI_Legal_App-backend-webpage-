@@ -1868,6 +1868,16 @@ export const apiService = {
     }
   },
 
+  async getUninstalledUsers(params = {}) {
+    try {
+      const response = await apiClient.get('/admin/analytics/downloads/uninstalls', { params });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch uninstalled users:", error);
+      throw error;
+    }
+  },
+
   // ─── LEGAL PRECEDENTS & AI INTELLIGENCE ───
   async searchPrecedents(query, projectId = null, language = 'English', jurisdiction = null) {
     try {

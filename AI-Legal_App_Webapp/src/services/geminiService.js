@@ -3,7 +3,7 @@ import { apis } from "../types";
 import { getUserData } from "../userStore/userData";
 import { getDeviceFingerprint } from "../utils/fingerprint";
 
-export const generateChatResponse = async (history, currentMessage, systemInstruction, attachments, language, abortSignal = null, mode = null, sessionId = null, projectId = null, userMsgId = null, aiMsgId = null, aspectRatio = null, modelId = null, onChunk = null) => {
+export const generateChatResponse = async (history, currentMessage, systemInstruction, attachments, language, abortSignal = null, mode = null, sessionId = null, projectId = null, userMsgId = null, aiMsgId = null, aspectRatio = null, modelId = null, onChunk = null, activeTool = null) => {
     try {
         const userData = getUserData();
         const token = userData?.token || (typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null);
@@ -69,6 +69,7 @@ export const generateChatResponse = async (history, currentMessage, systemInstru
                 state: userState
             },
             mode: mode,
+            activeTool: activeTool || 'legal_my_case',
             sessionId: sessionId,
             projectId: projectId,
             userMsgId: userMsgId,

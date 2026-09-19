@@ -298,6 +298,52 @@
     font-style: italic !important;
     color: hsl(var(--foreground)) !important;
   }
+
+  /* Universal Gold Table Styling for AI Responses */
+  .prose table,
+  table.markdown-table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin: 1rem 0 !important;
+    border-radius: 0.75rem !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(200, 163, 77, 0.25) !important;
+  }
+
+  .prose thead,
+  table.markdown-table thead {
+    background-color: rgba(200, 163, 77, 0.12) !important;
+    border-bottom: 1.5px solid rgba(200, 163, 77, 0.35) !important;
+  }
+
+  .prose th,
+  table.markdown-table th {
+    color: #B88B2A !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding: 0.75rem 1rem !important;
+    text-align: left !important;
+    font-size: 0.75rem !important;
+  }
+
+  .dark .prose th,
+  .dark table.markdown-table th {
+    color: #E2C275 !important;
+    background-color: rgba(200, 163, 77, 0.18) !important;
+  }
+
+  .prose td,
+  table.markdown-table td {
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid rgba(200, 163, 77, 0.1) !important;
+    font-size: 0.875rem !important;
+  }
+
+  .prose tr:hover,
+  table.markdown-table tr:hover {
+    background-color: rgba(200, 163, 77, 0.04) !important;
+  }
 }
 
 /* Scrollbar Styling */

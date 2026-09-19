@@ -940,3 +940,153 @@ export const syncSilentUninstallsHandler = async (req, res) => {
         });
     }
 };
+
+/**
+ * 10. Get Detailed Uninstalled Users / Devices Telemetry
+ * Endpoint: GET /api/admin/analytics/downloads/uninstalls
+ */
+export const getUninstalledUsers = async (req, res) => {
+    try {
+        const {
+            page = 1,
+            limit = 15,
+            search = '',
+            platform,
+            country,
+            startDate,
+            endDate,
+            range
+        } = req.query;
+
+        const dateRange = range || req.query.dateRange || 'all';
+        const matchQuery = {
+            status: 'uninstalled'
+        };
+
+        if (platform && platform.toLowerCase() !== 'all') {
+            matchQuery.platform = platform.toLowerCase();
+        }
+
+        if (country && country.toLowerCase() !== 'all') {
+            matchQuery.country = new RegExp(`^${country.trim()}$`, 'i');
+        }
+
+        const { start, end } = calculateDateBounds(dateRange, startDate, endDate);
+        if (start || end) {
+            matchQuery.uninstalledAt = {};
+            if (start) matchQuery.uninstalledAt.$gte = start;
+            if (end) matchQuery.uninstalledAt.$lt = end;
+        }
+
+        // Pagination
+        const p = Math.max(1, parseInt(page, 10));
+        const l = Math.max(1, parseInt(limit, 10));
+        const skip = (p - 1) * l;
+
+        // If search term is provided
+        let finalQuery = { ...matchQuery };
+        if (search && search.trim()) {
+            const regex = new RegExp(search.trim(), 'i');
+            const matchingUsers = await User.find({
+                $or: [
+                    { name: regex },
+                    { email: regex },
+                    { phone: regex }
+                ]
+            }).select('_id').lean();
+
+            const matchingUserIds = matchingUsers.map(u => u._id);
+
+            finalQuery.$or = [
+                { country: regex },
+                { state: regex },
+                { city: regex },
+                { installId: regex },
+                { deviceType: regex },
+                { deviceOSVersion: regex },
+                { userId: { $in: matchingUserIds } }
+            ];
+        }
+
+        // Fetch records and count
+        const [total, uninstalls, platformStats, registeredCount] = await Promise.all([
+            AppInstall.countDocuments(finalQuery),
+            AppInstall.find(finalQuery)
+                .populate('userId', 'name email phone role avatar createdAt')
+                .sort({ uninstalledAt: -1, updatedAt: -1, installedAt: -1 })
+                .skip(skip)
+                .limit(l)
+                .lean(),
+            AppInstall.aggregate([
+                { $match: matchQuery },
+                {
+                    $group: {
+                        _id: '$platform',
+                        count: { $sum: 1 }
+                    }
+                }
+            ]),
+            AppInstall.countDocuments({ ...matchQuery, userId: { $ne: null } })
+        ]);
+
+        const stats = {
+            total,
+            android: 0,
+            ios: 0,
+            other: 0,
+            registered: registeredCount,
+            guest: 0
+        };
+
+        platformStats.forEach(item => {
+            if (item._id === 'android') stats.android = item.count;
+            else if (item._id === 'ios') stats.ios = item.count;
+            else stats.other += item.count;
+        });
+
+        stats.guest = Math.max(0, (stats.android + stats.ios + stats.other) - registeredCount);
+
+        // Format uninstalls
+        const formattedList = uninstalls.map(item => ({
+            id: item._id,
+            installId: item.installId,
+            platform: item.platform || 'unknown',
+            country: item.country || 'India',
+            countryCode: item.countryCode || 'IN',
+            state: item.state || 'Unspecified Region',
+            city: item.city || '',
+            source: item.source || 'unknown',
+            installedAt: item.installedAt,
+            uninstalledAt: item.uninstalledAt || item.updatedAt || item.installedAt,
+            deviceType: item.deviceType || 'phone',
+            deviceOSVersion: item.deviceOSVersion || '',
+            isRegistered: !!item.userId,
+            user: item.userId ? {
+                id: item.userId._id,
+                name: item.userId.name || 'Anonymous User',
+                email: item.userId.email || '',
+                phone: item.userId.phone || '',
+                role: item.userId.role || 'user'
+            } : null
+        }));
+
+        return res.status(200).json({
+            success: true,
+            pagination: {
+                total,
+                page: p,
+                limit: l,
+                totalPages: Math.ceil(total / l)
+            },
+            stats,
+            uninstalls: formattedList
+        });
+    } catch (err) {
+        console.error('[getUninstalledUsers Error]', err);
+        return res.status(500).json({
+            success: false,
+            message: err.message || 'Failed to fetch uninstalled users'
+        });
+    }
+};
+

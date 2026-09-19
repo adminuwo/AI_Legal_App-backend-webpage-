@@ -73,6 +73,7 @@ export const optionalVerifyToken = (req, res, next) => {
         req.user = decoded;
         req.workspaceId = req.headers['x-active-workspace-id'] || 'personal_practice';
     } catch (error) {
+        console.error('[AUTH ERROR optionalVerifyToken]', error.message);
         req.user = null;
         req.workspaceId = 'personal_practice';
     }
