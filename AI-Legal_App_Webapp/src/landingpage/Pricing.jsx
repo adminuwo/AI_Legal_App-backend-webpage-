@@ -913,8 +913,8 @@ export default function Pricing() {
       {/* =========================================================================
           PRICING CARDS GRID (Exact 3 Plans Matching AI Legal Live Portal)
       ========================================================================= */}
-      <section className="pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 items-stretch">
+      <section className="pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
           {currentPlans.map((plan) => {
             const price = billingCycle === 'yearly' ? plan.yearly : plan.monthly;
             const monthlyEquiv = billingCycle === 'yearly' ? Math.round(plan.yearly / 12) : plan.monthly;
@@ -924,7 +924,7 @@ export default function Pricing() {
             return (
               <div
                 key={plan.id}
-                className={`bg-white dark:bg-[#0B1120] rounded-2xl p-7 flex flex-col justify-between relative transition-all duration-200 ${
+                className={`bg-white dark:bg-[#0B1120] rounded-2xl p-5 sm:p-5.5 flex flex-col justify-between relative transition-all duration-200 ${
                   plan.popular
                     ? 'border-2 border-[#B88B2A] shadow-xl shadow-[#B88B2A]/15 ring-1 ring-[#B88B2A]/40'
                     : 'border border-slate-200 dark:border-slate-800 shadow-sm hover:border-[#B88B2A]/60 hover:shadow-md'
@@ -932,19 +932,19 @@ export default function Pricing() {
               >
                 {/* Popular Ribbon */}
                 {tagText && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-b-xl rounded-t-sm bg-gradient-to-r from-[#B88B2A] to-[#B38628] text-white text-[10px] font-extrabold uppercase tracking-wider shadow-md whitespace-nowrap">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3.5 py-0.5 rounded-b-xl rounded-t-sm bg-gradient-to-r from-[#B88B2A] to-[#B38628] text-white text-[9px] font-extrabold uppercase tracking-wider shadow-md whitespace-nowrap">
                     ⭐ {tagText}
                   </div>
                 )}
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {/* Top Badge & Savings Tag */}
-                  <div className="flex items-center justify-between gap-2 pt-1">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-extrabold bg-[#B88B2A]/10 text-[#B38628] dark:text-[#E5C16C]">
+                  <div className="flex items-center justify-between gap-2 pt-0.5">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-extrabold bg-[#B88B2A]/10 text-[#B38628] dark:text-[#E5C16C]">
                       {plan.badge}
                     </span>
                     {plan.savingsBadge && (
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
                         {plan.savingsBadge}
                       </span>
                     )}
@@ -952,19 +952,19 @@ export default function Pricing() {
 
                   {/* Plan Name & Desc */}
                   <div>
-                    <h3 className="text-xl font-extrabold text-[#111827] dark:text-white tracking-tight">
+                    <h3 className="text-lg font-extrabold text-[#111827] dark:text-white tracking-tight leading-snug">
                       {plan.name}
                     </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed min-h-[34px]">
+                    <p className="text-[11.5px] text-slate-500 dark:text-slate-400 mt-1 leading-snug min-h-[28px]">
                       {plan.desc}
                     </p>
                   </div>
 
                   {/* Combo Workspaces Tag Pills */}
                   {plan.includes && (
-                    <div className="flex flex-wrap gap-1.5 pt-1">
+                    <div className="flex flex-wrap gap-1 pt-0.5">
                       {plan.includes.map((inc, i) => (
-                        <span key={i} className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40">
+                        <span key={i} className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40">
                           {inc}
                         </span>
                       ))}
@@ -972,25 +972,25 @@ export default function Pricing() {
                   )}
 
                   {/* Price Block */}
-                  <div className="pt-2 pb-1">
+                  <div className="pt-1 pb-0.5">
                     <div className="flex items-baseline gap-1">
-                      <sup className="text-lg font-bold text-slate-700 dark:text-slate-300">₹</sup>
-                      <span className="text-4xl font-black text-[#111827] dark:text-white tracking-tight">
+                      <sup className="text-base font-bold text-slate-700 dark:text-slate-300">₹</sup>
+                      <span className="text-3xl font-black text-[#111827] dark:text-white tracking-tight">
                         {price.toLocaleString('en-IN')}
                       </span>
-                      <span className="text-xs text-slate-500 font-medium ml-1">
+                      <span className="text-[11px] text-slate-500 font-medium ml-1">
                         {billingCycle === 'yearly' ? 'per year' : 'per month'}
                       </span>
                     </div>
 
                     {billingCycle === 'yearly' && (
-                      <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                      <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
                         (₹{monthlyEquiv}/mo equivalent)
                       </div>
                     )}
 
                     {yearlySaving > 0 && (
-                      <div className="mt-1.5 inline-block text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md">
+                      <div className="mt-1 inline-block text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded">
                         💰 Save ₹{yearlySaving.toLocaleString('en-IN')} per year
                       </div>
                     )}
@@ -999,16 +999,16 @@ export default function Pricing() {
                   <div className="border-t border-slate-100 dark:border-slate-800" />
 
                   {/* Feature Groups */}
-                  <div className="space-y-4 pt-1">
+                  <div className="space-y-3 pt-0.5">
                     {plan.features.map((grp, gIdx) => (
-                      <div key={gIdx} className="space-y-2">
-                        <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      <div key={gIdx} className="space-y-1.5">
+                        <div className="text-[9.5px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                           {grp.category}
                         </div>
-                        <div className="space-y-1.5">
+                        <div className="space-y-1">
                           {grp.items.map((item, iIdx) => (
-                            <div key={iIdx} className="flex items-start gap-2 text-xs leading-snug">
-                              <span className="text-sm shrink-0 leading-none mt-0.5">{item.icon}</span>
+                            <div key={iIdx} className="flex items-start gap-1.5 text-[11.5px] leading-snug">
+                              <span className="text-xs shrink-0 leading-none mt-0.5">{item.icon}</span>
                               <div className="text-slate-600 dark:text-slate-300">
                                 <span className="font-normal">{item.label}: </span>
                                 <span className="font-bold text-[#111827] dark:text-white">{item.value}</span>
@@ -1022,7 +1022,7 @@ export default function Pricing() {
 
                   {/* FUP Notice */}
                   {plan.fupNotice && (
-                    <p className="text-[10.5px] text-slate-400 dark:text-slate-500 pt-1">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 pt-0.5">
                       {plan.fupNotice}
                     </p>
                   )}
