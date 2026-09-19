@@ -631,14 +631,13 @@ export default function Pricing() {
       <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           <div onClick={() => navigate('/')} className="flex items-center gap-2.5 cursor-pointer select-none group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#B88B2A] to-[#B38628] flex items-center justify-center shadow-md shadow-[#B88B2A]/30 p-1">
-              <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-full h-full object-contain" />
+            <div className="relative flex items-center justify-center">
+              <div className="absolute inset-0 bg-[#B88B2A]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+              <img src="/logo/logo_transparent.png" alt="AI LEGAL Logo" className="w-9 h-9 sm:w-10 sm:h-10 object-contain relative" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg sm:text-xl font-extrabold tracking-tight text-[#111827] dark:text-white flex items-center">
-                AI Legal<span className="text-[10px] text-[#B38628] dark:text-[#B88B2A] font-extrabold ml-0.5">™</span>
-              </span>
-            </div>
+            <span className="text-lg sm:text-xl font-black tracking-tight text-[#0F172A] dark:text-white flex items-center">
+              AI LEGAL<span className="text-[10px] text-[#B88B2A] font-extrabold ml-0.5">TM</span>
+            </span>
           </div>
 
           <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-600 dark:text-slate-300">

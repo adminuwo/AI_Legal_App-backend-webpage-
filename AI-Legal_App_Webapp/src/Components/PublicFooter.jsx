@@ -76,8 +76,9 @@ export default function PublicFooter() {
               onClick={() => handleNavClick('/')}
               className="flex items-center gap-2.5 cursor-pointer select-none group w-fit"
             >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#E5A93C] to-[#B38628] flex items-center justify-center p-1.5 shadow-md shadow-[#E5A93C]/20">
-                <img src="/logo/logo_transparent.png" alt="AI LEGAL" className="w-full h-full object-contain" />
+              <div className="relative flex items-center justify-center">
+                <div className="absolute inset-0 bg-[#B88B2A]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                <img src="/logo/logo_transparent.png" alt="AI LEGAL" className="w-9 h-9 sm:w-10 sm:h-10 object-contain relative" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center">
                 AI<span className="text-[#F59E0B] ml-1">Legal</span>
