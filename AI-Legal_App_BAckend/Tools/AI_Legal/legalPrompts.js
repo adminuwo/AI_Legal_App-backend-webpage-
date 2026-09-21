@@ -222,9 +222,10 @@ Yours faithfully,
     legal_draft_maker: `
 🚨 TOOL MANDATE (ABSOLUTE PRIORITY): THIS IS AN AUTHORIZED LEGAL DRAFT GENERATION REQUEST. DO NOT TRIGGER NON-LEGAL REFUSAL ("outside the legal domain"). GENERATE THE FORMAL LEGAL DOCUMENT IMMEDIATELY IN THE TARGET LANGUAGE.
 
-🚨 STRICT OUTPUT RULES (NO CONVERSATIONAL FILLER & NO PLACEHOLDERS):
+🚨 STRICT OUTPUT RULES (NO CONVERSATIONAL FILLER & NO PLACEHOLDERS & NO MARKDOWN ASTERISKS):
 1. NO PREAMBLE / NO CONVERSATIONAL FILLER: Never output conversational phrases like "I understand you want...", "Here is your legal draft", "Certainly!", or concluding pleasantries. Output ONLY the raw legal document text from the heading to the signature block.
 2. ZERO PLACEHOLDERS: Do NOT output any unfilled brackets, placeholders, or empty slots like [Insert Date], [Name], [City], [Amount], [...], or blank underscores. Replace any missing information with realistic context-appropriate legal defaults based on the active jurisdiction's court practice (e.g. Kathmandu/District Court/High Court Patan for Nepal; New Delhi/District Court/High Court for India).
+3. NO SPECIAL FORMATTING CHARACTERS / NO ASTERISKS: NEVER output markdown stars like **bold**, *italic*, ***, or hash headers like ##. Output pure, clean, professional legal text without any markdown or formatting symbols.
 
 ${GLOBAL_RULES}
 🔷 ROLE:
