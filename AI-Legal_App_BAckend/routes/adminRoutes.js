@@ -35,7 +35,8 @@ import {
     updateCrashStatus,
     clearCrashLogs,
     getInstitutionalAddonRequests,
-    updateInstitutionalAddonRequestStatus
+    updateInstitutionalAddonRequestStatus,
+    updateUserRole
 } from '../controllers/adminPortalController.js';
 
 const router = express.Router();
@@ -50,9 +51,15 @@ router.get('/stats', verifyToken, isAdmin, getAdminStats);
 router.get('/users', verifyToken, isAdmin, getAllUsers);
 router.get('/users/:id', verifyToken, isAdmin, getUserDetails);
 router.put('/users/:id', verifyToken, isAdmin, updateUser);
+router.put('/users/:id/role', verifyToken, isAdmin, updateUserRole);
 router.post('/users/:id/change-plan', verifyToken, isAdmin, changeUserPlan);
+router.put('/users/:id/subscription', verifyToken, isAdmin, changeUserPlan);
+router.post('/users/:id/subscription', verifyToken, isAdmin, changeUserPlan);
 router.post('/users/:id/adjust-credits', verifyToken, isAdmin, adjustUserCredits);
+router.post('/users/:id/credits', verifyToken, isAdmin, adjustUserCredits);
+router.put('/users/:id/credits', verifyToken, isAdmin, adjustUserCredits);
 router.post('/users/:id/toggle-suspend', verifyToken, isAdmin, toggleSuspendUser);
+router.put('/users/:id/suspend', verifyToken, isAdmin, toggleSuspendUser);
 router.delete('/users/:id', verifyToken, isAdmin, deleteUser);
 router.post('/users/:id/login-as', verifyToken, isAdmin, loginAsUser);
 router.post('/users/:id/reset-password', verifyToken, isAdmin, resetUserPassword);

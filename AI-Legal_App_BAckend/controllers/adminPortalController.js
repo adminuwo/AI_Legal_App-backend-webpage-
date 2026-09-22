@@ -689,12 +689,30 @@ export const updateUser = async (req, res) => {
 export const toggleSuspendUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { isBlocked } = req.body;
+        let { isBlocked, status } = req.body;
+        if (isBlocked === undefined && status !== undefined) {
+            isBlocked = status === 'Suspended' || status === 'suspended' || status === 'blocked' || status === true;
+        }
         const user = await User.findByIdAndUpdate(id, { $set: { isBlocked } }, { new: true });
         if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
         broadcastAdminRefresh('user', user);
         res.status(200).json({ success: true, message: `User status changed to ${isBlocked ? 'suspended' : 'active'}.`, user });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// 5.1 Update User Role
+export const updateUserRole = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+        const user = await User.findByIdAndUpdate(id, { $set: { role } }, { new: true });
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+        broadcastAdminRefresh('user', user);
+        res.status(200).json({ success: true, message: `User role updated to ${role}.`, user });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -800,7 +818,8 @@ export const adjustUserCredits = async (req, res) => {
 export const changeUserPlan = async (req, res) => {
     try {
         const { id } = req.params;
-        const { planId, planName, type = 'monthly', expire = false } = req.body;
+        const { planId, planName, expire = false } = req.body;
+        const type = (req.body.billingCycle || req.body.type || 'monthly').toLowerCase();
 
         let user = null;
         if (mongoose.Types.ObjectId.isValid(id)) {

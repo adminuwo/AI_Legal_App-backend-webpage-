@@ -1855,10 +1855,10 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* CARD 4: AI RESOURCE SPENT */}
+              {/* CARD 4: AI OPERATIONS PROCESSED */}
               <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">AI RESOURCE SPENT</span>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">AI OPERATIONS</span>
                   <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 border border-blue-500/20 shrink-0">
                     <Zap className="w-4 h-4" />
                   </div>
@@ -1868,7 +1868,7 @@ export default function AdminDashboard() {
                     {(stats.totalCreditsUsed || 0).toLocaleString()}
                   </h3>
                   <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-zinc-400 mt-2 pt-2 border-t border-slate-100 dark:border-zinc-800/80 truncate">
-                    Total Credits Consumed
+                    Total AI Queries Processed
                   </p>
                 </div>
               </div>
@@ -2274,7 +2274,7 @@ export default function AdminDashboard() {
               <div className="p-4 sm:p-6 border-b border-slate-200/80 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">User Accounts Directory</h3>
-                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Manage user profiles, roles, AI credits, subscriptions and access controls</p>
+                  <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-medium">Manage user profiles, roles, subscriptions and access controls</p>
                 </div>
                 <span className="text-xs font-bold text-[#B88B2A] bg-[#B88B2A]/10 px-3 py-1 rounded-full border border-[#B88B2A]/20 self-start sm:self-auto shrink-0 flex items-center gap-1.5">
                   {usersLoading && <RotateCw className="w-3 h-3 animate-spin text-[#B88B2A]" />}
@@ -2341,9 +2341,6 @@ export default function AdminDashboard() {
                             )}
                             <span className="text-[10px] font-black text-[#B88B2A] bg-[#B88B2A]/10 px-2 py-0.5 rounded-md border border-[#B88B2A]/20 uppercase">
                               {userPlan}
-                            </span>
-                            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
-                              {u.credits ?? 500} Credits
                             </span>
                           </div>
 
@@ -2804,8 +2801,8 @@ export default function AdminDashboard() {
                             <p className="text-xs sm:text-sm font-black text-blue-500 mt-0.5">₹{Number(plan.priceYearly || 0).toLocaleString('en-IN')}</p>
                           </div>
                           <div>
-                            <p className="text-[8.5px] sm:text-[9px] font-black uppercase text-slate-400 truncate">CREDITS</p>
-                            <p className="text-xs sm:text-sm font-black text-[#B88B2A] mt-0.5">{Number(plan.credits || 0).toLocaleString('en-IN')}</p>
+                            <p className="text-[8.5px] sm:text-[9px] font-black uppercase text-slate-400 truncate">ACCESS TIER</p>
+                            <p className="text-xs sm:text-sm font-black text-[#B88B2A] mt-0.5">Plan Quota</p>
                           </div>
                         </div>
 
@@ -4544,7 +4541,7 @@ export default function AdminDashboard() {
                     </span>
                   </p>
                   <p className="text-slate-500 dark:text-zinc-400 font-medium">
-                    Credits: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.credits ?? 500}</span>
+                    Billing Cycle: <span className="font-extrabold capitalize text-slate-900 dark:text-white">{selectedDossierUser.subscription?.billingCycle || 'Monthly'}</span>
                   </p>
                   <p className="text-slate-500 dark:text-zinc-400 font-medium">
                     Cases Created: <span className="font-extrabold text-slate-900 dark:text-white">{selectedDossierUser.totalCases || 0}</span>
@@ -4578,8 +4575,8 @@ export default function AdminDashboard() {
                       <p className="font-extrabold text-slate-900 dark:text-white mt-0.5">{selectedDossierUser.totalCases || 0} / ∞</p>
                     </div>
                     <div className="p-2.5 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
-                      <p className="text-[9px] text-slate-400 font-bold uppercase truncate">AI Credits</p>
-                      <p className="font-extrabold text-slate-900 dark:text-white mt-0.5">{selectedDossierUser.credits ?? 500}</p>
+                      <p className="text-[9px] text-slate-400 font-bold uppercase truncate">Subscription Status</p>
+                      <p className="font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 uppercase text-[11px]">{selectedDossierUser.subscription?.status || 'Active'}</p>
                     </div>
                     <div className="p-2.5 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
                       <p className="text-[9px] text-slate-400 font-bold uppercase truncate">Contracts Audited</p>
