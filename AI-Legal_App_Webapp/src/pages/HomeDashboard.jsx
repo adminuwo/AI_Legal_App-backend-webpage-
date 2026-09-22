@@ -14,6 +14,7 @@ import { apiService } from '../services/apiService';
 import toast from 'react-hot-toast';
 
 import ExperienceRoleSelector from '../Components/ExperienceRoleSelector';
+import GeneralUserDashboardSection from '../Components/GeneralUserDashboardSection';
 import StudentDashboardSection from '../Components/StudentDashboardSection';
 import LawFirmDashboardSection from '../Components/LawFirmDashboardSection';
 import LawFirmOnboardingView from '../Components/LawFirmOnboardingView';
@@ -492,6 +493,14 @@ export default function HomeDashboard() {
       </div>
     </div>
   );
+
+  if (selectedRole === 'general_user') {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A] p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto text-[#111827] dark:text-white font-sans transition-colors">
+        <GeneralUserDashboardSection user={currentUser?.user} onRefresh={fetchDashboardData} />
+      </div>
+    );
+  }
 
   if (selectedRole === 'student') {
     return (

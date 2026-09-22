@@ -41,6 +41,7 @@ import { uploadAttachment } from "../controllers/chat.controller.js";
 import uploadMiddleware from "../middleware/upload.middleware.js";
 import AIService from "../services/core/AIService.js";
 import CaseAssistantService from "../services/core/CaseAssistantService.js";
+import { resolveCaseTracking } from "../services/caseResolverService.js";
 
 const router = express.Router();
 const aiServiceCore = new AIService();
@@ -226,9 +227,12 @@ export const resolveEffectiveTool = (requestedTool, content = '', document = nul
 // --- CORE CHAT ENDPOINT ---
 router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
   const { content: rawContent, history, systemInstruction, image, video, document, language, model, mode: reqMode, sessionId, userMsgId, aiMsgId, aspectRatio, modelId: reqModelId, skipSession } = req.body;
-  const content = typeof rawContent === 'string'
+  let content = typeof rawContent === 'string'
     ? rawContent.replace(/\n*\[MANDATORY JURISDICTION:[^\]]*\][\s\S]*$/i, '').trim()
     : (rawContent || '');
+  if (!content && (document || image)) {
+    content = "Please analyze and summarize the attached document in detail, highlighting key clauses, rights, obligations, and legal risks.";
+  }
 
   let mode = reqMode;
   let resolvedToolName = req.body.activeTool || req.body.toolName;
@@ -476,6 +480,38 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
       );
     }
 
+    // Resolve live case tracking from CNR, Case Number, or Consultation Request ID
+    try {
+      const resolvedCaseInfo = await resolveCaseTracking(content, req.user?.id || req.user?._id || null);
+      if (resolvedCaseInfo) {
+        const caseCardText = `
+### 🏛️ LIVE VERIFIED CASE TRACKING & COURT RECORD FOUND:
+- **Registry / Source**: ${resolvedCaseInfo.source}
+- **Case / CNR Reference**: ${resolvedCaseInfo.cnr || resolvedCaseInfo.requestId || 'Registered Reference'}
+- **Title / Matter**: ${resolvedCaseInfo.title}
+- **Forum / Court**: ${resolvedCaseInfo.court}
+- **Current Status**: ${resolvedCaseInfo.status}
+- **Hearing Stage**: ${resolvedCaseInfo.stage}
+- **Next Listing / Hearing Date**: ${resolvedCaseInfo.nextHearingDate}
+- **Court Room / Mode**: ${resolvedCaseInfo.courtHall}
+- **Presiding Officer / Bench / Counsel**: ${resolvedCaseInfo.judge}
+- **Parties**: Petitioner: ${resolvedCaseInfo.petitioner} vs Respondent: ${resolvedCaseInfo.respondent}
+- **Advocate on Record / Counsel**: ${resolvedCaseInfo.advocates}
+- **Latest Order / Summary**: ${resolvedCaseInfo.latestOrder}
+${resolvedCaseInfo.fee ? `- **Consultation Fee**: ₹${resolvedCaseInfo.fee}` : ''}
+
+CRITICAL INSTRUCTION FOR AI ASSISTANT:
+1. The user queried or referenced a legal case / CNR / consultation request.
+2. Present this live verified case information clearly to the user in a prominent, beautifully formatted "Court Case Status Card" table.
+3. TABLE FORMATTING MANDATE: In all Markdown tables, NEVER include asterisks (**), underscores, or special formatting characters inside table cells (e.g., write "| Aspect | Details |" and "| Registry / Source | ... |", NEVER write "| **Aspect** | **Details** |"). All table text must be clean plain text without any markdown symbols.
+4. Provide legal insight on the current stage (${resolvedCaseInfo.stage}), what happens on the next date (${resolvedCaseInfo.nextHearingDate}), and practical recommended next steps (e.g. required documents, counsel briefing, certified copy application, or consultation preparation).
+`;
+        masterCaseContext = masterCaseContext ? `${caseCardText}\n\n${masterCaseContext}` : caseCardText;
+      }
+    } catch (trackErr) {
+      console.warn('[CaseTrackingResolver] Error during lookup:', trackErr.message);
+    }
+
     // ── SSE Streaming Mode ───────────────────────────────────────────────────
     if (req.body.stream === true) {
       res.setHeader('Content-Type', 'text/event-stream');
@@ -493,6 +529,14 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
           if (typeof res.flush === 'function') res.flush();
         }
       };
+
+      // Keep-alive heartbeat every 4 seconds to prevent TCP idle disconnects
+      const sseHeartbeat = setInterval(() => {
+        if (res.writable && !res.writableEnded) {
+          res.write(': keep-alive\n\n');
+          if (typeof res.flush === 'function') res.flush();
+        }
+      }, 4000);
 
       try {
         const chatResponse = await aiService.chat(content, activeDocContent, {
@@ -633,13 +677,19 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
           res.write(`data: ${JSON.stringify({ done: true, sources: searchSources, suggestions: chatResponse.suggestions || [], isRealTime: isWebSearchResponse, usageStatus: streamUsageStatus })}\n\n`);
         }
 
-        if (res.writable) res.end();
+        if (res.writable && !res.writableEnded) res.end();
       } catch (streamErr) {
         console.error('[Stream] Error:', streamErr.message);
-        if (res.writable) {
-          res.write(`data: ${JSON.stringify({ error: streamErr.message })}\n\n`);
+        if (res.writable && !res.writableEnded) {
+          if (fullText && fullText.length > 50) {
+            res.write(`data: ${JSON.stringify({ done: true, sources: [] })}\n\n`);
+          } else {
+            res.write(`data: ${JSON.stringify({ error: streamErr.message })}\n\n`);
+          }
           res.end();
         }
+      } finally {
+        clearInterval(sseHeartbeat);
       }
       return;
     }

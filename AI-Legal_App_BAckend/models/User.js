@@ -238,6 +238,34 @@ const userSchema = new mongoose.Schema({
     finalExhaustionEmailSent: { type: Boolean, default: false },
     finalExhaustionEmailSentAt: { type: Date, default: null },
 
+    advocateVerification: {
+        verificationStatus: { type: String, enum: ['not_registered', 'pending', 'verified', 'rejected', 'suspended'], default: 'not_registered' },
+        listingConsent: { type: String, enum: ['none', 'pending', 'accepted', 'declined', 'revoked'], default: 'none' },
+        listingConsentAt: { type: Date, default: null },
+        verificationSubmittedAt: { type: Date, default: null },
+        verifiedAt: { type: Date, default: null },
+        verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+        profileStatus: { type: String, enum: ['active', 'inactive'], default: 'active' },
+        rejectionReason: { type: String, default: '' },
+        consultationFee: { type: Number, default: 1500 },
+        consultationTypes: { type: [String], default: ['chat', 'audio', 'video'] },
+        availability: { type: String, default: 'Available Today' },
+        languages: { type: [String], default: ['English', 'Hindi'] },
+        bio: { type: String, default: '' },
+        primaryCourts: { type: [String], default: [] },
+        practiceAreas: { type: [String], default: [] },
+        experienceYears: { type: String, default: '' },
+        barCouncil: { type: String, default: '' },
+        barEnrollmentNumber: { type: String, default: '' },
+        enrollmentYear: { type: String, default: '' },
+        verificationDocument: {
+            name: { type: String, default: '' },
+            uri: { type: String, default: '' },
+            mimeType: { type: String, default: '' }
+        },
+        rating: { type: Number, default: 4.9 },
+        totalConsultations: { type: Number, default: 0 }
+    },
     notificationsInbox: [{
         id: String,
         title: String,

@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, GraduationCap, Building2, ChevronDown, Check, X, Sparkles } from 'lucide-react';
+import { Shield, GraduationCap, Building2, ChevronDown, Check, X, Sparkles, User } from 'lucide-react';
 import { useRecoilState } from 'recoil';
 import { selectedRoleState } from '../userStore/userData';
 import apiService from '../services/apiService';
 
 export const ROLES = [
+  {
+    id: 'general_user',
+    label: 'General User',
+    subtitle: 'Legal advice, verified advocates & AI assistance',
+    icon: User,
+    badge: 'Citizen',
+  },
   {
     id: 'advocate',
     label: 'Advocate',
@@ -88,7 +95,10 @@ export default function ExperienceRoleSelector({ compact = false }) {
   let displayTitle = 'Advocate';
   let DisplayIcon = Shield;
 
-  if (selectedRole === 'student') {
+  if (selectedRole === 'general_user') {
+    displayTitle = 'General User';
+    DisplayIcon = User;
+  } else if (selectedRole === 'student') {
     displayTitle = 'Student';
     DisplayIcon = GraduationCap;
   } else if (selectedRole === 'advocate' || selectedRole === 'personal' || selectedRole === 'individual') {
@@ -125,6 +135,8 @@ export default function ExperienceRoleSelector({ compact = false }) {
       } else {
         targetWsId = activeWsId || 'firm_abc_workspace';
       }
+    } else if (roleId === 'general_user') {
+      targetWsId = 'general_user_workspace';
     }
     localStorage.setItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID', targetWsId);
     localStorage.removeItem('aisa_current_case');
@@ -231,10 +243,11 @@ export default function ExperienceRoleSelector({ compact = false }) {
                 </div>
                 <div className="space-y-2">
                   {ROLES.map((roleItem) => {
+                    const isGeneralUserRole = roleItem.id === 'general_user' && selectedRole === 'general_user';
                     const isAdvocateRole = roleItem.id === 'advocate' && (selectedRole === 'advocate' || selectedRole === 'personal' || selectedRole === 'individual');
                     const isStudentRole = roleItem.id === 'student' && selectedRole === 'student';
                     const isFirmRole = roleItem.id === 'law_firm' && selectedRole === 'law_firm';
-                    const isSelected = isAdvocateRole || isStudentRole || isFirmRole;
+                    const isSelected = isGeneralUserRole || isAdvocateRole || isStudentRole || isFirmRole;
                     const ItemIcon = roleItem.icon;
 
                     return (

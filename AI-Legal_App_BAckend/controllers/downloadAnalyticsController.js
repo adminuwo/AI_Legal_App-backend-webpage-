@@ -76,11 +76,11 @@ export const syncHistoricalInstalls = async () => {
                         rawState = regions[charCodeSum % regions.length];
                     }
 
-                    const platform = ['android', 'ios'].includes(String(u.deviceOS).toLowerCase())
+                    const platform = ['android', 'ios', 'web'].includes(String(u.deviceOS).toLowerCase())
                         ? String(u.deviceOS).toLowerCase()
-                        : 'android';
+                        : 'web';
 
-                    const source = platform === 'ios' ? 'app-store' : 'google-play';
+                    const source = platform === 'ios' ? 'app-store' : (platform === 'android' ? 'google-play' : 'organic');
 
                     bulkOps.push({
                         updateOne: {
@@ -251,6 +251,7 @@ export const getDownloadSummary = async (req, res) => {
             last2yCount,
             androidCount,
             iosCount,
+            webCount,
             firstTimeCount,
             uninstallCount,
             uniqueUserCount,
@@ -266,6 +267,7 @@ export const getDownloadSummary = async (req, res) => {
             AppInstall.countDocuments({ ...baseQuery, installedAt: { $gte: y2Bounds.start, $lt: y2Bounds.end } }),
             AppInstall.countDocuments({ ...rangeQuery, platform: 'android' }),
             AppInstall.countDocuments({ ...rangeQuery, platform: 'ios' }),
+            AppInstall.countDocuments({ ...rangeQuery, platform: 'web' }),
             AppInstall.countDocuments({ ...rangeQuery, firstInstall: true }),
             AppInstall.countDocuments({ ...rangeQuery, status: 'uninstalled' }),
             AppInstall.distinct('userId', { ...rangeQuery, userId: { $ne: null } }),
@@ -291,6 +293,7 @@ export const getDownloadSummary = async (req, res) => {
                 last2Years: last2yCount,
                 android: androidCount,
                 ios: iosCount,
+                web: webCount,
                 firstTimeInstallers: firstTimeCount,
                 uninstalls: finalUninstalls,
                 activeInstalls: Math.max(0, totalFiltered - finalUninstalls),
@@ -307,6 +310,7 @@ export const getDownloadSummary = async (req, res) => {
                 last2Years: last2yCount,
                 androidInstalls: androidCount,
                 iosInstalls: iosCount,
+                webInstalls: webCount,
                 firstTimeInstallers: firstTimeCount,
                 uninstalls: finalUninstalls,
                 activeRegisteredUsers: uniqueUserCount.length
@@ -396,7 +400,8 @@ export const getCountryDownloads = async (req, res) => {
                         }
                     },
                     androidCount: { $sum: { $cond: [{ $eq: ['$platform', 'android'] }, 1, 0] } },
-                    iosCount: { $sum: { $cond: [{ $eq: ['$platform', 'ios'] }, 1, 0] } }
+                    iosCount: { $sum: { $cond: [{ $eq: ['$platform', 'ios'] }, 1, 0] } },
+                    webCount: { $sum: { $cond: [{ $eq: ['$platform', 'web'] }, 1, 0] } }
                 }
             }
         ];
@@ -405,6 +410,7 @@ export const getCountryDownloads = async (req, res) => {
         const totalOverall = aggregated.reduce((acc, c) => acc + c.totalDownloads, 0);
         const totalAndroid = aggregated.reduce((acc, c) => acc + (c.androidCount || 0), 0);
         const totalIos = aggregated.reduce((acc, c) => acc + (c.iosCount || 0), 0);
+        const totalWeb = aggregated.reduce((acc, c) => acc + (c.webCount || 0), 0);
         const totalToday = aggregated.reduce((acc, c) => acc + (c.todayDownloads || 0), 0);
         const total7Days = aggregated.reduce((acc, c) => acc + (c.d7Downloads || 0), 0);
         const total30Days = aggregated.reduce((acc, c) => acc + (c.d30Downloads || 0), 0);
@@ -421,7 +427,8 @@ export const getCountryDownloads = async (req, res) => {
             last7Days: c.d7Downloads || 0,
             last30Days: c.d30Downloads || 0,
             android: c.androidCount || 0,
-            ios: c.iosCount || 0
+            ios: c.iosCount || 0,
+            web: c.webCount || 0
         }));
 
         // Sorting
@@ -702,6 +709,7 @@ export const getDownloadTrends = async (req, res) => {
                     total: { $sum: 1 },
                     android: { $sum: { $cond: [{ $eq: ['$platform', 'android'] }, 1, 0] } },
                     ios: { $sum: { $cond: [{ $eq: ['$platform', 'ios'] }, 1, 0] } },
+                    web: { $sum: { $cond: [{ $eq: ['$platform', 'web'] }, 1, 0] } },
                     firstTime: { $sum: { $cond: [{ $eq: ['$firstInstall', true] }, 1, 0] } }
                 }
             },
@@ -710,7 +718,7 @@ export const getDownloadTrends = async (req, res) => {
 
         const results = await AppInstall.aggregate(pipeline);
 
-        // Format nicely for charts (e.g. { date: '2026-09-15', formattedDate: '15 Sep', total: 14, android: 8, ios: 6 })
+        // Format nicely for charts (e.g. { date: '2026-09-15', formattedDate: '15 Sep', total: 14, android: 8, ios: 6, web: 4 })
         const trendData = results.map(r => {
             const dateObj = new Date(`${r._id}T00:00:00Z`);
             const formattedDate = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
@@ -722,6 +730,7 @@ export const getDownloadTrends = async (req, res) => {
                 totalInstalls: r.total,
                 android: r.android,
                 ios: r.ios,
+                web: r.web,
                 firstTime: r.firstTime
             };
         });
@@ -955,7 +964,8 @@ export const getUninstalledUsers = async (req, res) => {
             country,
             startDate,
             endDate,
-            range
+            range,
+            userType = 'all'
         } = req.query;
 
         const dateRange = range || req.query.dateRange || 'all';
@@ -983,8 +993,16 @@ export const getUninstalledUsers = async (req, res) => {
         const l = Math.max(1, parseInt(limit, 10));
         const skip = (p - 1) * l;
 
-        // If search term is provided
+        // Base finalQuery
         let finalQuery = { ...matchQuery };
+
+        if (userType === 'registered') {
+            finalQuery.userId = { $ne: null };
+        } else if (userType === 'guest') {
+            finalQuery.userId = null;
+        }
+
+        // If search term is provided
         if (search && search.trim()) {
             const regex = new RegExp(search.trim(), 'i');
             const matchingUsers = await User.find({
@@ -997,15 +1015,18 @@ export const getUninstalledUsers = async (req, res) => {
 
             const matchingUserIds = matchingUsers.map(u => u._id);
 
-            finalQuery.$or = [
-                { country: regex },
-                { state: regex },
-                { city: regex },
-                { installId: regex },
-                { deviceType: regex },
-                { deviceOSVersion: regex },
-                { userId: { $in: matchingUserIds } }
-            ];
+            finalQuery.$and = finalQuery.$and || [];
+            finalQuery.$and.push({
+                $or: [
+                    { country: regex },
+                    { state: regex },
+                    { city: regex },
+                    { installId: regex },
+                    { deviceType: regex },
+                    { deviceOSVersion: regex },
+                    { userId: { $in: matchingUserIds } }
+                ]
+            });
         }
 
         // Fetch records and count

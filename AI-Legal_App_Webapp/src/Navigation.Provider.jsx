@@ -50,6 +50,7 @@ const AiBase = lazy(() => import('./Tools/AI_Base/AI_Base').catch(() => ({ defau
 
 const SecurityAndGuidelines = lazy(() => import('./landingpage/SecurityAndGuidelines'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdvocateInviteWebFallback = lazy(() => import('./pages/AdvocateInviteWebFallback.jsx'));
 
 const LegalWorkspace = lazy(() => import('./pages/Workspace/LegalWorkspace'));
 const HomeDashboard = lazy(() => import('./pages/HomeDashboard'));
@@ -72,6 +73,8 @@ const ClientConnectWorkspace = lazy(() => import('./pages/ClientConnectWorkspace
 const QuizPracticeWorkspace = lazy(() => import('./pages/QuizPracticeWorkspace'));
 const NotesMakerWorkspace = lazy(() => import('./pages/NotesMakerWorkspace'));
 const MobileAppPage = lazy(() => import('./pages/MobileAppPage'));
+const AdvocatesDirectoryPage = lazy(() => import('./pages/AdvocatesDirectoryPage'));
+const MyRequestsPage = lazy(() => import('./pages/MyRequestsPage'));
 
 const EnterpriseSetupPage = lazy(() => import('./pages/Enterprise/EnterpriseSetupPage'));
 const EnterpriseDashboardLayout = lazy(() => import('./pages/Enterprise/EnterpriseDashboardLayout'));
@@ -466,6 +469,11 @@ const NavigateProvider = () => {
         <Route path={AppRoute.E_Verification} element={<VerificationForm />} />
         <Route path={AppRoute.FORGOT_PASSWORD} element={<ForgotPassword />} />
         <Route path={AppRoute.RESET_PASSWORD} element={<ResetPassword />} />
+        <Route path="/invite/advocate/:token" element={
+          <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-[#B88B2A] font-bold">Loading Invitation...</div>}>
+            <AdvocateInviteWebFallback />
+          </Suspense>
+        } />
 
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
@@ -572,6 +580,16 @@ const NavigateProvider = () => {
           <Route path="cases" element={<LegalWorkspace />} />
           <Route path="cases/:caseId" element={<LegalWorkspace />} />
           <Route path="case/:caseId" element={<LegalWorkspace />} />
+          <Route path="advocates" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Advocates Directory...</div>}>
+              <AdvocatesDirectoryPage />
+            </Suspense>
+          } />
+          <Route path="requests" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Consultations...</div>}>
+              <MyRequestsPage />
+            </Suspense>
+          } />
           <Route path="social-agent" element={<Navigate to="chat/new" replace state={{ forceGlobal: true }} />} />
           <Route path="ai-personal-assistant" element={<Navigate to="chat/new" replace state={{ forceGlobal: true }} />} />
           <Route path="ai-base" element={<Navigate to="chat/new" replace state={{ forceGlobal: true }} />} />

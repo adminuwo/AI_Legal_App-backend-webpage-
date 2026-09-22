@@ -98,8 +98,16 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
     });
   };
 
+  const isGeneralUser = selectedRole === 'general_user';
+
   // 4 Main Navigation Tabs (matching Mobile App)
-  const coreNavigation = [
+  const coreNavigation = isGeneralUser ? [
+    { name: 'Home', icon: LayoutGrid, path: '/dashboard' },
+    { name: 'Advocates', icon: Users, path: '/dashboard/advocates' },
+    { name: 'AI Legal', icon: Scale, path: '/dashboard/chat/new' },
+    { name: 'My Requests', icon: MessageSquare, path: '/dashboard/requests' },
+    { name: 'Mobile App', icon: Smartphone, path: '/dashboard/mobile-app' },
+  ] : [
     { name: 'Home', icon: LayoutGrid, path: '/dashboard' },
     { name: selectedRole === 'law_firm' ? 'Firm Workspace' : 'My Matters', icon: Briefcase, path: '/dashboard/cases' },
     { 
@@ -112,7 +120,13 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
   ];
 
   // Dynamic Role-Specific AI Tools
-  const roleAiTools = selectedRole === 'student' ? [
+  const roleAiTools = isGeneralUser ? [
+    { name: 'AI Legal Assistant', icon: Scale, path: '/dashboard/chat/new' },
+    { name: 'Verified Advocates', icon: Users, path: '/dashboard/advocates' },
+    { name: 'Consultation Requests', icon: MessageSquare, path: '/dashboard/requests' },
+    { name: 'Document Analyzer', icon: FileCheck, path: '/dashboard/chat/new?tool=contract_analyzer' },
+    { name: 'Know Your Rights', icon: Search, path: '/dashboard/chat/new?tool=legal_research' },
+  ] : selectedRole === 'student' ? [
     { name: 'Case Summarizer', icon: Search, path: '/dashboard/chat/new?tool=legal_research' },
     { name: 'Bare Act Tutor', icon: Library, path: '/dashboard/tools/legal-precedents' },
     { name: 'Moot Court Trainer', icon: Gavel, path: '/dashboard/tools/argument-builder' },

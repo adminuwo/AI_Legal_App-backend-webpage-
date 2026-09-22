@@ -15,7 +15,7 @@ import { executeTargetedLegalSearch, formatGroundingContext } from './legalSearc
 
 export const cleanAiOutputBrackets = (text) => {
     if (!text || typeof text !== 'string') return text;
-    return text
+    let cleaned = text
         .replace(/\[cite:\s*[^\]]*\]/gi, '')
         .replace(/\[RAG(?::\s*[^\]]*)?\]/gi, '')
         .replace(/\[Ref(?::\s*[^\]]*)?\]/gi, '')
@@ -30,7 +30,14 @@ export const cleanAiOutputBrackets = (text) => {
         .replace(/\bAISA™\b/g, 'AI LEGAL™')
         .replace(/\bAISA\b/g, 'AI LEGAL™')
         .replace(/For more information, you can visit:\s*https?:\/\/uwo24\.com\/?/gi, '')
-        .replace(/https?:\/\/uwo24\.com\/?/gi, '')
+        .replace(/https?:\/\/uwo24\.com\/?/gi, '');
+
+    // Strip special formatting characters (*, _, `, ~) from markdown table rows so tables are always completely clean
+    cleaned = cleaned.replace(/^(\|.+)\r?$/gm, (match) => {
+        return match.replace(/[*#`_~]/g, '');
+    });
+
+    return cleaned
         .replace(/\n{3,}/g, '\n\n')
         .trim();
 };
@@ -980,17 +987,27 @@ export const askVertex = async (prompt, context = null, options = {}) => {
 
         if (onChunk) {
             let fullText = '';
-            for await (const chunk of result.stream) {
-                let text = '';
-                if (typeof chunk.text === 'function') {
-                    text = chunk.text();
-                } else if (chunk.candidates?.[0]?.content?.parts?.[0]?.text) {
-                    text = chunk.candidates[0].content.parts[0].text;
-                } else if (chunk.text && typeof chunk.text === 'string') {
-                    text = chunk.text;
+            try {
+                for await (const chunk of result.stream) {
+                    let text = '';
+                    if (typeof chunk.text === 'function') {
+                        text = chunk.text();
+                    } else if (chunk.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        text = chunk.candidates[0].content.parts[0].text;
+                    } else if (chunk.text && typeof chunk.text === 'string') {
+                        text = chunk.text;
+                    }
+                    if (text) {
+                        fullText += text;
+                        onChunk(text);
+                    }
                 }
-                fullText += text;
-                onChunk(text);
+            } catch (streamIterErr) {
+                logger.warn(`[VERTEX] Streaming iteration notice: ${streamIterErr.message}`);
+                // If we already received substantial content from Gemini, gracefully preserve it!
+                if (fullText.length < 50) {
+                    throw streamIterErr;
+                }
             }
             
             // 4. JSON Parsing Attempt (If mode expects JSON)

@@ -306,42 +306,6 @@ const getPlanDisplayName = (u, sub) => {
     return 'Free';
 };
 
-// Helper: Backfill missing deviceOS in MongoDB for legacy user records (Optimized with caching)
-let isBackfilled = false;
-const backfillDeviceOS = async () => {
-    if (isBackfilled) return;
-    try {
-        const unassigned = await User.find({
-            $or: [
-                { deviceOS: { $exists: false } },
-                { deviceOS: { $nin: ['android', 'ios'] } },
-                { deviceOS: 'web' },
-                { deviceOS: 'unknown' },
-                { deviceOS: null }
-            ]
-        }).select('_id').limit(1000).lean();
-
-        if (unassigned.length > 0) {
-            const bulkOps = unassigned.map(u => {
-                const idStr = String(u._id);
-                const lastCode = idStr.charCodeAt(idStr.length - 1) || 0;
-                const assignedOS = (lastCode % 2 === 0) ? 'android' : 'ios';
-                return {
-                    updateOne: {
-                        filter: { _id: u._id },
-                        update: { $set: { deviceOS: assignedOS } }
-                    }
-                };
-            });
-            await User.bulkWrite(bulkOps);
-        } else {
-            isBackfilled = true;
-        }
-    } catch (e) {
-        console.warn('[backfillDeviceOS Error]', e.message);
-    }
-};
-
 // Helper: Calculate date range boundaries in Asia/Kolkata (IST, UTC+5:30)
 export const getDateRangeBoundaries = (dateRange) => {
     if (!dateRange || dateRange === 'all') {
@@ -418,8 +382,6 @@ export const getDateRangeBoundaries = (dateRange) => {
 // 2. Query/CRUD Users (Pure MongoDB Live Fetch with Server-side Date Filter & Pagination)
 export const getAllUsers = async (req, res) => {
     try {
-        await backfillDeviceOS();
-
         const {
             search,
             status,
@@ -501,10 +463,11 @@ export const getAllUsers = async (req, res) => {
             }
         }
 
-        const [totalAll, totalAndroid, totalIos, globalTotal] = await Promise.all([
+        const [totalAll, totalAndroid, totalIos, totalWeb, globalTotal] = await Promise.all([
             User.countDocuments(basePlatformQuery),
             User.countDocuments({ ...basePlatformQuery, deviceOS: 'android' }),
             User.countDocuments({ ...basePlatformQuery, deviceOS: 'ios' }),
+            User.countDocuments({ ...basePlatformQuery, deviceOS: 'web' }),
             User.countDocuments(conveeFilter || {})
         ]);
 
@@ -593,9 +556,9 @@ export const getAllUsers = async (req, res) => {
                 jurisdiction: u.jurisdiction || u.country || 'India',
                 currentPlan: planName,
                 totalCases: casesCount,
-                deviceOS: ['android', 'ios'].includes(String(u.deviceOS).toLowerCase()) 
+                deviceOS: ['android', 'ios', 'web'].includes(String(u.deviceOS).toLowerCase()) 
                     ? String(u.deviceOS).toLowerCase() 
-                    : ((String(u._id).charCodeAt(String(u._id).length - 1) % 2 === 0) ? 'android' : 'ios')
+                    : 'web'
             };
         });
 
@@ -617,6 +580,7 @@ export const getAllUsers = async (req, res) => {
                 globalTotal,
                 android: totalAndroid,
                 ios: totalIos,
+                web: totalWeb,
                 domains: {
                     all: domainAll,
                     gmail: domainGmail,

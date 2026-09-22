@@ -250,42 +250,32 @@ export const syncUninstallsToDatabase = async ({ days = 30, propertyIdOverride =
             const dateEnd = new Date(item.date);
             dateEnd.setHours(23, 59, 59, 999);
 
-            // Find installed records on that date
-            const existingToMark = await AppInstall.find({
-                platform: item.platform,
-                status: 'installed',
-                installedAt: { $lte: dateEnd }
-            }).limit(item.count).select('_id');
-
-            if (existingToMark.length > 0) {
-                const ids = existingToMark.map(doc => doc._id);
-                await AppInstall.updateMany(
-                    { _id: { $in: ids } },
-                    { $set: { status: 'uninstalled', uninstalledAt: dateEnd } }
-                );
-            } else {
-                // If fewer installed documents exist than GA uninstalls, create designated telemetry records
-                for (let i = 0; i < item.count; i++) {
-                    const uniqueInstallId = `ga4_uninst_${item.platform}_${item.date}_${i + 1}`;
-                    await AppInstall.findOneAndUpdate(
-                        { installId: uniqueInstallId },
-                        {
-                            $setOnInsert: {
-                                installId: uniqueInstallId,
-                                platform: item.platform,
-                                country: 'India',
-                                countryCode: 'IN',
-                                status: 'uninstalled',
-                                installedAt: dateStart,
-                                uninstalledAt: dateEnd,
-                                source: item.platform === 'ios' ? 'app-store' : 'google-play',
-                                firstInstall: false,
-                                appVersion: '1.0.11'
-                            }
+            // Deterministically upsert dedicated GA4 uninstall telemetry records
+            // This ensures idempotency: re-running the sync will NEVER re-cannibalize active registered users
+            for (let i = 0; i < item.count; i++) {
+                const uniqueInstallId = `ga4_uninst_${item.platform}_${item.date}_${i + 1}`;
+                await AppInstall.findOneAndUpdate(
+                    { installId: uniqueInstallId },
+                    {
+                        $set: {
+                            status: 'uninstalled',
+                            uninstalledAt: dateEnd,
+                            updatedAt: new Date()
                         },
-                        { upsert: true }
-                    );
-                }
+                        $setOnInsert: {
+                            installId: uniqueInstallId,
+                            platform: item.platform,
+                            country: 'India',
+                            countryCode: 'IN',
+                            installedAt: dateStart,
+                            source: item.platform === 'ios' ? 'app-store' : 'google-play',
+                            firstInstall: false,
+                            appVersion: '1.0.11',
+                            uninstallDetectionMethod: 'ga4_event'
+                        }
+                    },
+                    { upsert: true }
+                );
             }
         }
     }

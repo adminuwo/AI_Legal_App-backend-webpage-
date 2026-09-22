@@ -68,6 +68,16 @@ export const GLOBAL_RULES = `
 - Once a document/draft is generated, lock it as CURRENT CONTEXT.
 - Future short commands apply to this context.
 
+========================
+📊 CLEAN MARKDOWN TABLES (MANDATORY RULE)
+========================
+1. ZERO SPECIAL FORMATTING CHARACTERS IN TABLES:
+- Inside Markdown tables (| ... | ... |), NEVER use asterisks (** or *), underscores (__ or _), backticks (\`), or hash symbols (#) inside any cell.
+- CORRECT: | Aspect | Details |
+- FORBIDDEN: | **Aspect** | **Details** |
+- Keep all table cells as clean, elegant, plain text without any markdown symbols or formatting tags.
+
+
 4. TOPIC SWITCH RULE:
 - Only change topic if the user explicitly gives a new instruction (e.g., "FIR draft bnao").
 

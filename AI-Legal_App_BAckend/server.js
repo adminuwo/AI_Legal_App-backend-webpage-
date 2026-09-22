@@ -82,6 +82,8 @@ import blogPostRoutes from './routes/blogPostRoutes.js';
 import downloadAnalyticsRoutes from './routes/downloadAnalyticsRoutes.js';
 import telemetryRoutes from './routes/telemetryRoutes.js';
 import caseSearchRoutes from './routes/caseSearchRoutes.js';
+import consultationRoutes from './routes/consultationRoutes.js';
+import invitationRoutes from './routes/invitationRoutes.js';
 
 import { startPlanExpiryService } from './services/planExpiryService.js';
 import { langMiddleware } from './middleware/langContext.js';
@@ -414,6 +416,8 @@ app.use('/api/clients', clientRoutes);
 app.use('/api/student-notes', studentNoteRoutes);
 // Cases alias (same router — /api/cases/:id/auto-analyze maps to /:id/analyze)
 app.use('/api/cases', projectRoutes);
+app.use('/api/consultations', consultationRoutes);
+app.use('/api', invitationRoutes);
 
 // Broad Fallbacks (should be last and as specific as possible)
 app.use('/api/public', chatRoutes); // Allow /api/public/share/...

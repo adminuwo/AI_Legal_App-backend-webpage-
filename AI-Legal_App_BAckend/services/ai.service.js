@@ -493,7 +493,7 @@ STRICT MANDATE FOR THIS TURN:
         } else if ((activeDocContent && activeDocContent.length > 0) || (images && images.length > 0) || (documents && documents.length > 0)) {
             // PRIORITY 1: Chat-Uploaded Document / Images
 
-            // --- NEW: Legal Context Merging ---
+            // --- Legal Context Merging ---
             let combinedContext = null;
             let activeRagContext = null;
             if (mode === 'LEGAL_TOOLKIT' && toolName !== 'legal_contract_analyzer') {
@@ -502,7 +502,9 @@ STRICT MANDATE FOR THIS TURN:
                 const legalRewrittenQuery = ragAnalysis.rewrittenQuery || message;
                 activeRagContext = await vertexService.retrieveContextFromRag(legalRewrittenQuery, 8, 'LEGAL');
 
-                combinedContext = `📄 CASE CONTEXT (PRIMARY):\n${activeDocContent || "Refer to attached file contents."}\n\n📚 LEGAL KNOWLEDGE (RAG - REFERENCE):\n${activeRagContext?.text || "No relevant legal references found."}`;
+                combinedContext = `${caseContext ? `🏛️ LIVE CASE / COURT RECORD CONTEXT:\n${caseContext}\n\n` : ''}📄 CASE CONTEXT (PRIMARY):\n${activeDocContent || "Refer to attached file contents."}\n\n📚 LEGAL KNOWLEDGE (RAG - REFERENCE):\n${activeRagContext?.text || "No relevant legal references found."}`;
+            } else if (caseContext) {
+                combinedContext = `🏛️ LIVE CASE / COURT RECORD CONTEXT:\n${caseContext}\n\n${activeDocContent ? `📄 DOCUMENT CONTENT:\n${activeDocContent}` : ''}`;
             }
 
             const promptWithMemory = buildMemoryPrompt(message);
@@ -721,7 +723,7 @@ The user is requesting to draft, create, write, or type a legal document (Agreem
                         : `${basePersona}\n\n${dynamicSystemInstruction}\n\n### LANGUAGE INSTRUCTION:\n${langContext}\n\n${activeToolInstruction}\n\n${legalInstruction}${draftingDirective}`;
 
                     try {
-                        const vertexRes = await vertexService.askVertex(promptWithMemory, null, {
+                        const vertexRes = await vertexService.askVertex(promptWithMemory, caseContext || null, {
                             userName,
                             systemInstruction: finalSystemInstruction,
                             mode: mode || 'GENERAL',

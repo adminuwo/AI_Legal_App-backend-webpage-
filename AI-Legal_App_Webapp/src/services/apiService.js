@@ -228,6 +228,29 @@ apiClient.interceptors.response.use(
 );
 
 export const apiService = {
+  // Generic HTTP helpers
+  get(url, config) {
+    return apiClient.get(url, config);
+  },
+  post(url, data, config) {
+    return apiClient.post(url, data, config);
+  },
+  put(url, data, config) {
+    return apiClient.put(url, data, config);
+  },
+  patch(url, data, config) {
+    return apiClient.patch(url, data, config);
+  },
+  delete(url, config) {
+    return apiClient.delete(url, config);
+  },
+  request(urlOrConfig, config) {
+    if (typeof urlOrConfig === 'string') {
+      return apiClient.get(urlOrConfig, config);
+    }
+    return apiClient(urlOrConfig);
+  },
+
   // --- AI Tools ---
   async generateImage(prompt, aspectRatio = '1:1', modelId = 'imagen-3.0-generate-001') {
     try {
@@ -1922,4 +1945,5 @@ export const apiService = {
   }
 };
 
+export { apiClient };
 export default apiService;

@@ -20,6 +20,7 @@ import { COUNTRIES } from '../constants/countries';
 import { STATES_BY_COUNTRY } from '../constants/states';
 import AdminDownloadsSection from './AdminDashboard/components/AdminDownloadsSection';
 import AdminLinkedOrganizationsSection from './AdminDashboard/components/AdminLinkedOrganizationsSection';
+import AdminAdvocateVerificationsSection from './AdminDashboard/components/AdminAdvocateVerificationsSection';
 
 export const DATE_RANGE_OPTIONS = [
   { id: 'today', label: 'Today' },
@@ -48,8 +49,9 @@ const TABS = [
   { id: 'bugs', label: 'Bugs', icon: Bug },
   { id: 'jurisdiction', label: 'Jurisdiction', icon: Globe },
   { id: 'linked-orgs', label: 'Linked Organization (via Convee-Education)', icon: Building2 },
+  { id: 'rag-files', label: 'RAG Files', icon: FileText },
   { id: 'settings', label: 'Settings', icon: Settings },
-  { id: 'rag-files', label: 'RAG Files', icon: FileText }
+  { id: 'advocate-verifications', label: 'Advocate Verifications', icon: UserCheck }
 ];
 
 export default function AdminDashboard() {
@@ -265,7 +267,7 @@ export default function AdminDashboard() {
   });
 
   // Filter States
-  const [dateFilter, setDateFilter] = useState('today');
+  const [dateFilter, setDateFilter] = useState('all');
   const [usersPage, setUsersPage] = useState(1);
   const [userPagination, setUserPagination] = useState({ page: 1, limit: 25, total: 0, totalPages: 1, hasNextPage: false, hasPrevPage: false });
   const [usersLoading, setUsersLoading] = useState(false);
@@ -278,6 +280,20 @@ export default function AdminDashboard() {
   const [featureFilter, setFeatureFilter] = useState('all');
   const [bugSeverityFilter, setBugSeverityFilter] = useState('all');
   const [bugStatusFilter, setBugStatusFilter] = useState('all');
+
+  // Synchronized refs for fresh filters in polling and async operations
+  const dateFilterRef = useRef(dateFilter);
+  dateFilterRef.current = dateFilter;
+  const platformFilterRef = useRef(platformFilter);
+  platformFilterRef.current = platformFilter;
+  const emailDomainFilterRef = useRef(emailDomainFilter);
+  emailDomainFilterRef.current = emailDomainFilter;
+  const userFilterRef = useRef(userFilter);
+  userFilterRef.current = userFilter;
+  const userSearchRef = useRef(userSearch);
+  userSearchRef.current = userSearch;
+  const usersPageRef = useRef(usersPage);
+  usersPageRef.current = usersPage;
 
   // Modals & Actions States
   const [editUserModal, setEditUserModal] = useState(null);
@@ -495,7 +511,9 @@ export default function AdminDashboard() {
     else setRefreshing(true);
 
     try {
-      const token = user?.token || localStorage.getItem('token');
+      const token = user?.token || localStorage.getItem('token') || (() => {
+        try { return JSON.parse(localStorage.getItem('user') || '{}')?.token; } catch { return null; }
+      })();
       const tStamp = Date.now();
       const authHeader = { 
         headers: { 
@@ -507,9 +525,18 @@ export default function AdminDashboard() {
       };
       const noCacheAuthHeader = authHeader;
 
+      const userParams = new URLSearchParams();
+      userParams.append('page', String(usersPageRef.current || 1));
+      userParams.append('limit', '25');
+      userParams.append('dateRange', dateFilterRef.current || 'all');
+      if (platformFilterRef.current && platformFilterRef.current !== 'all') userParams.append('platform', platformFilterRef.current);
+      if (emailDomainFilterRef.current && emailDomainFilterRef.current !== 'all') userParams.append('domain', emailDomainFilterRef.current);
+      if (userFilterRef.current && userFilterRef.current !== 'all') userParams.append('plan', userFilterRef.current);
+      if (userSearchRef.current && userSearchRef.current.trim()) userParams.append('search', userSearchRef.current.trim());
+
       const [statsRes, usersRes, billingRes, plansRes, couponsRes, featuresRes, bugsRes, settingsRes, complaintsRes, addonRequestsRes] = await Promise.all([
         axios.get(`${API}/admin/stats?_t=${tStamp}${forceRefresh ? '&force=true' : ''}`, noCacheAuthHeader).catch((err) => ({ data: { success: false, code: err.response?.data?.code } })),
-        axios.get(`${API}/admin/users?dateRange=today&page=1&limit=25`, authHeader).catch(() => ({ data: { list: [], pagination: null } })),
+        axios.get(`${API}/admin/users?${userParams.toString()}`, authHeader).catch(() => ({ data: { list: [], pagination: null } })),
         axios.get(`${API}/admin/billing?limit=200`, authHeader).catch(() => ({ data: { list: [] } })),
         axios.get(`${API}/admin/plans`, authHeader).catch(() => ({ data: { plans: [] } })),
         axios.get(`${API}/admin/coupons`, authHeader).catch(() => ({ data: { coupons: [], stats: null } })),
@@ -564,20 +591,27 @@ export default function AdminDashboard() {
   const fetchUsersList = async (page = 1, filterOverrides = {}) => {
     try {
       setUsersLoading(true);
-      const token = user?.token || localStorage.getItem('token');
+      const token = user?.token || localStorage.getItem('token') || (() => {
+        try { return JSON.parse(localStorage.getItem('user') || '{}')?.token; } catch { return null; }
+      })();
       const authHeader = {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        },
+        timeout: 15000
       };
-      const dRange = filterOverrides.dateRange ?? dateFilter;
-      const plat = filterOverrides.platform ?? platformFilter;
-      const dom = filterOverrides.domain ?? emailDomainFilter;
-      const pln = filterOverrides.plan ?? userFilter;
-      const srch = filterOverrides.search !== undefined ? filterOverrides.search : userSearch;
+      const dRange = filterOverrides.dateRange !== undefined ? filterOverrides.dateRange : dateFilterRef.current;
+      const plat = filterOverrides.platform !== undefined ? filterOverrides.platform : platformFilterRef.current;
+      const dom = filterOverrides.domain !== undefined ? filterOverrides.domain : emailDomainFilterRef.current;
+      const pln = filterOverrides.plan !== undefined ? filterOverrides.plan : userFilterRef.current;
+      const srch = filterOverrides.search !== undefined ? filterOverrides.search : userSearchRef.current;
 
       const params = new URLSearchParams();
       params.append('page', String(page));
       params.append('limit', '25');
-      params.append('dateRange', dRange || 'today');
+      params.append('dateRange', dRange || 'all');
       if (plat && plat !== 'all') params.append('platform', plat);
       if (dom && dom !== 'all') params.append('domain', dom);
       if (pln && pln !== 'all') params.append('plan', pln);
@@ -597,15 +631,10 @@ export default function AdminDashboard() {
   };
 
   // Re-fetch users server-side on filter, search, or page change
-  const isUsersInitialMount = useRef(true);
   useEffect(() => {
-    if (isUsersInitialMount.current) {
-      isUsersInitialMount.current = false;
-      return;
-    }
     const timer = setTimeout(() => {
       fetchUsersList(usersPage);
-    }, 350);
+    }, 250);
     return () => clearTimeout(timer);
   }, [dateFilter, platformFilter, emailDomainFilter, userFilter, userSearch, usersPage]);
 
@@ -616,7 +645,9 @@ export default function AdminDashboard() {
   }, [isAdmin]);
 
   useEffect(() => {
-    if (activeTab === 'addons') {
+    if (activeTab === 'users') {
+      fetchUsersList(usersPageRef.current || 1);
+    } else if (activeTab === 'addons') {
       fetchAddonRequests();
     }
   }, [activeTab]);
@@ -656,10 +687,11 @@ export default function AdminDashboard() {
       return {
         all: usersCounts.total,
         android: usersCounts.android ?? 0,
-        ios: usersCounts.ios ?? 0
+        ios: usersCounts.ios ?? 0,
+        web: usersCounts.web ?? 0
       };
     }
-    return { all: 0, android: 0, ios: 0 };
+    return { all: 0, android: 0, ios: 0, web: 0 };
   }, [usersCounts]);
 
   // --- Live Billing KPIs & Filtered Payments List ---
@@ -2125,6 +2157,8 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
+        ) : activeTab === 'advocate-verifications' ? (
+          <AdminAdvocateVerificationsSection token={user?.token} />
         ) : activeTab === 'users' ? (
           /* TAB 2: USERS DIRECTORY — EXACT MOBILE & DESKTOP PARITY */
           <div className="space-y-4 sm:space-y-6">
@@ -2133,43 +2167,78 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Target Device Platform:</span>
                 <span className="text-[11px] sm:text-xs font-black text-[#B88B2A] bg-[#B88B2A]/10 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-[#B88B2A]/20">
-                  {platformFilter === 'all' && `${platformCounts.all} Total Users`}
-                  {platformFilter === 'android' && `🤖 ${platformCounts.android} Android`}
-                  {platformFilter === 'ios' && `🍎 ${platformCounts.ios} iOS`}
+                  {platformFilter === 'all' && `${(platformCounts.all || 0).toLocaleString()} Total Users`}
+                  {platformFilter === 'android' && `🤖 ${(platformCounts.android || 0).toLocaleString()} Android (Firebase)`}
+                  {platformFilter === 'ios' && `🍎 ${(platformCounts.ios || 0).toLocaleString()} iOS (App Store)`}
+                  {platformFilter === 'web' && `🌐 ${(platformCounts.web || 0).toLocaleString()} Web Portal`}
                 </span>
               </div>
 
-              {/* Android vs iOS Toggle Buttons (Strictly Android and iOS) */}
-              <div className="grid grid-cols-3 sm:flex items-center bg-slate-100 dark:bg-zinc-900 p-1 rounded-xl border border-slate-200 dark:border-zinc-800 gap-1 w-full sm:w-auto">
+              {/* Platform Toggle Buttons (ALL, ANDROID, iOS, WEB) */}
+              <div className="grid grid-cols-4 sm:flex items-center bg-slate-100 dark:bg-zinc-900 p-1 rounded-xl border border-slate-200 dark:border-zinc-800 gap-1 w-full sm:w-auto">
                 <button
-                  onClick={() => setPlatformFilter('all')}
-                  className={`px-2.5 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 text-center ${
+                  onClick={() => {
+                    setPlatformFilter('all');
+                    platformFilterRef.current = 'all';
+                    setUsersPage(1);
+                    usersPageRef.current = 1;
+                    fetchUsersList(1, { platform: 'all' });
+                  }}
+                  className={`px-2.5 sm:px-3.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 text-center ${
                     platformFilter === 'all'
                       ? 'bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white shadow-xs border border-slate-200/80 dark:border-zinc-700'
                       : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  <span>ALL ({platformCounts.all})</span>
+                  <span>ALL ({(platformCounts.all || 0).toLocaleString()})</span>
                 </button>
                 <button
-                  onClick={() => setPlatformFilter('android')}
-                  className={`px-2.5 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 text-center ${
+                  onClick={() => {
+                    setPlatformFilter('android');
+                    platformFilterRef.current = 'android';
+                    setUsersPage(1);
+                    usersPageRef.current = 1;
+                    fetchUsersList(1, { platform: 'android' });
+                  }}
+                  className={`px-2.5 sm:px-3.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 text-center ${
                     platformFilter === 'android'
                       ? 'bg-emerald-500 text-white shadow-xs border border-emerald-600'
                       : 'text-slate-500 dark:text-zinc-400 hover:text-emerald-500'
                   }`}
                 >
-                  <span>🤖 ANDROID ({platformCounts.android})</span>
+                  <span>🤖 ANDROID ({(platformCounts.android || 0).toLocaleString()})</span>
                 </button>
                 <button
-                  onClick={() => setPlatformFilter('ios')}
-                  className={`px-2.5 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 text-center ${
+                  onClick={() => {
+                    setPlatformFilter('ios');
+                    platformFilterRef.current = 'ios';
+                    setUsersPage(1);
+                    usersPageRef.current = 1;
+                    fetchUsersList(1, { platform: 'ios' });
+                  }}
+                  className={`px-2.5 sm:px-3.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 text-center ${
                     platformFilter === 'ios'
                       ? 'bg-blue-600 text-white shadow-xs border border-blue-700'
                       : 'text-slate-500 dark:text-zinc-400 hover:text-blue-500'
                   }`}
                 >
-                  <span>🍎 iOS ({platformCounts.ios})</span>
+                  <span>🍎 iOS ({(platformCounts.ios || 0).toLocaleString()})</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setPlatformFilter('web');
+                    platformFilterRef.current = 'web';
+                    setUsersPage(1);
+                    usersPageRef.current = 1;
+                    fetchUsersList(1, { platform: 'web' });
+                  }}
+                  className={`px-2.5 sm:px-3.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1 text-center ${
+                    platformFilter === 'web'
+                      ? 'bg-amber-600 text-white shadow-xs border border-amber-700'
+                      : 'text-slate-500 dark:text-zinc-400 hover:text-amber-500'
+                  }`}
+                >
+                  <span>🌐 WEB ({(platformCounts.web || 0).toLocaleString()})</span>
                 </button>
               </div>
             </div>
@@ -2185,7 +2254,11 @@ export default function AdminDashboard() {
                     value={userSearch}
                     onChange={e => {
                       setUserSearch(e.target.value);
-                      if (usersPage !== 1) setUsersPage(1);
+                      userSearchRef.current = e.target.value;
+                      if (usersPage !== 1) {
+                        setUsersPage(1);
+                        usersPageRef.current = 1;
+                      }
                     }}
                     className="w-full pl-10 pr-8 py-2 border border-slate-200 dark:border-zinc-700 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#B88B2A] bg-slate-50 dark:bg-zinc-900"
                   />
@@ -2193,7 +2266,12 @@ export default function AdminDashboard() {
                     <button
                       onClick={() => {
                         setUserSearch('');
-                        if (usersPage !== 1) setUsersPage(1);
+                        userSearchRef.current = '';
+                        if (usersPage !== 1) {
+                          setUsersPage(1);
+                          usersPageRef.current = 1;
+                        }
+                        fetchUsersList(1, { search: '' });
                       }}
                       className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
                     >
@@ -2209,8 +2287,12 @@ export default function AdminDashboard() {
                     <select
                       value={dateFilter}
                       onChange={e => {
-                        setDateFilter(e.target.value);
+                        const val = e.target.value;
+                        setDateFilter(val);
+                        dateFilterRef.current = val;
                         setUsersPage(1);
+                        usersPageRef.current = 1;
+                        fetchUsersList(1, { dateRange: val });
                       }}
                       className="bg-transparent text-xs font-black text-slate-800 dark:text-zinc-200 focus:outline-none cursor-pointer pr-1"
                     >
@@ -2230,15 +2312,19 @@ export default function AdminDashboard() {
                 <select
                   value={emailDomainFilter}
                   onChange={e => {
-                    setEmailDomainFilter(e.target.value);
+                    const val = e.target.value;
+                    setEmailDomainFilter(val);
+                    emailDomainFilterRef.current = val;
                     setUsersPage(1);
+                    usersPageRef.current = 1;
+                    fetchUsersList(1, { domain: val });
                   }}
                   className="px-3 py-2 rounded-xl text-xs font-black bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 focus:outline-none focus:border-[#B88B2A] cursor-pointer flex-1 sm:flex-initial"
                 >
-                  <option value="all">ALL DOMAINS ({emailDomainCounts.all})</option>
-                  <option value="gmail">📧 Gmail ({emailDomainCounts.gmail})</option>
-                  <option value="icloud">☁️ iCloud / Apple ({emailDomainCounts.icloud})</option>
-                  <option value="other">✉️ Other Domains ({emailDomainCounts.other})</option>
+                  <option value="all">ALL DOMAINS ({(emailDomainCounts.all || 0).toLocaleString()})</option>
+                  <option value="gmail">📧 Gmail ({(emailDomainCounts.gmail || 0).toLocaleString()})</option>
+                  <option value="icloud">☁️ iCloud / Apple ({(emailDomainCounts.icloud || 0).toLocaleString()})</option>
+                  <option value="other">✉️ Other Domains ({(emailDomainCounts.other || 0).toLocaleString()})</option>
                 </select>
 
                 <div className="h-4 w-px bg-slate-200 dark:bg-zinc-800 hidden sm:block" />
@@ -2254,7 +2340,10 @@ export default function AdminDashboard() {
                       key={f.id}
                       onClick={() => {
                         setUserFilter(f.id);
+                        userFilterRef.current = f.id;
                         setUsersPage(1);
+                        usersPageRef.current = 1;
+                        fetchUsersList(1, { plan: f.id });
                       }}
                       className={`px-3 py-1.5 rounded-xl text-[11px] font-black transition-all cursor-pointer border shrink-0 ${
                         userFilter === f.id
@@ -2334,9 +2423,13 @@ export default function AdminDashboard() {
                               <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20 inline-flex items-center gap-1">
                                 <span>🍎</span> iOS
                               </span>
-                            ) : (
+                            ) : userOS === 'android' ? (
                               <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 inline-flex items-center gap-1">
                                 <span>🤖</span> Android
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20 inline-flex items-center gap-1">
+                                <span>🌐</span> Web
                               </span>
                             )}
                             <span className="text-[10px] font-black text-[#B88B2A] bg-[#B88B2A]/10 px-2 py-0.5 rounded-md border border-[#B88B2A]/20 uppercase">
@@ -2406,9 +2499,13 @@ export default function AdminDashboard() {
                                   <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
                                     <span>🍎</span> iOS
                                   </span>
-                                ) : (
+                                ) : userOS === 'android' ? (
                                   <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
                                     <span>🤖</span> Android
+                                  </span>
+                                ) : (
+                                  <span className="text-[11px] font-black text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20 inline-flex items-center gap-1 whitespace-nowrap shrink-0">
+                                    <span>🌐</span> Web
                                   </span>
                                 )}
                               </td>
