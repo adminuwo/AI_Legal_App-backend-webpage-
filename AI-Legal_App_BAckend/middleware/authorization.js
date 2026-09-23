@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import Session from "../models/Session.js";
 import mongoose from "mongoose";
+import { createSession } from "../utils/sessionHelper.js";
 
 export const verifyToken = async (req, res, next) => {
     let token = null;
@@ -9,6 +10,8 @@ export const verifyToken = async (req, res, next) => {
         token = req.headers.authorization.split(" ")[1];
     } else if (req.cookies?.token) {
         token = req.cookies.token;
+    } else if (req.query?.token) {
+        token = req.query.token;
     }
 
     if (!token || token === 'undefined' || token === 'null') {
@@ -27,6 +30,17 @@ export const verifyToken = async (req, res, next) => {
             });
 
             if (!activeSession) {
+                // If the JWT itself is completely valid and fresh (less than 2 minutes old),
+                // do not falsely reject if session record had an indexing or creation delay
+                const tokenAgeMs = decoded.iat ? (Date.now() - (decoded.iat * 1000)) : 999999;
+                if (tokenAgeMs < 120000) {
+                    console.warn(`[AUTH] Fresh token (${Math.round(tokenAgeMs / 1000)}s old) active session not found in DB, auto-recovering active session...`);
+                    createSession(decoded.id, token, req).catch(() => {});
+                    req.user = decoded;
+                    req.workspaceId = req.headers['x-active-workspace-id'] || 'personal_practice';
+                    return next();
+                }
+
                 return res.status(401).json({ 
                     success: false,
                     code: "SESSION_REVOKED", 

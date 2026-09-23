@@ -26,7 +26,7 @@ const sessionSchema = new mongoose.Schema({
     },
     platform: {
         type: String,
-        enum: ["web", "mobile", "tablet", "desktop", "unknown"],
+        enum: ["web", "mobile", "tablet", "desktop", "android", "ios", "unknown"],
         default: "unknown"
     },
     device: {

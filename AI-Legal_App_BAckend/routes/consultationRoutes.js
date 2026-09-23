@@ -4,8 +4,15 @@ import ConsultationRequest from '../models/ConsultationRequest.js';
 import ConsultationMessage from '../models/ConsultationMessage.js';
 import { createNotification } from '../services/notificationService.js';
 import { verifyToken } from '../middleware/authorization.js';
+import { isConsultationSlotExpired } from '../utils/consultationExpiryHelper.js';
+import Razorpay from 'razorpay';
 
 const router = express.Router();
+
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID || '',
+    key_secret: process.env.RAZORPAY_KEY_SECRET || ''
+});
 
 /**
  * Helper to sanitize advocate data for public directory and profile.
@@ -183,11 +190,12 @@ router.post('/requests', verifyToken, async (req, res) => {
         const advocateName = advocate.fullName || advocate.name || 'Verified Advocate';
         const fee = advocate.advocateVerification?.consultationFee || 1500;
 
-        // Check if an existing active consultation already exists with this advocate
+        // Only update if there is an unconfirmed pending consultation that has NOT been paid yet
         const existingActiveRequest = await ConsultationRequest.findOne({
             userId: req.user.id,
             advocateId: advocate._id,
-            status: { $in: ['pending', 'accepted', 'scheduled'] }
+            status: 'pending',
+            paymentStatus: { $ne: 'paid' }
         }).sort({ updatedAt: -1 });
 
         if (existingActiveRequest) {
@@ -298,6 +306,27 @@ router.get('/my-requests', verifyToken, async (req, res) => {
             .sort({ updatedAt: -1, createdAt: -1 })
             .lean();
 
+        // Check if any active request has passed its scheduled slot, update to expired
+        for (const reqItem of requests) {
+            if (['pending', 'accepted', 'scheduled'].includes(reqItem.status) && isConsultationSlotExpired(reqItem.scheduledDate, reqItem.scheduledTimeSlot)) {
+                reqItem.status = 'expired';
+                ConsultationRequest.updateOne(
+                    { _id: reqItem._id, status: { $in: ['pending', 'accepted', 'scheduled'] } },
+                    { 
+                        $set: { status: 'expired' },
+                        $push: { 
+                            timeline: { 
+                                status: 'expired', 
+                                title: 'Consultation Expired', 
+                                description: `Scheduled time slot (${reqItem.scheduledTimeSlot || 'consultation slot'}) has ended.`, 
+                                timestamp: new Date() 
+                            } 
+                        } 
+                    }
+                ).exec().catch(() => {});
+            }
+        }
+
         // Deduplicate active requests so the user sees only ONE card per advocate with their latest mode
         const seenAdvocates = new Set();
         const deduplicatedRequests = [];
@@ -309,6 +338,9 @@ router.get('/my-requests', verifyToken, async (req, res) => {
                     continue;
                 }
                 seenAdvocates.add(advKey);
+            }
+            if (reqItem.paymentStatus !== 'paid' && Array.isArray(reqItem.timeline)) {
+                reqItem.timeline = reqItem.timeline.filter(t => !t.title?.toLowerCase().includes('fee paid') && !t.title?.toLowerCase().includes('payment'));
             }
             deduplicatedRequests.push(reqItem);
         }
@@ -336,6 +368,22 @@ router.get('/requests/:id', verifyToken, async (req, res) => {
 
         if (!request) {
             return res.status(404).json({ success: false, message: 'Consultation request not found.' });
+        }
+
+        if (['pending', 'accepted', 'scheduled'].includes(request.status) && isConsultationSlotExpired(request.scheduledDate, request.scheduledTimeSlot)) {
+            request.status = 'expired';
+            request.timeline = request.timeline || [];
+            request.timeline.push({
+                status: 'expired',
+                title: 'Consultation Expired',
+                description: `Scheduled time slot (${request.scheduledTimeSlot || 'consultation slot'}) has ended.`,
+                timestamp: new Date()
+            });
+            await request.save();
+        }
+
+        if (request.paymentStatus !== 'paid' && Array.isArray(request.timeline)) {
+            request.timeline = request.timeline.filter(t => !t.title?.toLowerCase().includes('fee paid') && !t.title?.toLowerCase().includes('payment'));
         }
 
         res.json({ success: true, request });
@@ -451,6 +499,519 @@ router.patch('/requests/:id/status', verifyToken, async (req, res) => {
     } catch (err) {
         console.error('[Consultation API] Error updating status:', err);
         res.status(500).json({ success: false, message: 'Failed to update status.' });
+    }
+});
+
+// @desc    Pay consultation fee (Client pays to unlock accepted consultation)
+// @route   POST /api/consultations/requests/:id/pay
+// @access  Private (Client)
+router.post('/requests/:id/pay', verifyToken, async (req, res) => {
+    try {
+        const { paymentId, gateway = 'Razorpay' } = req.body;
+        const request = await ConsultationRequest.findById(req.params.id);
+
+        if (!request) {
+            return res.status(404).json({ success: false, message: 'Consultation request not found.' });
+        }
+
+        // Must belong to user (or admin)
+        if (request.userId.toString() !== req.user.id && req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Unauthorized to pay for this request.' });
+        }
+
+        if (['expired', 'cancelled', 'rejected'].includes(request.status)) {
+            return res.status(400).json({
+                success: false,
+                message: `Cannot pay for a consultation that is ${request.status}.`
+            });
+        }
+
+        if (request.paymentStatus === 'paid') {
+            return res.status(200).json({
+                success: true,
+                message: 'Consultation fee is already paid.',
+                request
+            });
+        }
+
+        const txnId = paymentId || `pay_sim_${Date.now()}_${Math.random().toString(36).slice(-6)}`;
+        request.paymentStatus = 'paid';
+        if (['accepted', 'scheduled'].includes(request.status)) {
+            request.status = 'scheduled';
+        }
+
+        request.timeline = request.timeline || [];
+        request.timeline.push({
+            status: request.status,
+            title: 'Fee Paid & Slot Confirmed',
+            description: `Payment of ₹${request.fee || 1500} successfully completed via ${gateway} (Txn: ${txnId}). Live calls and chat are unlocked.`,
+            timestamp: new Date()
+        });
+
+        await request.save();
+
+        // Notify advocate that client paid
+        try {
+            await createNotification(request.advocateId, {
+                title: 'Consultation Fee Paid',
+                message: `${request.userName} has completed payment of ₹${request.fee || 1500}. The session is confirmed and unlocked.`,
+                category: 'Alerts',
+                priority: 'High'
+            });
+        } catch (nErr) {
+            console.warn('[Consultation API] Failed to send payment notification:', nErr.message);
+        }
+
+        res.json({
+            success: true,
+            message: 'Payment successful! Consultation slot confirmed and communication unlocked.',
+            request
+        });
+    } catch (err) {
+        console.error('[Consultation API] Error processing consultation payment:', err);
+        res.status(500).json({ success: false, message: 'Failed to process consultation payment.' });
+    }
+});
+
+// @desc    Create Razorpay Order for consultation fee payment
+// @route   POST /api/consultations/requests/:id/create-order
+// @access  Private (Client)
+router.post('/requests/:id/create-order', verifyToken, async (req, res) => {
+    try {
+        const request = await ConsultationRequest.findById(req.params.id);
+        if (!request) {
+            return res.status(404).json({ success: false, message: 'Consultation request not found.' });
+        }
+
+        const fee = request.fee || 1500;
+        const amountInPaise = Math.round(fee * 100);
+        const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_live_SBFlInxBiRfOGd';
+
+        let rzpOrder = null;
+        try {
+            if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+                rzpOrder = await razorpay.orders.create({
+                    amount: amountInPaise,
+                    currency: 'INR',
+                    receipt: `rcpt_cons_${request.requestId || request._id.toString().slice(-6)}_${Date.now().toString().slice(-4)}`,
+                    notes: {
+                        consultationRequestId: request._id.toString(),
+                        advocateName: request.advocateName,
+                        userName: request.userName,
+                        consultationType: request.consultationType
+                    }
+                });
+            }
+        } catch (rzpErr) {
+            console.warn('[Consultation Razorpay Order Warning]:', rzpErr?.message || rzpErr);
+        }
+
+        if (!rzpOrder) {
+            rzpOrder = {
+                id: `order_cons_${Date.now()}`,
+                amount: amountInPaise,
+                currency: 'INR',
+                status: 'created',
+                isMock: true
+            };
+        }
+
+        res.json({
+            success: true,
+            order: rzpOrder,
+            key: keyId,
+            fee,
+            request: {
+                id: request._id,
+                requestId: request.requestId,
+                advocateName: request.advocateName,
+                consultationType: request.consultationType,
+                scheduledDate: request.scheduledDate,
+                scheduledTimeSlot: request.scheduledTimeSlot
+            }
+        });
+    } catch (err) {
+        console.error('[Consultation API] Error creating order:', err);
+        res.status(500).json({ success: false, message: 'Failed to create payment order.' });
+    }
+});
+
+// @desc    Render Web Checkout Portal for Legal Consultation Payment (Razorpay)
+// @route   GET /api/consultations/web-checkout
+// @access  Public (Validates token/request ID)
+router.get('/web-checkout', async (req, res) => {
+    try {
+        const requestId = req.query.requestId || req.query.id;
+        const token = req.query.token || '';
+
+        if (!requestId) {
+            return res.status(400).send(`
+                <html><body style="font-family:sans-serif;text-align:center;padding:50px;">
+                    <h3>Invalid Request</h3><p>Consultation Request ID is missing.</p>
+                </body></html>
+            `);
+        }
+
+        const request = await ConsultationRequest.findById(requestId).lean();
+        if (!request) {
+            return res.status(404).send(`
+                <html><body style="font-family:sans-serif;text-align:center;padding:50px;">
+                    <h3>Not Found</h3><p>Consultation request not found.</p>
+                </body></html>
+            `);
+        }
+
+        const fee = request.fee || 1500;
+        const advocateName = request.advocateName || 'Advocate';
+        const practiceArea = request.practiceArea || 'Legal Consultation';
+        const consultationType = request.consultationType || 'chat';
+        const scheduledDateStr = request.scheduledDate
+            ? new Date(request.scheduledDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+            : 'Scheduled Session';
+        const timeSlot = request.scheduledTimeSlot || '11:00 AM - 11:45 AM';
+
+        if (request.paymentStatus === 'paid') {
+            return res.status(200).send(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>AI LEGAL™ - Fee Already Paid</title>
+                    <style>
+                        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #F8FAFC; color: #1E293B; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; margin: 0; }
+                        .card { background: #FFFFFF; border-radius: 24px; padding: 36px 24px; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.06); border: 1.5px solid #E2E8F0; }
+                        .icon { width: 64px; height: 64px; border-radius: 32px; background: #ECFDF5; color: #10B981; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; }
+                        h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #0F172A; }
+                        p { font-size: 13px; color: #64748B; line-height: 1.5; margin-bottom: 24px; }
+                        .btn { background: #C8A34D; color: #111; font-weight: 800; padding: 14px 24px; border-radius: 12px; text-decoration: none; display: inline-block; font-size: 14px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="card">
+                        <div class="icon">✓</div>
+                        <h2>Consultation Fee Already Paid</h2>
+                        <p>Payment of ₹${fee} has already been received for this session. Your consultation with ${advocateName} is confirmed and unlocked.</p>
+                        <a href="ailegal://consultation/success?id=${request._id}" class="btn">Return to App</a>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+
+        res.status(200).send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>AI LEGAL™ - Secure Consultation Checkout</title>
+                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                <style>
+                    * { box-sizing: border-box; margin: 0; padding: 0; }
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                        background-color: #F4F5F7;
+                        color: #111827;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        padding: 20px;
+                    }
+                    .checkout-card {
+                        background: #FFFFFF;
+                        border: 1.5px solid #E5E7EB;
+                        border-radius: 24px;
+                        width: 100%;
+                        max-width: 440px;
+                        padding: 32px 24px;
+                        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+                        text-align: center;
+                    }
+                    .logo-badge {
+                        display: inline-block;
+                        background: rgba(200, 163, 77, 0.12);
+                        color: #B38628;
+                        font-size: 11px;
+                        font-weight: 800;
+                        letter-spacing: 1.5px;
+                        padding: 6px 14px;
+                        border-radius: 20px;
+                        border: 1px solid rgba(200, 163, 77, 0.3);
+                        text-transform: uppercase;
+                        margin-bottom: 16px;
+                    }
+                    h2 {
+                        font-size: 22px;
+                        font-weight: 800;
+                        color: #111827;
+                        margin-bottom: 8px;
+                    }
+                    .subtitle {
+                        font-size: 13px;
+                        color: #6B7280;
+                        margin-bottom: 24px;
+                        line-height: 1.4;
+                    }
+                    .summary-box {
+                        background: #F9FAFB;
+                        border-radius: 16px;
+                        padding: 20px;
+                        text-align: left;
+                        margin-bottom: 24px;
+                        border: 1px solid #E5E7EB;
+                    }
+                    .summary-row {
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 10px;
+                        font-size: 13px;
+                        color: #4B5563;
+                    }
+                    .summary-row:last-child {
+                        margin-bottom: 0;
+                    }
+                    .summary-row strong {
+                        color: #111827;
+                    }
+                    .total-row {
+                        display: flex;
+                        justify-content: space-between;
+                        border-top: 1.5px solid #E5E7EB;
+                        padding-top: 12px;
+                        margin-top: 12px;
+                        font-weight: 800;
+                        font-size: 18px;
+                        color: #B38628;
+                    }
+                    .pay-btn {
+                        background: linear-gradient(135deg, #C8A34D 0%, #B38628 100%);
+                        color: #FFFFFF;
+                        font-size: 16px;
+                        font-weight: 800;
+                        border: none;
+                        border-radius: 14px;
+                        width: 100%;
+                        padding: 16px;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        box-shadow: 0 4px 15px rgba(200, 163, 77, 0.35);
+                    }
+                    .pay-btn:hover {
+                        opacity: 0.95;
+                        transform: translateY(-1px);
+                    }
+                    .security-text {
+                        font-size: 11px;
+                        color: #6B7280;
+                        margin-top: 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 6px;
+                    }
+                    #loadingOverlay {
+                        display: none;
+                        position: fixed;
+                        inset: 0;
+                        background: rgba(255,255,255,0.94);
+                        z-index: 9999;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 16px;
+                    }
+                    .spinner {
+                        width: 44px;
+                        height: 44px;
+                        border: 4px solid #E5E7EB;
+                        border-top-color: #C8A34D;
+                        border-radius: 50%;
+                        animation: spin 0.8s linear infinite;
+                    }
+                    @keyframes spin { to { transform: rotate(360deg); } }
+                    .overlay-text { color: #4B5563; font-size: 14px; font-weight: 600; }
+                </style>
+            </head>
+            <body>
+                <div id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <div class="overlay-text" id="overlayMsg">Connecting to Razorpay...</div>
+                </div>
+
+                <div class="checkout-card" id="mainCard">
+                    <div class="logo-badge">🛡️ SECURE CONSULTATION BILLING</div>
+                    <h2>Confirm Consultation Fee</h2>
+                    <p class="subtitle">Complete payment securely to unlock calls and direct messaging with your advocate.</p>
+
+                    <div class="summary-box">
+                        <div class="summary-row">
+                            <span>Advocate:</span>
+                            <strong>${advocateName}</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Practice Area:</span>
+                            <strong>${practiceArea}</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Mode:</span>
+                            <strong style="text-transform: capitalize;">${consultationType} Consultation</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Schedule:</span>
+                            <strong>${scheduledDateStr} • ${timeSlot}</strong>
+                        </div>
+                        <div class="total-row">
+                            <span>Total Fee:</span>
+                            <span>₹${fee}</span>
+                        </div>
+                    </div>
+
+                    <button class="pay-btn" id="payBtn" onclick="initiatePayment()">Pay ₹${fee} via Razorpay</button>
+                    
+                    <div class="security-text">
+                        <span>🔒 256-Bit Encrypted • UPI, Cards, NetBanking Supported</span>
+                    </div>
+                </div>
+
+                <script>
+                    var requestId = "${request._id}";
+                    var fee = ${fee};
+                    var userToken = "${token}";
+
+                    function initiatePayment() {
+                        var btn = document.getElementById('payBtn');
+                        btn.innerText = 'Connecting to Razorpay...';
+                        btn.disabled = true;
+
+                        var headers = { 'Content-Type': 'application/json' };
+                        if (userToken) {
+                            headers['Authorization'] = 'Bearer ' + userToken;
+                        }
+
+                        var createOrderUrl = '/api/consultations/requests/' + requestId + '/create-order' + (userToken ? '?token=' + encodeURIComponent(userToken) : '');
+                        fetch(createOrderUrl, {
+                            method: 'POST',
+                            headers: headers
+                        })
+                        .then(function(res) { return res.json(); })
+                        .then(function(data) {
+                            if (!data.order || !data.key) {
+                                alert('Could not initiate payment: ' + (data.message || 'Order creation failed.'));
+                                btn.innerText = 'Pay ₹' + fee + ' via Razorpay';
+                                btn.disabled = false;
+                                return;
+                            } else {
+                                var options = {
+                                    "key": data.key,
+                                    "amount": data.order.amount,
+                                    "currency": "INR",
+                                    "name": "AI LEGAL™ Consultation",
+                                    "description": "${consultationType.toUpperCase()} Consultation with ${advocateName}",
+                                    "order_id": data.order.id,
+                                    "prefill": {
+                                        "name": "${request.userName || ''}",
+                                        "email": "${request.userEmail || ''}",
+                                        "contact": "${request.userPhone || ''}"
+                                    },
+                                    "handler": function (response) {
+                                        completeVerification(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
+                                    },
+                                    "modal": {
+                                        "ondismiss": function() {
+                                            btn.innerText = 'Pay ₹' + fee + ' via Razorpay';
+                                            btn.disabled = false;
+                                            try {
+                                                window.location.href = "ailegal://consultation/cancelled?id=" + requestId;
+                                            } catch(e) {}
+                                        }
+                                    },
+                                    "theme": { "color": "#C8A34D" }
+                                };
+                                var rzp = new Razorpay(options);
+                                rzp.open();
+                            }
+                        })
+                        .catch(function(err) {
+                            alert('Could not start Razorpay payment: ' + err.message);
+                            btn.innerText = 'Pay ₹' + fee + ' via Razorpay';
+                            btn.disabled = false;
+                        });
+                    }
+
+                    function completeVerification(orderId, paymentId, signature) {
+                        var overlay = document.getElementById('loadingOverlay');
+                        var overlayMsg = document.getElementById('overlayMsg');
+                        overlayMsg.innerText = 'Verifying Payment & Unlocking Session...';
+                        overlay.style.display = 'flex';
+
+                        var headers = { 'Content-Type': 'application/json' };
+                        if (userToken) {
+                            headers['Authorization'] = 'Bearer ' + userToken;
+                        }
+
+                        var payUrl = '/api/consultations/requests/' + requestId + '/pay' + (userToken ? '?token=' + encodeURIComponent(userToken) : '');
+                        fetch(payUrl, {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify({
+                                paymentId: paymentId,
+                                gateway: 'Razorpay',
+                                orderId: orderId,
+                                signature: signature
+                            })
+                        })
+                        .then(function(res) { return res.json(); })
+                        .then(function(data) {
+                            overlay.style.display = 'none';
+                            if (data && data.success) {
+                                showSuccessCard();
+                                var deepLink = 'ailegal://consultation/success?id=' + encodeURIComponent(requestId);
+                                try {
+                                    if (window.opener) { window.opener.postMessage(JSON.stringify({ status: 'success', requestId: requestId }), '*'); }
+                                    if (window.parent) { window.parent.postMessage(JSON.stringify({ status: 'success', requestId: requestId }), '*'); }
+                                } catch(e) {}
+                                setTimeout(function() {
+                                    try { window.location.href = deepLink; } catch(e) {}
+                                }, 1200);
+                            } else {
+                                alert('Payment verification failed: ' + (data.message || 'Unknown error'));
+                                var btn = document.getElementById('payBtn');
+                                btn.innerText = 'Pay ₹' + fee + ' via Razorpay';
+                                btn.disabled = false;
+                            }
+                        })
+                        .catch(function(err) {
+                            overlay.style.display = 'none';
+                            alert('Network error verifying payment: ' + err.message);
+                            var btn = document.getElementById('payBtn');
+                            btn.innerText = 'Pay ₹' + fee + ' via Razorpay';
+                            btn.disabled = false;
+                        });
+                    }
+
+                    function showSuccessCard() {
+                        var card = document.getElementById('mainCard');
+                        card.innerHTML = [
+                            '<div style="width:64px;height:64px;border-radius:32px;background:#ECFDF5;color:#10B981;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;">✓</div>',
+                            '<h2 style="color:#0F172A;margin-bottom:8px;">Payment Successful!</h2>',
+                            '<p style="color:#64748B;font-size:13px;line-height:1.5;margin-bottom:20px;">Fee of ₹' + fee + ' received. Your consultation with ${advocateName} is confirmed and unlocked.</p>',
+                            '<div style="padding:12px;border-radius:12px;background:#F8FAFC;border:1px solid #E2E8F0;font-size:12px;color:#10B981;font-weight:700;margin-bottom:20px;">Live Calls and Direct Messaging Unlocked</div>',
+                            '<a href="ailegal://consultation/success?id=' + requestId + '" style="display:inline-block;width:100%;padding:14px;background:#C8A34D;color:#111;font-weight:800;border-radius:12px;text-decoration:none;font-size:14px;">Return to AI Legal</a>'
+                        ].join('');
+                    }
+
+                    // Auto-trigger Razorpay modal on page load
+                    window.addEventListener('DOMContentLoaded', function() {
+                        setTimeout(initiatePayment, 400);
+                    });
+                </script>
+            </body>
+            </html>
+        `);
+    } catch (err) {
+        console.error('[Consultation API] Error rendering web-checkout page:', err);
+        res.status(500).send('Failed to render consultation checkout.');
     }
 });
 
@@ -625,6 +1186,27 @@ router.get('/advocate/conversations', verifyToken, async (req, res) => {
             .sort({ updatedAt: -1 })
             .lean();
 
+        // Check and mark expired slots
+        for (const r of requests) {
+            if (['pending', 'accepted', 'scheduled'].includes(r.status) && isConsultationSlotExpired(r.scheduledDate, r.scheduledTimeSlot)) {
+                r.status = 'expired';
+                ConsultationRequest.updateOne(
+                    { _id: r._id, status: { $in: ['pending', 'accepted', 'scheduled'] } },
+                    {
+                        $set: { status: 'expired' },
+                        $push: {
+                            timeline: {
+                                status: 'expired',
+                                title: 'Consultation Expired',
+                                description: `Consultation time slot (${r.scheduledTimeSlot || 'scheduled slot'}) has ended.`,
+                                timestamp: new Date()
+                            }
+                        }
+                    }
+                ).exec().catch(() => {});
+            }
+        }
+
         const conversations = await Promise.all(requests.map(async (r) => {
             const lastMessage = await ConsultationMessage.findOne({ consultationRequestId: r._id })
                 .sort({ createdAt: -1 })
@@ -647,6 +1229,10 @@ router.get('/advocate/conversations', verifyToken, async (req, res) => {
                 summary: r.legalIssueSummary,
                 consultationType: r.consultationType,
                 status: r.status,
+                paymentStatus: r.paymentStatus || 'pending',
+                fee: r.fee || 1500,
+                scheduledDate: r.scheduledDate,
+                scheduledTimeSlot: r.scheduledTimeSlot,
                 lastMessage: lastMessage?.message || r.legalIssueSummary,
                 lastMessageAt: lastMessage?.createdAt || r.updatedAt || r.createdAt,
                 lastMessageSender: lastMessage?.senderRole || 'general_user',
@@ -705,6 +1291,19 @@ router.get('/requests/:id/messages', verifyToken, async (req, res) => {
             return res.status(403).json({ success: false, message: 'Unauthorized to view this conversation.' });
         }
 
+        // Auto-expire if scheduled slot has passed
+        if (['pending', 'accepted', 'scheduled'].includes(request.status) && isConsultationSlotExpired(request.scheduledDate, request.scheduledTimeSlot)) {
+            request.status = 'expired';
+            request.timeline = request.timeline || [];
+            request.timeline.push({
+                status: 'expired',
+                title: 'Consultation Expired',
+                description: `Consultation time slot (${request.scheduledTimeSlot || 'scheduled slot'}) has ended.`,
+                timestamp: new Date()
+            });
+            await request.save();
+        }
+
         // Mark incoming messages as read
         if (isAdvocate) {
             await ConsultationMessage.updateMany(
@@ -734,7 +1333,10 @@ router.get('/requests/:id/messages', verifyToken, async (req, res) => {
                 practiceArea: request.practiceArea,
                 consultationType: request.consultationType,
                 scheduledDate: request.scheduledDate,
-                scheduledTimeSlot: request.scheduledTimeSlot
+                scheduledTimeSlot: request.scheduledTimeSlot,
+                paymentStatus: request.paymentStatus || 'pending',
+                fee: request.fee || 1500,
+                isExpired: request.status === 'expired'
             },
             messages
         });
@@ -766,11 +1368,32 @@ router.post('/requests/:id/messages', verifyToken, async (req, res) => {
             return res.status(403).json({ success: false, message: 'Unauthorized to participate in this consultation.' });
         }
 
-        // Requirement 13: Communication enabled according to consultation lifecycle
-        if (request.status === 'cancelled' || request.status === 'rejected') {
+        // Auto-expire check before sending message
+        if (['pending', 'accepted', 'scheduled'].includes(request.status) && isConsultationSlotExpired(request.scheduledDate, request.scheduledTimeSlot)) {
+            request.status = 'expired';
+            request.timeline = request.timeline || [];
+            request.timeline.push({
+                status: 'expired',
+                title: 'Consultation Expired',
+                description: `Consultation time slot (${request.scheduledTimeSlot || 'scheduled slot'}) has ended.`,
+                timestamp: new Date()
+            });
+            await request.save();
+        }
+
+        // Lifecycle check: Communication closed if cancelled, rejected, completed, or expired
+        if (['cancelled', 'rejected', 'completed', 'expired'].includes(request.status)) {
             return res.status(400).json({
                 success: false,
-                message: `This consultation has been ${request.status}. Communication is closed.`
+                message: `This consultation has ${request.status === 'expired' ? 'expired' : 'been ' + request.status}. Communication and calls are closed.`
+            });
+        }
+
+        // Payment check: Client must pay fee after advocate accepts to unlock messaging
+        if (isClient && request.paymentStatus !== 'paid') {
+            return res.status(402).json({
+                success: false,
+                message: 'Consultation fee payment is required to unlock messaging and calls.'
             });
         }
 

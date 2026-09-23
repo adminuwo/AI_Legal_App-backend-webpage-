@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI LEGAL™ - Secure Consultation Checkout</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0F172A;
+      color: #F8FAFC;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .checkout-card {
+      background: #1E293B;
+      border: 1.5px solid #334155;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 440px;
+      padding: 32px 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+    .logo-badge {
+      display: inline-block;
+      background: rgba(200, 163, 77, 0.15);
+      color: #E2B755;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(200, 163, 77, 0.35);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #94A3B8;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .summary-box {
+      background: #0F172A;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: left;
+      margin-bottom: 24px;
+      border: 1px solid #334155;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #94A3B8;
+    }
+    .summary-row strong {
+      color: #F1F5F9;
+      font-weight: 600;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #334155;
+      padding-top: 14px;
+      margin-top: 14px;
+      font-weight: 800;
+      font-size: 18px;
+      color: #E2B755;
+    }
+    .pay-btn {
+      background: linear-gradient(135deg, #E2B755 0%, #C8A34D 50%, #9B7629 100%);
+      color: #0F172A;
+      font-size: 16px;
+      font-weight: 800;
+      border: none;
+      border-radius: 14px;
+      width: 100%;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(200, 163, 77, 0.4);
+    }
+    .pay-btn:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+    .pay-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .security-text {
+      font-size: 11px;
+      color: #64748B;
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.95);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #334155;
+      border-top-color: #E2B755;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .overlay-text { color: #E2E8F0; font-size: 14px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="overlay-text" id="overlayMsg">Connecting to Razorpay...</div>
+  </div>
+
+  <div class="checkout-card" id="mainCard">
+    <div class="logo-badge">🛡️ SECURE CONSULTATION BILLING</div>
+    <h2>Confirm Consultation Fee</h2>
+    <p class="subtitle">Complete payment securely via Razorpay to unlock calls and direct messaging with your advocate.</p>
+
+    <div class="summary-box">
+      <div class="summary-row">
+        <span>Advocate:</span>
+        <strong id="advName">Loading...</strong>
+      </div>
+      <div class="summary-row">
+        <span>Practice Area:</span>
+        <strong id="practiceArea">Civil Law</strong>
+      </div>
+      <div class="summary-row">
+        <span>Mode:</span>
+        <strong id="consType" style="text-transform: capitalize;">Consultation</strong>
+      </div>
+      <div class="summary-row">
+        <span>Schedule:</span>
+        <strong id="consSlot">Scheduled Session</strong>
+      </div>
+      <div class="total-row">
+        <span>Total Fee:</span>
+        <span id="feeAmount">₹1,500</span>
+      </div>
+    </div>
+
+    <button class="pay-btn" id="payBtn" onclick="initiatePayment()">Pay via Razorpay</button>
+
+    <div class="security-text">
+      <span>🔒 256-Bit Encrypted • UPI, Cards, NetBanking Supported</span>
+    </div>
+  </div>
+
+  <script>
+    var urlParams = new URLSearchParams(window.location.search);
+    var requestId = urlParams.get('requestId') || urlParams.get('id') || '';
+    var userToken = urlParams.get('token') || '';
+    var fee = 1500;
+    var advocateName = 'Advocate';
+    var consType = 'Consultation';
+
+    var API_ORIGIN = window.location.origin;
+
+    function getHeaders() {
+      var h = { 'Content-Type': 'application/json' };
+      if (userToken) {
+        h['Authorization'] = 'Bearer ' + userToken;
+      }
+      return h;
+    }
+
+    async function loadDetails() {
+      if (!requestId) {
+        alert('Invalid Consultation Request ID');
+        return;
+      }
+      try {
+        var res = await fetch(API_ORIGIN + '/api/consultations/requests/' + encodeURIComponent(requestId) + (userToken ? '?token=' + encodeURIComponent(userToken) : ''), {
+          headers: getHeaders()
+        });
+        var data = await res.json();
+        if (data && data.request) {
+          var req = data.request;
+          fee = req.fee || 1500;
+          advocateName = req.advocateName || (req.advocateId && req.advocateId.name) || 'Verified Advocate';
+          consType = (req.consultationType || 'consultation').toUpperCase();
+
+          document.getElementById('advName').innerText = 'Adv. ' + advocateName;
+          document.getElementById('practiceArea').innerText = req.practiceArea || 'Legal Consultation';
+          document.getElementById('consType').innerText = consType + ' Consultation';
+          document.getElementById('consSlot').innerText = (req.scheduledTimeSlot || '11:00 AM - 11:45 AM');
+          document.getElementById('feeAmount').innerText = '₹' + fee.toLocaleString();
+          document.getElementById('payBtn').innerText = 'Pay ₹' + fee.toLocaleString() + ' via Razorpay';
+
+          if (req.paymentStatus === 'paid') {
+            showSuccessCard();
+          } else {
+            setTimeout(initiatePayment, 400);
+          }
+        }
+      } catch (e) {
+        console.warn('Error loading details:', e);
+        setTimeout(initiatePayment, 400);
+      }
+    }
+
+    async function initiatePayment() {
+      var btn = document.getElementById('payBtn');
+      btn.innerText = 'Connecting to Razorpay...';
+      btn.disabled = true;
+
+      try {
+        var orderUrl = API_ORIGIN + '/api/consultations/requests/' + encodeURIComponent(requestId) + '/create-order' + (userToken ? '?token=' + encodeURIComponent(userToken) : '');
+        var res = await fetch(orderUrl, {
+          method: 'POST',
+          headers: getHeaders()
+        });
+        var data = await res.json();
+
+        if (!data || !data.order || !data.key) {
+          throw new Error(data && data.message ? data.message : 'Could not create order.');
+        }
+
+        var options = {
+          "key": data.key,
+          "amount": data.order.amount,
+          "currency": "INR",
+          "name": "AI LEGAL™ Consultation",
+          "description": consType + " Consultation with Adv. " + advocateName,
+          "order_id": data.order.id,
+          "prefill": {
+            "name": (data.request && data.request.userName) || "",
+            "email": (data.request && data.request.userEmail) || "",
+            "contact": (data.request && data.request.userPhone) || ""
+          },
+          "handler": function (response) {
+            completeVerification(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
+          },
+          "modal": {
+            "ondismiss": function() {
+              btn.innerText = 'Pay ₹' + fee.toLocaleString() + ' via Razorpay';
+              btn.disabled = false;
+              try {
+                window.location.href = "ailegal://consultation/cancelled?id=" + encodeURIComponent(requestId);
+              } catch(e) {}
+            }
+          },
+          "theme": { "color": "#C8A34D" }
+        };
+
+        var rzp = new Razorpay(options);
+        rzp.on('payment.failed', function(resp) {
+          alert('Payment Failed: ' + (resp.error ? resp.error.description : 'Transaction cancelled'));
+          btn.innerText = 'Pay ₹' + fee.toLocaleString() + ' via Razorpay';
+          btn.disabled = false;
+        });
+        rzp.open();
+      } catch (err) {
+        alert('Could not start Razorpay payment: ' + err.message);
+        btn.innerText = 'Pay ₹' + fee.toLocaleString() + ' via Razorpay';
+        btn.disabled = false;
+      }
+    }
+
+    async function completeVerification(orderId, paymentId, signature) {
+      var overlay = document.getElementById('loadingOverlay');
+      var overlayMsg = document.getElementById('overlayMsg');
+      overlayMsg.innerText = 'Verifying Payment & Unlocking Session...';
+      overlay.style.display = 'flex';
+
+      try {
+        var payUrl = API_ORIGIN + '/api/consultations/requests/' + encodeURIComponent(requestId) + '/pay' + (userToken ? '?token=' + encodeURIComponent(userToken) : '');
+        var res = await fetch(payUrl, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify({
+            paymentId: paymentId,
+            gateway: 'Razorpay',
+            orderId: orderId,
+            signature: signature
+          })
+        });
+        var data = await res.json();
+        overlay.style.display = 'none';
+
+        if (data && data.success) {
+          showSuccessCard();
+          var deepLink = 'ailegal://consultation/success?id=' + encodeURIComponent(requestId);
+          try {
+            if (window.opener) { window.opener.postMessage(JSON.stringify({ status: 'success', requestId: requestId }), '*'); }
+            if (window.parent) { window.parent.postMessage(JSON.stringify({ status: 'success', requestId: requestId }), '*'); }
+          } catch(e) {}
+          setTimeout(function() {
+            try { window.location.href = deepLink; } catch(e) {}
+          }, 1000);
+        } else {
+          alert('Payment verification failed: ' + (data && data.message ? data.message : 'Unknown error'));
+          var btn = document.getElementById('payBtn');
+          btn.innerText = 'Pay ₹' + fee.toLocaleString() + ' via Razorpay';
+          btn.disabled = false;
+        }
+      } catch (err) {
+        overlay.style.display = 'none';
+        alert('Network error verifying payment: ' + err.message);
+        var btn = document.getElementById('payBtn');
+        btn.innerText = 'Pay ₹' + fee.toLocaleString() + ' via Razorpay';
+        btn.disabled = false;
+      }
+    }
+
+    function showSuccessCard() {
+      var card = document.getElementById('mainCard');
+      card.innerHTML = [
+        '<div style="width:64px;height:64px;border-radius:32px;background:rgba(16,185,129,0.15);color:#10B981;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;">✓</div>',
+        '<h2 style="color:#FFFFFF;margin-bottom:8px;">Payment Successful!</h2>',
+        '<p style="color:#94A3B8;font-size:13px;line-height:1.5;margin-bottom:20px;">Fee of ₹' + fee + ' received. Your consultation with Adv. ' + advocateName + ' is confirmed and unlocked.</p>',
+        '<div style="padding:12px;border-radius:12px;background:#0F172A;border:1px solid #10B981;font-size:12px;color:#10B981;font-weight:700;margin-bottom:20px;">Live Calls and Direct Messaging Unlocked</div>',
+        '<a href="ailegal://consultation/success?id=' + encodeURIComponent(requestId) + '" style="display:inline-block;width:100%;padding:14px;background:#C8A34D;color:#0F172A;font-weight:800;border-radius:12px;text-decoration:none;font-size:14px;">Return to AI Legal</a>'
+      ].join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', loadDetails);
+  </script>
+</body>
+</html>

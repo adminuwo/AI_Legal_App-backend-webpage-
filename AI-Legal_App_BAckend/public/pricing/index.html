@@ -15,9 +15,9 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --gold: #C8A34D;
+      --gold: #B88B2A;
       --gold-dark: #B38628;
-      --gold-light: rgba(200,163,77,0.12);
+      --gold-light: rgba(184,139,42,0.12);
       --bg: #F4F6FA;
       --surface: #FFFFFF;
       --surface2: #F8F9FB;
@@ -67,7 +67,7 @@
       border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
       font-size: 18px;
-      box-shadow: 0 2px 8px rgba(200,163,77,0.35);
+      box-shadow: 0 2px 8px rgba(184,139,42,0.35);
     }
     .logo-text { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
     .logo-text span { color: var(--gold-dark); }
@@ -198,7 +198,7 @@
       background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
       color: #fff;
       border-color: transparent;
-      box-shadow: 0 4px 14px rgba(200,163,77,0.35);
+      box-shadow: 0 4px 14px rgba(184,139,42,0.35);
     }
     .ws-badge {
       font-size: 9px;
@@ -243,7 +243,7 @@
     }
     .plan-card.popular {
       border-color: var(--gold);
-      box-shadow: 0 8px 32px rgba(200,163,77,0.2);
+      box-shadow: 0 8px 32px rgba(184,139,42,0.2);
     }
     .popular-ribbon {
       position: absolute;
@@ -373,13 +373,13 @@
     .cta-primary, .cta-secondary {
       background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%) !important;
       color: #fff !important;
-      box-shadow: 0 4px 14px rgba(200,163,77,0.35);
+      box-shadow: 0 4px 14px rgba(184,139,42,0.35);
       border: none !important;
     }
     .cta-primary:hover, .cta-secondary:hover {
       opacity: 0.93;
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(200,163,77,0.45);
+      box-shadow: 0 6px 20px rgba(184,139,42,0.45);
     }
     .cta-subscribed {
       background: #10B981 !important;
@@ -692,7 +692,7 @@
       font-weight: 700;
       text-decoration: none;
       text-align: center;
-      box-shadow: 0 4px 16px rgba(200,163,77,0.35);
+      box-shadow: 0 4px 16px rgba(184,139,42,0.35);
       transition: all 0.2s ease;
       cursor: pointer;
       border: none;
@@ -849,7 +849,7 @@
   <div style="display: flex; align-items: center; gap: 10px;">
     <button onclick="if(window.history.length > 1) { window.history.back(); } else { window.location.href='/dashboard/home'; }" 
             style="display: inline-flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1.5px solid #E5E9F2; color: #1E293B; font-size: 13px; font-weight: 700; padding: 8px 18px; border-radius: 24px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.04);"
-            onmouseover="this.style.borderColor='#C8A34D'; this.style.color='#B38628';"
+            onmouseover="this.style.borderColor='#B88B2A'; this.style.color='#B38628';"
             onmouseout="this.style.borderColor='#E5E9F2'; this.style.color='#1E293B';">
       <span style="font-size: 15px; font-weight: 800;">←</span> Back to Home
     </button>
@@ -864,7 +864,7 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-eyebrow">⚡ AI-Powered Legal Platform</div>
-  <h1>Choose Your <span style="background: linear-gradient(135deg, #C8A34D, #B38628); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AI Legal</span> Plan</h1>
+  <h1>Choose Your <span style="background: linear-gradient(135deg, #B88B2A, #B38628); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AI Legal</span> Plan</h1>
   <p>Unlock the full power of AI-driven legal tools. Transparent pricing, no hidden fees.</p>
 
   <!-- Billing Toggle -->
@@ -1659,7 +1659,7 @@
           workspace: currentWorkspace,
           billingCycle: currentCycle
         },
-        theme: { color: '#C8A34D' },
+        theme: { color: '#B88B2A' },
         modal: {
           ondismiss: function() {
             isProcessing = false;

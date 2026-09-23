@@ -102,8 +102,25 @@ export const createSession = async (userId, token, req) => {
         else if (/android/i.test(userAgent)) os = "Android";
         else if (/iphone|ipad|ipod/i.test(userAgent)) os = "iOS";
 
-        let platform = clientPlatform || (device === 'Mobile' || device === 'Tablet' ? 'mobile' : 'web');
-        let deviceName = clientDeviceName || `${os} ${device === 'Mobile' ? 'Phone' : 'PC'} (${browser})`;
+        const normPlatform = (clientPlatform || '').toLowerCase().trim();
+        if (os === "Other") {
+            if (normPlatform === 'android') os = 'Android';
+            else if (normPlatform === 'ios') os = 'iOS';
+            else if (normPlatform === 'web') os = 'Web';
+        }
+
+        let platform = 'mobile';
+        if (['android', 'ios', 'mobile'].includes(normPlatform) || device === 'Mobile') {
+            platform = 'mobile';
+        } else if (['tablet', 'ipad'].includes(normPlatform) || device === 'Tablet') {
+            platform = 'tablet';
+        } else if (['web', 'desktop'].includes(normPlatform)) {
+            platform = normPlatform;
+        } else {
+            platform = device === 'Desktop' ? 'web' : 'mobile';
+        }
+
+        let deviceName = clientDeviceName || `${os} ${device === 'Mobile' ? 'Phone' : 'Device'} (${browser})`;
 
         // Revoke any pre-existing active session for the SAME deviceId to maintain slot count
         if (deviceId) {
@@ -115,7 +132,7 @@ export const createSession = async (userId, token, req) => {
 
         const newSession = await Session.create({
             userId,
-            token,
+            token: token.toString(),
             deviceId,
             deviceName,
             platform,

@@ -219,7 +219,9 @@ export const getDownloadSummary = async (req, res) => {
         if (state && state.toLowerCase() !== 'all') {
             baseQuery.state = new RegExp(`^${state.trim()}$`, 'i');
         }
-        if (platform && platform.toLowerCase() !== 'all') {
+        
+        const isSpecificPlatform = platform && platform.toLowerCase() !== 'all';
+        if (isSpecificPlatform) {
             baseQuery.platform = platform.toLowerCase();
         }
 
@@ -230,6 +232,24 @@ export const getDownloadSummary = async (req, res) => {
             rangeQuery.installedAt = {};
             if (selectedStart) rangeQuery.installedAt.$gte = selectedStart;
             if (selectedEnd) rangeQuery.installedAt.$lt = selectedEnd;
+        }
+
+        // App installs strictly belong to mobile devices (android & ios) unless specifically filtered to web
+        const installRangeQuery = { ...rangeQuery };
+        const installBaseQuery = { ...baseQuery };
+        if (!isSpecificPlatform) {
+            installRangeQuery.platform = { $in: ['android', 'ios'] };
+            installBaseQuery.platform = { $in: ['android', 'ios'] };
+        }
+
+        // Web portal active users query (independent of mobile install scoping)
+        const webQuery = { ...baseQuery };
+        delete webQuery.platform;
+        webQuery.platform = 'web';
+        if (selectedStart || selectedEnd) {
+            webQuery.installedAt = {};
+            if (selectedStart) webQuery.installedAt.$gte = selectedStart;
+            if (selectedEnd) webQuery.installedAt.$lt = selectedEnd;
         }
 
         // Fixed milestone queries for top cards
@@ -257,20 +277,20 @@ export const getDownloadSummary = async (req, res) => {
             uniqueUserCount,
             gaUninstallsAgg
         ] = await Promise.all([
-            AppInstall.countDocuments(rangeQuery),
-            AppInstall.countDocuments(baseQuery),
-            AppInstall.countDocuments({ ...baseQuery, installedAt: { $gte: todayBounds.start, $lt: todayBounds.end } }),
-            AppInstall.countDocuments({ ...baseQuery, installedAt: { $gte: yesterdayBounds.start, $lt: yesterdayBounds.end } }),
-            AppInstall.countDocuments({ ...baseQuery, installedAt: { $gte: d7Bounds.start, $lt: d7Bounds.end } }),
-            AppInstall.countDocuments({ ...baseQuery, installedAt: { $gte: d30Bounds.start, $lt: d30Bounds.end } }),
-            AppInstall.countDocuments({ ...baseQuery, installedAt: { $gte: d90Bounds.start, $lt: d90Bounds.end } }),
-            AppInstall.countDocuments({ ...baseQuery, installedAt: { $gte: y2Bounds.start, $lt: y2Bounds.end } }),
+            AppInstall.countDocuments(installRangeQuery),
+            AppInstall.countDocuments(installBaseQuery),
+            AppInstall.countDocuments({ ...installBaseQuery, installedAt: { $gte: todayBounds.start, $lt: todayBounds.end } }),
+            AppInstall.countDocuments({ ...installBaseQuery, installedAt: { $gte: yesterdayBounds.start, $lt: yesterdayBounds.end } }),
+            AppInstall.countDocuments({ ...installBaseQuery, installedAt: { $gte: d7Bounds.start, $lt: d7Bounds.end } }),
+            AppInstall.countDocuments({ ...installBaseQuery, installedAt: { $gte: d30Bounds.start, $lt: d30Bounds.end } }),
+            AppInstall.countDocuments({ ...installBaseQuery, installedAt: { $gte: d90Bounds.start, $lt: d90Bounds.end } }),
+            AppInstall.countDocuments({ ...installBaseQuery, installedAt: { $gte: y2Bounds.start, $lt: y2Bounds.end } }),
             AppInstall.countDocuments({ ...rangeQuery, platform: 'android' }),
             AppInstall.countDocuments({ ...rangeQuery, platform: 'ios' }),
-            AppInstall.countDocuments({ ...rangeQuery, platform: 'web' }),
-            AppInstall.countDocuments({ ...rangeQuery, firstInstall: true }),
-            AppInstall.countDocuments({ ...rangeQuery, status: 'uninstalled' }),
-            AppInstall.distinct('userId', { ...rangeQuery, userId: { $ne: null } }),
+            AppInstall.countDocuments(webQuery),
+            AppInstall.countDocuments({ ...installRangeQuery, firstInstall: true }),
+            AppInstall.countDocuments({ ...installRangeQuery, status: 'uninstalled' }),
+            AppInstall.distinct('userId', { ...installRangeQuery, userId: { $ne: null } }),
             GaAnalyticsSync.aggregate([
                 { $match: { metricName: 'app_remove' } },
                 { $group: { _id: null, total: { $sum: '$count' } } }
@@ -310,14 +330,15 @@ export const getDownloadSummary = async (req, res) => {
                 last2Years: last2yCount,
                 androidInstalls: androidCount,
                 iosInstalls: iosCount,
+                webActiveUsers: webCount,
                 webInstalls: webCount,
                 firstTimeInstallers: firstTimeCount,
                 uninstalls: finalUninstalls,
                 activeRegisteredUsers: uniqueUserCount.length
             },
             definitions: {
-                totalDownloads: "Total recorded app installs matching active filters.",
-                firstTimeInstallers: "Unique devices installing the application for the first time.",
+                totalDownloads: "Total recorded app installs (Android & iOS) matching active filters.",
+                firstTimeInstallers: "Unique mobile devices installing the application for the first time.",
                 activeRegisteredUsers: "Users linked to an active installation in this period.",
                 uninstalls: "Devices with confirmed uninstallation / app removal telemetry."
             }
@@ -349,6 +370,9 @@ export const getCountryDownloads = async (req, res) => {
         const matchQuery = {};
         if (platform && platform.toLowerCase() !== 'all') {
             matchQuery.platform = platform.toLowerCase();
+        } else {
+            // App installs strictly measure mobile devices (Android and iOS)
+            matchQuery.platform = { $in: ['android', 'ios'] };
         }
 
         const { start, end } = calculateDateBounds(dateRange, startDate, endDate);
@@ -504,6 +528,9 @@ export const getCountryDetails = async (req, res) => {
 
         if (platform && platform.toLowerCase() !== 'all') {
             matchQuery.platform = platform.toLowerCase();
+        } else {
+            // App installs strictly measure mobile devices (Android and iOS)
+            matchQuery.platform = { $in: ['android', 'ios'] };
         }
 
         const { start, end } = calculateDateBounds(dateRange, startDate, endDate);
@@ -706,7 +733,16 @@ export const getDownloadTrends = async (req, res) => {
                             timezone: 'Asia/Kolkata'
                         }
                     },
-                    total: { $sum: 1 },
+                    total: {
+                        $sum: {
+                            $cond: [
+                                platform && platform.toLowerCase() !== 'all'
+                                    ? { $eq: ['$platform', platform.toLowerCase()] }
+                                    : { $in: ['$platform', ['android', 'ios']] },
+                                1, 0
+                            ]
+                        }
+                    },
                     android: { $sum: { $cond: [{ $eq: ['$platform', 'android'] }, 1, 0] } },
                     ios: { $sum: { $cond: [{ $eq: ['$platform', 'ios'] }, 1, 0] } },
                     web: { $sum: { $cond: [{ $eq: ['$platform', 'web'] }, 1, 0] } },
@@ -775,6 +811,9 @@ export const exportDownloadReport = async (req, res) => {
         }
         if (platform && platform.toLowerCase() !== 'all') {
             matchQuery.platform = platform.toLowerCase();
+        } else {
+            // App installs strictly measure mobile devices (Android and iOS)
+            matchQuery.platform = { $in: ['android', 'ios'] };
         }
 
         const { start, end } = calculateDateBounds(dateRange, startDate, endDate);

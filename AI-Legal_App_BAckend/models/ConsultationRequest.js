@@ -78,7 +78,7 @@ const consultationRequestSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'accepted', 'scheduled', 'completed', 'cancelled', 'rejected'],
+        enum: ['pending', 'accepted', 'scheduled', 'completed', 'cancelled', 'rejected', 'expired'],
         default: 'pending',
         index: true
     },
