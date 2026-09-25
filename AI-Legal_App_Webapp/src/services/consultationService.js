@@ -32,7 +32,7 @@ export const consultationService = {
    */
   async createConsultationRequest(payload) {
     try {
-      const response = await apiClient.post('/consultations/request', payload);
+      const response = await apiClient.post('/consultations/requests', payload);
       return response.data;
     } catch (err) {
       console.warn('[ConsultationService] createConsultationRequest error:', err);
@@ -85,7 +85,7 @@ export const consultationService = {
    */
   async getMessages(requestId) {
     try {
-      const response = await apiClient.get(`/consultations/messages/${requestId}`);
+      const response = await apiClient.get(`/consultations/requests/${requestId}/messages`);
       return response.data;
     } catch (err) {
       console.warn('[ConsultationService] getMessages error:', err);
@@ -98,10 +98,104 @@ export const consultationService = {
    */
   async sendMessage(requestId, text) {
     try {
-      const response = await apiClient.post(`/consultations/messages/${requestId}`, { text });
+      const response = await apiClient.post(`/consultations/requests/${requestId}/messages`, {
+        message: text,
+        text,
+      });
       return response.data;
     } catch (err) {
       console.warn('[ConsultationService] sendMessage error:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Fetch conversation threads for advocate's consultations.
+   */
+  async getAdvocateConversations() {
+    try {
+      const response = await apiClient.get('/consultations/advocate/conversations');
+      return response.data;
+    } catch (err) {
+      console.warn('[ConsultationService] getAdvocateConversations error:', err);
+      return { success: false, total: 0, conversations: [] };
+    }
+  },
+
+  /**
+   * Get advocate's total unread consultation messages count.
+   */
+  async getAdvocateUnreadCount() {
+    try {
+      const response = await apiClient.get('/consultations/advocate/unread-count');
+      return response.data;
+    } catch (err) {
+      console.warn('[ConsultationService] getAdvocateUnreadCount error:', err);
+      return { success: false, unreadCount: 0 };
+    }
+  },
+
+  /**
+   * Update consultation request status (accept, decline, complete).
+   */
+  async updateConsultationStatus(id, payload) {
+    try {
+      const response = await apiClient.patch(`/consultations/requests/${id}/status`, payload);
+      return response.data;
+    } catch (err) {
+      console.warn('[ConsultationService] updateConsultationStatus error:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Create Razorpay order for consultation fee.
+   */
+  async createRazorpayOrder(requestId) {
+    try {
+      const response = await apiClient.post(`/consultations/requests/${requestId}/create-order`);
+      return response.data;
+    } catch (err) {
+      console.warn('[ConsultationService] createRazorpayOrder error:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Pay consultation fee to unlock messaging and calls.
+   */
+  async payConsultation(requestId, paymentDetails = {}) {
+    try {
+      const response = await apiClient.post(`/consultations/requests/${requestId}/pay`, paymentDetails);
+      return response.data;
+    } catch (err) {
+      console.warn('[ConsultationService] payConsultation error:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Get current advocate's verification and listing status.
+   */
+  async getAdvocateStatus() {
+    try {
+      const response = await apiClient.get('/consultations/advocate/status');
+      return response.data;
+    } catch (err) {
+      console.warn('[ConsultationService] getAdvocateStatus error:', err);
+      return { success: false, verificationStatus: 'not_registered', listingConsent: 'none' };
+    }
+  },
+
+  /**
+   * Submit advocate registration with credentials and consent.
+   */
+  async submitAdvocateRegistration(payload) {
+    try {
+      const response = await apiClient.post('/consultations/advocate/register', payload);
+      return response.data;
+    } catch (err) {
+      console.warn('[ConsultationService] submitAdvocateRegistration error:', err);
       throw err;
     }
   },

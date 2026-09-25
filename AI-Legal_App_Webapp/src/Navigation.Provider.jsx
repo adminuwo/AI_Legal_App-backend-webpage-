@@ -75,6 +75,7 @@ const NotesMakerWorkspace = lazy(() => import('./pages/NotesMakerWorkspace'));
 const MobileAppPage = lazy(() => import('./pages/MobileAppPage'));
 const AdvocatesDirectoryPage = lazy(() => import('./pages/AdvocatesDirectoryPage'));
 const MyRequestsPage = lazy(() => import('./pages/MyRequestsPage'));
+const AdvocateConsultationsPage = lazy(() => import('./pages/AdvocateConsultationsPage'));
 
 const EnterpriseSetupPage = lazy(() => import('./pages/Enterprise/EnterpriseSetupPage'));
 const EnterpriseDashboardLayout = lazy(() => import('./pages/Enterprise/EnterpriseDashboardLayout'));
@@ -590,6 +591,18 @@ const NavigateProvider = () => {
               <MyRequestsPage />
             </Suspense>
           } />
+          <Route path="consultations" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Client Consultations...</div>}>
+              <AdvocateConsultationsPage />
+            </Suspense>
+          } />
+          <Route path="consultations/:id" element={
+            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-400">Loading Client Consultations...</div>}>
+              <AdvocateConsultationsPage />
+            </Suspense>
+          } />
+          <Route path="consultation-messages" element={<Navigate to="/dashboard/consultations" replace />} />
+          <Route path="consultation-messages/:id" element={<Navigate to="/dashboard/consultations" replace />} />
           <Route path="social-agent" element={<Navigate to="chat/new" replace state={{ forceGlobal: true }} />} />
           <Route path="ai-personal-assistant" element={<Navigate to="chat/new" replace state={{ forceGlobal: true }} />} />
           <Route path="ai-base" element={<Navigate to="chat/new" replace state={{ forceGlobal: true }} />} />

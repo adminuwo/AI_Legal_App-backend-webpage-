@@ -6,6 +6,8 @@ import {
   Video, User, ArrowRight, Filter, AlertCircle, RefreshCw
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { selectedRoleState } from '../userStore/userData';
 import toast from 'react-hot-toast';
 import consultationService from '../services/consultationService';
 
@@ -22,11 +24,20 @@ const PRACTICE_FILTERS = [
 
 export default function AdvocatesDirectoryPage() {
   const navigate = useNavigate();
+  const selectedRole = useRecoilValue(selectedRoleState);
+
+  // Advocates should manage consultations, not browse the directory to hire other advocates
+  useEffect(() => {
+    if (selectedRole === 'advocate') {
+      navigate('/dashboard/consultations', { replace: true });
+    }
+  }, [selectedRole, navigate]);
 
   const [advocates, setAdvocates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPractice, setSelectedPractice] = useState('All');
+  const [avatarErrors, setAvatarErrors] = useState({});
 
   // Booking Modal State
   const [selectedAdvocate, setSelectedAdvocate] = useState(null);
@@ -218,85 +229,90 @@ export default function AdvocatesDirectoryPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 max-w-6xl">
           {filteredAdvocates.map((adv) => {
             const advId = adv._id || adv.id;
             const name = adv.fullName || adv.name || 'Advocate';
             const court = adv.primaryCourt || 'High Court';
             const experience = adv.experience || '8+ Years';
             const rating = adv.rating || 4.9;
-            const fee = adv.consultationFee || 1500;
+            const fee = adv.consultationFee !== undefined ? adv.consultationFee : 1500;
             const areas = adv.practiceAreas || ['Civil Law', 'Corporate Law'];
 
             return (
               <motion.div
                 key={advId}
-                whileHover={{ y: -3 }}
-                className="p-5 rounded-3xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-[#B88B2A]/40 transition-all flex flex-col justify-between"
+                whileHover={{ y: -2 }}
+                className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-xs hover:shadow-sm hover:border-[#B88B2A]/40 transition-all flex flex-col justify-between w-full min-w-[320px] max-w-xl"
               >
                 <div>
                   {/* Top row: Avatar & Verification */}
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="relative w-12 h-12 rounded-2xl bg-[#B88B2A]/15 border border-[#B88B2A]/30 flex items-center justify-center font-bold text-base text-[#B88B2A] overflow-hidden shrink-0">
-                        {adv.avatar && adv.avatar !== '/User.jpeg' ? (
-                          <img src={adv.avatar} alt={name} className="w-full h-full object-cover" />
+                  <div className="flex items-start justify-between gap-2.5 mb-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="relative w-10 h-10 rounded-xl bg-[#B88B2A]/15 border border-[#B88B2A]/30 flex items-center justify-center font-bold text-sm text-[#B88B2A] overflow-hidden shrink-0">
+                        {adv.avatar && adv.avatar !== '/User.jpeg' && !avatarErrors[advId] ? (
+                          <img
+                            src={adv.avatar}
+                            alt=""
+                            onError={() => setAvatarErrors(prev => ({ ...prev, [advId]: true }))}
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
-                          name.charAt(0)
+                          name.charAt(0).toUpperCase()
                         )}
                       </div>
                       <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <h3 className="text-base font-bold text-slate-900 dark:text-white truncate">
+                        <div className="flex items-center gap-1">
+                          <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
                             {name}
                           </h3>
-                          <ShieldCheck className="w-4 h-4 text-[#B88B2A] shrink-0" title="Verified Advocate" />
+                          <ShieldCheck className="w-3.5 h-3.5 text-[#B88B2A] shrink-0" title="Verified Advocate" />
                         </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate mt-0.5">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate mt-0.5">
                           <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-                          <span>{adv.city ? `${adv.city}, ${adv.state || 'India'}` : court}</span>
+                          <span className="truncate">{adv.city ? `${adv.city}, ${adv.state || 'India'}` : court}</span>
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold shrink-0">
+                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold shrink-0">
                       <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                       <span>{rating}</span>
                     </div>
                   </div>
 
                   {/* Badges: Court, Exp, Enrollment */}
-                  <div className="flex flex-wrap gap-1.5 my-3">
-                    <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                  <div className="flex flex-wrap gap-1 my-2">
+                    <span className="px-2 py-0.5 rounded-md text-[9px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                       {court}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <span className="px-2 py-0.5 rounded-md text-[9px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                       {experience} Exp
                     </span>
                     {adv.barCouncil && (
-                      <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 truncate max-w-[150px]">
+                      <span className="px-2 py-0.5 rounded-md text-[9px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 truncate max-w-[120px]">
                         {adv.barCouncil}
                       </span>
                     )}
                   </div>
 
                   {/* Bio */}
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 my-2 leading-relaxed">
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2 my-1.5 leading-snug">
                     {adv.bio || `${name} is an enrolled advocate practicing in ${court} with proven experience in litigation and advisory.`}
                   </p>
 
                   {/* Practice Areas */}
-                  <div className="flex flex-wrap gap-1 mt-3">
+                  <div className="flex flex-wrap gap-1 mt-2">
                     {areas.slice(0, 3).map((area) => (
                       <span
                         key={area}
-                        className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20"
+                        className="px-1.5 py-0.5 rounded-md text-[9px] font-medium bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20 truncate"
                       >
                         {area}
                       </span>
                     ))}
                     {areas.length > 3 && (
-                      <span className="text-[10px] text-slate-400 self-center">
+                      <span className="text-[9px] text-slate-400 self-center">
                         +{areas.length - 3} more
                       </span>
                     )}
@@ -304,17 +320,22 @@ export default function AdvocatesDirectoryPage() {
                 </div>
 
                 {/* Bottom Row: Fee & Book Button */}
-                <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="mt-3.5 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] text-slate-400 block font-medium">Consultation Fee</span>
-                    <span className="text-sm font-black text-slate-900 dark:text-white">
-                      ₹{fee} <span className="text-[11px] font-normal text-slate-500">/ session</span>
+                    <span className="text-[9px] text-slate-400 block font-medium">Consultation Fee</span>
+                    <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                      {fee === 0 ? 'Free' : `₹${fee}`} <span className="text-[10px] font-normal text-slate-500">{fee === 0 ? 'Consultation' : '/ 15 mins'}</span>
                     </span>
+                    {fee > 0 && (
+                      <span className="block text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                        ₹{Math.round(fee / 15)}/min after 15m
+                      </span>
+                    )}
                   </div>
 
                   <button
                     onClick={() => handleOpenBooking(adv)}
-                    className="px-4 py-2 rounded-xl bg-[#B88B2A] hover:bg-[#A37722] text-white font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-[#B88B2A] hover:bg-[#A37722] text-white font-bold text-xs shadow-xs transition-all active:scale-95 cursor-pointer"
                   >
                     Book Consult
                   </button>
@@ -342,7 +363,7 @@ export default function AdvocatesDirectoryPage() {
                     Book Legal Consultation
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    With {selectedAdvocate.fullName || selectedAdvocate.name} • ₹{selectedAdvocate.consultationFee || 1500}
+                    With {selectedAdvocate.fullName || selectedAdvocate.name} • {selectedAdvocate.consultationFee === 0 ? 'Free' : `₹${selectedAdvocate.consultationFee !== undefined ? selectedAdvocate.consultationFee : 1500} / 15 mins (₹${Math.round((selectedAdvocate.consultationFee !== undefined ? selectedAdvocate.consultationFee : 1500) / 15)}/min after)`}
                   </p>
                 </div>
                 <button
@@ -437,6 +458,19 @@ export default function AdvocatesDirectoryPage() {
                   <p className="text-[11px] text-slate-400 mt-1">
                     Your details are securely transmitted directly to the advocate.
                   </p>
+                </div>
+
+                {/* 15-min & per-minute Billing Model Explainer */}
+                <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
+                  <div className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[11px]">
+                    ⏱
+                  </div>
+                  <div>
+                    <span className="font-bold block">15-Minute Base Consultation</span>
+                    <span className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed block mt-0.5">
+                      This booking covers an initial <strong>15-minute</strong> consultation. If the session continues past 15 minutes, extended time will be billed dynamically at <strong>₹{Math.round(((selectedAdvocate.consultationFee !== undefined ? selectedAdvocate.consultationFee : 1500) || 1500) / 15)}/minute</strong>.
+                    </span>
+                  </div>
                 </div>
 
                 {/* Submit Action */}

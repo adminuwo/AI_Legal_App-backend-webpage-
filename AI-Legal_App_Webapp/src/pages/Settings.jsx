@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-  Settings2, Palette, Sparkles, Bell, Shield, Database, HelpCircle, 
-  Search, Sliders, Moon, Sun, Monitor, Type, Info, Key, LogOut, Trash2, 
-  ShieldAlert, Cloud, FileText, Check, AlertTriangle, 
+import {
+  Settings2, Palette, Sparkles, Bell, Shield, Database, HelpCircle,
+  Search, Sliders, Moon, Sun, Monitor, Type, Info, Key, LogOut, Trash2,
+  ShieldAlert, Cloud, FileText, Check, AlertTriangle,
   ChevronRight, ChevronLeft, Volume2, Globe, Calendar, Clock, Laptop, Eye, Heart, Download,
   Bug, MessageSquare, BookOpen, Star, Send, Paperclip, CheckCircle2, MessageCircle,
   Award, ShieldCheck, ChevronDown, RefreshCw, Smartphone, Lock, Mail, Menu, ArrowLeft
@@ -127,15 +127,15 @@ const SettingsPage = () => {
   const user = currentUserData.user || getUserData() || { name: 'Advocate', email: 'user@aisa.in' };
   const { personalizations, updatePersonalization, resetPersonalizations } = usePersonalization();
   const { theme, setTheme } = useTheme();
-  
+
   // Active Category State
   const [activeCategory, setActiveCategory] = useState('general');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  
+
   // Help & Support Sub-tab state
   const [helpSubTab, setHelpSubTab] = useState('guide'); // 'guide' | 'faqs' | 'bug' | 'feature' | 'contact'
-  
+
   // App Guide Interactive State
   const [selectedGuideTopic, setSelectedGuideTopic] = useState(GUIDE_TOPICS[0]);
   const [guideQuery, setGuideQuery] = useState('');
@@ -183,58 +183,58 @@ const SettingsPage = () => {
   const [recoveryEmail, setRecoveryEmail] = useState('');
   const [twoFactor, setTwoFactor] = useState(false);
 
-const POLICY_DOCUMENTS = {
-  privacy: {
-    id: 'privacy',
-    title: 'Privacy Policy',
-    lastUpdated: 'July 17, 2026',
-    version: 'v1.5.0',
-    intro: 'AI LEGAL™ takes client confidentiality and data security with absolute seriousness. This Privacy Policy details how we compile, process, safeguard, and delete your professional case information.',
-    sections: [
-      { id: '1', title: '1. Information We Collect', content: 'To provide secure AI processing, we collect: (a) Account Information: name, email address, phone number, and billing logs; (b) Workspace Data: legal documents, PDF case files, evidence images, and chat logs; (c) Telemetry Data: device identification, crash details, OS versions, and application performance metrics.' },
-      { id: '2', title: '2. How We Use Data', content: 'Data is processed strictly to execute requested features: (a) Optical Character Recognition (OCR) text extraction; (b) Semantic indexing of precedent files and contract risk audits; (c) Personalizing response language preferences; (d) Platform security, billing compliance, and active threat detection.' },
-      { id: '3', title: '3. Data Sharing & Non-Sale Policy', content: 'We enforce a strict data protection policy: we NEVER sell, trade, rent, or monetize your personal files, evidence briefs, or workspace logs to advertising networks, brokers, or third parties. Data is processed exclusively inside encrypted cloud services required to execute the platform features.' },
-      { id: '4', title: '4. AI Data Processing & Third-Party AI Services', content: 'AI LEGAL™ utilizes secure enterprise AI API providers (such as Google Gemini) to process user queries for legal research, drafting, and analysis. Data transmitted to AI processing infrastructure is encrypted via HTTPS and strictly used to return immediate real-time outputs requested by the user. User input data is never sold, shared with unauthorized third parties, or utilized to train public AI models.' },
-      { id: '5', title: '5. International Data Transfers', content: 'AI LEGAL™ serves global legal workspaces. Your data may be processed in secure database regions closest to your selected jurisdiction. Any transfers across international borders are protected under standard contractual clauses, ensuring uniform data security guidelines.' },
-      { id: '6', title: '6. Security & Encryption Standards', content: 'We apply top-tier security controls: (a) End-to-end TLS 1.3 encryption for all data in transit; (b) AES-256 block encryption at rest for databases and file servers; (c) Isolated tenant sandboxing to prevent cross-account leaks; (d) Continuous intrusion monitoring and vulnerability scans.' },
-      { id: '7', title: '7. Data Retention & Permanent Deletion', content: 'Case files and chat transcripts are stored only for as long as you maintain your account. Toggling deletion on a file immediately flags it for purge. Permanent account deletions remove all corresponding database collections, document buffers, and billing logs from active nodes within 48 hours.' },
-      { id: '8', title: '8. User Rights & Data Portability', content: 'You maintain absolute ownership of your data. You have the right to inspect, download a copy of your chat history and case metadata, correct account information, restrict processing, or permanently delete your entire profile directly from the Settings panel.' },
-      { id: '9', title: '9. Privacy Policy Updates', content: 'We may modify this document as technology or compliance mandates evolve. For significant updates, we notify users via in-app alerts or email registered accounts at least 15 days before amendments take effect.' }
-    ]
-  },
-  terms: {
-    id: 'terms',
-    title: 'Terms of Service & Conditions',
-    lastUpdated: 'July 17, 2026',
-    version: 'v1.5.0',
-    intro: 'Welcome to AI LEGAL™. These Terms of Service govern your license, account setup, and legal responsibilities when accessing our AI legal analytics application, web portal, and cloud strategy services.',
-    sections: [
-      { id: '1', title: '1. Acceptance of Terms', content: 'By accessing or using the AI LEGAL™ platform, creating an account, or purchasing subscription plans, you agree to be bound by these Terms of Service. If you do not agree to these terms, you are prohibited from using the platform and must immediately delete your account and uninstall the mobile application.' },
-      { id: '2', title: '2. User Eligibility', content: 'AI LEGAL™ is built for registered advocates, legal firms, corporate legal departments, and individual litigants. By registering, you warrant that you possess the legal authority to enter into this agreement and will comply with all local, state, and international bar associations, judicial orders, and code ordinances.' },
-      { id: '3', title: '3. Account Security & Registration', content: 'You must provide accurate, verified information during signup, including your preferred jurisdiction. You are solely responsible for maintaining the confidentiality of your credentials and restrict access to unauthorized parties. Any security breaches or suspect activity must be reported to support immediately.' },
-      { id: '4', title: '4. AI Legal Services & Limitations', content: 'AI LEGAL™ utilizes advanced natural language processing, machine learning models, and document intelligence tools to offer case summaries, precedent research, contract analysis, and litigation strategies. You acknowledge that AI is a tool designed to assist human lawyers, not replace them. AI outputs may contain errors, incomplete precedents, or structural anomalies.' },
-      { id: '5', title: '5. No Attorney-Client Relationship', content: 'Your use of AI LEGAL™ does not establish an attorney-client relationship between you and AI LEGAL™, its developers, or its parent entity. The platform is not a licensed law firm, does not practice law, and does not provide legal representation. All materials generated are for informational and educational workflow assistance.' },
-      { id: '6', title: '6. User Content & Uploaded Documents', content: 'You retain all ownership and intellectual property rights in the documents, pleading briefs, and evidence matrices you upload to the platform. You grant AI LEGAL™ a limited, non-exclusive, secure license to host and process these files solely to generate the requested analysis. No uploaded documents are used for training public open-source models.' },
-      { id: '7', title: '7. Subscriptions, Renewals, & Billing', content: 'Access to premium features requires a paid subscription (monthly or yearly cycles). Subscriptions automatically renew at the end of the billing period using the payment method on file. You may cancel your subscription at any time; however, cancellations will only apply to the subsequent billing cycle.' },
-      { id: '8', title: '8. Prohibited Activities', content: 'You agree not to: (a) reverse-engineer or attempt to extract the source code of the platform or the underlying AI weights; (b) upload state-restricted, highly classified, or illegally compiled materials; (c) use the AI to generate documents for illegal tax evasion, harassment, or extortion; (d) deploy automated scraping bots that degrade system performance.' },
-      { id: '9', title: '9. Limitation of Liability', content: 'To the maximum extent permitted by applicable law, AI LEGAL™ and its parent operators, affiliates, and developers shall not be liable for any direct, indirect, incidental, or consequential damages, legal malpractice claims, professional sanctions, or lost cases resulting from your reliance on AI-generated suggestions. Practicing advocates are solely responsible for verifying all filings.' },
-      { id: '10', title: '10. Governing Law & Jurisdiction', content: 'These Terms of Service shall be governed by and construed in accordance with the laws of India. Any litigation, dispute, or claim arising out of these terms shall be subject to the exclusive jurisdiction of the competent courts of New Delhi, India. If any provision is found invalid, the remaining terms shall continue in full force.' }
-    ]
-  },
-  disclaimer: {
-    id: 'disclaimer',
-    title: 'AI Legal Disclaimer',
-    lastUpdated: 'July 17, 2026',
-    version: 'v1.5.0',
-    intro: 'This AI Legal Disclaimer clarifies the operational scope, algorithmic limits, and professional exclusions of the AI LEGAL™ platform.',
-    sections: [
-      { id: '1', title: '1. Automated Advisory Status', content: 'AI LEGAL™ is a software application leveraging artificial intelligence, natural language models, and semantic databases. All case predictors, citation reviews, roadmap strategies, and drafting advice are generated algorithmically. The software does not think like a human practitioner and does not hold a license to practice law.' },
-      { id: '2', title: '2. Informational Purpose Only', content: 'The information and suggestions provided by the AI are for informational and educational research purposes. They must not be construed as official legal opinions, binding representations, or licensed legal advice. The platform serves to accelerate case preparations, not replace professional legal assessment.' },
-      { id: '3', title: '3. Precedent Citation Warning', content: 'AI models can occasionally hallucinate or output out-of-date, overruled, or incorrect case precedent links. Advocates are under an absolute professional duty under local bar regulations to manually cross-verify all case names, citations, and statutory acts before referencing them in active courts.' },
-      { id: '4', title: '4. Assumption of Risk & Liability', content: 'By using this app, you assume all risk. Neither AI LEGAL™ nor its developers assume liability for legal errors, dismissed claims, missed filing deadlines, or professional malpractice complaints resulting from reliance on AI suggestions. Advocates are solely responsible for their final filings.' }
-    ]
-  }
-};
+  const POLICY_DOCUMENTS = {
+    privacy: {
+      id: 'privacy',
+      title: 'Privacy Policy',
+      lastUpdated: 'July 17, 2026',
+      version: 'v1.5.0',
+      intro: 'AI LEGAL™ takes client confidentiality and data security with absolute seriousness. This Privacy Policy details how we compile, process, safeguard, and delete your professional case information.',
+      sections: [
+        { id: '1', title: '1. Information We Collect', content: 'To provide secure AI processing, we collect: (a) Account Information: name, email address, phone number, and billing logs; (b) Workspace Data: legal documents, PDF case files, evidence images, and chat logs; (c) Telemetry Data: device identification, crash details, OS versions, and application performance metrics.' },
+        { id: '2', title: '2. How We Use Data', content: 'Data is processed strictly to execute requested features: (a) Optical Character Recognition (OCR) text extraction; (b) Semantic indexing of precedent files and contract risk audits; (c) Personalizing response language preferences; (d) Platform security, billing compliance, and active threat detection.' },
+        { id: '3', title: '3. Data Sharing & Non-Sale Policy', content: 'We enforce a strict data protection policy: we NEVER sell, trade, rent, or monetize your personal files, evidence briefs, or workspace logs to advertising networks, brokers, or third parties. Data is processed exclusively inside encrypted cloud services required to execute the platform features.' },
+        { id: '4', title: '4. AI Data Processing & Third-Party AI Services', content: 'AI LEGAL™ utilizes secure enterprise AI API providers (such as Google Gemini) to process user queries for legal research, drafting, and analysis. Data transmitted to AI processing infrastructure is encrypted via HTTPS and strictly used to return immediate real-time outputs requested by the user. User input data is never sold, shared with unauthorized third parties, or utilized to train public AI models.' },
+        { id: '5', title: '5. International Data Transfers', content: 'AI LEGAL™ serves global legal workspaces. Your data may be processed in secure database regions closest to your selected jurisdiction. Any transfers across international borders are protected under standard contractual clauses, ensuring uniform data security guidelines.' },
+        { id: '6', title: '6. Security & Encryption Standards', content: 'We apply top-tier security controls: (a) End-to-end TLS 1.3 encryption for all data in transit; (b) AES-256 block encryption at rest for databases and file servers; (c) Isolated tenant sandboxing to prevent cross-account leaks; (d) Continuous intrusion monitoring and vulnerability scans.' },
+        { id: '7', title: '7. Data Retention & Permanent Deletion', content: 'Case files and chat transcripts are stored only for as long as you maintain your account. Toggling deletion on a file immediately flags it for purge. Permanent account deletions remove all corresponding database collections, document buffers, and billing logs from active nodes within 48 hours.' },
+        { id: '8', title: '8. User Rights & Data Portability', content: 'You maintain absolute ownership of your data. You have the right to inspect, download a copy of your chat history and case metadata, correct account information, restrict processing, or permanently delete your entire profile directly from the Settings panel.' },
+        { id: '9', title: '9. Privacy Policy Updates', content: 'We may modify this document as technology or compliance mandates evolve. For significant updates, we notify users via in-app alerts or email registered accounts at least 15 days before amendments take effect.' }
+      ]
+    },
+    terms: {
+      id: 'terms',
+      title: 'Terms of Service & Conditions',
+      lastUpdated: 'July 17, 2026',
+      version: 'v1.5.0',
+      intro: 'Welcome to AI LEGAL™. These Terms of Service govern your license, account setup, and legal responsibilities when accessing our AI legal analytics application, web portal, and cloud strategy services.',
+      sections: [
+        { id: '1', title: '1. Acceptance of Terms', content: 'By accessing or using the AI LEGAL™ platform, creating an account, or purchasing subscription plans, you agree to be bound by these Terms of Service. If you do not agree to these terms, you are prohibited from using the platform and must immediately delete your account and uninstall the mobile application.' },
+        { id: '2', title: '2. User Eligibility', content: 'AI LEGAL™ is built for registered advocates, legal firms, corporate legal departments, and individual litigants. By registering, you warrant that you possess the legal authority to enter into this agreement and will comply with all local, state, and international bar associations, judicial orders, and code ordinances.' },
+        { id: '3', title: '3. Account Security & Registration', content: 'You must provide accurate, verified information during signup, including your preferred jurisdiction. You are solely responsible for maintaining the confidentiality of your credentials and restrict access to unauthorized parties. Any security breaches or suspect activity must be reported to support immediately.' },
+        { id: '4', title: '4. AI Legal Services & Limitations', content: 'AI LEGAL™ utilizes advanced natural language processing, machine learning models, and document intelligence tools to offer case summaries, precedent research, contract analysis, and litigation strategies. You acknowledge that AI is a tool designed to assist human lawyers, not replace them. AI outputs may contain errors, incomplete precedents, or structural anomalies.' },
+        { id: '5', title: '5. No Attorney-Client Relationship', content: 'Your use of AI LEGAL™ does not establish an attorney-client relationship between you and AI LEGAL™, its developers, or its parent entity. The platform is not a licensed law firm, does not practice law, and does not provide legal representation. All materials generated are for informational and educational workflow assistance.' },
+        { id: '6', title: '6. User Content & Uploaded Documents', content: 'You retain all ownership and intellectual property rights in the documents, pleading briefs, and evidence matrices you upload to the platform. You grant AI LEGAL™ a limited, non-exclusive, secure license to host and process these files solely to generate the requested analysis. No uploaded documents are used for training public open-source models.' },
+        { id: '7', title: '7. Subscriptions, Renewals, & Billing', content: 'Access to premium features requires a paid subscription (monthly or yearly cycles). Subscriptions automatically renew at the end of the billing period using the payment method on file. You may cancel your subscription at any time; however, cancellations will only apply to the subsequent billing cycle.' },
+        { id: '8', title: '8. Prohibited Activities', content: 'You agree not to: (a) reverse-engineer or attempt to extract the source code of the platform or the underlying AI weights; (b) upload state-restricted, highly classified, or illegally compiled materials; (c) use the AI to generate documents for illegal tax evasion, harassment, or extortion; (d) deploy automated scraping bots that degrade system performance.' },
+        { id: '9', title: '9. Limitation of Liability', content: 'To the maximum extent permitted by applicable law, AI LEGAL™ and its parent operators, affiliates, and developers shall not be liable for any direct, indirect, incidental, or consequential damages, legal malpractice claims, professional sanctions, or lost cases resulting from your reliance on AI-generated suggestions. Practicing advocates are solely responsible for verifying all filings.' },
+        { id: '10', title: '10. Governing Law & Jurisdiction', content: 'These Terms of Service shall be governed by and construed in accordance with the laws of India. Any litigation, dispute, or claim arising out of these terms shall be subject to the exclusive jurisdiction of the competent courts of New Delhi, India. If any provision is found invalid, the remaining terms shall continue in full force.' }
+      ]
+    },
+    disclaimer: {
+      id: 'disclaimer',
+      title: 'AI Legal Disclaimer',
+      lastUpdated: 'July 17, 2026',
+      version: 'v1.5.0',
+      intro: 'This AI Legal Disclaimer clarifies the operational scope, algorithmic limits, and professional exclusions of the AI LEGAL™ platform.',
+      sections: [
+        { id: '1', title: '1. Automated Advisory Status', content: 'AI LEGAL™ is a software application leveraging artificial intelligence, natural language models, and semantic databases. All case predictors, citation reviews, roadmap strategies, and drafting advice are generated algorithmically. The software does not think like a human practitioner and does not hold a license to practice law.' },
+        { id: '2', title: '2. Informational Purpose Only', content: 'The information and suggestions provided by the AI are for informational and educational research purposes. They must not be construed as official legal opinions, binding representations, or licensed legal advice. The platform serves to accelerate case preparations, not replace professional legal assessment.' },
+        { id: '3', title: '3. Precedent Citation Warning', content: 'AI models can occasionally hallucinate or output out-of-date, overruled, or incorrect case precedent links. Advocates are under an absolute professional duty under local bar regulations to manually cross-verify all case names, citations, and statutory acts before referencing them in active courts.' },
+        { id: '4', title: '4. Assumption of Risk & Liability', content: 'By using this app, you assume all risk. Neither AI LEGAL™ nor its developers assume liability for legal errors, dismissed claims, missed filing deadlines, or professional malpractice complaints resulting from reliance on AI suggestions. Advocates are solely responsible for their final filings.' }
+      ]
+    }
+  };
 
   // Policy Modal Viewer State
   const [activePolicyKey, setActivePolicyKey] = useState(null); // 'privacy' | 'terms' | 'disclaimer' | null
@@ -290,7 +290,7 @@ const POLICY_DOCUMENTS = {
   // Filter Categories
   const filteredCategories = useMemo(() => {
     if (!searchQuery) return CATEGORIES;
-    return CATEGORIES.filter(cat => 
+    return CATEGORIES.filter(cat =>
       cat.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
       cat.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -437,7 +437,7 @@ const POLICY_DOCUMENTS = {
 
   return (
     <div className="min-h-full bg-[#F8FAFC] dark:bg-[#0F172A] flex flex-col font-sans select-text p-3.5 sm:p-6 lg:p-8 text-slate-900 dark:text-white transition-colors duration-200 max-w-6xl mx-auto space-y-4 sm:space-y-6">
-      
+
       {/* Header Bar matching Mobile App Screenshots 1-5 */}
       <div className="flex items-center gap-2.5 sm:gap-3 pb-2 sm:pb-3 border-b border-slate-200 dark:border-slate-800">
         <button
@@ -489,11 +489,10 @@ const POLICY_DOCUMENTS = {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 sm:gap-2 shadow-xs min-h-[38px] ${
-                  isActive
+                className={`px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5 sm:gap-2 shadow-xs min-h-[38px] ${isActive
                     ? 'bg-white dark:bg-[#1E293B] border-2 border-[#B88B2A] text-[#B88B2A] shadow-sm ring-2 ring-[#B88B2A]/20'
                     : 'bg-white/90 dark:bg-[#1E293B]/90 border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:border-[#B88B2A]/50 hover:text-slate-900 dark:hover:text-white'
-                }`}
+                  }`}
               >
                 <Icon size={15} className={isActive ? 'text-[#B88B2A]' : 'text-slate-400'} />
                 <span>{cat.label}</span>
@@ -513,7 +512,7 @@ const POLICY_DOCUMENTS = {
 
       {/* Content Body for Active Tab */}
       <div className="space-y-4 sm:space-y-6">
-        
+
         {/* CATEGORY 1: GENERAL SETTINGS (Screenshot 1 Parity) */}
         {activeCategory === 'general' && (
           <div className="space-y-4 sm:space-y-6 animate-fade-in bg-white dark:bg-[#1E293B] border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-xs">
@@ -613,7 +612,7 @@ const POLICY_DOCUMENTS = {
                   <h4 className="text-xs font-black text-slate-900 dark:text-white">Show Product Guide Tips Again</h4>
                   <p className="text-[11px] font-semibold text-slate-400 mt-0.5">Enable this to show the onboarding guide on your dashboard again</p>
                 </div>
-                <button 
+                <button
                   onClick={() => handleToggle('general', 'showGuideTips', generalSettings.showGuideTips !== false)}
                   className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${generalSettings.showGuideTips !== false ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                 >
@@ -695,7 +694,7 @@ const POLICY_DOCUMENTS = {
                   <h4 className="text-xs font-black text-slate-900 dark:text-white">Hearing Reminders</h4>
                   <p className="text-[11px] font-semibold text-slate-400">Receive alerts 24 hours prior to court hearings</p>
                 </div>
-                <button 
+                <button
                   onClick={() => handleToggle('notifications', 'hearingReminder', notifPrefs.hearingReminder !== false)}
                   className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.hearingReminder !== false ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                 >
@@ -708,7 +707,7 @@ const POLICY_DOCUMENTS = {
                   <h4 className="text-xs font-black text-slate-900 dark:text-white">Daily Cause List Updates</h4>
                   <p className="text-[11px] font-semibold text-slate-400">Daily cause list notification digest</p>
                 </div>
-                <button 
+                <button
                   onClick={() => handleToggle('notifications', 'pushNotif', notifPrefs.pushNotif !== false)}
                   className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.pushNotif !== false ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                 >
@@ -721,7 +720,7 @@ const POLICY_DOCUMENTS = {
                   <h4 className="text-xs font-black text-slate-900 dark:text-white">AI Research Complete Alerts</h4>
                   <p className="text-[11px] font-semibold text-slate-400">Notify when background AI draft or analysis completes</p>
                 </div>
-                <button 
+                <button
                   onClick={() => handleToggle('notifications', 'draftCompleted', notifPrefs.draftCompleted !== false)}
                   className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.draftCompleted !== false ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                 >
@@ -734,7 +733,7 @@ const POLICY_DOCUMENTS = {
                   <h4 className="text-xs font-black text-slate-900 dark:text-white">Email Notifications</h4>
                   <p className="text-[11px] font-semibold text-slate-400">Receive schedule digests via email</p>
                 </div>
-                <button 
+                <button
                   onClick={() => handleToggle('notifications', 'emailNotif', notifPrefs.emailNotif !== false)}
                   className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300 ${notifPrefs.emailNotif !== false ? 'bg-[#B88B2A]' : 'bg-slate-300 dark:bg-slate-700'}`}
                 >
@@ -1194,13 +1193,12 @@ const POLICY_DOCUMENTS = {
                               type="button"
                               key={sev}
                               onClick={() => setBugForm({ ...bugForm, severity: sev })}
-                              className={`py-2 rounded-xl text-[10px] font-black transition-all cursor-pointer text-center ${
-                                isSel
+                              className={`py-2 rounded-xl text-[10px] font-black transition-all cursor-pointer text-center ${isSel
                                   ? sev === 'Critical'
                                     ? 'bg-rose-600 text-white shadow-xs'
                                     : 'bg-[#B88B2A] text-[#111111] shadow-xs'
                                   : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                              }`}
+                                }`}
                             >
                               {sev}
                             </button>
@@ -1456,11 +1454,10 @@ const POLICY_DOCUMENTS = {
                             type="button"
                             key={prio}
                             onClick={() => setFeatureForm({ ...featureForm, priority: prio })}
-                            className={`py-2 rounded-xl text-[10px] font-black transition-all cursor-pointer text-center ${
-                              isSel
+                            className={`py-2 rounded-xl text-[10px] font-black transition-all cursor-pointer text-center ${isSel
                                 ? 'bg-[#B88B2A] text-[#111111] shadow-xs'
                                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                            }`}
+                              }`}
                           >
                             {prio}
                           </button>

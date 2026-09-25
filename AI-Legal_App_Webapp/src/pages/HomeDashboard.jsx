@@ -12,6 +12,8 @@ import { useRecoilValue } from 'recoil';
 import { userData, selectedRoleState } from '../userStore/userData';
 import { apiService } from '../services/apiService';
 import toast from 'react-hot-toast';
+import consultationService from '../services/consultationService';
+import { MessageSquare } from 'lucide-react';
 
 import ExperienceRoleSelector from '../Components/ExperienceRoleSelector';
 import GeneralUserDashboardSection from '../Components/GeneralUserDashboardSection';
@@ -20,8 +22,10 @@ import LawFirmDashboardSection from '../Components/LawFirmDashboardSection';
 import LawFirmOnboardingView from '../Components/LawFirmOnboardingView';
 import CreateCaseWizardModal from '../Tools/AI_Legal/components/CreateCaseWizardModal';
 import NotificationCenter from '../Components/NotificationBar/NotificationCenter';
+import AdvocateRegistrationModal from '../Components/AdvocateRegistrationModal';
 import { useSubscription } from '../context/SubscriptionContext';
 import { usePersonalization } from '../context/PersonalizationContext';
+import { SHOW_GENERAL_USER_FLOW, SHOW_VERIFIED_ADVOCATE_FLOW } from '../constants/featureFlags';
 
 export default function HomeDashboard() {
   const navigate = useNavigate();
@@ -72,6 +76,38 @@ export default function HomeDashboard() {
   const [isBannerVisible, setIsBannerVisible] = useState(true);
   const [isProductGuideOpen, setIsProductGuideOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [advocateUnreadCount, setAdvocateUnreadCount] = useState(0);
+  const [advocateVerificationStatus, setAdvocateVerificationStatus] = useState('not_registered');
+  const [advocateListingConsent, setAdvocateListingConsent] = useState('none');
+  const [isAdvocateRegModalOpen, setIsAdvocateRegModalOpen] = useState(false);
+  const [isVerificationLoading, setIsVerificationLoading] = useState(false);
+
+  const fetchAdvocateVerification = async () => {
+    if (selectedRole !== 'advocate') return;
+    try {
+      setIsVerificationLoading(true);
+      const res = await consultationService.getAdvocateStatus();
+      if (res && res.success) {
+        setAdvocateVerificationStatus(res.verificationStatus || 'not_registered');
+        setAdvocateListingConsent(res.listingConsent || 'none');
+      }
+    } catch (err) {
+      console.warn('[HomeDashboard] Failed to fetch advocate verification:', err);
+    } finally {
+      setIsVerificationLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedRole === 'advocate') {
+      fetchAdvocateVerification();
+      consultationService.getAdvocateUnreadCount().then(res => {
+        if (res && res.unreadCount != null) {
+          setAdvocateUnreadCount(res.unreadCount);
+        }
+      }).catch(() => {});
+    }
+  }, [selectedRole]);
 
   // Form States
   const [newCaseForm, setNewCaseForm] = useState({
@@ -494,7 +530,7 @@ export default function HomeDashboard() {
     </div>
   );
 
-  if (selectedRole === 'general_user') {
+  if (SHOW_GENERAL_USER_FLOW && selectedRole === 'general_user') {
     return (
       <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A] p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto text-[#111827] dark:text-white font-sans transition-colors">
         <GeneralUserDashboardSection user={currentUser?.user} onRefresh={fetchDashboardData} />
@@ -541,6 +577,21 @@ export default function HomeDashboard() {
             </div>
             
             <div className="flex items-center gap-2 shrink-0">
+              {selectedRole === 'advocate' && (
+                <button
+                  onClick={() => navigate('/dashboard/consultations')}
+                  className="relative flex items-center gap-1.5 p-2 sm:px-3 sm:py-2.5 bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700/60 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 font-bold rounded-xl text-xs sm:text-sm shadow-xs transition-all active:scale-95 cursor-pointer"
+                  title="Client Consultation Messages"
+                >
+                  <MessageSquare className="w-4 h-4 text-[#B88B2A]" />
+                  <span className="hidden md:inline">Client Chats</span>
+                  {advocateUnreadCount > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full bg-[#B88B2A] text-white text-[10px] font-black">
+                      {advocateUnreadCount > 99 ? '99+' : advocateUnreadCount}
+                    </span>
+                  )}
+                </button>
+              )}
               <button
                 onClick={() => setIsNotifOpen(true)}
                 className="relative flex items-center gap-2 p-2 sm:px-4 sm:py-2.5 bg-[#B88B2A]/15 hover:bg-[#B88B2A]/25 border border-[#B88B2A]/40 text-[#8B6517] dark:text-[#E2B755] font-black rounded-xl text-xs sm:text-sm shadow-xs transition-all active:scale-95 cursor-pointer"
@@ -606,25 +657,25 @@ export default function HomeDashboard() {
 
           {/* Advocate Litigation Dashboard */}
           {/* 2. Today's Overview Statistics Ribbon */}
-          <div className="mb-8">
-            <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">Today&apos;s Overview</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+          <div className="mb-6">
+            <h2 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2.5">Today&apos;s Overview</h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
               {[
                 { label: "Active Cases", value: totalActiveCases, icon: Briefcase, status: "Active", color: "text-[#B88B2A] bg-[#B88B2A]/10 border border-[#B88B2A]/25" },
                 { label: "Today's Hearings", value: totalTodaysHearingsCount, icon: Gavel, status: totalTodaysHearingsCount > 0 ? "TODAY" : "0 Today", color: totalTodaysHearingsCount > 0 ? "text-rose-500 bg-rose-50 border border-rose-200" : "text-slate-400 bg-slate-100 dark:bg-slate-800" },
                 { label: "Pending Drafts", value: totalPendingDrafts, icon: FileText, status: "Pending", color: "text-amber-500 bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:border-amber-900/40" },
                 { label: "Pending Research", value: totalPendingResearch, icon: Search, status: "Up to Date", color: "text-emerald-500 bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900/40" }
               ].map((stat, i) => (
-                <div key={i} className="p-3.5 sm:p-6 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] shadow-xs hover:border-[#B88B2A] hover:shadow-md transition-all flex flex-col justify-between">
-                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                <div key={i} className="p-3 sm:p-4 border border-slate-200/80 dark:border-slate-800 rounded-xl bg-white dark:bg-[#1E293B] shadow-xs hover:border-[#B88B2A] hover:shadow-sm transition-all flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                     <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sm:tracking-widest truncate">{stat.label}</span>
-                    <div className={`p-1.5 sm:p-2 rounded-xl ${stat.color} shrink-0`}>
-                      <stat.icon className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5" />
+                    <div className={`p-1.5 rounded-lg ${stat.color} shrink-0`}>
+                      <stat.icon className="w-3.5 h-3.5" />
                     </div>
                   </div>
-                  <div className="flex items-baseline justify-between mt-1 sm:mt-2">
-                    <span className="text-2xl sm:text-3xl font-black text-[#111111] dark:text-white">{stat.value}</span>
-                    <span className="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0">
+                  <div className="flex items-baseline justify-between mt-1">
+                    <span className="text-xl sm:text-2xl font-black text-[#111111] dark:text-white">{stat.value}</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0">
                       {stat.status}
                     </span>
                   </div>
@@ -697,39 +748,153 @@ export default function HomeDashboard() {
               </div>
 
               {/* 3. Quick Actions Row */}
-              <div className="space-y-3">
-                <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Quick Actions</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2.5">
+                <h2 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Quick Actions</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button 
                     onClick={() => {
                       setNewCaseForm({ name: '', clientName: '', opponentName: '', caseType: '', courtName: '', summary: '', priority: 'Medium' });
                       setIsNewCaseModalOpen(true);
                     }}
-                    className="p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#B88B2A] hover:shadow-md transition-all flex items-center gap-4 group cursor-pointer text-left"
+                    className="p-3.5 sm:p-4 border border-slate-200/80 dark:border-slate-800 rounded-xl bg-white dark:bg-[#1E293B] hover:border-[#B88B2A] hover:shadow-xs transition-all flex items-center gap-3 group cursor-pointer text-left"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform shrink-0">
+                    <div className="w-9 h-9 rounded-lg bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25 flex items-center justify-center font-black text-lg group-hover:scale-105 transition-transform shrink-0">
                       +
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-sm text-[#111111] dark:text-white group-hover:text-[#B88B2A] transition-colors">New Case</h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Initialize litigation folder & AI docket</p>
+                      <h4 className="font-extrabold text-xs sm:text-sm text-[#111111] dark:text-white group-hover:text-[#B88B2A] transition-colors">New Case</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">Initialize litigation folder & AI docket</p>
                     </div>
                   </button>
 
                   <button 
                     onClick={() => navigate('/dashboard/guide')}
-                    className="p-5 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] hover:border-[#B88B2A] hover:shadow-md transition-all flex items-center gap-4 group cursor-pointer text-left"
+                    className="p-3.5 sm:p-4 border border-slate-200/80 dark:border-slate-800 rounded-xl bg-white dark:bg-[#1E293B] hover:border-[#B88B2A] hover:shadow-xs transition-all flex items-center gap-3 group cursor-pointer text-left"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform shrink-0">
+                    <div className="w-9 h-9 rounded-lg bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25 flex items-center justify-center font-black text-base group-hover:scale-105 transition-transform shrink-0">
                       ✨
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-sm text-[#111111] dark:text-white group-hover:text-[#B88B2A] transition-colors">Product Guide</h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Interactive AI feature walkthrough</p>
+                      <h4 className="font-extrabold text-xs sm:text-sm text-[#111111] dark:text-white group-hover:text-[#B88B2A] transition-colors">Product Guide</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">Interactive AI feature walkthrough</p>
                     </div>
                   </button>
                 </div>
               </div>
+
+              {/* 3.1 ADVOCATE VERIFICATION STATUS / REGISTRATION CTA */}
+              {SHOW_VERIFIED_ADVOCATE_FLOW && selectedRole === 'advocate' && (
+                <div className="mt-1">
+                  {advocateVerificationStatus === 'verified' ? (
+                    <div 
+                      className="p-4 sm:p-5 rounded-2xl border-1.5 border-[#10B981] bg-[#F0FDF4] dark:bg-[#141E15] flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 shadow-xs"
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-11 h-11 rounded-full bg-[#DCFCE7] dark:bg-[#19331E] border border-[#10B981] flex items-center justify-center text-[#10B981] shrink-0 shadow-2xs">
+                          <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-extrabold text-sm sm:text-[15px] text-slate-900 dark:text-white flex items-center gap-1">
+                              <span>✓</span> Verified Advocate
+                            </span>
+                            <span className="bg-[#10B98125] text-[#10B981] text-[10px] font-extrabold px-2 py-0.5 rounded-md tracking-wider">
+                              LISTED
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5 leading-snug">
+                            Your profile is visible to users seeking legal consultation in the Advocates directory.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 self-end sm:self-center shrink-0">
+                        <button
+                          onClick={() => navigate('/dashboard/consultations')}
+                          className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm shadow-emerald-600/20 cursor-pointer"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>Client Consultations</span>
+                          {advocateUnreadCount > 0 && (
+                            <span className="ml-1 px-1.5 py-0.2 bg-white text-emerald-700 rounded-full text-[10px] font-black">
+                              {advocateUnreadCount}
+                            </span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (advocateVerificationStatus === 'pending' && advocateListingConsent === 'accepted') ? (
+                    <div className="p-4 sm:p-5 rounded-2xl border-1.5 border-[#F59E0B] bg-[#FFFBEB] dark:bg-[#261F14] flex items-center justify-between gap-3.5 shadow-xs">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-11 h-11 rounded-full bg-[#FEF3C7] dark:bg-[#3D2F16] border border-[#F59E0B] flex items-center justify-center text-[#F59E0B] shrink-0 shadow-2xs">
+                          <Clock className="w-6 h-6 stroke-[2.2]" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-extrabold text-sm sm:text-[15px] text-slate-900 dark:text-white">
+                              Verification Pending
+                            </span>
+                            <span className="bg-[#F59E0B25] text-[#D97706] dark:text-[#FBBF24] text-[10px] font-extrabold px-2 py-0.5 rounded-md tracking-wider">
+                              IN REVIEW
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5 leading-snug">
+                            Your verification is under review. Once approved, your profile will become visible to users looking for verified advocates.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : advocateVerificationStatus === 'rejected' ? (
+                    <div className="p-4 sm:p-5 rounded-2xl border-1.5 border-[#EF4444] bg-[#FEF2F2] dark:bg-[#261414] flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 shadow-xs">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-11 h-11 rounded-full bg-red-100 dark:bg-red-950/60 border border-[#EF4444] flex items-center justify-center text-[#EF4444] shrink-0 shadow-2xs">
+                          <AlertTriangle className="w-6 h-6 stroke-[2.2]" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-extrabold text-sm sm:text-[15px] text-slate-900 dark:text-white">
+                              Verification Needs Attention
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5 leading-snug">
+                            Please review and resubmit the required professional information and credentials.
+                          </p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => setIsAdvocateRegModalOpen(true)}
+                        className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-colors shrink-0 self-start sm:self-center cursor-pointer shadow-xs"
+                      >
+                        Re-submit Details
+                      </button>
+                    </div>
+                  ) : (
+                    /* Default: not_registered -> Register as a Verified Advocate CTA */
+                    <div className="p-4 sm:p-5 rounded-2xl border-1.5 border-[#C8A34D] bg-[#FFFDF5] dark:bg-[#1A1824] flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 shadow-xs hover:border-[#B88B2A] transition-all">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="w-11 h-11 rounded-full bg-[#FEF3C7] dark:bg-[#2C220E] border border-[#C8A34D] flex items-center justify-center text-[#C8A34D] shrink-0 shadow-2xs">
+                          <ShieldCheck className="w-6 h-6 stroke-[2.2]" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="font-extrabold text-sm sm:text-[15px] text-slate-900 dark:text-white">
+                            Register as a Verified Advocate
+                          </h3>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5 leading-snug">
+                            Get verified and become discoverable to users looking for legal consultation in the Advocates directory.
+                          </p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => setIsAdvocateRegModalOpen(true)}
+                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 text-white text-xs font-extrabold transition-all shadow-md shadow-[#B88B2A]/20 shrink-0 self-start sm:self-center cursor-pointer flex items-center gap-1.5"
+                      >
+                        <span>Register Now</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* 4. AI Legal Knowledge Hub Card */}
               <div className="p-4 sm:p-6 border border-slate-200/80 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#1E293B] shadow-xs space-y-3.5">
@@ -1010,6 +1175,12 @@ export default function HomeDashboard() {
               </div>
             )}
           </AnimatePresence>
+          {/* H. MODAL Dialog: Advocate Registration */}
+          <AdvocateRegistrationModal 
+            isOpen={isAdvocateRegModalOpen}
+            onClose={() => setIsAdvocateRegModalOpen(false)}
+            onSuccess={fetchAdvocateVerification}
+          />
         </>
       )}
 

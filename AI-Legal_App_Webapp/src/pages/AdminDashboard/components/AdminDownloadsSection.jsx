@@ -403,6 +403,7 @@ export default function AdminDownloadsSection() {
           { Metric: "Active Installs", Value: summary.activeInstalls },
           { Metric: "Android Installs", Value: summary.android },
           { Metric: "iOS Installs", Value: summary.ios },
+          { Metric: "Web Portal Active Users", Value: summary.web },
           { Metric: "Today", Value: summary.today },
           { Metric: "Yesterday", Value: summary.yesterday },
           { Metric: "Last 7 Days", Value: summary.last7Days },
@@ -468,6 +469,7 @@ export default function AdminDownloadsSection() {
         ["Active Devices", (summary.activeInstalls || summary.total || 0).toLocaleString()],
         ["Android Platform Installs", (summary.android || 0).toLocaleString()],
         ["iOS Platform Installs", (summary.ios || 0).toLocaleString()],
+        ["Web Portal Active Users", (summary.web || 0).toLocaleString()],
         ["Installs Today", (summary.today || 0).toLocaleString()],
         ["Installs Yesterday", (summary.yesterday || 0).toLocaleString()],
         ["Last 7 Days Velocity", (summary.last7Days || 0).toLocaleString()],
@@ -970,7 +972,7 @@ export default function AdminDownloadsSection() {
               {loading ? '...' : (summary.web || 0).toLocaleString()}
             </p>
             <p className="text-[10px] text-indigo-600 font-semibold mt-0.5 truncate">
-              {summary.total > 0 ? `${Math.round(((summary.web || 0) / summary.total) * 100)}% share` : '0%'}
+              Active Users
             </p>
           </div>
         </div>

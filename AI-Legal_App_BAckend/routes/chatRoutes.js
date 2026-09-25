@@ -234,6 +234,53 @@ router.post("/", optionalVerifyToken, identifyGuest, async (req, res) => {
     content = "Please analyze and summarize the attached document in detail, highlighting key clauses, rights, obligations, and legal risks.";
   }
 
+  // Auto-save any document uploaded for AI Legal Assistant to User's Legal Vault
+  if (req.user && (req.user.id || req.user._id)) {
+    const userId = req.user.id || req.user._id;
+    const rawDocs = [];
+    if (document) {
+      if (Array.isArray(document)) rawDocs.push(...document);
+      else rawDocs.push(document);
+    }
+    if (Array.isArray(req.body.attachments)) {
+      rawDocs.push(...req.body.attachments);
+    }
+    if (rawDocs.length > 0) {
+      (async () => {
+        try {
+          const userRec = await userModel.findById(userId);
+          if (userRec) {
+            if (!userRec.legalVaultDocs) userRec.legalVaultDocs = [];
+            let changed = false;
+            for (const d of rawDocs) {
+              const docName = d.name || d.filename;
+              if (!docName) continue;
+              const alreadyExists = userRec.legalVaultDocs.some(v => v.name === docName && (v.url === (d.url || '') || v.id === d.id));
+              if (!alreadyExists) {
+                userRec.legalVaultDocs.unshift({
+                  id: d.id || `doc_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                  name: docName,
+                  size: d.size ? (typeof d.size === 'number' ? `${Math.round(d.size / 1024)} KB` : d.size) : '1.2 MB',
+                  date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+                  url: d.url || '',
+                  uri: d.uri || '',
+                  type: docName.toLowerCase().endsWith('.pdf') ? 'pdf' : 'doc',
+                  mimeType: d.mimeType || d.type || '',
+                  source: 'AI Legal Assistant',
+                  createdAt: new Date()
+                });
+                changed = true;
+              }
+            }
+            if (changed) await userRec.save();
+          }
+        } catch (vErr) {
+          console.warn('[Auto-Vault] Failed to save chat docs to vault:', vErr.message);
+        }
+      })();
+    }
+  }
+
   let mode = reqMode;
   let resolvedToolName = req.body.activeTool || req.body.toolName;
 
@@ -1684,6 +1731,6 @@ router.post('/upload-pdf', upload.single('pdf'), async (req, res) => {
 });
 
 // --- GENERAL UPLOAD ---
-router.post('/upload', uploadMiddleware, uploadAttachment);
+router.post('/upload', optionalVerifyToken, uploadMiddleware, uploadAttachment);
 
 export default router;

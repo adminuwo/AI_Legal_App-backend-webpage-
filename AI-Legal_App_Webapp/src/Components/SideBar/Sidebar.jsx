@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutGrid, Brain, Briefcase, Search, FileText, Library, 
-  SearchCode, FileCheck, Gavel, Lightbulb, Scale, Calendar, 
+import {
+  LayoutGrid, Brain, Briefcase, Search, FileText, Library,
+  SearchCode, FileCheck, Gavel, Lightbulb, Scale, Calendar,
   Users, Bell, User, Settings2, LogOut, ChevronRight, ChevronLeft, Binary,
   Sun, Moon, Globe, ChevronDown, Bookmark, HelpCircle, Download,
   CreditCard, Shield, Zap, GraduationCap, Building2, MessageSquare, BookOpen, Smartphone, X
@@ -18,6 +18,8 @@ import { useSubscription } from '../../context/SubscriptionContext';
 import { logo } from '../../constants';
 import { isSuperAdmin } from '../../utils/isSuperAdmin';
 import toast from 'react-hot-toast';
+import consultationService from '../../services/consultationService';
+import { SHOW_VERIFIED_ADVOCATE_FLOW, SHOW_GENERAL_USER_FLOW } from '../../constants/featureFlags';
 
 const CORE_VIEWS = [
   { name: 'Dashboard', icon: LayoutGrid, path: '/dashboard' },
@@ -68,7 +70,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
       if (t && typeof t === 'string' && t.includes('.')) {
         return JSON.parse(atob(t.split('.')[1]))?.role;
       }
-    } catch (e) {}
+    } catch (e) { }
     return null;
   })();
 
@@ -100,20 +102,49 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
 
   const isGeneralUser = selectedRole === 'general_user';
 
+  const [advocateUnreadCount, setAdvocateUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (selectedRole === 'advocate') {
+      const loadUnread = () => {
+        consultationService.getAdvocateUnreadCount().then(res => {
+          if (res && res.unreadCount != null) {
+            setAdvocateUnreadCount(res.unreadCount);
+          }
+        }).catch(() => { });
+      };
+      loadUnread();
+      const interval = setInterval(loadUnread, 12000);
+      return () => clearInterval(interval);
+    }
+  }, [selectedRole, location.pathname]);
+
   // 4 Main Navigation Tabs (matching Mobile App)
   const coreNavigation = isGeneralUser ? [
     { name: 'Home', icon: LayoutGrid, path: '/dashboard' },
-    { name: 'Advocates', icon: Users, path: '/dashboard/advocates' },
+    ...(SHOW_VERIFIED_ADVOCATE_FLOW ? [{ name: 'Advocates', icon: Users, path: '/dashboard/advocates' }] : []),
     { name: 'AI Legal', icon: Scale, path: '/dashboard/chat/new' },
-    { name: 'My Requests', icon: MessageSquare, path: '/dashboard/requests' },
+    ...(SHOW_VERIFIED_ADVOCATE_FLOW ? [{ name: 'My Requests', icon: MessageSquare, path: '/dashboard/requests' }] : []),
+    { name: 'Mobile App', icon: Smartphone, path: '/dashboard/mobile-app' },
+  ] : selectedRole === 'advocate' ? [
+    { name: 'Home', icon: LayoutGrid, path: '/dashboard' },
+    { name: 'My Matters', icon: Briefcase, path: '/dashboard/cases' },
+    { name: 'AI Legal Assistant', icon: Scale, path: '/dashboard/chat/new' },
+    ...(SHOW_VERIFIED_ADVOCATE_FLOW ? [{
+      name: 'Client Consultations',
+      icon: MessageSquare,
+      path: '/dashboard/consultations',
+      badge: advocateUnreadCount > 0 ? advocateUnreadCount : null
+    }] : []),
+    { name: 'AI Tools', icon: Zap, path: '/dashboard/tools' },
     { name: 'Mobile App', icon: Smartphone, path: '/dashboard/mobile-app' },
   ] : [
     { name: 'Home', icon: LayoutGrid, path: '/dashboard' },
     { name: selectedRole === 'law_firm' ? 'Firm Workspace' : 'My Matters', icon: Briefcase, path: '/dashboard/cases' },
-    { 
-      name: selectedRole === 'law_firm' ? 'AI Firm Assistant' : selectedRole === 'student' ? 'AI Legal Tutor' : 'AI Legal Assistant', 
-      icon: selectedRole === 'student' ? GraduationCap : selectedRole === 'law_firm' ? Building2 : Scale, 
-      path: '/dashboard/chat/new' 
+    {
+      name: selectedRole === 'law_firm' ? 'AI Firm Assistant' : selectedRole === 'student' ? 'AI Legal Tutor' : 'AI Legal Assistant',
+      icon: selectedRole === 'student' ? GraduationCap : selectedRole === 'law_firm' ? Building2 : Scale,
+      path: '/dashboard/chat/new'
     },
     { name: 'AI Tools', icon: Zap, path: '/dashboard/tools' },
     { name: 'Mobile App', icon: Smartphone, path: '/dashboard/mobile-app' },
@@ -156,6 +187,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
   const profileCardRef = useRef(null);
   const { theme, setTheme } = useTheme();
   const { language } = useLanguage();
+  const currentLang = localStorage.getItem('ai_legal_lang') || language || 'English';
 
   useEffect(() => {
     const handleResize = () => {
@@ -227,7 +259,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
       if (path.includes('draft-maker') && rules.draftMaker === false) return true;
       if (path.includes('legal-precedents') && rules.legalResearch === false) return true;
       if (path.includes('strategy-engine') && rules.strategyEngine === false) return true;
-    } catch (e) {}
+    } catch (e) { }
     return false;
   };
 
@@ -252,14 +284,16 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
             }
             if (window.innerWidth < 1024) onClose();
           }}
-          className={`w-11 h-11 mx-auto flex items-center justify-center rounded-xl mb-2 transition-all cursor-pointer ${
-            isDisabled
+          className={`w-11 h-11 mx-auto flex items-center justify-center rounded-xl mb-2 transition-all cursor-pointer ${isDisabled
               ? 'opacity-40 grayscale cursor-not-allowed text-slate-400'
               : isLinkActive
-              ? 'bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/40 font-extrabold shadow-xs'
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-          }`}
+                ? 'bg-[#B88B2A]/20 text-[#B88B2A] border border-[#B88B2A]/40 font-extrabold shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+            }`}
         >
+          {item.badge != null && (
+            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-[#B88B2A] ring-2 ring-white dark:ring-zinc-900" />
+          )}
           {item.useLogoIcon ? (
             <img src="/logo/logo_gold_emblem.png" className="w-6 h-6 object-contain shrink-0" alt="AI LEGAL™ - Verified Judicial Intelligence Emblem" />
           ) : (
@@ -284,13 +318,12 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
           }
           if (window.innerWidth < 1024) onClose();
         }}
-        className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl mb-1 transition-all cursor-pointer ${
-          isDisabled
+        className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl mb-1 transition-all cursor-pointer ${isDisabled
             ? 'opacity-40 grayscale cursor-not-allowed text-slate-400'
             : isLinkActive
-            ? 'bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 font-extrabold shadow-xs'
-            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-semibold'
-        }`}
+              ? 'bg-[#B88B2A]/15 text-[#B88B2A] border border-[#B88B2A]/30 font-extrabold shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-semibold'
+          }`}
       >
         <div className="flex items-center gap-3">
           <item.icon className={`w-4 h-4 ${isLinkActive ? 'text-[#B88B2A]' : 'text-slate-400'}`} />
@@ -305,19 +338,26 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
             )}
           </span>
         </div>
+        {item.badge != null && (
+          <span className="px-1.5 py-0.5 rounded-full text-[10px] font-black bg-[#B88B2A] text-white shadow-xs ml-auto shrink-0">
+            {item.badge}
+          </span>
+        )}
         {isDisabled && <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-500">🔒 Lock</span>}
       </button>
     );
   };
 
   const renderDropdownContent = () => {
-    const profileLabel = selectedRole === 'student' 
-      ? 'My Student Profile' 
-      : selectedRole === 'law_firm' 
-      ? 'Law Firm Profile' 
-      : 'My Advocate Profile';
+    const profileLabel = isGeneralUser
+      ? 'My Account'
+      : selectedRole === 'student'
+        ? 'My Student Profile'
+        : selectedRole === 'law_firm'
+          ? 'Law Firm Profile'
+          : 'My Advocate Profile';
 
-    const menuItems = [
+    const advocateMenuItems = [
       { name: profileLabel, icon: User, action: 'profile' },
       { name: 'Settings', icon: Settings2, path: '/dashboard/settings' },
       { name: 'Pricing & Plans', icon: CreditCard, path: '/legal-pricing' },
@@ -332,23 +372,23 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
     return (
       <div className="flex flex-col w-full font-sans select-none bg-white dark:bg-[#1E293B]">
         {/* User Identity Header */}
-        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-[#1E293B]">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="w-10 h-10 rounded-full bg-[#B88B2A]/10 flex items-center justify-center shrink-0 overflow-hidden border border-[#B88B2A]/25">
+        <div className="flex items-center justify-between gap-2.5 px-3 py-2.5 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-[#1E293B]">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <div className="w-8 h-8 rounded-full bg-[#B88B2A]/10 flex items-center justify-center shrink-0 overflow-hidden border border-[#B88B2A]/25">
               {user.avatar ? (
                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = ''; }} />
               ) : (
-                <span className="text-[#B88B2A] font-bold text-sm">{user.name?.charAt(0) || 'A'}</span>
+                <span className="text-[#B88B2A] font-bold text-xs">{user.name?.charAt(0) || 'A'}</span>
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-extrabold text-slate-800 dark:text-white truncate leading-tight capitalize">{user.name || 'Advocate Profile'}</p>
-              <p className="text-[11px] font-semibold text-slate-400 truncate mt-0.5">{user.email || 'Advocate Account'}</p>
-              <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                <span className="inline-block px-2 py-0.5 rounded bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20 text-[9px] font-bold uppercase tracking-wider">
-                  {isSuperAdminUser ? 'SUPER ADMIN' : isAdminUser ? 'ADMIN' : selectedRole === 'student' ? 'Law Student' : selectedRole === 'law_firm' ? 'Law Firm Associate' : 'Advocate / Practitioner'}
+              <p className="text-xs font-bold text-slate-800 dark:text-white truncate leading-tight capitalize">{user.name || (isGeneralUser ? 'General User' : 'Advocate Profile')}</p>
+              <p className="text-[10px] font-semibold text-slate-400 truncate mt-0.5">{user.email || (isGeneralUser ? 'User Account' : 'Advocate Account')}</p>
+              <div className="flex flex-wrap items-center gap-1 mt-1">
+                <span className="inline-block px-1.5 py-0.5 rounded bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20 text-[8.5px] font-bold uppercase tracking-wider">
+                  {isSuperAdminUser ? 'SUPER ADMIN' : isAdminUser ? 'ADMIN' : isGeneralUser ? 'General User' : selectedRole === 'student' ? 'Law Student' : selectedRole === 'law_firm' ? 'Law Firm Associate' : 'Advocate / Practitioner'}
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] font-bold text-slate-700 dark:text-slate-300">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[8.5px] font-bold text-slate-700 dark:text-slate-300">
                   <span>{countryFlag}</span>
                   <span>{userCountry}</span>
                 </span>
@@ -357,53 +397,222 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
           </div>
           <button
             onClick={() => setShowDropdown(false)}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
             title="Close menu"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Action Items List */}
-        <div className="flex-1 py-1 overflow-y-auto custom-scrollbar bg-white dark:bg-[#1E293B]">
-          {menuItems.map((item, idx) => {
-            if (item.isDivider) {
-              return <div key={`div-${idx}`} className="h-[1px] bg-slate-100 dark:bg-slate-800 my-1 mx-2" />;
-            }
-
-            const isItemDanger = item.danger;
-            const Icon = item.icon;
-
-            return (
-              <button
-                key={item.name}
-                onClick={() => {
-                  setShowDropdown(false);
-                  if (window.innerWidth < 1024) onClose();
-                  if (item.action === 'profile') {
+        <div className="flex-1 py-1.5 overflow-y-auto custom-scrollbar bg-white dark:bg-[#1E293B] space-y-2">
+          {isGeneralUser ? (
+            <>
+              {/* 1. MY ACCOUNT */}
+              <div className="px-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDropdown(false);
+                    if (window.innerWidth < 1024) onClose();
                     onOpenSettings('account');
-                  } else if (item.action === 'logout') {
-                    setShowLogoutConfirm(true);
-                  } else if (item.path) {
-                    navigate(item.path);
-                  }
-                }}
-                className={`w-full h-12 flex items-center justify-between px-4 rounded-xl transition-all text-left text-sm cursor-pointer ${
-                  isItemDanger 
-                    ? 'text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 font-bold'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-semibold'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 ${isItemDanger ? 'text-rose-400' : 'text-[#B88B2A]'}`} />
-                  <span>{item.name}</span>
+                  }}
+                  className="w-full p-2 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-amber-500/5 hover:border-[#B88B2A]/40 transition-all flex items-center justify-between gap-2.5 text-left group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-[#B88B2A] flex items-center justify-center shrink-0 border border-[#B88B2A]/20 group-hover:scale-105 transition-transform">
+                      <User className="w-3.5 h-3.5 text-[#B88B2A]" />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="text-[11px] font-bold text-slate-800 dark:text-white leading-tight">
+                        My Account
+                      </h4>
+                      <p className="text-[9.5px] font-medium text-slate-400 dark:text-slate-400 truncate mt-0.5">
+                        Personal details, consultations & vault
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#B88B2A] group-hover:translate-x-0.5 transition-all shrink-0" />
+                </button>
+              </div>
+
+              {/* 2. BILLING & PLANS */}
+              <div className="px-1.5 space-y-1">
+                <span className="text-[8.5px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-1">
+                  BILLING & PLANS
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDropdown(false);
+                    if (window.innerWidth < 1024) onClose();
+                    onOpenSettings('billing');
+                  }}
+                  className="w-full p-2 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-amber-500/5 hover:border-[#B88B2A]/40 transition-all flex items-center justify-between gap-2.5 text-left group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-[#B88B2A] flex items-center justify-center shrink-0 border border-[#B88B2A]/20 group-hover:scale-105 transition-transform">
+                      <CreditCard className="w-3.5 h-3.5 text-[#B88B2A]" />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="text-[11px] font-bold text-slate-800 dark:text-white leading-tight">
+                        Plans & Receipts
+                      </h4>
+                      <p className="text-[9.5px] font-medium text-slate-400 dark:text-slate-400 truncate mt-0.5">
+                        Subscription, AI credits & payment invoices
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#B88B2A] group-hover:translate-x-0.5 transition-all shrink-0" />
+                </button>
+              </div>
+
+              {/* 3. APP SETTINGS */}
+              <div className="px-1.5 space-y-1">
+                <span className="text-[8.5px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-1">
+                  APP SETTINGS
+                </span>
+                
+                <div className="rounded-xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden shadow-xs">
+                  {/* Language */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      if (window.innerWidth < 1024) onClose();
+                      navigate('/dashboard/settings?tab=language');
+                    }}
+                    className="w-full p-2 hover:bg-amber-500/5 transition-all flex items-center justify-between gap-2.5 text-left group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-[#B88B2A] flex items-center justify-center shrink-0 border border-[#B88B2A]/20 group-hover:scale-105 transition-transform">
+                        <Globe className="w-3.5 h-3.5 text-[#B88B2A]" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-[11px] font-bold text-slate-800 dark:text-white leading-tight">
+                          Language
+                        </h4>
+                        <p className="text-[9.5px] font-medium text-slate-400 dark:text-slate-400 truncate mt-0.5">
+                          {currentLang || 'English'}
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#B88B2A] group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </button>
+
+                  {/* Notifications */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      if (window.innerWidth < 1024) onClose();
+                      navigate('/dashboard/settings?tab=notifications');
+                    }}
+                    className="w-full p-2 hover:bg-amber-500/5 transition-all flex items-center justify-between gap-2.5 text-left group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-[#B88B2A] flex items-center justify-center shrink-0 border border-[#B88B2A]/20 group-hover:scale-105 transition-transform">
+                        <Bell className="w-3.5 h-3.5 text-[#B88B2A]" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-[11px] font-bold text-slate-800 dark:text-white leading-tight">
+                          Notifications
+                        </h4>
+                        <p className="text-[9.5px] font-medium text-slate-400 dark:text-slate-400 truncate mt-0.5">
+                          Consultation alerts, updates & reminders
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#B88B2A] group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </button>
+
+                  {/* Help & Support */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      if (window.innerWidth < 1024) onClose();
+                      navigate('/dashboard/settings?tab=help');
+                    }}
+                    className="w-full p-2 hover:bg-amber-500/5 transition-all flex items-center justify-between gap-2.5 text-left group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-[#B88B2A] flex items-center justify-center shrink-0 border border-[#B88B2A]/20 group-hover:scale-105 transition-transform">
+                        <HelpCircle className="w-3.5 h-3.5 text-[#B88B2A]" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-[11px] font-bold text-slate-800 dark:text-white leading-tight">
+                          Help & Support
+                        </h4>
+                        <p className="text-[9.5px] font-medium text-slate-400 dark:text-slate-400 truncate mt-0.5">
+                          FAQs, contact team & legal guidance
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#B88B2A] group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </button>
                 </div>
-                {!isItemDanger && (
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 transition-colors" />
-                )}
-              </button>
-            );
-          })}
+              </div>
+
+              {/* Logout */}
+              <div className="px-1.5 pt-0.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDropdown(false);
+                    if (window.innerWidth < 1024) onClose();
+                    setShowLogoutConfirm(true);
+                  }}
+                  className="w-full h-8 flex items-center gap-2.5 px-2.5 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-[11px] font-bold transition-all cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5 text-rose-500" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </>
+          ) : (
+            advocateMenuItems.map((item, idx) => {
+              if (item.isDivider) {
+                return <div key={`div-${idx}`} className="h-[1px] bg-slate-100 dark:bg-slate-800 my-1 mx-2" />;
+              }
+
+              const isItemDanger = item.danger;
+              const Icon = item.icon;
+
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => {
+                    setShowDropdown(false);
+                    if (window.innerWidth < 1024) onClose();
+                    if (item.action === 'general_account' || item.action === 'profile') {
+                      onOpenSettings('account');
+                    } else if (item.action === 'general_billing') {
+                      onOpenSettings('billing');
+                    } else if (item.action === 'general_settings') {
+                      onOpenSettings('settings');
+                    } else if (item.action === 'logout') {
+                      setShowLogoutConfirm(true);
+                    } else if (item.path) {
+                      navigate(item.path);
+                    }
+                  }}
+                  className={`w-full h-10 flex items-center justify-between px-3 rounded-xl transition-all text-left text-xs cursor-pointer ${isItemDanger
+                      ? 'text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-semibold'
+                    }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Icon className={`w-3.5 h-3.5 ${isItemDanger ? 'text-rose-400' : 'text-[#B88B2A]'}`} />
+                    <span>{item.name}</span>
+                  </div>
+                  {!isItemDanger && (
+                    <ChevronRight className="w-3 h-3 text-slate-300 dark:text-slate-600 transition-colors" />
+                  )}
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
     );
@@ -413,17 +622,16 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
     <>
       {/* Mobile Overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/20 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar Container */}
-      <aside className={`fixed lg:sticky top-0 left-0 h-[100dvh] ${isCollapsed ? 'w-20' : 'w-72'} bg-[#FFFFFF] dark:bg-[#0F172A] border-r border-[#E5E7EB] dark:border-slate-800 z-50 flex flex-col transition-all duration-300 ${
-        isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      }`}>
-        
+      <aside className={`fixed lg:sticky top-0 left-0 h-[100dvh] ${isCollapsed ? 'w-20' : 'w-72'} bg-[#FFFFFF] dark:bg-[#0F172A] border-r border-[#E5E7EB] dark:border-slate-800 z-50 flex flex-col transition-all duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}>
+
         {/* Brand Header */}
         <div className={`h-16 flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-between px-5'} border-b border-[#E5E7EB] dark:border-slate-800 shrink-0 transition-all`}>
           {!isCollapsed ? (
@@ -480,7 +688,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
               <ExperienceRoleSelector compact={true} />
             </div>
           )}
-          
+
           {/* Dropdown for Desktop */}
           <AnimatePresence>
             {showDropdown && deviceType === 'desktop' && (
@@ -489,9 +697,8 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15, ease: 'easeOut' }}
-                className={`absolute bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-2 flex flex-col gap-0.5 max-h-[70vh] overflow-hidden ${
-                  isCollapsed ? 'bottom-2 left-16 w-72' : 'bottom-16 left-4 right-4'
-                }`}
+                className={`absolute bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 p-2 flex flex-col gap-0.5 max-h-[85vh] overflow-hidden ${isCollapsed ? 'bottom-2 left-16 w-80' : 'bottom-16 left-2 right-2 sm:left-2 sm:w-[310px]'
+                  }`}
               >
                 {renderDropdownContent()}
               </motion.div>
@@ -499,7 +706,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
           </AnimatePresence>
 
           {!isCollapsed ? (
-            <button 
+            <button
               onClick={() => setShowDropdown(prev => !prev)}
               className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-white dark:hover:bg-[#1E293B] border border-transparent hover:border-[#E5E7EB] dark:hover:border-slate-800 transition-all duration-200 text-left select-none cursor-pointer"
               aria-expanded={showDropdown}
@@ -550,7 +757,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
       <AnimatePresence>
         {showDropdown && deviceType === 'tablet' && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-auto">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -573,7 +780,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSettings }) => {
       <AnimatePresence>
         {showDropdown && deviceType === 'mobile' && (
           <div className="fixed inset-0 z-[100] flex items-end justify-center pointer-events-auto">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

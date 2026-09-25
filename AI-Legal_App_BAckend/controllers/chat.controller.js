@@ -282,6 +282,37 @@ export const uploadAttachment = async (req, res, next) => {
             }
         }
 
+        // Auto-save uploaded document to User's Legal Vault
+        if (req.user && (req.user.id || req.user._id)) {
+            try {
+                const userId = req.user.id || req.user._id;
+                const sizeKB = Math.round((req.file.size || 0) / 1024);
+                const sizeStr = sizeKB > 1024 ? `${(sizeKB / 1024).toFixed(1)} MB` : `${sizeKB} KB`;
+                const dateStr = new Date().toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                const newVaultDoc = {
+                    id: `doc_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                    name: req.file.originalname,
+                    size: sizeStr,
+                    date: dateStr,
+                    url: uploadResultUrl,
+                    type: req.file.originalname.toLowerCase().endsWith('.pdf') ? 'pdf' : 'doc',
+                    mimeType: mimeType,
+                    source: 'AI Legal Assistant',
+                    createdAt: new Date()
+                };
+                await User.findByIdAndUpdate(userId, {
+                    $push: { legalVaultDocs: { $each: [newVaultDoc], $position: 0 } }
+                });
+                logger.info(`[Chat Upload] Auto-saved "${req.file.originalname}" to Legal Vault for user ${userId}`);
+            } catch (vaultErr) {
+                logger.warn(`[Chat Upload] Failed to auto-save to legal vault: ${vaultErr.message}`);
+            }
+        }
+
         // Return text so frontend can send it back as context
         res.status(200).json({
             success: true,

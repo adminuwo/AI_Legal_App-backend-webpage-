@@ -5,8 +5,9 @@ import { Shield, GraduationCap, Building2, ChevronDown, Check, X, Sparkles, User
 import { useRecoilState } from 'recoil';
 import { selectedRoleState } from '../userStore/userData';
 import apiService from '../services/apiService';
+import { SHOW_GENERAL_USER_FLOW } from '../constants/featureFlags';
 
-export const ROLES = [
+export const ALL_ROLES = [
   {
     id: 'general_user',
     label: 'General User',
@@ -37,11 +38,23 @@ export const ROLES = [
   },
 ];
 
+export const ROLES = SHOW_GENERAL_USER_FLOW
+  ? ALL_ROLES
+  : ALL_ROLES.filter((r) => r.id !== 'general_user');
+
 export default function ExperienceRoleSelector({ compact = false }) {
   const [selectedRole, setSelectedRole] = useRecoilState(selectedRoleState);
   const [isOpen, setIsOpen] = useState(false);
   const [workspaces, setWorkspaces] = useState([]);
   const [isLoadingWorkspaces, setIsLoadingWorkspaces] = useState(false);
+
+  useEffect(() => {
+    if (!SHOW_GENERAL_USER_FLOW && selectedRole === 'general_user') {
+      setSelectedRole('advocate');
+      localStorage.setItem('user_selected_role', 'advocate');
+      localStorage.setItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID', 'personal_practice');
+    }
+  }, [selectedRole]);
 
   const activeWsId = localStorage.getItem('AI_LEGAL_LAST_ACTIVE_WORKSPACE_ID');
 

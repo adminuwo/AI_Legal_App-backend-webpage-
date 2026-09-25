@@ -63,6 +63,7 @@ import { SelectionToolbarProvider } from '../../Components/SelectionToolbar/Sele
 import useChatGeneration from '../../userStore/useChatGeneration';
 import { useChatMessages } from '../../userStore/useChatMessages';
 import { useGenerationStore } from '../../userStore/useGenerationStore';
+import { addDocumentToVault } from '../../services/vaultService';
 
 
 const transformLegalActions = (content) => {
@@ -525,7 +526,9 @@ const getToolDetails = (toolId, selectedRole = 'advocate') => {
     }
   };
 
-  if (!tools[toolId] && ((localStorage.getItem('user_selected_role') || selectedRole) === 'law_firm')) {
+  const effectiveRole = localStorage.getItem('user_selected_role') || selectedRole;
+
+  if (!tools[toolId] && effectiveRole === 'law_firm') {
     return {
       title: "AI Firm™ Assistant",
       emoji: "🏛️",
@@ -535,13 +538,24 @@ const getToolDetails = (toolId, selectedRole = 'advocate') => {
     };
   }
 
-  if (!tools[toolId] && selectedRole === 'student') {
+  if (!tools[toolId] && (effectiveRole === 'student' || selectedRole === 'student')) {
     return {
       title: "AI Legal™ Tutor",
       emoji: "🎓",
       icon: GraduationCap,
       desc: "Your AI-powered legal learning companion for concepts, judgments, bare acts, exams, and legal research.",
       placeholder: "Ask your AI Legal Tutor anything about law, exams or case laws..."
+    };
+  }
+
+  if (!tools[toolId] && (effectiveRole === 'general_user' || selectedRole === 'general_user')) {
+    return {
+      title: "AI Legal™ Assistant",
+      badge: "Citizen Portal",
+      emoji: "⚖️",
+      icon: Scale,
+      desc: "Ask legal queries, summarize PDFs/documents, or track cases by Case or 16-digit CNR Number.",
+      placeholder: "Ask legal queries, attach PDF, or enter Case/CNR..."
     };
   }
 
@@ -1942,6 +1956,7 @@ const LegalWorkspace = () => {
 
     if (isGeneralCopilot) {
       const isStudentRole = activeRole === 'student' || selectedRole === 'student' || location.pathname.includes('/tutor');
+      const isGeneralUserRole = activeRole === 'general_user' || selectedRole === 'general_user';
       const storedCountry = localStorage.getItem('ai_legal_selected_country') || localStorage.getItem('legal_country') || 'India';
       const isNepal = storedCountry.toLowerCase().includes('nepal') || localStorage.getItem('legal_country_code') === 'NP';
 
@@ -1960,6 +1975,21 @@ const LegalWorkspace = () => {
           { label: "🎯 Judiciary Exam MCQs", prompt: "Generate 5 practice MCQs on Constitutional Law & Fundamental Rights." },
           { label: "🎓 Moot Court Memorial Draft", prompt: "Help me structure a Moot Court Memorial Argument for Appellant." },
           { label: "✍️ Indian Contract Act Sec 10", prompt: "Explain Section 10 of Indian Contract Act 1872 valid contract elements." }
+        ]
+      ) : isGeneralUserRole ? (
+        isNepal ? [
+          { label: "🔍 Track Case / Mudda No.", prompt: "How can I check my court case status in Nepal District/High Court using Mudda number or registration date?" },
+          { label: "📄 Rental Agreement (Nepal)", prompt: "Analyze this rental agreement. What are tenant rights, security deposit, and eviction rules under Muluki Civil Code 2074?" },
+          { label: "🚔 Police FIR & Jaheri Rights", prompt: "What are my legal rights if Nepal Police calls me for questioning or registers an FIR / Jaheri Darkhasta?" },
+          { label: "🧾 Consumer Rights (Nepal)", prompt: "How do I file a consumer complaint for defective goods or unfair pricing under Consumer Protection Act 2075?" },
+          { label: "📝 Draft Legal Notice (Nepal)", prompt: "Draft a formal legal notice under Nepal law for recovery of debt or breach of agreement." }
+        ] : [
+          { label: "🔍 Track Case by CNR", prompt: "Track and explain my case details for CNR: DLHC010012342024. What is the current stage and next hearing date?" },
+          { label: "⚖️ Case Hearing Status", prompt: "How can I check my court case hearing date, orders, and cause list status using my Case Number or CNR on eCourts?" },
+          { label: "📄 Analyze Rent Agreement", prompt: "Analyze this rental agreement. What are my rights as a tenant, notice period rules, and security deposit terms?" },
+          { label: "🚔 Police FIR & Arrest Rights", prompt: "What are my legal rights if police summon me, register an FIR, or refuse to register my complaint?" },
+          { label: "🧾 Consumer Court Complaint", prompt: "How do I file a consumer complaint against a company for defective service, fraud, or refund?" },
+          { label: "📝 Draft Legal Notice", prompt: "Draft a formal legal notice demanding refund of pending dues before filing a court case." }
         ]
       ) : (
         isNepal ? [
@@ -2712,6 +2742,7 @@ const LegalWorkspace = () => {
         attachments: [{ url: base64Content, name: file.name, type: file.type }]
       };
       setMessages(prev => [...prev, userMsg]);
+      addDocumentToVault({ name: file.name, size: file.size, type: file.type, source: 'AI Legal Assistant' }).catch(() => {});
       chatStorageService.saveMessage(activeSessionId, userMsg, `Audio: ${file.name}`, currentProjectId).catch(e => console.error(e));
 
       const aiMsgId = (Date.now() + 1).toString();
@@ -5521,6 +5552,19 @@ const LegalWorkspace = () => {
         activeTool: selectedLegalTool?.id || 'legal_my_case',
       };
 
+      // Auto-save uploaded documents to user's Legal Vault
+      if (filePreviews && filePreviews.length > 0) {
+        filePreviews.forEach(fp => {
+          addDocumentToVault({
+            name: fp.name,
+            size: fp.size,
+            url: fp.url,
+            type: fp.type,
+            source: 'AI Legal Assistant'
+          }).catch(() => {});
+        });
+      }
+
       const updatedMessages = messages.filter(m => !m.isSystemLog).concat(userMsg);
       setMessages(updatedMessages, activeSessionId);
       ratingReviewWebHelper.recordChatTurn();
@@ -5707,6 +5751,32 @@ ${(localStorage.getItem('ai_legal_selected_country') || '').toLowerCase().includ
   : '- Explain statutory provisions (IPC, BNS, CrPC, BNSS, BSA, Constitution of India) in simple, easy-to-understand language.'}
 - Structure case law summaries in concise IRAC format (Issue, Rule, Application, Conclusion).
 - When student asks short follow-up questions like "example?", "exam me kaise puch skte hai?", "mcq do", build seamlessly on the previous turn's context.
+` : (selectedRole === 'general_user' || localStorage.getItem('user_selected_role') === 'general_user') ? `
+### CITIZEN & GENERAL USER MODE (AI LEGAL™ ASSISTANT):
+- You are acting as the personal AI Legal Assistant for a Citizen / General User.
+- TONE & STYLE: Plain-language, empathetic, clear, structured, and easy to understand. Avoid obscure Latin maxims and dense legalese unless immediately explained in simple terms. If the user communicates in Hindi or Hinglish, explain legal terms clearly with simple English terms in brackets.
+- CASE NUMBER & 16-DIGIT CNR NUMBER COMPREHENSION:
+  - Recognize and extract:
+    1. 16-character eCourts CNR Numbers (e.g. DLHC010012342024, MHCC..., UPAL..., KAHC...).
+    2. Court Case Numbers (e.g. WP(C) 1245/2023, CS 412/2024, Bail Application, Criminal Appeal, Special Leave Petition SLP).
+    3. Police Station FIR Numbers & Diary Numbers.
+    4. AI Legal Advocate Consultation Request IDs (e.g. REQ-2026-...).
+  - If verified case/court data is provided in context or if a CNR number is analyzed:
+    - Display the Court Case Status Card cleanly with:
+      * Case / CNR Reference
+      * Court / Forum
+      * Current Status & Stage of Hearing
+      * Next Listing / Hearing Date & Bench / Court Room
+      * Parties (Petitioner vs Respondent)
+      * Advocates on Record
+    - Then provide practical citizen guidance:
+      1. What does the current stage mean in simple words (e.g. Notice Returnable means the court has summoned the other party; Evidence stage means witness statements are being recorded).
+      2. What will happen on the next hearing date.
+      3. What the citizen should do right now (documents to prepare, briefing their advocate, attending court or checking order copies).
+  - If a user provides an incomplete case number or asks how to track their case:
+    - Explain that court cases across India are indexed via 16-digit CNR numbers on eCourts (ecourts.gov.in).
+    - Explain the 16-character CNR structure simply: 4 letters for Court (e.g. DLHC = Delhi High Court), 2 digits for District, 6 digits for Case Number, 4 digits for Year.
+    - Encourage them to enter their 16-digit CNR or Case Number directly here to track case details.
 ` : ''}
 ${activeAgent.category ? `Your specialization is in ${activeAgent.category}.` : ''}
 
@@ -10571,10 +10641,15 @@ If the user asks for an image (e.g., "generate", "create", "draw", "show me a pi
                               )}
 
                               <div className="text-center space-y-1.5 sm:space-y-2 select-text">
-                                <div className="flex items-center justify-center gap-3">
+                                <div className="flex items-center justify-center gap-2.5">
                                   <h1 className="text-2xl sm:text-4xl font-extrabold text-[#111827] dark:text-zinc-100 tracking-tight">
                                     {details.title}
                                   </h1>
+                                  {details.badge && (
+                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/30">
+                                      {details.badge}
+                                    </span>
+                                  )}
                                 </div>
                                 <p className="text-xs sm:text-sm text-[#6B7280] dark:text-zinc-400 font-medium max-w-md mx-auto leading-relaxed px-2">
                                   {details.desc}

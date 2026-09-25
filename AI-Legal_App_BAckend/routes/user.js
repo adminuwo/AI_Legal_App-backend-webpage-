@@ -305,31 +305,153 @@ route.put("/personalizations", verifyToken, async (req, res) => {
     }
 });
 
-// PUT /api/user/profile - Update user profile fields (like name)
+// PUT /api/user/profile - Update user profile fields (like name, phone, city, address)
 route.put("/profile", verifyToken, async (req, res) => {
     try {
         const userId = req.user.id || req.user._id;
-        const { name } = req.body;
-        if (!name) return res.status(400).json({ error: "Name is required" });
+        const { name, fullName, phone, phoneNumber, city, address, state, gender, dob } = req.body;
+        
+        const updateFields = {};
+        if (name) updateFields.name = name;
+        if (fullName !== undefined) updateFields.fullName = fullName;
+        if (phone !== undefined || phoneNumber !== undefined) updateFields.phone = phone || phoneNumber;
+        if (city !== undefined) updateFields.city = city;
+        if (address !== undefined) updateFields.address = address;
+        if (state !== undefined) updateFields.state = state;
+        if (gender !== undefined) updateFields.gender = gender;
+        if (dob !== undefined) updateFields.dob = dob;
 
         // DB Down Fallback - Allow "Offline" updates to succeed for the session
         if (mongoose.connection.readyState !== 1) {
             console.log("[DB] MongoDB unreachable. Simulating profile update.");
             return res.status(200).json({
                 _id: userId,
-                name: name,
+                name: name || req.user.name,
                 email: req.user.email || "demo@aisa.in",
+                ...updateFields,
                 role: "user"
             });
         }
 
-        const user = await userModel.findByIdAndUpdate(userId, { name }, { new: true }).select("-password");
+        const user = await userModel.findByIdAndUpdate(userId, updateFields, { new: true }).select("-password");
         if (!user) return res.status(404).json({ error: "User not found" });
 
         res.status(200).json(user);
     } catch (error) {
         console.error("[BACKEND ERROR] Failed to update profile:", error);
         res.status(500).json({ msg: "Failed to update profile", error: error.message });
+    }
+});
+
+// Helper to ensure dummy documents are never kept
+const isRealVaultDoc = (d) => Boolean(
+    d && d.name &&
+    d.name !== 'Rental_Agreement_Signed.pdf' &&
+    d.name !== 'Identity_Aadhaar_Card.pdf' &&
+    d.id !== 'doc_1' &&
+    d.id !== 'doc_2'
+);
+
+// GET /api/user/vault - Get all saved vault documents for the user
+route.get("/vault", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const user = await userModel.findById(userId).select("legalVaultDocs");
+        if (!user) return res.status(404).json({ success: false, error: "User not found" });
+
+        const vaultDocs = (user.legalVaultDocs || []).filter(isRealVaultDoc);
+
+        res.status(200).json({
+            success: true,
+            vaultDocs
+        });
+    } catch (error) {
+        console.error("[BACKEND ERROR] Failed to fetch user vault documents:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// POST /api/user/vault - Add document(s) to user's legal vault
+route.post("/vault", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const { document, documents } = req.body;
+        const docsToAdd = Array.isArray(documents) ? documents : (document ? [document] : []);
+
+        if (docsToAdd.length === 0) {
+            return res.status(400).json({ success: false, error: "No document provided" });
+        }
+
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).json({ success: false, error: "User not found" });
+
+        if (!user.legalVaultDocs) {
+            user.legalVaultDocs = [];
+        }
+
+        const addedDocs = [];
+        for (const doc of docsToAdd) {
+            if (!doc.name || !isRealVaultDoc(doc)) continue;
+            // Prevent duplicate by name or id
+            const exists = user.legalVaultDocs.some(d => d.name === doc.name && (d.id === doc.id || d.url === doc.url));
+            if (!exists) {
+                const newDocItem = {
+                    id: doc.id || `doc_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                    name: doc.name,
+                    size: doc.size || '1.0 MB',
+                    date: doc.date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+                    url: doc.url || '',
+                    uri: doc.uri || '',
+                    type: doc.type || (doc.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'doc'),
+                    mimeType: doc.mimeType || '',
+                    source: doc.source || 'AI Legal Assistant',
+                    createdAt: new Date()
+                };
+                user.legalVaultDocs.unshift(newDocItem);
+                addedDocs.push(newDocItem);
+            }
+        }
+
+        user.legalVaultDocs = user.legalVaultDocs.filter(isRealVaultDoc);
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: `Added ${addedDocs.length} document(s) to vault`,
+            vaultDocs: user.legalVaultDocs,
+            addedDocs
+        });
+    } catch (error) {
+        console.error("[BACKEND ERROR] Failed to save document to vault:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// DELETE /api/user/vault/:id - Delete document from user's legal vault
+route.delete("/vault/:id", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const docId = req.params.id;
+        const docName = req.query.name;
+
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).json({ success: false, error: "User not found" });
+
+        user.legalVaultDocs = (user.legalVaultDocs || []).filter(d => {
+            if (docId && (d.id === docId || String(d._id) === docId || d.name === docId)) return false;
+            if (docName && d.name === docName) return false;
+            return true;
+        });
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Document removed from vault",
+            vaultDocs: user.legalVaultDocs
+        });
+    } catch (error) {
+        console.error("[BACKEND ERROR] Failed to delete document from vault:", error);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 

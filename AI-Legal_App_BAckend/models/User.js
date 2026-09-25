@@ -14,6 +14,22 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    city: {
+        type: String,
+        default: ''
+    },
+    address: {
+        type: String,
+        default: ''
+    },
+    gender: {
+        type: String,
+        default: ''
+    },
+    dob: {
+        type: String,
+        default: ''
+    },
     country: {
         type: String,
         default: 'India'
@@ -248,6 +264,11 @@ const userSchema = new mongoose.Schema({
         profileStatus: { type: String, enum: ['active', 'inactive'], default: 'active' },
         rejectionReason: { type: String, default: '' },
         consultationFee: { type: Number, default: 1500 },
+        consultationDuration: { type: Number, default: 15 },
+        perMinuteExtensionFee: { type: Number, default: 100 },
+        platformCommissionPercentage: { type: Number, default: 30 },
+        advocatePayoutPer15Min: { type: Number, default: 1050 },
+        advocatePayoutPerMinute: { type: Number, default: 70 },
         consultationTypes: { type: [String], default: ['chat', 'audio', 'video'] },
         availability: { type: String, default: 'Available Today' },
         languages: { type: [String], default: ['English', 'Hindi'] },
@@ -275,6 +296,18 @@ const userSchema = new mongoose.Schema({
         isRead: { type: Boolean, default: false },
         voice: { type: String, default: 'none' },
         data: { type: mongoose.Schema.Types.Mixed, default: null }
+    }],
+    legalVaultDocs: [{
+        id: { type: String, required: true },
+        name: { type: String, required: true },
+        size: { type: String, default: '' },
+        date: { type: String, default: '' },
+        url: { type: String, default: '' },
+        uri: { type: String, default: '' },
+        type: { type: String, default: 'doc' },
+        mimeType: { type: String, default: '' },
+        source: { type: String, default: 'AI Legal Assistant' },
+        createdAt: { type: Date, default: Date.now }
     }]
 }, { timestamps: true });
 

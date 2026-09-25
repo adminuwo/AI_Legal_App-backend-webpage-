@@ -107,6 +107,7 @@ const apis = {
   resetPassword: `${API}/auth/reset-password-otp`,
   user: `${API}/user`,
   profile: `${API}/user/profile`,
+  vault: `${API}/user/vault`,
   getPayments: `${API}/user/payments`,
   notifications: `${API}/notifications`,
   agents: `${API}/agents`,

@@ -4,7 +4,7 @@ import ConsultationRequest from '../models/ConsultationRequest.js';
 import ConsultationMessage from '../models/ConsultationMessage.js';
 import { createNotification } from '../services/notificationService.js';
 import { verifyToken } from '../middleware/authorization.js';
-import { isConsultationSlotExpired } from '../utils/consultationExpiryHelper.js';
+import { isConsultationSlotExpired, getConsultationSlotStatus, isConsultationSlotActive } from '../utils/consultationExpiryHelper.js';
 import Razorpay from 'razorpay';
 
 const router = express.Router();
@@ -45,7 +45,7 @@ function sanitizeAdvocateProfile(user) {
         experience,
         languages,
         languagesKnown: languages.join(', '),
-        consultationFee: ver.consultationFee || 1500,
+        consultationFee: ver.consultationFee !== undefined ? ver.consultationFee : 1500,
         consultationTypes: ver.consultationTypes || ['chat', 'audio', 'video'],
         availability: ver.availability || 'Available Today',
         rating: ver.rating || 4.9,
@@ -162,7 +162,7 @@ router.get('/advocates/:id', async (req, res) => {
 // @desc    Create a consultation request
 // @route   POST /api/consultations/requests
 // @access  Private
-router.post('/requests', verifyToken, async (req, res) => {
+router.post(['/requests', '/request'], verifyToken, async (req, res) => {
     try {
         const {
             advocateId,
@@ -188,53 +188,9 @@ router.post('/requests', verifyToken, async (req, res) => {
 
         const user = await User.findById(req.user.id).lean();
         const advocateName = advocate.fullName || advocate.name || 'Verified Advocate';
-        const fee = advocate.advocateVerification?.consultationFee || 1500;
-
-        // Only update if there is an unconfirmed pending consultation that has NOT been paid yet
-        const existingActiveRequest = await ConsultationRequest.findOne({
-            userId: req.user.id,
-            advocateId: advocate._id,
-            status: 'pending',
-            paymentStatus: { $ne: 'paid' }
-        }).sort({ updatedAt: -1 });
-
-        if (existingActiveRequest) {
-            // Update existing consultation with the new mode, date, slot, and summary
-            existingActiveRequest.consultationType = consultationType || existingActiveRequest.consultationType;
-            if (scheduledDate) {
-                existingActiveRequest.scheduledDate = new Date(scheduledDate);
-            }
-            if (scheduledTimeSlot) {
-                existingActiveRequest.scheduledTimeSlot = scheduledTimeSlot;
-            }
-            if (practiceArea) {
-                existingActiveRequest.practiceArea = practiceArea;
-            }
-            if (legalIssueSummary && legalIssueSummary.trim()) {
-                existingActiveRequest.legalIssueSummary = legalIssueSummary.trim();
-            }
-            if (uploadedDocuments && uploadedDocuments.length > 0) {
-                existingActiveRequest.uploadedDocuments = [
-                    ...(existingActiveRequest.uploadedDocuments || []),
-                    ...uploadedDocuments
-                ];
-            }
-
-            existingActiveRequest.timeline.push({
-                status: existingActiveRequest.status,
-                title: 'Consultation Mode & Slot Updated',
-                description: `Mode updated to ${consultationType?.toUpperCase() || 'NEW MODE'}${scheduledDate ? ' on ' + new Date(scheduledDate).toLocaleDateString() : ''}.`,
-                timestamp: new Date()
-            });
-
-            await existingActiveRequest.save();
-
-            return res.status(200).json({
-                success: true,
-                message: `Consultation updated to ${consultationType || 'new mode'} successfully.`,
-                request: existingActiveRequest
-            });
-        }
+        const rawFee = advocate.advocateVerification?.consultationFee;
+        const fee = typeof rawFee === 'number' ? rawFee : (rawFee !== undefined && rawFee !== '' ? Number(rawFee) : 1500);
+        const isFree = fee === 0;
 
         // Generate human-friendly request ID
         const randomDigits = Math.floor(1000 + Math.random() * 9000);
@@ -265,7 +221,7 @@ router.post('/requests', verifyToken, async (req, res) => {
             legalIssueSummary: legalIssueSummary.trim(),
             uploadedDocuments: uploadedDocuments || [],
             fee,
-            paymentStatus: 'pending',
+            paymentStatus: isFree ? 'paid' : 'pending',
             status: 'pending',
             timeline: initialTimeline
         });
@@ -327,28 +283,17 @@ router.get('/my-requests', verifyToken, async (req, res) => {
             }
         }
 
-        // Deduplicate active requests so the user sees only ONE card per advocate with their latest mode
-        const seenAdvocates = new Set();
-        const deduplicatedRequests = [];
-
-        for (const reqItem of requests) {
-            const advKey = (reqItem.advocateId ? reqItem.advocateId.toString() : '') || reqItem.advocateName;
-            if (['pending', 'accepted', 'scheduled'].includes(reqItem.status)) {
-                if (seenAdvocates.has(advKey)) {
-                    continue;
-                }
-                seenAdvocates.add(advKey);
-            }
+        const sanitizedRequests = requests.map(reqItem => {
             if (reqItem.paymentStatus !== 'paid' && Array.isArray(reqItem.timeline)) {
                 reqItem.timeline = reqItem.timeline.filter(t => !t.title?.toLowerCase().includes('fee paid') && !t.title?.toLowerCase().includes('payment'));
             }
-            deduplicatedRequests.push(reqItem);
-        }
+            return reqItem;
+        });
 
         res.json({
             success: true,
-            total: deduplicatedRequests.length,
-            requests: deduplicatedRequests
+            total: sanitizedRequests.length,
+            requests: sanitizedRequests
         });
     } catch (err) {
         console.error('[Consultation API] Error fetching my requests:', err);
@@ -1063,6 +1008,11 @@ router.get('/advocate/status', verifyToken, async (req, res) => {
                 languages: verification.languages?.length ? verification.languages : (advProfile.languagesKnown ? advProfile.languagesKnown.split(',').map(s => s.trim()) : ['English', 'Hindi']),
                 bio: verification.bio || advProfile.bio || '',
                 consultationFee: verification.consultationFee || 1500,
+                consultationDuration: verification.consultationDuration || 15,
+                perMinuteExtensionFee: verification.perMinuteExtensionFee || Math.max(1, Math.round((verification.consultationFee || 1500) / 15)),
+                platformCommissionPercentage: 30,
+                advocatePayoutPer15Min: Math.round((verification.consultationFee || 1500) * 0.70),
+                advocatePayoutPerMinute: Math.round(((verification.consultationFee || 1500) / 15) * 0.70),
                 consultationTypes: verification.consultationTypes || ['chat', 'audio', 'video'],
                 availability: verification.availability || 'Available Today',
                 verificationDocument: verification.verificationDocument || null
@@ -1137,7 +1087,13 @@ router.post('/advocate/register', verifyToken, async (req, res) => {
         user.advocateVerification.experienceYears = experienceYears || user.advocateVerification.experienceYears || '5+ Years';
         user.advocateVerification.languages = Array.isArray(languages) && languages.length ? languages : (user.advocateVerification.languages || ['English', 'Hindi']);
         user.advocateVerification.bio = bio ? bio.trim() : (user.advocateVerification.bio || '');
-        user.advocateVerification.consultationFee = Number(consultationFee) || 1500;
+        const baseFee = Number(consultationFee) || 1500;
+        user.advocateVerification.consultationFee = baseFee;
+        user.advocateVerification.consultationDuration = 15; // 15 mins base session
+        user.advocateVerification.perMinuteExtensionFee = Math.max(1, Math.round(baseFee / 15));
+        user.advocateVerification.platformCommissionPercentage = 30; // 30% platform fee
+        user.advocateVerification.advocatePayoutPer15Min = Math.round(baseFee * 0.70);
+        user.advocateVerification.advocatePayoutPerMinute = Math.round((baseFee / 15) * 0.70);
         user.advocateVerification.consultationTypes = Array.isArray(consultationTypes) && consultationTypes.length ? consultationTypes : ['chat', 'audio', 'video'];
         user.advocateVerification.availability = availability || 'Available Today';
         user.advocateVerification.rejectionReason = '';
@@ -1275,11 +1231,12 @@ router.get('/advocate/unread-count', verifyToken, async (req, res) => {
 });
 
 // @desc    Get messages for a specific consultation request
-// @route   GET /api/consultations/requests/:id/messages
+// @route   GET /api/consultations/requests/:id/messages OR GET /api/consultations/messages/:id
 // @access  Private (Advocate or Consulting User)
-router.get('/requests/:id/messages', verifyToken, async (req, res) => {
+router.get(['/requests/:id/messages', '/messages/:id'], verifyToken, async (req, res) => {
     try {
-        const request = await ConsultationRequest.findById(req.params.id);
+        const requestId = req.params.id;
+        const request = await ConsultationRequest.findById(requestId);
         if (!request) {
             return res.status(404).json({ success: false, message: 'Consultation request not found.' });
         }
@@ -1336,7 +1293,8 @@ router.get('/requests/:id/messages', verifyToken, async (req, res) => {
                 scheduledTimeSlot: request.scheduledTimeSlot,
                 paymentStatus: request.paymentStatus || 'pending',
                 fee: request.fee || 1500,
-                isExpired: request.status === 'expired'
+                isExpired: request.status === 'expired' || getConsultationSlotStatus(request.scheduledDate, request.scheduledTimeSlot).isExpired,
+                slotStatus: getConsultationSlotStatus(request.scheduledDate, request.scheduledTimeSlot)
             },
             messages
         });
@@ -1347,12 +1305,13 @@ router.get('/requests/:id/messages', verifyToken, async (req, res) => {
 });
 
 // @desc    Send a chat message in a consultation request
-// @route   POST /api/consultations/requests/:id/messages
+// @route   POST /api/consultations/requests/:id/messages OR POST /api/consultations/messages/:id
 // @access  Private (Advocate or Consulting User)
-router.post('/requests/:id/messages', verifyToken, async (req, res) => {
+router.post(['/requests/:id/messages', '/messages/:id'], verifyToken, async (req, res) => {
     try {
-        const { message, attachments } = req.body;
-        if (!message || !message.trim()) {
+        const messageContent = (req.body.message || req.body.text || '').trim();
+        const { attachments } = req.body;
+        if (!messageContent) {
             return res.status(400).json({ success: false, message: 'Message content cannot be empty.' });
         }
 
@@ -1381,11 +1340,18 @@ router.post('/requests/:id/messages', verifyToken, async (req, res) => {
             await request.save();
         }
 
-        // Lifecycle check: Communication closed if cancelled, rejected, completed, or expired
-        if (['cancelled', 'rejected', 'completed', 'expired'].includes(request.status)) {
+        // Slot Timing Check: Communication only allowed during scheduled slot window
+        const slotStatus = getConsultationSlotStatus(request.scheduledDate, request.scheduledTimeSlot);
+        if (slotStatus.isUpcoming) {
+            return res.status(403).json({
+                success: false,
+                message: `This consultation is scheduled for ${slotStatus.formattedDate} at ${request.scheduledTimeSlot || 'scheduled slot'}. Direct messaging will open 10 minutes before the scheduled start time.`
+            });
+        }
+        if (slotStatus.isExpired || ['cancelled', 'rejected', 'completed', 'expired'].includes(request.status)) {
             return res.status(400).json({
                 success: false,
-                message: `This consultation has ${request.status === 'expired' ? 'expired' : 'been ' + request.status}. Communication and calls are closed.`
+                message: `This consultation slot has ended. Communication and calls are closed.`
             });
         }
 
@@ -1418,7 +1384,7 @@ router.post('/requests/:id/messages', verifyToken, async (req, res) => {
             senderRole,
             senderName,
             senderAvatar: senderUser?.avatar || '',
-            message: message.trim(),
+            message: messageContent,
             attachments: attachments || [],
             isRead: false
         });
