@@ -1001,7 +1001,7 @@ export default function AdminDownloadsSection() {
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-rose-500 group-hover:text-rose-600 flex items-center gap-1">
-              Uninstalls
+              Uninstall Rate
               <span className="text-[9px] font-semibold text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity hidden xs:inline">
                 • View list
               </span>
@@ -1013,14 +1013,14 @@ export default function AdminDownloadsSection() {
           <div className="mt-1">
             <div className="flex items-baseline justify-between">
               <p className="text-base sm:text-lg md:text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                {loading ? '...' : (summary.uninstalls || 0).toLocaleString()}
+                {loading ? '...' : (summary.total > 0 ? `${((summary.uninstalls / summary.total) * 100).toFixed(1)}%` : '0%')}
               </p>
               <span className="text-[10px] text-rose-500 font-bold group-hover:underline flex items-center gap-0.5">
                 Details &rarr;
               </span>
             </div>
             <p className="text-[10px] text-rose-500 font-semibold mt-0.5 truncate">
-              {summary.total > 0 ? `${((summary.uninstalls / summary.total) * 100).toFixed(1)}% churn` : '0% churn'}
+              Overall churn rate
             </p>
           </div>
         </div>
