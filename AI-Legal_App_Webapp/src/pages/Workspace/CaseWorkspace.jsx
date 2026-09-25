@@ -12126,7 +12126,7 @@ Through Counsel
       } else {
         setIsVoiceRecording(true);
         setVoiceTranscriptText("Dictating: Client confirmed notice was delivered via registered AD post. Bank ledger statement attached...");
-        toast.info("Voice dictation active... Speak into microphone");
+        toast("Voice dictation active... Speak into microphone", { icon: '🎙️' });
       }
     };
 

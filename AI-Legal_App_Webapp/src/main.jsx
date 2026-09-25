@@ -12,6 +12,17 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 
 import ErrorBoundary from './Components/ErrorBoundary';
+import toast from 'react-hot-toast';
+
+// ─── Patch react-hot-toast for missing .info and .warn methods ───
+if (typeof toast !== 'undefined') {
+  if (!toast.info) {
+    toast.info = (message, options) => toast(message, { icon: 'ℹ️', ...options });
+  }
+  if (!toast.warn) {
+    toast.warn = (message, options) => toast(message, { icon: '⚠️', ...options });
+  }
+}
 
 // ─── Auto-Recover from Deployment Stale Chunks ───
 if (typeof window !== 'undefined') {

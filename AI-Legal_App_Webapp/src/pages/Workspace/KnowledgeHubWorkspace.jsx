@@ -646,7 +646,7 @@ export default function KnowledgeHubWorkspace() {
       setViewState('READER');
       toast.success(`Direct Match Found: Routed to ${matchedSec.num}`);
     } else {
-      toast.info(`Search active for "${q}". Showing library search results.`);
+      toast(`Search active for "${q}". Showing library search results.`, { icon: 'ℹ️' });
     }
   };
 
@@ -725,7 +725,7 @@ export default function KnowledgeHubWorkspace() {
       toast.success("Voice recording transcribed!");
     } else {
       setIsRecording(true);
-      toast.info("Listening... Speak your legal query in English or Hindi.");
+      toast("Listening... Speak your legal query in English or Hindi.", { icon: '🎙️' });
       setTimeout(() => {
         setIsRecording(false);
         setChatInput("Explain Article 21 privacy scope and Puttaswamy ratio");
@@ -1086,7 +1086,7 @@ export default function KnowledgeHubWorkspace() {
                     onClick={() => {
                       if (bookmarks.includes(activeSection.id)) {
                         setBookmarks(bookmarks.filter(b => b !== activeSection.id));
-                        toast.info("Bookmark removed");
+                        toast("Bookmark removed", { icon: '📑' });
                       } else {
                         setBookmarks([...bookmarks, activeSection.id]);
                         toast.success("Section bookmarked!");
