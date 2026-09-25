@@ -37,7 +37,8 @@ import {
     clearCrashLogs,
     getInstitutionalAddonRequests,
     updateInstitutionalAddonRequestStatus,
-    updateUserRole
+    updateUserRole,
+    getFeatureAdoptionAnalytics
 } from '../controllers/adminPortalController.js';
 
 const router = express.Router();
@@ -47,6 +48,7 @@ const upload = multer({ storage: storage });
 
 // Core Dashboard Stats
 router.get('/stats', verifyToken, isAdmin, getAdminStats);
+router.get('/analytics/feature-adoption', verifyToken, isAdmin, getFeatureAdoptionAnalytics);
 
 // User CRUD Management
 router.get('/users', verifyToken, isAdmin, getAllUsers);

@@ -1591,4 +1591,640 @@ export const updateInstitutionalAddonRequestStatus = async (req, res) => {
     }
 };
 
+// 21. Real-Time Feature Adoption & Penetration Funnel Analytics (All 16 AI Legal Tools)
+export const getFeatureAdoptionAnalytics = async (req, res) => {
+    try {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+
+        const { cohort = '7d', window = 'cohort', role = 'all' } = req.query;
+
+        const db = mongoose.connection.db;
+
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const yesterdayStart = new Date(todayStart);
+        yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+        // Convee & Sandbox user exclusions
+        const conveeFilter = await getConveeExclusionFilter();
+        const sandboxUsers = await User.find({
+            $or: [
+                { email: { $regex: /privaterelay\.appleid\.com|appleid\.com|sandbox|john\.apple|@ailegal\.app/i } },
+                { name: { $regex: /john apple|sandbox|test user/i } }
+            ]
+        }).select('_id').lean();
+        const sandboxUserIds = sandboxUsers.map(u => u._id);
+
+        // Total registered app users
+        const allUsersQuery = buildNonConveeUserQuery(conveeFilter, {
+            ...(sandboxUserIds.length > 0 ? { _id: { $nin: sandboxUserIds } } : {}),
+            ...(role && role !== 'all' ? { role } : {})
+        });
+        const totalRegisteredUsers = await User.countDocuments(allUsersQuery);
+
+        // 1. Build Cohort User Filter (users active/logged in during this period)
+        let cohortDateFilter = {};
+        if (cohort === 'today') {
+            cohortDateFilter = {
+                $or: [
+                    { lastLogin: { $gte: todayStart } },
+                    { createdAt: { $gte: todayStart } }
+                ]
+            };
+        } else if (cohort === 'yesterday') {
+            cohortDateFilter = {
+                $or: [
+                    { lastLogin: { $gte: yesterdayStart, $lt: todayStart } },
+                    { createdAt: { $gte: yesterdayStart, $lt: todayStart } }
+                ]
+            };
+        } else if (cohort === '7d') {
+            cohortDateFilter = {
+                $or: [
+                    { lastLogin: { $gte: sevenDaysAgo } },
+                    { createdAt: { $gte: sevenDaysAgo } }
+                ]
+            };
+        } else if (cohort === '30d') {
+            cohortDateFilter = {
+                $or: [
+                    { lastLogin: { $gte: thirtyDaysAgo } },
+                    { createdAt: { $gte: thirtyDaysAgo } }
+                ]
+            };
+        } else if (cohort === 'all') {
+            cohortDateFilter = {};
+        }
+
+        const cohortUserQuery = buildNonConveeUserQuery(conveeFilter, {
+            ...cohortDateFilter,
+            ...(sandboxUserIds.length > 0 ? { _id: { $nin: sandboxUserIds } } : {}),
+            ...(role && role !== 'all' ? { role } : {})
+        });
+
+        const targetUsers = await User.find(cohortUserQuery).select('_id name email role lastLogin createdAt').lean();
+        const cohortUserIds = targetUsers.map(u => u._id);
+        const cohortTotalUsers = cohortUserIds.length;
+
+        // 2. Build Activity Window Filter
+        const effectiveWindow = (window === 'cohort' || !window) ? cohort : window;
+        let activityDateFilter = {};
+        if (effectiveWindow === 'today') {
+            activityDateFilter = { createdAt: { $gte: todayStart } };
+        } else if (effectiveWindow === 'yesterday') {
+            activityDateFilter = { createdAt: { $gte: yesterdayStart, $lt: todayStart } };
+        } else if (effectiveWindow === '7d') {
+            activityDateFilter = { createdAt: { $gte: sevenDaysAgo } };
+        } else if (effectiveWindow === '30d') {
+            activityDateFilter = { createdAt: { $gte: thirtyDaysAgo } };
+        } else if (effectiveWindow === 'all') {
+            activityDateFilter = {};
+        }
+
+        // All 16 AI Legal Tools Definitions
+        const featureDefinitions = [
+            {
+                key: 'my_case_assistant',
+                title: 'My Case Assistant',
+                category: 'Practice & Case AI',
+                icon: 'Scale',
+                color: 'blue',
+                badge: 'Top Tool',
+                description: 'Litigation case intelligence & hearing copilot',
+                getLifetimeRuns: () => db.collection('chatsessions').countDocuments({ activeTool: { $regex: /my_case|caseAssistant/i } }),
+                getLifetimeUsers: () => db.collection('chatsessions').distinct('userId', { activeTool: { $regex: /my_case|caseAssistant/i } }),
+                getCohortRuns: () => db.collection('chatsessions').countDocuments({
+                    userId: { $in: cohortUserIds },
+                    activeTool: { $regex: /my_case|caseAssistant/i },
+                    ...activityDateFilter
+                }),
+                getCohortUsers: () => db.collection('chatsessions').distinct('userId', {
+                    userId: { $in: cohortUserIds },
+                    activeTool: { $regex: /my_case|caseAssistant/i },
+                    ...activityDateFilter
+                })
+            },
+            {
+                key: 'draft_maker',
+                title: 'Draft Maker & Petitions',
+                category: 'Litigation & Drafting',
+                icon: 'Edit2',
+                color: 'amber',
+                badge: 'Core Tool',
+                description: 'Court notices, petitions, affidavits, plaints & bail',
+                getLifetimeRuns: async () => {
+                    const c = await db.collection('chatsessions').countDocuments({ activeTool: { $regex: /draft/i } });
+                    const cr = await db.collection('creditlogs').countDocuments({
+                        $or: [{ action: { $regex: /draft/i } }, { description: { $regex: /draft/i } }]
+                    });
+                    return c + cr;
+                },
+                getLifetimeUsers: async () => {
+                    const u1 = await db.collection('chatsessions').distinct('userId', { activeTool: { $regex: /draft/i } });
+                    const u2 = await db.collection('creditlogs').distinct('userId', {
+                        $or: [{ action: { $regex: /draft/i } }, { description: { $regex: /draft/i } }]
+                    });
+                    return Array.from(new Set([...u1.map(String), ...u2.map(String)]));
+                },
+                getCohortRuns: async () => {
+                    const c = await db.collection('chatsessions').countDocuments({
+                        userId: { $in: cohortUserIds },
+                        activeTool: { $regex: /draft/i },
+                        ...activityDateFilter
+                    });
+                    const cr = await db.collection('creditlogs').countDocuments({
+                        userId: { $in: cohortUserIds },
+                        $or: [{ action: { $regex: /draft/i } }, { description: { $regex: /draft/i } }],
+                        ...activityDateFilter
+                    });
+                    return c + cr;
+                },
+                getCohortUsers: async () => {
+                    const u1 = await db.collection('chatsessions').distinct('userId', {
+                        userId: { $in: cohortUserIds },
+                        activeTool: { $regex: /draft/i },
+                        ...activityDateFilter
+                    });
+                    const u2 = await db.collection('creditlogs').distinct('userId', {
+                        userId: { $in: cohortUserIds },
+                        $or: [{ action: { $regex: /draft/i } }, { description: { $regex: /draft/i } }],
+                        ...activityDateFilter
+                    });
+                    return Array.from(new Set([...u1.map(String), ...u2.map(String)]));
+                }
+            },
+            {
+                key: 'ai_chat',
+                title: 'AI Assistant & Core Chat',
+                category: 'Core Intelligence',
+                icon: 'MessageSquare',
+                color: 'indigo',
+                badge: 'General AI',
+                description: 'Conversational legal queries & research consults',
+                getLifetimeRuns: () => db.collection('chatsessions').countDocuments({
+                    $or: [{ activeTool: { $in: [null, '', 'none', 'chat', 'ai_chat'] } }, { activeTool: { $exists: false } }]
+                }),
+                getLifetimeUsers: () => db.collection('chatsessions').distinct('userId', {
+                    $or: [{ activeTool: { $in: [null, '', 'none', 'chat', 'ai_chat'] } }, { activeTool: { $exists: false } }]
+                }),
+                getCohortRuns: () => db.collection('chatsessions').countDocuments({
+                    userId: { $in: cohortUserIds },
+                    $or: [{ activeTool: { $in: [null, '', 'none', 'chat', 'ai_chat'] } }, { activeTool: { $exists: false } }],
+                    ...activityDateFilter
+                }),
+                getCohortUsers: () => db.collection('chatsessions').distinct('userId', {
+                    userId: { $in: cohortUserIds },
+                    $or: [{ activeTool: { $in: [null, '', 'none', 'chat', 'ai_chat'] } }, { activeTool: { $exists: false } }],
+                    ...activityDateFilter
+                })
+            },
+            {
+                key: 'cases_managed',
+                title: 'Cases Managed',
+                category: 'Practice & Case AI',
+                icon: 'Building2',
+                color: 'blue',
+                badge: 'Workspaces',
+                description: 'Litigation folders, case files & timeline trackers',
+                getLifetimeRuns: () => db.collection('projects').countDocuments(),
+                getLifetimeUsers: () => db.collection('projects').distinct('userId'),
+                getCohortRuns: () => db.collection('projects').countDocuments({ userId: { $in: cohortUserIds }, ...activityDateFilter }),
+                getCohortUsers: () => db.collection('projects').distinct('userId', { userId: { $in: cohortUserIds }, ...activityDateFilter })
+            },
+            {
+                key: 'legal_precedents',
+                title: 'Legal Precedents & Citations',
+                category: 'Legal Research',
+                icon: 'BookOpen',
+                color: 'purple',
+                badge: 'Precedents',
+                description: 'Supreme Court & High Court landmark ratio decidendi',
+                getLifetimeRuns: async () => {
+                    const p = await db.collection('precedents').countDocuments();
+                    const c = await db.collection('creditlogs').countDocuments({ action: { $regex: /precedent/i } });
+                    return p + c;
+                },
+                getLifetimeUsers: async () => {
+                    const u = await db.collection('creditlogs').distinct('userId', { action: { $regex: /precedent/i } });
+                    return u;
+                },
+                getCohortRuns: async () => {
+                    const p = await db.collection('precedents').countDocuments(activityDateFilter);
+                    const c = await db.collection('creditlogs').countDocuments({
+                        userId: { $in: cohortUserIds },
+                        action: { $regex: /precedent/i },
+                        ...activityDateFilter
+                    });
+                    return p + c;
+                },
+                getCohortUsers: async () => {
+                    const u = await db.collection('creditlogs').distinct('userId', {
+                        userId: { $in: cohortUserIds },
+                        action: { $regex: /precedent/i },
+                        ...activityDateFilter
+                    });
+                    return u;
+                }
+            },
+            {
+                key: 'knowledge_hub',
+                title: 'Knowledge Hub & RAG Vault',
+                category: 'Legal Research',
+                icon: 'Database',
+                color: 'cyan',
+                badge: 'RAG Vault',
+                description: 'Legal research vault & statutory knowledge base',
+                getLifetimeRuns: () => db.collection('chatsessions').countDocuments({ activeTool: { $regex: /knowledge_hub/i } }),
+                getLifetimeUsers: () => db.collection('chatsessions').distinct('userId', { activeTool: { $regex: /knowledge_hub/i } }),
+                getCohortRuns: () => db.collection('chatsessions').countDocuments({
+                    userId: { $in: cohortUserIds },
+                    activeTool: { $regex: /knowledge_hub/i },
+                    ...activityDateFilter
+                }),
+                getCohortUsers: () => db.collection('chatsessions').distinct('userId', {
+                    userId: { $in: cohortUserIds },
+                    activeTool: { $regex: /knowledge_hub/i },
+                    ...activityDateFilter
+                })
+            },
+            {
+                key: 'legal_tutor',
+                title: 'Legal Tutor & Student Coaching',
+                category: 'Academic & Prep',
+                icon: 'GraduationCap',
+                color: 'amber',
+                badge: 'Academic',
+                description: 'BNS vs IPC comparison & student legal tutoring',
+                getLifetimeRuns: () => db.collection('chatsessions').countDocuments({ activeTool: { $regex: /legal_tutor/i } }),
+                getLifetimeUsers: () => db.collection('chatsessions').distinct('userId', { activeTool: { $regex: /legal_tutor/i } }),
+                getCohortRuns: () => db.collection('chatsessions').countDocuments({
+                    userId: { $in: cohortUserIds },
+                    activeTool: { $regex: /legal_tutor/i },
+                    ...activityDateFilter
+                }),
+                getCohortUsers: () => db.collection('chatsessions').distinct('userId', {
+                    userId: { $in: cohortUserIds },
+                    activeTool: { $regex: /legal_tutor/i },
+                    ...activityDateFilter
+                })
+            },
+            {
+                key: 'quiz_practice',
+                title: 'Quiz & Exam Practice',
+                category: 'Academic & Prep',
+                icon: 'Award',
+                color: 'emerald',
+                badge: 'Judiciary Prep',
+                description: 'Judiciary PCS-J & AIBE preliminary exam practice',
+                getLifetimeRuns: () => db.collection('chatsessions').countDocuments({ activeTool: { $regex: /quiz/i } }),
+                getLifetimeUsers: () => db.collection('chatsessions').distinct('userId', { activeTool: { $regex: /quiz/i } }),
+                getCohortRuns: () => db.collection('chatsessions').countDocuments({
+                    userId: { $in: cohortUserIds },
+                    activeTool: { $regex: /quiz/i },
+                    ...activityDateFilter
+                }),
+                getCohortUsers: () => db.collection('chatsessions').distinct('userId', {
+                    userId: { $in: cohortUserIds },
+                    activeTool: { $regex: /quiz/i },
+                    ...activityDateFilter
+                })
+            },
+            {
+                key: 'case_predictor',
+                title: 'Case Predictor Models',
+                category: 'Litigation & Drafting',
+                icon: 'TrendingUp',
+                color: 'emerald',
+                badge: 'Predictive',
+                description: 'Win-probability simulations & judicial trends',
+                getLifetimeRuns: async () => {
+                    const p = await db.collection('casepredictions').countDocuments();
+                    const c = await db.collection('chatsessions').countDocuments({ activeTool: { $regex: /predictor/i } });
+                    return p + c;
+                },
+                getLifetimeUsers: async () => {
+                    const u1 = await db.collection('casepredictions').distinct('userId');
+                    const u2 = await db.collection('chatsessions').distinct('userId', { activeTool: { $regex: /predictor/i } });
+                    return Array.from(new Set([...u1.map(String), ...u2.map(String)]));
+                },
+                getCohortRuns: async () => {
+                    const p = await db.collection('casepredictions').countDocuments({ userId: { $in: cohortUserIds }, ...activityDateFilter });
+                    const c = await db.collection('chatsessions').countDocuments({
+                        userId: { $in: cohortUserIds },
+                        activeTool: { $regex: /predictor/i },
+                        ...activityDateFilter
+                    });
+                    return p + c;
+                },
+                getCohortUsers: async () => {
+                    const u1 = await db.collection('casepredictions').distinct('userId', { userId: { $in: cohortUserIds }, ...activityDateFilter });
+                    const u2 = await db.collection('chatsessions').distinct('userId', {
+                        userId: { $in: cohortUserIds },
+                        activeTool: { $regex: /predictor/i },
+                        ...activityDateFilter
+                    });
+                    return Array.from(new Set([...u1.map(String), ...u2.map(String)]));
+                }
+            },
+            {
+                key: 'strategy_engine',
+                title: 'Strategy Engine Reports',
+                category: 'Litigation & Drafting',
+                icon: 'Lightbulb',
+                color: 'amber',
+                badge: 'Strategy',
+                description: 'Litigation roadmaps, risk matrices & counter-moves',
+                getLifetimeRuns: async () => {
+                    const s = await db.collection('strategyhistories').countDocuments();
+                    const c = await db.collection('chatsessions').countDocuments({ activeTool: { $regex: /strategy/i } });
+                    const cr = await db.collection('creditlogs').countDocuments({ action: { $regex: /strategy/i } });
+                    return s + c + cr;
+                },
+                getLifetimeUsers: async () => {
+                    const u1 = await db.collection('strategyhistories').distinct('userId');
+                    const u2 = await db.collection('chatsessions').distinct('userId', { activeTool: { $regex: /strategy/i } });
+                    const u3 = await db.collection('creditlogs').distinct('userId', { action: { $regex: /strategy/i } });
+                    return Array.from(new Set([...u1.map(String), ...u2.map(String), ...u3.map(String)]));
+                },
+                getCohortRuns: async () => {
+                    const s = await db.collection('strategyhistories').countDocuments({ userId: { $in: cohortUserIds }, ...activityDateFilter });
+                    const c = await db.collection('chatsessions').countDocuments({
+                        userId: { $in: cohortUserIds },
+                        activeTool: { $regex: /strategy/i },
+                        ...activityDateFilter
+                    });
+                    const cr = await db.collection('creditlogs').countDocuments({
+                        userId: { $in: cohortUserIds },
+                        action: { $regex: /strategy/i },
+                        ...activityDateFilter
+                    });
+                    return s + c + cr;
+                },
+                getCohortUsers: async () => {
+                    const u1 = await db.collection('strategyhistories').distinct('userId', { userId: { $in: cohortUserIds }, ...activityDateFilter });
+                    const u2 = await db.collection('chatsessions').distinct('userId', {
+                        userId: { $in: cohortUserIds },
+                        activeTool: { $regex: /strategy/i },
+                        ...activityDateFilter
+                    });
+                    const u3 = await db.collection('creditlogs').distinct('userId', {
+                        userId: { $in: cohortUserIds },
+                        action: { $regex: /strategy/i },
+                        ...activityDateFilter
+                    });
+                    return Array.from(new Set([...u1.map(String), ...u2.map(String), ...u3.map(String)]));
+                }
+            },
+            {
+                key: 'contract_analyzer',
+                title: 'Contract Analyzer & Audits',
+                category: 'Litigation & Drafting',
+                icon: 'FileText',
+                color: 'purple',
+                badge: 'Audit',
+                description: 'Clause risk audits & redline review suggestions',
+                getLifetimeRuns: async () => {
+                    const c = await db.collection('contractanalyses').countDocuments();
+                    const ch = await db.collection('chatsessions').countDocuments({ activeTool: { $regex: /contract/i } });
+                    return c + ch;
+                },
+                getLifetimeUsers: async () => {
+                    const u1 = await db.collection('contractanalyses').distinct('userId');
+                    const u2 = await db.collection('chatsessions').distinct('userId', { activeTool: { $regex: /contract/i } });
+                    return Array.from(new Set([...u1.map(String), ...u2.map(String)]));
+                },
+                getCohortRuns: async () => {
+                    const c = await db.collection('contractanalyses').countDocuments({ userId: { $in: cohortUserIds }, ...activityDateFilter });
+                    const ch = await db.collection('chatsessions').countDocuments({
+                        userId: { $in: cohortUserIds },
+                        activeTool: { $regex: /contract/i },
+                        ...activityDateFilter
+                    });
+                    return c + ch;
+                },
+                getCohortUsers: async () => {
+                    const u1 = await db.collection('contractanalyses').distinct('userId', { userId: { $in: cohortUserIds }, ...activityDateFilter });
+                    const u2 = await db.collection('chatsessions').distinct('userId', {
+                        userId: { $in: cohortUserIds },
+                        activeTool: { $regex: /contract/i },
+                        ...activityDateFilter
+                    });
+                    return Array.from(new Set([...u1.map(String), ...u2.map(String)]));
+                }
+            },
+            {
+                key: 'argument_builder',
+                title: 'Argument Builder',
+                category: 'Litigation & Drafting',
+                icon: 'Gavel',
+                color: 'rose',
+                badge: 'Oral Arguments',
+                description: 'Oral hearing submissions & counter-rebuttal points',
+                getLifetimeRuns: async () => {
+                    const ch = await db.collection('chatsessions').countDocuments({ activeTool: { $regex: /argument/i } });
+                    const cr = await db.collection('creditlogs').countDocuments({ action: { $regex: /argument/i } });
+                    return ch + cr;
+                },
+                getLifetimeUsers: async () => {
+                    const u1 = await db.collection('chatsessions').distinct('userId', { activeTool: { $regex: /argument/i } });
+                    const u2 = await db.collection('creditlogs').distinct('userId', { action: { $regex: /argument/i } });
+                    return Array.from(new Set([...u1.map(String), ...u2.map(String)]));
+                },
+                getCohortRuns: async () => {
+                    const ch = await db.collection('chatsessions').countDocuments({
+                        userId: { $in: cohortUserIds },
+                        activeTool: { $regex: /argument/i },
+                        ...activityDateFilter
+                    });
+                    const cr = await db.collection('creditlogs').countDocuments({
+                        userId: { $in: cohortUserIds },
+                        action: { $regex: /argument/i },
+                        ...activityDateFilter
+                    });
+                    return ch + cr;
+                },
+                getCohortUsers: async () => {
+                    const u1 = await db.collection('chatsessions').distinct('userId', {
+                        userId: { $in: cohortUserIds },
+                        activeTool: { $regex: /argument/i },
+                        ...activityDateFilter
+                    });
+                    const u2 = await db.collection('creditlogs').distinct('userId', {
+                        userId: { $in: cohortUserIds },
+                        action: { $regex: /argument/i },
+                        ...activityDateFilter
+                    });
+                    return Array.from(new Set([...u1.map(String), ...u2.map(String)]));
+                }
+            },
+            {
+                key: 'mock_courtroom',
+                title: 'AI Mock Courtroom & Prep',
+                category: 'Courtroom & Trials',
+                icon: 'Mic',
+                color: 'rose',
+                badge: 'Voice AI',
+                description: 'Voice AI trial drills & courtroom objection training',
+                getLifetimeRuns: () => db.collection('creditlogs').countDocuments({
+                    $or: [{ action: { $regex: /court|dossier|prep/i } }, { description: { $regex: /court|dossier|prep/i } }]
+                }),
+                getLifetimeUsers: () => db.collection('creditlogs').distinct('userId', {
+                    $or: [{ action: { $regex: /court|dossier|prep/i } }, { description: { $regex: /court|dossier|prep/i } }]
+                }),
+                getCohortRuns: () => db.collection('creditlogs').countDocuments({
+                    userId: { $in: cohortUserIds },
+                    $or: [{ action: { $regex: /court|dossier|prep/i } }, { description: { $regex: /court|dossier|prep/i } }],
+                    ...activityDateFilter
+                }),
+                getCohortUsers: () => db.collection('creditlogs').distinct('userId', {
+                    userId: { $in: cohortUserIds },
+                    $or: [{ action: { $regex: /court|dossier|prep/i } }, { description: { $regex: /court|dossier|prep/i } }],
+                    ...activityDateFilter
+                })
+            },
+            {
+                key: 'evidence_analyst',
+                title: 'Evidence Analyst & OCR',
+                category: 'Forensics & Audit',
+                icon: 'Search',
+                color: 'cyan',
+                badge: 'Forensics',
+                description: 'Sec 65B BSA compliance & document forensic audits',
+                getLifetimeRuns: () => db.collection('creditlogs').countDocuments({
+                    $or: [{ action: { $regex: /evidence|ocr|scan/i } }, { description: { $regex: /evidence|ocr|scan/i } }]
+                }),
+                getLifetimeUsers: () => db.collection('creditlogs').distinct('userId', {
+                    $or: [{ action: { $regex: /evidence|ocr|scan/i } }, { description: { $regex: /evidence|ocr|scan/i } }]
+                }),
+                getCohortRuns: () => db.collection('creditlogs').countDocuments({
+                    userId: { $in: cohortUserIds },
+                    $or: [{ action: { $regex: /evidence|ocr|scan/i } }, { description: { $regex: /evidence|ocr|scan/i } }],
+                    ...activityDateFilter
+                }),
+                getCohortUsers: () => db.collection('creditlogs').distinct('userId', {
+                    userId: { $in: cohortUserIds },
+                    $or: [{ action: { $regex: /evidence|ocr|scan/i } }, { description: { $regex: /evidence|ocr|scan/i } }],
+                    ...activityDateFilter
+                })
+            },
+            {
+                key: 'student_notes',
+                title: 'Notes Maker & Flashcards',
+                category: 'Academic & Prep',
+                icon: 'BookMarked',
+                color: 'blue',
+                badge: 'Notes',
+                description: 'Study outlines, case briefings & legal flashcards',
+                getLifetimeRuns: () => db.collection('studentnotes').countDocuments(),
+                getLifetimeUsers: () => db.collection('studentnotes').distinct('userId'),
+                getCohortRuns: () => db.collection('studentnotes').countDocuments({ userId: { $in: cohortUserIds }, ...activityDateFilter }),
+                getCohortUsers: () => db.collection('studentnotes').distinct('userId', { userId: { $in: cohortUserIds }, ...activityDateFilter })
+            },
+            {
+                key: 'audio_doc_magic',
+                title: 'Audio & Doc Magic',
+                category: 'Forensics & Audit',
+                icon: 'Binary',
+                color: 'purple',
+                badge: 'Conversion',
+                description: 'Audio speech-to-text & PDF document conversions',
+                getLifetimeRuns: () => db.collection('creditlogs').countDocuments({ action: { $in: ['convert_audio', 'convert_document'] } }),
+                getLifetimeUsers: () => db.collection('creditlogs').distinct('userId', { action: { $in: ['convert_audio', 'convert_document'] } }),
+                getCohortRuns: () => db.collection('creditlogs').countDocuments({
+                    userId: { $in: cohortUserIds },
+                    action: { $in: ['convert_audio', 'convert_document'] },
+                    ...activityDateFilter
+                }),
+                getCohortUsers: () => db.collection('creditlogs').distinct('userId', {
+                    userId: { $in: cohortUserIds },
+                    action: { $in: ['convert_audio', 'convert_document'] },
+                    ...activityDateFilter
+                })
+            }
+        ];
+
+        const results = await Promise.all(
+            featureDefinitions.map(async (feat) => {
+                const [lRuns, lUsers, cRuns, cUsers] = await Promise.all([
+                    feat.getLifetimeRuns().catch(() => 0),
+                    feat.getLifetimeUsers().catch(() => []),
+                    feat.getCohortRuns().catch(() => 0),
+                    feat.getCohortUsers().catch(() => [])
+                ]);
+
+                const lifetimeRuns = Number(lRuns || 0);
+                const lifetimeUsersCount = Array.isArray(lUsers) ? lUsers.length : 0;
+                const lifetimeAdoptionRate = totalRegisteredUsers > 0 ? Number(((lifetimeUsersCount / totalRegisteredUsers) * 100).toFixed(1)) : 0;
+
+                const cohortRuns = Number(cRuns || 0);
+                const cohortUsedUsersCount = Array.isArray(cUsers) ? cUsers.length : 0;
+                const cohortUnusedUsersCount = Math.max(0, cohortTotalUsers - cohortUsedUsersCount);
+                const cohortAdoptionRate = cohortTotalUsers > 0 ? Number(((cohortUsedUsersCount / cohortTotalUsers) * 100).toFixed(1)) : 0;
+                const cohortDropoffRate = cohortTotalUsers > 0 ? Number((100 - cohortAdoptionRate).toFixed(1)) : 100;
+                const avgRunsPerUser = cohortUsedUsersCount > 0 ? Number((cohortRuns / cohortUsedUsersCount).toFixed(1)) : 0;
+
+                return {
+                    key: feat.key,
+                    title: feat.title,
+                    description: feat.description,
+                    category: feat.category,
+                    icon: feat.icon,
+                    color: feat.color,
+                    badge: feat.badge,
+                    lifetimeRuns,
+                    lifetimeUsersCount,
+                    lifetimeAdoptionRate,
+                    totalRuns: cohortRuns,
+                    usedUsersCount: cohortUsedUsersCount,
+                    unusedUsersCount: cohortUnusedUsersCount,
+                    cohortTotalUsers,
+                    adoptionRate: cohortAdoptionRate,
+                    dropoffRate: cohortDropoffRate,
+                    avgRunsPerUser
+                };
+            })
+        );
+
+        // Sorting / Summary Metrics
+        const activeInCohortCount = results.filter(r => r.totalRuns > 0).length;
+        const totalAdoptionSum = results.reduce((acc, r) => acc + r.adoptionRate, 0);
+        const overallAdoptionScore = Number((totalAdoptionSum / (results.length || 1)).toFixed(1));
+
+        const sortedByAllTime = [...results].sort((a, b) => b.lifetimeRuns - a.lifetimeRuns);
+        const topAllTimeFeature = sortedByAllTime[0]?.title || 'None';
+        const topAllTimeRuns = sortedByAllTime[0]?.lifetimeRuns || 0;
+
+        const sortedByCohort = [...results].sort((a, b) => b.adoptionRate - a.adoptionRate);
+        const topCohortFeature = sortedByCohort[0]?.title || 'None';
+
+        return res.status(200).json({
+            success: true,
+            cohort,
+            window: effectiveWindow,
+            cohortTotalUsers,
+            totalRegisteredUsers,
+            summary: {
+                activeFeaturesCount: activeInCohortCount,
+                totalFeaturesCount: results.length,
+                overallAdoptionScore,
+                topAdoptedFeature: topCohortFeature,
+                topAllTimeFeature,
+                topAllTimeRuns
+            },
+            features: results
+        });
+    } catch (error) {
+        console.error('[getFeatureAdoptionAnalytics] Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to fetch feature adoption analytics'
+        });
+    }
+};
+
+
 

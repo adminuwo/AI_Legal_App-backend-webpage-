@@ -21,6 +21,7 @@ import { STATES_BY_COUNTRY } from '../constants/states';
 import AdminDownloadsSection from './AdminDashboard/components/AdminDownloadsSection';
 import AdminLinkedOrganizationsSection from './AdminDashboard/components/AdminLinkedOrganizationsSection';
 import AdminAdvocateVerificationsSection from './AdminDashboard/components/AdminAdvocateVerificationsSection';
+import AdminFeatureAdoptionSection from './AdminDashboard/components/AdminFeatureAdoptionSection';
 
 export const DATE_RANGE_OPTIONS = [
   { id: 'today', label: 'Today' },
@@ -2031,84 +2032,8 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* ROW 4: AI LEGAL FEATURE USAGE ANALYTICS GRID */}
-            <div className="space-y-3 sm:space-y-4">
-              <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">AI LEGAL™ FEATURE USAGE</h3>
-              
-              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
-                  <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-blue-500 border border-blue-500/20">
-                    <Building2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CASES MANAGED</p>
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.totalCases || 0).toLocaleString()}</h4>
-                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Total litigation folders</p>
-                </div>
-
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
-                  <div className="p-2.5 w-fit rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20">
-                    <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CONTRACTS ANALYZED</p>
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.contractsAnalyzed || 0).toLocaleString()}</h4>
-                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Total contracts audited</p>
-                </div>
-
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
-                  <div className="p-2.5 w-fit rounded-xl bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/20">
-                    <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">STRATEGY ENGINE REPORTS</p>
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.strategyReports || 0).toLocaleString()}</h4>
-                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Strategy reports generated</p>
-                </div>
-
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
-                  <div className="p-2.5 w-fit rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                    <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CASE PREDICTOR MODELS</p>
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.casePredictorReports || 0).toLocaleString()}</h4>
-                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Outcome predictions run</p>
-                </div>
-
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
-                  <div className="p-2.5 w-fit rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                    <Edit2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">DRAFTS GENERATED</p>
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.draftsGenerated || 0).toLocaleString()}</h4>
-                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Petitions & notices drafted</p>
-                </div>
-
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
-                  <div className="p-2.5 w-fit rounded-xl bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">
-                    <Search className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">EVIDENCE ANALYST AUDITS</p>
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.evidenceAnalyses || 0).toLocaleString()}</h4>
-                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Evidence documents scanned</p>
-                </div>
-
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
-                  <div className="p-2.5 w-fit rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
-                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">AI ASSISTANT CHATS</p>
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{(stats.chatUsage || 0).toLocaleString()}</h4>
-                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">Conversations created</p>
-                </div>
-
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-2">
-                  <div className="p-2.5 w-fit rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20">
-                    <HardDrive className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">STORAGE CONSUMED</p>
-                  <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{stats.storageUsed || '512 MB'}</h4>
-                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500">RAG & database storage</p>
-                </div>
-              </div>
-            </div>
+            {/* ROW 4: AI LEGAL FEATURE USAGE & ADOPTION ANALYTICS */}
+            <AdminFeatureAdoptionSection user={user} fallbackStats={stats} />
 
             {/* ROW 5: PENDING TRIAGE ALERTS */}
             <div className="space-y-3 sm:space-y-4">
