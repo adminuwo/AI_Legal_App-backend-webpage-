@@ -10,6 +10,16 @@ export default defineConfig({
     port: 5173,
     host: true, // Listen on all network interfaces
     allowedHosts: true, // Allow ngrok URLs to bypass host checks in Vite 6
+    proxy: {
+      '/uploads': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      }
+    },
     watch: {
       ignored: ['**/dist/**', '**/.git/**']
     }

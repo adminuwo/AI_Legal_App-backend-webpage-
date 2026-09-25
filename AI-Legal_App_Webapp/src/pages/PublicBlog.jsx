@@ -176,16 +176,30 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
     }
   ];
 
+  const backendBase = useMemo(() => {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      return 'http://localhost:8080';
+    }
+    return typeof API === 'string' ? API.replace(/\/api\/?$/, '') : '';
+  }, []);
+
+  const resolveImageUrl = (img) => {
+    if (!img) return '';
+    if (img.startsWith('/uploads/')) {
+      return `${backendBase}${img}`;
+    }
+    return img;
+  };
+
   const [articles, setArticles] = useState(CORE_ARTICLES);
+  const [singleArticle, setSingleArticle] = useState(null);
+  const [loadingSingle, setLoadingSingle] = useState(false);
 
   // Fetch in-house published blogs from Backend & Local Cache
   useEffect(() => {
+    let isMounted = true;
     const fetchInHouseBlogs = async () => {
       try {
-        const backendBase = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
-          ? 'http://localhost:8080'
-          : (typeof API === 'string' ? API.replace(/\/api\/?$/, '') : '');
-
         const res = await axios.get(`${backendBase}/api/blogs`);
         const serverBlogs = res.data?.blogs || [];
 
@@ -227,8 +241,11 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
           }
         });
 
-        setArticles(combined);
+        if (isMounted) {
+          setArticles(combined);
+        }
       } catch (err) {
+        console.warn('Failed to load server blogs:', err);
         // Fallback to local storage if server unreachable
         try {
           const localBlogs = JSON.parse(localStorage.getItem('inhouse_published_blogs') || '[]');
@@ -246,13 +263,49 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
               combined.push(core);
             }
           });
-          setArticles(combined);
+          if (isMounted) {
+            setArticles(combined);
+          }
         } catch (e) {}
       }
     };
 
     fetchInHouseBlogs();
-  }, []);
+    return () => { isMounted = false; };
+  }, [backendBase]);
+
+  // When visiting a specific blog slug directly
+  useEffect(() => {
+    if (!slug) {
+      setSingleArticle(null);
+      return;
+    }
+
+    const found = articles.find(a => a.slug === slug);
+    if (found && (found.content || found.description)) {
+      setSingleArticle(found);
+      return;
+    }
+
+    const fetchSingle = async () => {
+      setLoadingSingle(true);
+      try {
+        const res = await axios.get(`${backendBase}/api/blogs/${slug}`);
+        if (res.data?.success && res.data?.blog) {
+          const b = res.data.blog;
+          setSingleArticle({
+            ...b,
+            date: b.date || new Date(b.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+          });
+        }
+      } catch (e) {
+        console.warn('Single blog fetch failed:', e);
+      } finally {
+        setLoadingSingle(false);
+      }
+    };
+    fetchSingle();
+  }, [slug, articles, backendBase]);
 
   // Compute categories dynamically
   const categories = useMemo(() => {
@@ -263,15 +316,16 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
     return Array.from(cats);
   }, [articles]);
 
-  // If a slug is specified, render the individual article
-  const selectedArticle = slug ? articles.find(a => a.slug === slug) : null;
+  // Active selected article if on /blog/:slug
+  const selectedArticle = singleArticle || (slug ? articles.find(a => a.slug === slug) : null);
 
   const filteredArticles = articles.filter(item => {
     const matchCat = activeCategory === 'All' || item.category === activeCategory;
-    const matchSearch = !searchQuery.trim() ||
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = searchQuery.toLowerCase().trim();
+    const matchSearch = !q ||
+      (item.title || '').toLowerCase().includes(q) ||
+      (item.subtitle || item.summary || '').toLowerCase().includes(q) ||
+      (item.category || '').toLowerCase().includes(q);
     return matchCat && matchSearch;
   });
 
@@ -361,7 +415,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
           {(selectedArticle.image || selectedArticle.coverImage) && (
             <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-800 max-h-96 w-full bg-slate-900">
               <img
-                src={selectedArticle.image || selectedArticle.coverImage}
+                src={resolveImageUrl(selectedArticle.image || selectedArticle.coverImage)}
                 alt={selectedArticle.title}
                 className="w-full h-72 sm:h-96 object-cover"
                 onError={(e) => { e.target.style.display = 'none'; }}
@@ -465,6 +519,23 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
                   <pre className="bg-slate-950 text-slate-100 p-4 rounded-xl font-mono text-xs overflow-x-auto my-4 shadow-sm border border-slate-800" {...props}>
                     {children}
                   </pre>
+                ),
+                table: ({ node, ...props }) => (
+                  <div className="overflow-x-auto my-6 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs">
+                    <table className="min-w-full text-xs sm:text-sm text-left border-collapse" {...props} />
+                  </div>
+                ),
+                thead: ({ node, ...props }) => (
+                  <thead className="bg-slate-100 dark:bg-slate-800/80 font-black text-slate-900 dark:text-slate-100 uppercase tracking-wider" {...props} />
+                ),
+                th: ({ node, ...props }) => (
+                  <th className="p-3.5 border-b border-slate-200 dark:border-slate-700 font-black text-xs" {...props} />
+                ),
+                td: ({ node, ...props }) => (
+                  <td className="p-3.5 border-b border-slate-100 dark:border-slate-800/60 text-slate-700 dark:text-slate-300 font-medium" {...props} />
+                ),
+                a: ({ node, ...props }) => (
+                  <a className="text-[#B88B2A] underline hover:text-[#976e18] font-bold transition-colors" target="_blank" rel="noopener noreferrer" {...props} />
                 )
               }}
             >
@@ -635,7 +706,7 @@ Seamlessly transition between legacy laws and the 2024 Sanhitas:
                         {artImg ? (
                           <div className="h-44 w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">
                             <img
-                              src={artImg}
+                              src={resolveImageUrl(artImg)}
                               alt={art.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               onError={(e) => { e.target.style.display = 'none'; }}

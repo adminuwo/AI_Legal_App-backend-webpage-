@@ -1,4 +1,39 @@
 import BlogPost from '../models/BlogPost.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const BLOG_UPLOADS_DIR = path.join(__dirname, '..', 'public', 'uploads', 'blogs');
+
+/**
+ * Save base64 image data URL to disk to prevent massive BSON documents in MongoDB
+ */
+function saveBase64Image(dataString, slug = 'blog') {
+    if (!dataString || typeof dataString !== 'string') return dataString || '';
+    if (!dataString.startsWith('data:image/')) return dataString;
+
+    try {
+        if (!fs.existsSync(BLOG_UPLOADS_DIR)) {
+            fs.mkdirSync(BLOG_UPLOADS_DIR, { recursive: true });
+        }
+
+        const matches = dataString.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
+        if (!matches || matches.length < 3) return dataString;
+
+        const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+        const safeSlug = (slug || 'blog').toLowerCase().replace(/[^a-z0-9_-]/g, '_').slice(0, 40);
+        const filename = `blog_${safeSlug}_${Date.now()}.${ext}`;
+        const filePath = path.join(BLOG_UPLOADS_DIR, filename);
+
+        fs.writeFileSync(filePath, Buffer.from(matches[2], 'base64'));
+        return `/uploads/blogs/${filename}`;
+    } catch (err) {
+        console.error('[Save Blog Image Error]:', err);
+        return dataString;
+    }
+}
 
 /**
  * Generate clean URL-friendly slug
@@ -142,6 +177,8 @@ export async function createBlogPost(req, res) {
             estimatedReadTime = `${minutes} min read`;
         }
 
+        const savedImage = saveBase64Image(finalImage, uniqueSlug);
+
         const newPost = await BlogPost.create({
             title: finalTitle,
             subtitle: finalSubtitle,
@@ -155,8 +192,8 @@ export async function createBlogPost(req, res) {
             readTime: estimatedReadTime,
             keywords: finalKeywords,
             tags: finalKeywords,
-            image: finalImage,
-            coverImage: finalImage,
+            image: savedImage,
+            coverImage: savedImage,
             hasMobileDownload: Boolean(hasMobileDownload),
             isFeatured: Boolean(isFeatured),
             status,
@@ -234,11 +271,13 @@ export async function updateBlogPost(req, res) {
         }
 
         if (image !== undefined) {
-            updateData.image = image.trim();
-            updateData.coverImage = image.trim();
+            const savedImg = saveBase64Image(image.trim(), id);
+            updateData.image = savedImg;
+            updateData.coverImage = savedImg;
         } else if (coverImage !== undefined) {
-            updateData.image = coverImage.trim();
-            updateData.coverImage = coverImage.trim();
+            const savedImg = saveBase64Image(coverImage.trim(), id);
+            updateData.image = savedImg;
+            updateData.coverImage = savedImg;
         }
 
         if (category !== undefined) updateData.category = category.trim();

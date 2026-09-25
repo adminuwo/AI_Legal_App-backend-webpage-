@@ -5,7 +5,10 @@ import {
   Clock, CheckCircle2, AlertCircle, FileText, Smartphone,
   Layers, Hash, RefreshCw, Check, Trash2, History, Plus,
   Search, ExternalLink, X, Save, Image as ImageIcon, Upload, Link as LinkIcon,
-  Scale, Phone, Mail, Star, Download, XCircle
+  Scale, Phone, Mail, Star, Download, XCircle,
+  Bold, Italic, Strikethrough, Heading1, Heading2, Heading3,
+  List, ListOrdered, Quote, Code, Minus, Columns2, Table as TableIcon,
+  HelpCircle, AlignLeft, CheckSquare, Lock, EyeOff, ShieldCheck, LogOut, KeyRound
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
@@ -18,6 +21,64 @@ import { API } from '../types.js';
 export default function InHouseBlogPublisher() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
+  const [splitPreview, setSplitPreview] = useState(false);
+
+  // Editorial Admin Authentication Gatekeeper
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    try {
+      const sessionAuth = sessionStorage.getItem('inhouse_blog_admin_auth');
+      const localAuth = localStorage.getItem('inhouse_blog_admin_auth');
+      return sessionAuth === 'true' || localAuth === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+
+  const handleEditorialLogin = (e) => {
+    if (e) e.preventDefault();
+    setLoginError('');
+    setLoginLoading(true);
+
+    const cleanEmail = (loginEmail || '').trim().toLowerCase();
+    const cleanPassword = (loginPassword || '').trim();
+
+    setTimeout(() => {
+      if (cleanEmail === 'admin@uwo24.com' && cleanPassword === 'admin@24') {
+        try {
+          sessionStorage.setItem('inhouse_blog_admin_auth', 'true');
+          sessionStorage.setItem('inhouse_blog_admin_user', cleanEmail);
+          localStorage.setItem('inhouse_blog_admin_auth', 'true');
+        } catch (err) {}
+        setIsAuthenticated(true);
+        setLoginPassword('');
+        setLoginError('');
+        toast.success('Editorial Studio Unlocked! Welcome, Admin.');
+      } else {
+        setLoginError('Invalid email or password. Access denied.');
+        toast.error('Access Denied: Incorrect admin credentials');
+      }
+      setLoginLoading(false);
+    }, 350);
+  };
+
+  const handleEditorialLogout = () => {
+    try {
+      sessionStorage.removeItem('inhouse_blog_admin_auth');
+      sessionStorage.removeItem('inhouse_blog_admin_user');
+      localStorage.removeItem('inhouse_blog_admin_auth');
+    } catch (err) {}
+    setIsAuthenticated(false);
+    setLoginPassword('');
+    setLoginError('');
+    toast('Editorial Studio locked.');
+  };
 
   // Active view: 'write' | 'preview' | 'history'
   const [activeTab, setActiveTab] = useState('write');
@@ -63,6 +124,450 @@ export default function InHouseBlogPublisher() {
     const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
     const minutes = Math.max(1, Math.ceil(wordCount / 180));
     return `${minutes} min read`;
+  };
+
+  // Helper to apply text update and restore focus & selection accurately
+  const applyTextUpdate = (newText, selectStart, selectEnd) => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.value = newText;
+    }
+    setFormData(prev => ({ ...prev, description: newText }));
+
+    const updateSelection = () => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        if (typeof selectStart === 'number') {
+          textareaRef.current.setSelectionRange(selectStart, selectEnd ?? selectStart);
+        }
+      }
+    };
+    updateSelection();
+    setTimeout(updateSelection, 10);
+  };
+
+  // Robust Formatting Insertion with intelligent toggling, line detection, and selection preservation
+  const insertFormat = (type, customValue = null) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    let start = textarea.selectionStart ?? 0;
+    let end = textarea.selectionEnd ?? 0;
+    const text = textarea.value || '';
+
+    if (start > end) {
+      const temp = start;
+      start = end;
+      end = temp;
+    }
+
+    const selected = text.substring(start, end);
+
+    // 1. INLINE FORMATTERS: bold, italic, strikethrough, code
+    if (type === 'bold') {
+      if (selected.startsWith('**') && selected.endsWith('**') && selected.length >= 4) {
+        const unwrapped = selected.slice(2, -2);
+        const newText = text.substring(0, start) + unwrapped + text.substring(end);
+        applyTextUpdate(newText, start, start + unwrapped.length);
+        return;
+      }
+      if (start >= 2 && end <= text.length - 2 && text.substring(start - 2, start) === '**' && text.substring(end, end + 2) === '**') {
+        const newText = text.substring(0, start - 2) + selected + text.substring(end + 2);
+        applyTextUpdate(newText, start - 2, start - 2 + selected.length);
+        return;
+      }
+      if (selected) {
+        const wrapped = `**${selected}**`;
+        const newText = text.substring(0, start) + wrapped + text.substring(end);
+        applyTextUpdate(newText, start, start + wrapped.length);
+      } else {
+        const placeholder = 'bold text';
+        const wrapped = `**${placeholder}**`;
+        const newText = text.substring(0, start) + wrapped + text.substring(end);
+        applyTextUpdate(newText, start + 2, start + 2 + placeholder.length);
+      }
+      return;
+    }
+
+    if (type === 'italic') {
+      if (selected.startsWith('*') && selected.endsWith('*') && selected.length >= 2 && !selected.startsWith('**')) {
+        const unwrapped = selected.slice(1, -1);
+        const newText = text.substring(0, start) + unwrapped + text.substring(end);
+        applyTextUpdate(newText, start, start + unwrapped.length);
+        return;
+      }
+      if (start >= 1 && end <= text.length - 1 && text[start - 1] === '*' && text[end] === '*' && text[start - 2] !== '*' && text[end + 1] !== '*') {
+        const newText = text.substring(0, start - 1) + selected + text.substring(end + 1);
+        applyTextUpdate(newText, start - 1, start - 1 + selected.length);
+        return;
+      }
+      if (selected) {
+        const wrapped = `*${selected}*`;
+        const newText = text.substring(0, start) + wrapped + text.substring(end);
+        applyTextUpdate(newText, start, start + wrapped.length);
+      } else {
+        const placeholder = 'italic text';
+        const wrapped = `*${placeholder}*`;
+        const newText = text.substring(0, start) + wrapped + text.substring(end);
+        applyTextUpdate(newText, start + 1, start + 1 + placeholder.length);
+      }
+      return;
+    }
+
+    if (type === 'strikethrough') {
+      if (selected.startsWith('~~') && selected.endsWith('~~') && selected.length >= 4) {
+        const unwrapped = selected.slice(2, -2);
+        const newText = text.substring(0, start) + unwrapped + text.substring(end);
+        applyTextUpdate(newText, start, start + unwrapped.length);
+        return;
+      }
+      if (selected) {
+        const wrapped = `~~${selected}~~`;
+        const newText = text.substring(0, start) + wrapped + text.substring(end);
+        applyTextUpdate(newText, start, start + wrapped.length);
+      } else {
+        const placeholder = 'strikethrough text';
+        const wrapped = `~~${placeholder}~~`;
+        const newText = text.substring(0, start) + wrapped + text.substring(end);
+        applyTextUpdate(newText, start + 2, start + 2 + placeholder.length);
+      }
+      return;
+    }
+
+    if (type === 'code') {
+      if (selected.startsWith('`') && selected.endsWith('`') && selected.length >= 2) {
+        const unwrapped = selected.slice(1, -1);
+        const newText = text.substring(0, start) + unwrapped + text.substring(end);
+        applyTextUpdate(newText, start, start + unwrapped.length);
+        return;
+      }
+      if (selected) {
+        const wrapped = `\`${selected}\``;
+        const newText = text.substring(0, start) + wrapped + text.substring(end);
+        applyTextUpdate(newText, start, start + wrapped.length);
+      } else {
+        const placeholder = 'legal_term';
+        const wrapped = `\`${placeholder}\``;
+        const newText = text.substring(0, start) + wrapped + text.substring(end);
+        applyTextUpdate(newText, start + 1, start + 1 + placeholder.length);
+      }
+      return;
+    }
+
+    // 2. LINE-LEVEL FORMATTERS: Headings (h1, h2, h3)
+    if (type === 'h1' || type === 'h2' || type === 'h3') {
+      const prefix = type === 'h1' ? '# ' : type === 'h2' ? '## ' : '### ';
+      const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+      let lineEnd = text.indexOf('\n', end);
+      if (lineEnd === -1) lineEnd = text.length;
+
+      const currentLine = text.substring(lineStart, lineEnd);
+
+      if (!currentLine.trim()) {
+        const placeholder = type === 'h1' ? 'Main Heading' : type === 'h2' ? 'Section Heading' : 'Sub-heading';
+        const newLine = `${prefix}${placeholder}`;
+        const newText = text.substring(0, lineStart) + newLine + text.substring(lineEnd);
+        applyTextUpdate(newText, lineStart + prefix.length, lineStart + newLine.length);
+        return;
+      }
+
+      const headingMatch = currentLine.match(/^(#{1,6})\s*(.*)$/);
+      let newLine = '';
+      if (headingMatch) {
+        const existingHashes = headingMatch[1];
+        const lineContent = headingMatch[2];
+        const targetHashes = type === 'h1' ? '#' : type === 'h2' ? '##' : '###';
+        if (existingHashes === targetHashes) {
+          newLine = lineContent;
+        } else {
+          newLine = `${prefix}${lineContent}`;
+        }
+      } else {
+        newLine = `${prefix}${currentLine}`;
+      }
+
+      const newText = text.substring(0, lineStart) + newLine + text.substring(lineEnd);
+      applyTextUpdate(newText, lineStart + newLine.length, lineStart + newLine.length);
+      return;
+    }
+
+    // 3. LISTS: Bullet (*) & Numbered (1.)
+    if (type === 'bullet' || type === 'number') {
+      const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+      let lineEnd = text.indexOf('\n', end);
+      if (lineEnd === -1) lineEnd = text.length;
+
+      const selectedBlock = text.substring(lineStart, lineEnd);
+      const lines = selectedBlock.split('\n');
+
+      if (type === 'bullet') {
+        const allBulleted = lines.every(l => /^\s*[*+-]\s+/.test(l));
+        let newBlock = '';
+        if (allBulleted) {
+          newBlock = lines.map(l => l.replace(/^(\s*)[*+-]\s+/, '$1')).join('\n');
+        } else {
+          newBlock = lines.map(l => {
+            const stripped = l.replace(/^(\s*)\d+\.\s+/, '$1').replace(/^(\s*)[*+-]\s+/, '$1');
+            return stripped.trim() ? `* ${stripped.trim()}` : '* ';
+          }).join('\n');
+        }
+        const newText = text.substring(0, lineStart) + newBlock + text.substring(lineEnd);
+        applyTextUpdate(newText, lineStart + newBlock.length, lineStart + newBlock.length);
+        return;
+      }
+
+      if (type === 'number') {
+        const allNumbered = lines.every(l => /^\s*\d+\.\s+/.test(l));
+        let newBlock = '';
+        if (allNumbered) {
+          newBlock = lines.map(l => l.replace(/^(\s*)\d+\.\s+/, '$1')).join('\n');
+        } else {
+          let counter = 1;
+          newBlock = lines.map(l => {
+            const stripped = l.replace(/^(\s*)[*+-]\s+/, '$1').replace(/^(\s*)\d+\.\s+/, '$1');
+            return stripped.trim() ? `${counter++}. ${stripped.trim()}` : `${counter++}. `;
+          }).join('\n');
+        }
+        const newText = text.substring(0, lineStart) + newBlock + text.substring(lineEnd);
+        applyTextUpdate(newText, lineStart + newBlock.length, lineStart + newBlock.length);
+        return;
+      }
+    }
+
+    // 4. BLOCKQUOTE (Quote)
+    if (type === 'quote') {
+      const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+      let lineEnd = text.indexOf('\n', end);
+      if (lineEnd === -1) lineEnd = text.length;
+
+      const selectedBlock = text.substring(lineStart, lineEnd);
+      const lines = selectedBlock.split('\n');
+
+      if (!selectedBlock.trim()) {
+        const placeholder = 'Court dictum or landmark legal quote...';
+        const quoteBlock = `> "${placeholder}"\n`;
+        const newText = text.substring(0, lineStart) + quoteBlock + text.substring(lineEnd);
+        applyTextUpdate(newText, lineStart + 3, lineStart + 3 + placeholder.length);
+        return;
+      }
+
+      const allQuoted = lines.every(l => /^\s*>\s?/.test(l));
+      let newBlock = '';
+      if (allQuoted) {
+        newBlock = lines.map(l => l.replace(/^(\s*)>\s?/, '$1')).join('\n');
+      } else {
+        newBlock = lines.map(l => l.trim() ? `> ${l.trim()}` : '> ').join('\n');
+      }
+      const newText = text.substring(0, lineStart) + newBlock + text.substring(lineEnd);
+      applyTextUpdate(newText, lineStart + newBlock.length, lineStart + newBlock.length);
+      return;
+    }
+
+    // 5. CALLOUT (Takeaway)
+    if (type === 'callout') {
+      const content = selected.trim() || 'Core statutory compliance and advocate courtroom strategy.';
+      const calloutText = `\n\n> ⚖️ **Important Legal Takeaway:**\n> ${content}\n\n`;
+      const newText = text.substring(0, start) + calloutText + text.substring(end);
+      const selectPos = start + 34;
+      applyTextUpdate(newText, selectPos, selectPos + content.length);
+      return;
+    }
+
+    // 6. LINK (Citation)
+    if (type === 'link') {
+      const urlInput = customValue || window.prompt('Enter Link or Precedent URL (e.g., https://main.sci.gov.in):', 'https://');
+      if (urlInput === null) return;
+      const cleanUrl = urlInput.trim() || 'https://';
+
+      let linkText = '';
+      if (selected.trim()) {
+        linkText = `[${selected.trim()}](${cleanUrl})`;
+        const newText = text.substring(0, start) + linkText + text.substring(end);
+        applyTextUpdate(newText, start, start + linkText.length);
+      } else {
+        const titlePlaceholder = 'Legal Precedent Citation';
+        linkText = `[${titlePlaceholder}](${cleanUrl})`;
+        const newText = text.substring(0, start) + linkText + text.substring(end);
+        applyTextUpdate(newText, start + 1, start + 1 + titlePlaceholder.length);
+      }
+      return;
+    }
+
+    // 7. TABLE (Comparison Matrix)
+    if (type === 'table') {
+      const tableMarkdown = `\n\n| Statutory Section | Landmark Precedent Citation | Judicial Ratio & Strategy |\n| :--- | :--- | :--- |\n| Section 482 BNSS | (2024) 4 SCC 120 | Pre-arrest protection benchmarks |\n| Section 63 BSA | AIR 2024 SC 890 | Electronic certificate requirement |\n\n`;
+      const newText = text.substring(0, start) + tableMarkdown + text.substring(end);
+      applyTextUpdate(newText, start + tableMarkdown.length, start + tableMarkdown.length);
+      return;
+    }
+
+    // 8. CODEBLOCK ({ })
+    if (type === 'codeblock') {
+      const snippet = selected || '// Statutory extract, draft clause, or evidentiary formulation';
+      const block = `\n\n\`\`\`text\n${snippet}\n\`\`\`\n\n`;
+      const newText = text.substring(0, start) + block + text.substring(end);
+      if (selected) {
+        applyTextUpdate(newText, start + block.length, start + block.length);
+      } else {
+        const snippetStart = start + 9;
+        applyTextUpdate(newText, snippetStart, snippetStart + snippet.length);
+      }
+      return;
+    }
+
+    // 9. DIVIDER (---)
+    if (type === 'divider') {
+      const divider = `\n\n---\n\n`;
+      const newText = text.substring(0, start) + divider + text.substring(end);
+      applyTextUpdate(newText, start + divider.length, start + divider.length);
+      return;
+    }
+  };
+
+  // Keyboard shortcut handler for description editor
+  const handleKeyDown = (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+      e.preventDefault();
+      insertFormat('bold');
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
+      e.preventDefault();
+      insertFormat('italic');
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      insertFormat('link');
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      const updated = text.substring(0, start) + '  ' + text.substring(end);
+      setFormData(prev => ({ ...prev, description: updated }));
+      setTimeout(() => {
+        textarea.setSelectionRange(start + 2, start + 2);
+      }, 10);
+    }
+  };
+
+  // Pre-made Legal Template Inserter
+  const insertTemplate = (templateType) => {
+    let templateText = '';
+    if (templateType === 'judgment') {
+      templateText = `\n\n### 1. Facts & Procedural History
+Describe the essential factual background, FIR / case registration details, and proceedings before the trial or appellate court.
+
+### 2. Primary Substantial Issues Framed
+1. Whether the statutory thresholds under the relevant section were satisfied?
+2. Whether the applicant/petitioner has established a prima facie case for relief?
+
+### 3. Judicial Ratios & Landmark Precedents Considered
+* **Authority 1:** *(Year) Vol SCC Page* — Highlighting the core ratio laid down.
+* **Authority 2:** *AIR Year SC Page* — Distinguishing the counter-arguments.
+
+### 4. Courtroom Takeaways & Litigation Strategy
+> ⚖️ **Crucial Practice Takeaway:**
+> Key points for advocates while filing or arguing similar matters before the Bench.\n\n`;
+    } else if (templateType === 'act') {
+      templateText = `\n\n### Overview of the Statutory Provisions
+Explain the legislative intent and statutory background behind this provision.
+
+| Legacy Law (IPC / CrPC / IEA) | New 2024 Sanhita (BNS / BNSS / BSA) | Substantive Procedural Change |
+| :--- | :--- | :--- |
+| Section 438 CrPC | Section 482 BNSS | Anticipatory bail procedural benchmarks |
+| Section 65B IEA | Section 63 BSA | Certificate for electronic records |
+
+### Core Compliance Checklist
+* [ ] Mandatory statutory notice period served
+* [ ] Proper evidentiary certificates appended under Section 63 BSA
+* [ ] Jurisdiction and limitation requirements satisfied\n\n`;
+    } else if (templateType === 'notice') {
+      templateText = `\n\n### Executive Summary
+Brief summary of the legal matter and factual matrix.
+
+### Statutory Grounds & Legal Merits
+1. **First Ground:** Violation of statutory covenants.
+2. **Second Ground:** Non-compliance with mandatory guidelines.
+
+> 💡 **Notice / Pleading Strategy:**
+> Ensure specific averments regarding cause of action and territorial jurisdiction are clearly set out.\n\n`;
+    }
+
+    const current = formData.description;
+    setFormData(prev => ({
+      ...prev,
+      description: current ? `${current}\n${templateText}` : templateText.trimStart()
+    }));
+    toast.success('Legal template inserted into editor! 📋');
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  const markdownComponents = {
+    h1: ({ node, ...props }) => (
+      <h1 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white tracking-tight mt-6 mb-3 border-b border-slate-200 dark:border-slate-800 pb-2" {...props} />
+    ),
+    h2: ({ node, ...props }) => (
+      <h2 className="text-xl sm:text-2xl font-black text-slate-950 dark:text-white tracking-tight mt-5 mb-2.5" {...props} />
+    ),
+    h3: ({ node, ...props }) => (
+      <h3 className="text-lg sm:text-xl font-black text-slate-950 dark:text-white tracking-tight mt-4 mb-2" {...props} />
+    ),
+    h4: ({ node, ...props }) => (
+      <h4 className="text-base sm:text-lg font-black text-slate-950 dark:text-white mt-3 mb-1.5" {...props} />
+    ),
+    p: ({ node, ...props }) => (
+      <p className="text-slate-800 dark:text-slate-200 text-xs sm:text-sm leading-relaxed mb-3 font-normal" {...props} />
+    ),
+    strong: ({ node, ...props }) => (
+      <strong className="font-black text-slate-950 dark:text-white" {...props} />
+    ),
+    b: ({ node, ...props }) => (
+      <b className="font-black text-slate-950 dark:text-white" {...props} />
+    ),
+    ul: ({ node, ...props }) => (
+      <ul className="list-disc pl-5 mb-4 space-y-1.5 text-slate-800 dark:text-slate-200 marker:text-[#B88B2A]" {...props} />
+    ),
+    ol: ({ node, ...props }) => (
+      <ol className="list-decimal pl-5 mb-4 space-y-1.5 text-slate-800 dark:text-slate-200 marker:text-[#B88B2A] font-bold" {...props} />
+    ),
+    li: ({ node, ...props }) => (
+      <li className="pl-1 text-slate-800 dark:text-slate-200 text-xs sm:text-sm leading-relaxed font-normal" {...props} />
+    ),
+    hr: ({ node, ...props }) => (
+      <hr className="my-6 border-t-2 border-slate-200 dark:border-slate-800" {...props} />
+    ),
+    blockquote: ({ node, ...props }) => (
+      <blockquote className="border-l-4 border-[#B88B2A] bg-[#B88B2A]/10 dark:bg-[#B88B2A]/15 pl-3.5 py-2.5 pr-2.5 rounded-r-xl my-4 text-slate-900 dark:text-zinc-100 font-medium italic text-xs sm:text-sm" {...props} />
+    ),
+    code: ({ node, inline, className, children, ...props }) => (
+      <code className="bg-slate-100 dark:bg-slate-800 text-[#B88B2A] px-1.5 py-0.5 rounded-md font-mono text-xs border border-slate-200 dark:border-slate-700" {...props}>
+        {children}
+      </code>
+    ),
+    pre: ({ node, children, ...props }) => (
+      <pre className="bg-slate-950 text-slate-100 p-3.5 rounded-xl font-mono text-xs overflow-x-auto my-3 shadow-sm border border-slate-800" {...props}>
+        {children}
+      </pre>
+    ),
+    table: ({ node, ...props }) => (
+      <div className="overflow-x-auto my-4 border border-slate-200 dark:border-slate-800 rounded-xl">
+        <table className="min-w-full text-xs text-left border-collapse" {...props} />
+      </div>
+    ),
+    thead: ({ node, ...props }) => (
+      <thead className="bg-slate-100 dark:bg-slate-800/80 font-black text-slate-900 dark:text-slate-100 uppercase tracking-wider" {...props} />
+    ),
+    th: ({ node, ...props }) => (
+      <th className="p-2.5 border-b border-slate-200 dark:border-slate-700 font-black text-[11px]" {...props} />
+    ),
+    td: ({ node, ...props }) => (
+      <td className="p-2.5 border-b border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-medium" {...props} />
+    ),
+    a: ({ node, ...props }) => (
+      <a className="text-[#B88B2A] underline hover:text-[#976e18] font-bold" target="_blank" rel="noopener noreferrer" {...props} />
+    )
   };
 
   // Fetch all published blogs for History view
@@ -465,87 +970,217 @@ export default function InHouseBlogPublisher() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* View Switcher Tabs */}
-            <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
-              <button
-                type="button"
-                onClick={() => setActiveTab('write')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  activeTab === 'write'
-                    ? 'bg-white dark:bg-[#0B0F19] text-[#B88B2A] shadow-xs'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
-                }`}
-              >
-                <Edit3 size={13} /> {editingId ? 'Edit Article' : 'Write'}
-              </button>
+            {isAuthenticated ? (
+              <>
+                {/* View Switcher Tabs */}
+                <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('write')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      activeTab === 'write'
+                        ? 'bg-white dark:bg-[#0B0F19] text-[#B88B2A] shadow-xs'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                    }`}
+                  >
+                    <Edit3 size={13} /> {editingId ? 'Edit Article' : 'Write'}
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab('preview')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  activeTab === 'preview'
-                    ? 'bg-white dark:bg-[#0B0F19] text-[#B88B2A] shadow-xs'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
-                }`}
-              >
-                <Eye size={13} /> Preview
-              </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('preview')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      activeTab === 'preview'
+                        ? 'bg-white dark:bg-[#0B0F19] text-[#B88B2A] shadow-xs'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                    }`}
+                  >
+                    <Eye size={13} /> Preview
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => { setActiveTab('history'); fetchPublishedList(); fetchJudgments(); }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  activeTab === 'history'
-                    ? 'bg-white dark:bg-[#0B0F19] text-[#B88B2A] shadow-xs'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
-                }`}
-              >
-                <History size={13} /> History
-                <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-black bg-[#B88B2A]/20 text-[#B88B2A]">
-                  {publishedList.length + (judgmentsStats.total || judgmentsList.length)}
-                </span>
-              </button>
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab('history'); fetchPublishedList(); fetchJudgments(); }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      activeTab === 'history'
+                        ? 'bg-white dark:bg-[#0B0F19] text-[#B88B2A] shadow-xs'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                    }`}
+                  >
+                    <History size={13} /> History
+                    <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-black bg-[#B88B2A]/20 text-[#B88B2A]">
+                      {publishedList.length + (judgmentsStats.total || judgmentsList.length)}
+                    </span>
+                  </button>
+                </div>
 
-            <ThemeToggle />
+                <ThemeToggle />
 
-            {/* Action Button: Publish or Save Changes */}
-            {activeTab !== 'history' && (
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="px-4 py-2 rounded-full text-xs font-black text-[#111111] bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 shadow-md shadow-[#B88B2A]/25 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shrink-0"
-              >
-                {submitting ? (
-                  <>
-                    <RefreshCw size={13} className="animate-spin" /> {editingId ? 'Updating...' : 'Publishing...'}
-                  </>
-                ) : editingId ? (
-                  <>
-                    <Save size={13} /> Save Changes
-                  </>
-                ) : (
-                  <>
-                    <Send size={13} /> Publish Article
-                  </>
+                {/* Action Button: Publish or Save Changes */}
+                {activeTab !== 'history' && (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                    className="px-4 py-2 rounded-full text-xs font-black text-[#111111] bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 shadow-md shadow-[#B88B2A]/25 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shrink-0"
+                  >
+                    {submitting ? (
+                      <>
+                        <RefreshCw size={13} className="animate-spin" /> {editingId ? 'Updating...' : 'Publishing...'}
+                      </>
+                    ) : editingId ? (
+                      <>
+                        <Save size={13} /> Save Changes
+                      </>
+                    ) : (
+                      <>
+                        <Send size={13} /> Publish Article
+                      </>
+                    )}
+                  </button>
                 )}
-              </button>
-            )}
 
-            {activeTab === 'history' && (
-              <button
-                onClick={() => { handleCancelEdit(); setActiveTab('write'); }}
-                className="px-4 py-2 rounded-full text-xs font-black text-[#111111] bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 shadow-md shadow-[#B88B2A]/25 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
-              >
-                <Plus size={14} /> New Article
-              </button>
+                {activeTab === 'history' && (
+                  <button
+                    onClick={() => { handleCancelEdit(); setActiveTab('write'); }}
+                    className="px-4 py-2 rounded-full text-xs font-black text-[#111111] bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 shadow-md shadow-[#B88B2A]/25 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                  >
+                    <Plus size={14} /> New Article
+                  </button>
+                )}
+
+                {/* Lock Studio / Logout Button */}
+                <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200 dark:border-slate-800">
+                  <button
+                    type="button"
+                    onClick={handleEditorialLogout}
+                    className="px-2.5 py-1.5 rounded-xl border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/50 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    title="Lock Editorial Studio / Logout"
+                  >
+                    <LogOut size={13} />
+                    <span className="hidden sm:inline">Lock</span>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-full bg-amber-500/10 text-[#B88B2A] border border-[#B88B2A]/20 text-[10px] font-black flex items-center gap-1">
+                  <Lock size={11} /> Admin Locked
+                </span>
+                <ThemeToggle />
+              </div>
             )}
           </div>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className={`${activeTab === 'history' && historySubTab === 'judgments' ? 'max-w-7xl' : 'max-w-4xl'} mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1 transition-all`}>
+      {/* Main Container or Gatekeeper */}
+      {!isAuthenticated ? (
+        /* EDITORIAL ADMIN LOGIN GATEKEEPER */
+        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 my-auto w-full">
+          <div className="w-full max-w-md bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Top gold accent line */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#B88B2A] via-amber-400 to-[#B88B2A]" />
+
+            <div className="text-center space-y-2">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#B88B2A]/20 to-[#B38628]/10 border border-[#B88B2A]/30 flex items-center justify-center mx-auto text-[#B88B2A] shadow-md shadow-[#B88B2A]/10">
+                <ShieldCheck size={32} />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                Editorial Studio Access
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs mx-auto">
+                In-House article publishing & legal editorial governance. Enter administrator credentials to proceed.
+              </p>
+            </div>
+
+            {/* Error Message */}
+            {loginError && (
+              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-xs font-semibold flex items-center gap-2">
+                <AlertCircle size={15} className="shrink-0" />
+                <span>{loginError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleEditorialLogin} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Admin Email
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <Mail size={16} />
+                  </div>
+                  <input
+                    type="email"
+                    required
+                    autoFocus
+                    value={loginEmail}
+                    onChange={(e) => { setLoginEmail(e.target.value); setLoginError(''); }}
+                    placeholder="admin@uwo24.com"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs sm:text-sm font-medium focus:outline-none focus:border-[#B88B2A] transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <Lock size={16} />
+                  </div>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={loginPassword}
+                    onChange={(e) => { setLoginPassword(e.target.value); setLoginError(''); }}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs sm:text-sm font-medium focus:outline-none focus:border-[#B88B2A] transition-colors font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(p => !p)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loginLoading}
+                className="w-full py-3 rounded-xl text-xs sm:text-sm font-black text-[#111111] bg-gradient-to-r from-[#B88B2A] to-[#B38628] hover:opacity-95 shadow-md shadow-[#B88B2A]/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2"
+              >
+                {loginLoading ? (
+                  <>
+                    <RefreshCw size={15} className="animate-spin" /> Verifying Credentials...
+                  </>
+                ) : (
+                  <>
+                    <Lock size={14} /> Unlock Editorial Studio
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+              <button
+                type="button"
+                onClick={() => navigate('/blog')}
+                className="text-xs font-bold text-slate-500 hover:text-[#B88B2A] transition-colors inline-flex items-center gap-1 cursor-pointer"
+              >
+                <ArrowLeft size={13} /> Return to Legal Journal
+              </button>
+            </div>
+          </div>
+        </main>
+      ) : (
+        <>
+          {/* Main Container */}
+          <main className={`${activeTab === 'history' && historySubTab === 'judgments' ? 'max-w-7xl' : 'max-w-4xl'} mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1 transition-all`}>
         
         {/* EDITING MODE ALERT BANNER */}
         {editingId && activeTab === 'write' && (
@@ -708,23 +1343,231 @@ export default function InHouseBlogPublisher() {
               )}
             </div>
 
-            {/* 5. ARTICLE DESCRIPTION (MAIN CONTENT) */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                  5. Article Description / Full Content * (Markdown Supported)
-                </label>
-                <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
-                  <span>Supports:</span>
-                  <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">### Headings</code>
-                  <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">* Bullets</code>
-                  <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">**Bold**</code>
+            {/* 5. ARTICLE DESCRIPTION (MAIN CONTENT) WITH RICH FORMATTING TOOLBAR */}
+            <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+              {/* Header Title & Split Preview Toggle */}
+              <div className="flex items-center justify-between flex-wrap gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800/80">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#B88B2A] animate-pulse" />
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                    5. Article Content & Legal Narrative *
+                  </label>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#B88B2A]/10 text-[#B88B2A] border border-[#B88B2A]/25">
+                    Rich Formatting Enabled
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSplitPreview(prev => !prev)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                      splitPreview
+                        ? 'bg-[#B88B2A] text-slate-950 border-[#B88B2A] shadow-md shadow-[#B88B2A]/25'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#B88B2A] hover:text-[#B88B2A]'
+                    }`}
+                    title={splitPreview ? "Close split screen" : "Open side-by-side live preview"}
+                  >
+                    <Columns2 size={13} />
+                    <span>{splitPreview ? 'Close Split View' : 'Side-by-Side Preview'}</span>
+                  </button>
                 </div>
               </div>
 
-              <textarea
-                rows={16}
-                placeholder={`Type or paste your complete article description here...
+              {/* Comprehensive Formatting Toolbar */}
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-1.5 sm:gap-2">
+                {/* Text Styles Group */}
+                <div className="flex items-center gap-0.5 sm:gap-1 bg-white dark:bg-slate-800/90 p-1 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-2xs">
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('bold')}
+                    className="p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer"
+                    title="Bold (**text**) - Ctrl+B"
+                  >
+                    <Bold size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('italic')}
+                    className="p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer"
+                    title="Italic (*text*) - Ctrl+I"
+                  >
+                    <Italic size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('strikethrough')}
+                    className="p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer"
+                    title="Strikethrough (~~text~~)"
+                  >
+                    <Strikethrough size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('code')}
+                    className="p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer"
+                    title="Inline Code / Statute (`text`)"
+                  >
+                    <Code size={15} />
+                  </button>
+                </div>
+
+                {/* Headings Group */}
+                <div className="flex items-center gap-0.5 sm:gap-1 bg-white dark:bg-slate-800/90 p-1 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-2xs">
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('h1')}
+                    className="px-2 py-1.5 rounded-lg text-xs font-black text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer flex items-center gap-0.5"
+                    title="Heading 1 (# Heading)"
+                  >
+                    <Heading1 size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('h2')}
+                    className="px-2 py-1.5 rounded-lg text-xs font-black text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer flex items-center gap-0.5"
+                    title="Heading 2 (## Sub-Heading)"
+                  >
+                    <Heading2 size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('h3')}
+                    className="px-2 py-1.5 rounded-lg text-xs font-black text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer flex items-center gap-0.5"
+                    title="Heading 3 (### Section Sub-header)"
+                  >
+                    <Heading3 size={15} />
+                  </button>
+                </div>
+
+                {/* Lists & Quotes Group */}
+                <div className="flex items-center gap-0.5 sm:gap-1 bg-white dark:bg-slate-800/90 p-1 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-2xs">
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('bullet')}
+                    className="p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer"
+                    title="Bullet List (* Item)"
+                  >
+                    <List size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('number')}
+                    className="p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer"
+                    title="Numbered List (1. Item)"
+                  >
+                    <ListOrdered size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('quote')}
+                    className="p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer"
+                    title="Court Dictum / Blockquote (> Quote)"
+                  >
+                    <Quote size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('callout')}
+                    className="px-2 py-1.5 rounded-lg text-[11px] font-black text-amber-700 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
+                    title="Insert Legal Takeaway Callout Box"
+                  >
+                    <Scale size={13} /> Takeaway
+                  </button>
+                </div>
+
+                {/* Inserts Group (Link, Table, Codeblock, Divider) */}
+                <div className="flex items-center gap-0.5 sm:gap-1 bg-white dark:bg-slate-800/90 p-1 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-2xs">
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('link')}
+                    className="p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer"
+                    title="Insert Link / Citation (Ctrl+K)"
+                  >
+                    <LinkIcon size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('table')}
+                    className="p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer flex items-center gap-1"
+                    title="Insert Comparison Table / Matrix"
+                  >
+                    <TableIcon size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('divider')}
+                    className="p-1.5 sm:p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer"
+                    title="Horizontal Divider (---)"
+                  >
+                    <Minus size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertFormat('codeblock')}
+                    className="px-2 py-1.5 rounded-lg text-[11px] font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-[#B88B2A] active:scale-95 active:bg-[#B88B2A]/20 transition-all cursor-pointer font-mono"
+                    title="Code / Statutory Snippet (```)"
+                  >
+                    {'{ }'}
+                  </button>
+                </div>
+
+                {/* Templates Dropdown / Pills */}
+                <div className="flex items-center gap-1 ml-auto flex-wrap">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 hidden xl:inline">Templates:</span>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertTemplate('judgment')}
+                    className="px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 active:scale-95 text-[#B88B2A] text-[10px] font-bold border border-[#B88B2A]/25 transition-all cursor-pointer"
+                    title="Insert 4-Step Judgment Analysis Template"
+                  >
+                    + Judgment
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertTemplate('act')}
+                    className="px-2 py-1 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 active:scale-95 text-blue-600 dark:text-blue-400 text-[10px] font-bold border border-blue-500/25 transition-all cursor-pointer"
+                    title="Insert Sanhita Matrix (IPC vs BNS) Template"
+                  >
+                    + Sanhita Table
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => insertTemplate('notice')}
+                    className="px-2 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 active:scale-95 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold border border-emerald-500/25 transition-all cursor-pointer"
+                    title="Insert Pleading & Notice Template"
+                  >
+                    + Pleading
+                  </button>
+                </div>
+              </div>
+
+              {/* Main Textarea or Split Preview Container */}
+              <div className={splitPreview ? 'grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch' : 'w-full'}>
+                {/* Editor textarea */}
+                <div className="relative flex flex-col">
+                  <textarea
+                    ref={textareaRef}
+                    rows={splitPreview ? 24 : 18}
+                    placeholder={`Type or paste your complete article description here...
 
 ### 1. Key Judicial Propositions
 Describe the facts, procedural posture, and relevant provisions of the Bharatiya Nagarik Suraksha Sanhita (BNSS) or landmark authorities.
@@ -732,11 +1575,66 @@ Describe the facts, procedural posture, and relevant provisions of the Bharatiya
 ### 2. Courtroom Takeaways & Strategy
 * Point 1: Essential statutory compliance
 * Point 2: Evidentiary thresholds required`}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full text-xs sm:text-sm font-sans font-medium bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-[#B88B2A] leading-relaxed resize-y"
-                required
-              />
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onKeyDown={handleKeyDown}
+                    className="w-full h-full min-h-[380px] text-xs sm:text-sm font-sans font-medium bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 sm:p-5 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-[#B88B2A] leading-relaxed resize-y shadow-inner text-[13px]"
+                    required
+                  />
+                </div>
+
+                {/* Live Split Preview Panel (shown when splitPreview is true) */}
+                {splitPreview && (
+                  <div className="flex flex-col border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/80 overflow-hidden shadow-inner min-h-[380px]">
+                    <div className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-700/80 flex items-center justify-between">
+                      <span className="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                        <Eye size={12} className="text-[#B88B2A]" /> Live Formatted Preview
+                      </span>
+                      <span className="text-[10px] text-slate-400">Updates as you type</span>
+                    </div>
+                    <div className="p-5 overflow-y-auto max-h-[600px] flex-1">
+                      {formData.description ? (
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          urlTransform={(val) => val}
+                          components={markdownComponents}
+                        >
+                          {formData.description}
+                        </ReactMarkdown>
+                      ) : (
+                        <div className="h-full flex items-center justify-center text-center p-8 text-slate-400 text-xs italic">
+                          Start typing or click any formatting button above to see live preview...
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Status Bar: Live Counts & Keyboard Shortcuts */}
+              <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">
+                    <strong className="text-[#B88B2A]">{formData.description ? formData.description.trim().split(/\s+/).filter(Boolean).length : 0}</strong> words
+                  </span>
+                  <span>•</span>
+                  <span>
+                    <strong className="text-slate-700 dark:text-slate-300">{formData.description ? formData.description.length : 0}</strong> characters
+                  </span>
+                  <span>•</span>
+                  <span>
+                    Est. <strong className="text-slate-700 dark:text-slate-300">{getReadTime(formData.description)}</strong>
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5 flex-wrap text-[10px]">
+                  <span className="hidden md:inline text-slate-400">Shortcuts:</span>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[9px]">Ctrl+B</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[9px]">Ctrl+I</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[9px]">Ctrl+K</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[9px]">Tab</kbd>
+                </div>
+              </div>
             </div>
 
             {/* Bottom Action Bar */}
@@ -829,54 +1727,7 @@ Describe the facts, procedural posture, and relevant provisions of the Bharatiya
                 remarkPlugins={[remarkGfm]}
                 urlTransform={(val) => val}
                 className="text-slate-800 dark:text-slate-200 text-sm sm:text-base leading-relaxed focus:outline-none"
-                components={{
-                  h1: ({ node, ...props }) => (
-                    <h1 className="text-2xl sm:text-4xl font-black text-slate-950 dark:text-white tracking-tight mt-8 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2" {...props} />
-                  ),
-                  h2: ({ node, ...props }) => (
-                    <h2 className="text-xl sm:text-3xl font-black text-slate-950 dark:text-white tracking-tight mt-7 mb-3" {...props} />
-                  ),
-                  h3: ({ node, ...props }) => (
-                    <h3 className="text-lg sm:text-2xl font-black text-slate-950 dark:text-white tracking-tight mt-6 mb-3" {...props} />
-                  ),
-                  h4: ({ node, ...props }) => (
-                    <h4 className="text-base sm:text-xl font-black text-slate-950 dark:text-white mt-5 mb-2" {...props} />
-                  ),
-                  p: ({ node, ...props }) => (
-                    <p className="text-slate-800 dark:text-slate-200 text-sm sm:text-[15px] leading-relaxed mb-4 font-normal" {...props} />
-                  ),
-                  strong: ({ node, ...props }) => (
-                    <strong className="font-black text-slate-950 dark:text-white" {...props} />
-                  ),
-                  b: ({ node, ...props }) => (
-                    <b className="font-black text-slate-950 dark:text-white" {...props} />
-                  ),
-                  ul: ({ node, ...props }) => (
-                    <ul className="list-disc pl-6 mb-5 space-y-2 text-slate-800 dark:text-slate-200 marker:text-[#B88B2A]" {...props} />
-                  ),
-                  ol: ({ node, ...props }) => (
-                    <ol className="list-decimal pl-6 mb-5 space-y-2 text-slate-800 dark:text-slate-200 marker:text-[#B88B2A] font-bold" {...props} />
-                  ),
-                  li: ({ node, ...props }) => (
-                    <li className="pl-1 text-slate-800 dark:text-slate-200 text-sm sm:text-[15px] leading-relaxed font-normal" {...props} />
-                  ),
-                  hr: ({ node, ...props }) => (
-                    <hr className="my-8 border-t-2 border-slate-200 dark:border-slate-800" {...props} />
-                  ),
-                  blockquote: ({ node, ...props }) => (
-                    <blockquote className="border-l-4 border-[#B88B2A] bg-[#B88B2A]/10 dark:bg-[#B88B2A]/15 pl-4 py-3 pr-3 rounded-r-2xl my-5 text-slate-900 dark:text-zinc-100 font-medium italic" {...props} />
-                  ),
-                  code: ({ node, inline, className, children, ...props }) => (
-                    <code className="bg-slate-100 dark:bg-slate-800 text-[#B88B2A] px-1.5 py-0.5 rounded-md font-mono text-xs border border-slate-200 dark:border-slate-700" {...props}>
-                      {children}
-                    </code>
-                  ),
-                  pre: ({ node, children, ...props }) => (
-                    <pre className="bg-slate-950 text-slate-100 p-4 rounded-xl font-mono text-xs overflow-x-auto my-4 shadow-sm border border-slate-800" {...props}>
-                      {children}
-                    </pre>
-                  )
-                }}
+                components={markdownComponents}
               >
                 {formData.description || 'Article description will be formatted here...'}
               </ReactMarkdown>
@@ -1039,7 +1890,8 @@ Describe the facts, procedural posture, and relevant provisions of the Bharatiya
                     {filteredHistory.map((blog, idx) => {
                       const blogId = blog._id || blog.slug;
                       const isCurrentEditing = editingId === blogId || editingId === blog.slug;
-                      const blogImg = blog.image || blog.coverImage;
+                      const rawImg = blog.image || blog.coverImage;
+                      const blogImg = rawImg && rawImg.startsWith('/uploads/') ? `${backendBase}${rawImg}` : rawImg;
 
                       return (
                         <div
@@ -1854,6 +2706,8 @@ Describe the facts, procedural posture, and relevant provisions of the Bharatiya
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
 
       {/* Footer */}
